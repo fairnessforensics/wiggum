@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # Detecting Simpson's Paradox documentation build configuration file, created by
-# sphinx-quickstart on Thu Aug 31 11:11:28 2017.
+# sphinx-quickstart on Thu Aug 31 11:21:36 2017.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.

@@ -1,2 +1,2 @@
 # ignore built versions of docs
-./docs/build
+/docs/build/
