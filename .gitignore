@@ -1,2 +1,5 @@
 # ignore built versions of docs
 /docs/build/
+
+# ignore notebook checkpoints
+notebooks/.ipynb_checkpoints
