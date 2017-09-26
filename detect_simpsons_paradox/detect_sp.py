@@ -29,9 +29,10 @@ def upper_triangle_element(matrix):
     
     return elements
 
-# Function return a dataframe for upper triangle elements without diagonal elements
+
 def upper_triangle_df(matrix):
     """
+    return a dataframe for upper triangle elements without diagonal elements
     """
     #upper triangle construction
     tri_upper = np.triu(matrix, k=1)
@@ -57,3 +58,11 @@ def isReverse(a, b):
        return True
     else:
        return False
+
+def isReverse(a, b):
+    """
+    reversal is the logical opposite of signs matching
+    
+    """
+    
+    return not (np.sign(a) == np.sign(b))
