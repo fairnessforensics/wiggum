@@ -7,5 +7,5 @@ setup(name='detect_simpsons_paradox',
       author='Sarah M Brown',
       author_email='smb@sarahmbrown.org',
       license='MIT',
-      packages=['mlhelpers'],
+      packages=['detect_simpsons_paradox'],
       zip_safe=False)
