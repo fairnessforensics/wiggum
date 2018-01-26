@@ -1,8 +1,15 @@
 import numpy as np
 import pandas as pd
+from .gp-data-gen import kLIN, ySampleNoisy
 
 def Hello():
     return "Hello2"
+
+def linear_sp(N):
+    """
+    generatate synthetic data for SP in linear trends by generating
+    linear data with offsets that induce SP
+    """
 
 
 def simple_regression_sp(N, mu,cov):
