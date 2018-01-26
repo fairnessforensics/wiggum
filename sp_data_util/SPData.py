@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from .gp-data-gen import kLIN, ySampleNoisy
+from .gp_data_gen import kLIN, ySampleNoisy
 
 def Hello():
     return "Hello2"
