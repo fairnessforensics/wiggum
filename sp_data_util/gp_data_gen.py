@@ -33,7 +33,6 @@ def kPER(x1,x2,theta):
     return np.exp(-theta[0]*np.square(np.sin((x1-x2)/theta[1])))
 
 def kLIN(x1,x2,theta):
-    return theta[0] + theta[1]*(x1-theta[2])*(x2-theta[2])
     """
     Linear Kernel
     Inputs
@@ -43,6 +42,8 @@ def kLIN(x1,x2,theta):
     theta:vector of length 3
         1. variance of y-intercept 2.slope variance 3.x that all samples go through
     """
+    return theta[0] + theta[1]*(x1-theta[2])*(x2-theta[2])
+    
 def kRQ(x1,x2,theta):
     """
     Rational Quadratic Kernel
