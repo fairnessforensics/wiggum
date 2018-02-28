@@ -8,7 +8,8 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=python -msphinx
 )
 set SOURCEDIR=source
-set BUILDDIR=build
+REM set BUILDDIR=build
+set BUILDDIR=..
 set SPHINXPROJ=DetectingSimpsonsParadox
 
 if "%1" == "" goto help
