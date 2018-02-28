@@ -1,16 +1,14 @@
 # DetectSimpsonParadox
 
-Toward scalable, interactive detection of Simpson's Paradox. 
+Toward scalable, interactive detection of Simpson's Paradox.
 
-To use the pacakge, download (or clone) and:
+Published in:
+ - [FLAIRS 31] (http://www.flairs-31.info/program) paper to appear
+
+To use the package, download (or clone) and:
 ```bash
 cd DetectSimpsonParadox/
 pip install .
-```
-
-To reinstall after changes
-```bash
-pip install --upgrade .
 ```
 
 To compile docs, sphinx is required. then
@@ -19,7 +17,7 @@ To compile docs, sphinx is required. then
 cd docs/
 make html
 ```
-    
+
 To use the package, after installed
 
 ```python
@@ -32,3 +30,8 @@ To use the data generation utilities, after installed
 import sp_data_utils as sp_data
 ```
 
+
+To reinstall after changes:
+```bash
+pip install --upgrade .
+```
