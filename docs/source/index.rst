@@ -12,8 +12,8 @@ Welcome to Detecting Simpson's Paradox's documentation!
 
    FLAIRS31
    API
-   ../../notebooks/simple_simpsons_paradox_intro.ipynb
    spintro
+   ../../notebooks/simple_simpsons_paradox_intro.ipynb
 
 .. instead of keeping this info in two places, set it to show at github and here
 .. include:: ../../README.rst
