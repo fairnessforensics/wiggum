@@ -10,11 +10,16 @@ Welcome to Detecting Simpson's Paradox's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   organization.rst
+   FLAIRS31
+   API
+   ../../notebooks/simple_simpsons_paradox_intro.ipynb
+   spintro
 
 .. instead of keeping this info in two places, set it to show at github and here
 .. include:: ../../README.rst
 
+
+.. include:: ./organization.rst
 
 
 Indices and tables

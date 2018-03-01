@@ -33,8 +33,10 @@ To use the data generation utilities, after installed::
   import sp_data_utils as sp_data
 
 
-To reinstall after changes:
+To reinstall after changes
 
-.. code-block::bash
+.. code-block:: bash
 
   pip install --upgrade .
+
+(only needed in development or after upgrade)
