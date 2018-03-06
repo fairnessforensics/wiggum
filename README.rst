@@ -15,7 +15,14 @@ To use the package, download (or clone) and:
   pip install .
 
 
-To compile docs, sphinx is required. then
+To compile docs, sphinx and some extensions are required, all are included in
+`requirements.txt` and can be installed with
+
+.. code-block:: bash
+
+  pip install -r requirements.txt
+
+then
 
 .. code-block:: bash
 

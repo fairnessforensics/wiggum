@@ -3,7 +3,7 @@
 /docs/doctrees/
 
 # ignore notebook checkpoints
-notebooks/.ipynb_checkpoints
+research_notebooks/.ipynb_checkpoints
 
 # ignore compiled stuff
 *.pyc

@@ -1,16 +1,19 @@
+"""
+Auto MPG Dataset Experiments Example
+=====================================
 
+THis example is detials on the auto mpg experiemtns incldued in our flairs 31 paper.
+"""
 # coding: utf-8
 
 # # Auto Miles Per Gallon Data Experiments
-# 
-# This notebook runs the experiments and generates the figures on the [auto mpg data](https://archive.ics.uci.edu/ml/datasets/auto+mpg). We are working with a subset of the data created by: 
-#  
-#  1. selecting a subset of columns to suit our problem setting: three continuous (mpg, acceleration, and horsepower) and three categorical attributes (cylinders, model year, and origin) 
+#
+# This notebook runs the experiments and generates the figures on the [auto mpg data](https://archive.ics.uci.edu/ml/datasets/auto+mpg). We are working with a subset of the data created by:
+#
+#  1. selecting a subset of columns to suit our problem setting: three continuous (mpg, acceleration, and horsepower) and three categorical attributes (cylinders, model year, and origin)
 #  1. removing incomplete records
-#  
+#
 # This notebook generates the results and figures related to the AutoMPG experiments
-
-# In[3]:
 
 import numpy as np
 import pandas as pd
@@ -25,31 +28,29 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 # our code packaged for easy use
 import detect_simpsons_paradox as dsp
 
-
-# In[4]:
-
 # import the prepared copy of the data
 auto_df = pd.read_csv('../data/auto2.csv')
 auto_df.head()
 
+##############################################################################
+# From examining the above, we know that the integer columns are the group-by
+# variables and the float type variables  are the continuous attributes. The
+# detector function will automatically
 
-# From examining the above, we know that the integer columns are the group-by variables and the float type variables  are the continuous attributes. The detector function will automatically 
 
-# In[13]:
 
 groupbyAttrs = auto_df.select_dtypes(include=['int64'])
 groupbyAttrs_labels = list(groupbyAttrs)
 print(groupbyAttrs_labels)
 
 
-# In[14]:
-
 continuousAttrs = auto_df.select_dtypes(include=['float64'])
 continuousAttrs_labels = list(continuousAttrs)
 print(continuousAttrs_labels)
 
-
-# Now we can run our algorithm and print out the results after a little bit of post-processing to improve readability.
+##############################################################################
+# Now we can run our algorithm and print out the results after a little bit of
+# post-processing to improve readability.
 
 # In[19]:
 
@@ -62,13 +63,16 @@ result_df['attr2'] = result_df['attr2'].map(lambda x:continuousAttrs_labels[x])
 # sort for easy reading
 result_df = result_df.sort_values(['attr1', 'attr2'], ascending=[1, 1])
 
-# data frames print neatly in notebooks 
-result_df
+##############################################################################
+# data frames print neatly in notebooks
+print(result_df)
 
-
+##############################################################################
 # # Plotting
-# 
-# We plot all data in scatter plots based on each group by attribute, for each pair of candidate attributes. For each plot we add the overall trendline and the trend line for each occurence of Simpson's Paradox. 
+#
+# We plot all data in scatter plots based on each group by attribute, for each
+# pair of candidate attributes. For each plot we add the overall trendline and
+#  the trend line for each occurence of Simpson's Paradox.
 
 # In[8]:
 
@@ -207,7 +211,7 @@ plt.show()
 #fig.savefig('auto2.jpg')
 
 
-# 
+#
 
 # In[11]:
 
@@ -267,4 +271,3 @@ plt.plot(X_plot, m*X_plot + b, '-', color='black')
 plt.show()
 
 #fig.savefig('auto3.jpg')
-
