@@ -174,6 +174,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
+    "## Results\n",
     "Now we can run our algorithm and print out the results after a little bit of post-processing to improve readability."
    ]
   },
@@ -343,7 +344,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Plotting\n",
+    "## Plotting\n",
     "\n",
     "We plot all data in scatter plots based on each group by attribute, for each pair of candidate attributes. For each plot we add the overall trendline and the trend line for each occurence of Simpson's Paradox. "
    ]
@@ -568,7 +569,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Experiments on sampled data\n",
+    "## Experiments on sampled data\n",
     "We run our algorithm on 10%, 30%, 50%, 60%, 90% sampled data set and print out the results."
    ]
   },
@@ -1313,7 +1314,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.6.1"
+   "version": "3.6.4"
   }
  },
  "nbformat": 4,

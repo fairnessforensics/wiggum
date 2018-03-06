@@ -16,6 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Timing Experiment" href="exp_time.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -29,20 +30,19 @@
         <div class="sphinxsidebarwrapper">
 <h3><a href="../index.html">Table Of Contents</a></h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../FLAIRS31.html">Reproducing the FLAIRS31 paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../API.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../spintro.html">SP Intro</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="simple_simpsons_paradox_intro.html#Regression-Based-SImpson’s-Paradox">Regression Based SImpson’s Paradox</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exp_autompg.html">Auto Miles Per Gallon Data Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exp_autompg.html#Plotting">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exp_time.html">Timing Experiment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Iris Data Experiments</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="exp_time.html" title="previous chapter">Timing Experiment</a></li>
   </ul></li>
 </ul>
 </div>
@@ -391,6 +391,8 @@ selected columns of each type to verify.</p>
 [&#39;sepal length&#39;, &#39;sepal width&#39;, &#39;petal length&#39;, &#39;petal width&#39;]
 </pre></div></div>
 </div>
+<div class="section" id="Results">
+<h2>Results<a class="headerlink" href="#Results" title="Permalink to this headline">¶</a></h2>
 <p>Now we can run our algorithm and print out the results after a little
 bit of post-processing to improve readability.</p>
 <div class="nbinput docutils container">
@@ -532,7 +534,7 @@ bit of post-processing to improve readability.</p>
 </div>
 </div>
 <div class="section" id="Plotting">
-<h1>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline">¶</a></h1>
+<h2>Plotting<a class="headerlink" href="#Plotting" title="Permalink to this headline">¶</a></h2>
 <p>We plot all data in scatter plots based on each group by attribute, for
 each pair of candidate attributes. For each plot we add the overall
 trendline and the trend line for each occurence of Simpson’s Paradox.</p>
@@ -745,7 +747,7 @@ trendline and the trend line for each occurence of Simpson’s Paradox.</p>
 </div>
 </div>
 <div class="section" id="Experiments-on-sampled-data">
-<h1>Experiments on sampled data<a class="headerlink" href="#Experiments-on-sampled-data" title="Permalink to this headline">¶</a></h1>
+<h2>Experiments on sampled data<a class="headerlink" href="#Experiments-on-sampled-data" title="Permalink to this headline">¶</a></h2>
 <p>We run our algorithm on 10%, 30%, 50%, 60%, 90% sampled data set and
 print out the results.</p>
 <div class="nbinput nblast docutils container">
@@ -1401,6 +1403,7 @@ SP Detections in 90.0% of the data
   </tbody>
 </table>
 </div></div>
+</div>
 </div>
 </div>
 
