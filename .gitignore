@@ -1,5 +1,5 @@
 # ignore built versions of docs
-/docs/html/
+#/docs/html/
 /docs/doctrees/
 
 # ignore notebook checkpoints
