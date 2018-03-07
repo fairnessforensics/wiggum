@@ -5,7 +5,7 @@ Getting Started
 Toward scalable, interactive detection of Simpson's Paradox.
 
 Published in:
- - [FLAIRS 31] (http://www.flairs-31.info/program) paper to appear
+ - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`_ to appear
 
 To use the package, download (or clone) and:
 

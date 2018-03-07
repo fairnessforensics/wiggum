@@ -10,7 +10,6 @@ Detecting Simpson's Paradox's documentation!
    :maxdepth: 1
    :caption: Contents:
 
-   FLAIRS31
    API
    /notebooks/simple_simpsons_paradox_intro.ipynb
    /notebooks/exp_autompg
