@@ -4,6 +4,7 @@
 
 # ignore notebook checkpoints
 research_notebooks/.ipynb_checkpoints
+docs/source/notebooks/.ipynb_checkpoints
 
 # ignore compiled stuff
 *.pyc
