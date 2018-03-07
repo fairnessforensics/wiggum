@@ -67,10 +67,10 @@
   <h1>Source code for sp_data_util.SPData</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">.gp_data_gen</span> <span class="k">import</span> <span class="n">kLIN</span><span class="p">,</span> <span class="n">ySampleNoisy</span>
-
-<span class="k">def</span> <span class="nf">Hello</span><span class="p">():</span>
-    <span class="k">return</span> <span class="s2">&quot;Hello2&quot;</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">randint</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">gauss</span>
+<span class="kn">import</span> <span class="nn">math</span>
 
 <span class="k">def</span> <span class="nf">linear_sp</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -81,30 +81,30 @@
 
 <div class="viewcode-block" id="simple_regression_sp"><a class="viewcode-back" href="../../API.html#sp_data_util.simple_regression_sp">[docs]</a><span class="k">def</span> <span class="nf">simple_regression_sp</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    generate synthetic data for simplest case of group-wise SP of the </span>
-<span class="sd">       regression type, generates data from $k$k clusters with centers </span>
+<span class="sd">    generate synthetic data for simplest case of group-wise SP of the</span>
+<span class="sd">       regression type, generates data from $k$k clusters with centers</span>
 <span class="sd">       mu each with covariance cov</span>
 <span class="sd">    mu and cov must induce SP, this does not make SP happen</span>
 <span class="sd">    adds 1 noisy dimensions</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 <span class="sd">    N : scalar integer</span>
 <span class="sd">        number of samples total to draw</span>
 <span class="sd">    mu : k cluster centers in d dimensions</span>
 <span class="sd">        locations of the clusters</span>
-<span class="sd">    cov : d_1 xd_1 covariance </span>
+<span class="sd">    cov : d_1 xd_1 covariance</span>
 <span class="sd">        shared covariance of all subgroup clusters</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="c1"># number rof clusters</span>
     <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
     <span class="c1"># dimensions</span>
     <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    
+
     <span class="c1">#generate var names</span>
     <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
-    
+
     <span class="c1"># sample from clusters (should accept wights and allow this to vary ie class imbalance)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">z_i</span><span class="p">],</span><span class="n">cov</span><span class="p">)</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">])</span>
@@ -112,48 +112,48 @@
     <span class="c1"># make a dataframe</span>
     <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
                            <span class="n">columns</span> <span class="o">=</span> <span class="n">var_names</span><span class="p">)</span>
-    
+
     <span class="c1"># add a noise column</span>
     <span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x_n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x3</span>
-    
+
     <span class="c1"># code z as color and add that as a column to the dataframe</span>
     <span class="n">color_z</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">}</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">color_z</span><span class="p">[</span><span class="n">z_i</span><span class="p">]</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">]</span>
-   </div>
+</div>
     <span class="k">return</span> <span class="n">latent_df</span>
 
 <div class="viewcode-block" id="noise_regression_sp"><a class="viewcode-back" href="../../API.html#sp_data_util.noise_regression_sp">[docs]</a><span class="k">def</span> <span class="nf">noise_regression_sp</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">,</span><span class="n">d_noise</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    generate synthetic data for simplest case of group-wise SP of the </span>
-<span class="sd">       regression type, generates data from $k$k clusters with centers </span>
+<span class="sd">    generate synthetic data for simplest case of group-wise SP of the</span>
+<span class="sd">       regression type, generates data from $k$k clusters with centers</span>
 <span class="sd">       mu each with covariance cov</span>
 <span class="sd">    mu and cov must induce SP, this does not make SP happen</span>
 <span class="sd">    adds d_noise noisy dimensions</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 <span class="sd">    N : scalar integer</span>
 <span class="sd">        number of samples total to draw</span>
 <span class="sd">    mu : k cluster centers in d dimensions</span>
 <span class="sd">        locations of the clusters</span>
-<span class="sd">    cov : d_1 xd_1 covariance </span>
+<span class="sd">    cov : d_1 xd_1 covariance</span>
 <span class="sd">        shared covariance of all subgroup clusters</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="c1"># number rof clusters</span>
     <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
     <span class="c1"># dimensions</span>
     <span class="n">d</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">d_noise</span>
-    
+
     <span class="c1">#generate var names</span>
     <span class="n">var_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">d</span><span class="p">)]</span>
-    
+
     <span class="c1"># add noise dimensions to mu and cov</span>
     <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">k</span><span class="p">,</span><span class="n">d_noise</span><span class="p">]),</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">cov</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">cov</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">d_noise</span><span class="p">,</span><span class="n">d_noise</span><span class="p">])]),</span>
            <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">d_noise</span><span class="p">,</span><span class="n">d_noise</span><span class="p">]),</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">d_noise</span><span class="p">)])])</span>
-    
+
     <span class="c1"># sample from clusters (should accept wights and allow this to vary ie class imbalance)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">z_i</span><span class="p">],</span><span class="n">cov</span><span class="p">)</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">])</span>
@@ -161,37 +161,124 @@
     <span class="c1"># make a dataframe</span>
     <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
                            <span class="n">columns</span> <span class="o">=</span> <span class="n">var_names</span><span class="p">)</span>
-    
+
     <span class="c1"># add a noise column</span>
     <span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x_n&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x3</span>
-    
+
     <span class="c1"># code z as color and add that as a column to the dataframe</span>
     <span class="n">color_z</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">}</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">color_z</span><span class="p">[</span><span class="n">z_i</span><span class="p">]</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">]</span>
-   </div>
+</div>
     <span class="k">return</span> <span class="n">latent_df</span>
 
+<div class="viewcode-block" id="mixed_regression_sp_extra"><a class="viewcode-back" href="../../API.html#sp_data_util.mixed_regression_sp_extra">[docs]</a><span class="k">def</span> <span class="nf">mixed_regression_sp_extra</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">,</span><span class="n">extra</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    generate synthetic data for simplest case of group-wise SP of the regression type</span>
+<span class="sd">    mu and cov must induce SP, this does not make SP happen</span>
+<span class="sd">    adds 1 noisy dimensions and an interacting char attribute</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    -----------</span>
+<span class="sd">    N : scalar integer</span>
+<span class="sd">        number of samples total to draw</span>
+<span class="sd">    mu : k cluster centers in d dimensions</span>
+<span class="sd">        locations of the clusters</span>
+<span class="sd">    cov : d_1 xd_1 covariance</span>
+<span class="sd">        shared covariance of all subgroup clusters</span>
+<span class="sd">    extra : scalar</span>
+<span class="sd">        number of extra variables ot add.</span>
+<span class="sd">    p : vector length k</span>
+<span class="sd">        probability of each cluster</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+
+    <span class="c1"># sample from clusters</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">N</span><span class="p">,</span><span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
+
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">z_i</span><span class="p">],</span><span class="n">cov</span><span class="p">)</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">])</span>
+
+    <span class="c1"># make a dataframe</span>
+    <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+                           <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="s1">&#39;x2&#39;</span><span class="p">])</span>
+
+    <span class="c1"># add in the cluster id</span>
+    <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;cluster&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">z_i</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">]</span>
+
+    <span class="c1"># add extra continuous column</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">extra</span><span class="p">):</span>
+        <span class="n">attrName</span> <span class="o">=</span> <span class="s2">&quot;con_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">attrName</span><span class="p">])</span>
+        <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">latent_df</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="c1"># add extra categorical column</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">extra</span><span class="p">):</span>
+        <span class="n">attrName</span> <span class="o">=</span> <span class="s2">&quot;cat_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">N</span><span class="p">),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">attrName</span><span class="p">])</span>
+        <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">latent_df</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</div>
+    <span class="k">return</span> <span class="n">latent_df</span>
+
+
+<span class="k">def</span> <span class="nf">random_with_N_digits</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">range_start</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">range_end</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">n</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">range_start</span><span class="p">,</span> <span class="n">range_end</span><span class="p">)</span>
+
+<div class="viewcode-block" id="generateDataset"><a class="viewcode-back" href="../../API.html#sp_data_util.generateDataset">[docs]</a><span class="k">def</span> <span class="nf">generateDataset</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">numClu</span><span class="p">,</span> <span class="n">numExtra</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    generate synthetic dataset for time experiments</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    --------------</span>
+<span class="sd">    N : scalar</span>
+<span class="sd">        total samples to draw</span>
+<span class="sd">    numClu: number of clusters</span>
+<span class="sd">    numberOfExtraColumn: number of extra categorical columns and continuous columns</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="c1"># generate numClu mu_x and mu_y for sampling data from numClu clusters</span>
+    <span class="c1"># create first two mu</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+
+    <span class="c1"># generate rest of the mu</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numClu</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="n">mu_x</span> <span class="o">=</span> <span class="n">random_with_N_digits</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+        <span class="n">variance</span> <span class="o">=</span> <span class="mi">1000</span>
+        <span class="n">mu_y</span> <span class="o">=</span> <span class="n">gauss</span><span class="p">(</span><span class="n">mu_x</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">))</span>
+        <span class="n">mu_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">mu_x</span><span class="p">,</span><span class="n">mu_y</span><span class="p">])</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mu</span><span class="p">,[</span><span class="n">mu_new</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">cov</span> <span class="o">=</span> <span class="p">[[</span><span class="o">.</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">.</span><span class="mi">6</span><span class="p">]]</span>
+
+    <span class="c1"># generate the data set</span>
+    <span class="n">latent_df</span> <span class="o">=</span> <span class="n">mixed_regression_sp_extra</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">,[</span><span class="o">.</span><span class="mi">7</span><span class="p">,</span><span class="o">.</span><span class="mi">3</span><span class="p">],</span> <span class="n">numExtra</span><span class="p">)</span>
+</div>
+    <span class="k">return</span> <span class="n">latent_df</span>
 
 <span class="k">def</span> <span class="nf">mixed_regression_sp</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">,</span><span class="n">p</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    generate synthetic data for simplest case of group-wise SP of the regression type</span>
 <span class="sd">    mu and cov must induce SP, this does not make SP happen</span>
 <span class="sd">    adds 1 noisy dimensions and an interacting char attribute</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 <span class="sd">    N : scalar integer</span>
 <span class="sd">        number of samples total to draw</span>
 <span class="sd">    mu : k cluster centers in d dimensions</span>
 <span class="sd">        locations of the clusters</span>
-<span class="sd">    cov : d_1 xd_1 covariance </span>
+<span class="sd">    cov : d_1 xd_1 covariance</span>
 <span class="sd">        shared covariance of all subgroup clusters</span>
-<span class="sd">        </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
-    
+
     <span class="c1"># sample from clusters (should accept wights and allow this to vary ie class imbalance)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">z_i</span><span class="p">],</span><span class="n">cov</span><span class="p">)</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">])</span>
@@ -199,22 +286,22 @@
     <span class="c1"># make a dataframe</span>
     <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
                            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="s1">&#39;x2&#39;</span><span class="p">])</span>
-    
+
     <span class="c1"># add a noise column</span>
     <span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x3</span>
-    
+
     <span class="c1"># code z as color and add that as a column to the dataframe</span>
     <span class="n">color_z</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">}</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">color_z</span><span class="p">[</span><span class="n">z_i</span><span class="p">]</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">]</span>
-    
+
     <span class="c1"># add a sub group, character that interacts with color based on p</span>
     <span class="n">char_zy</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="s1">&#39;o&#39;</span><span class="p">},</span> <span class="mi">1</span><span class="p">:{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="s1">&#39;x&#39;</span><span class="p">}}</span>
 
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">N</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="n">p</span><span class="p">)</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;char&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">char_zy</span><span class="p">[</span><span class="n">zi</span><span class="p">][</span><span class="n">yi</span><span class="p">]</span> <span class="k">for</span> <span class="n">zi</span><span class="p">,</span><span class="n">yi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">y</span><span class="p">)]</span>
-   
+
     <span class="k">return</span> <span class="n">latent_df</span>
 
 
@@ -229,19 +316,19 @@
 <span class="sd">    generate synthetic data for simplest case of group-wise SP of the regression type</span>
 <span class="sd">    mu and cov must induce SP, this does not make SP happen</span>
 <span class="sd">    adds 1 noisy dimensions</span>
-<span class="sd">    </span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    -----------</span>
 <span class="sd">    N : scalar integer</span>
 <span class="sd">        number of samples total to draw</span>
 <span class="sd">    mu : k cluster centers in d dimensions</span>
 <span class="sd">        locations of the clusters</span>
-<span class="sd">    cov : d_1 xd_1 covariance </span>
+<span class="sd">    cov : d_1 xd_1 covariance</span>
 <span class="sd">        shared covariance of all subgroup clusters</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
-    
+
     <span class="c1"># sample from clusters (should accept wights and allow this to vary ie class imbalance)</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">z_i</span><span class="p">],</span><span class="n">cov</span><span class="p">)</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">])</span>
@@ -249,15 +336,15 @@
     <span class="c1"># make a dataframe</span>
     <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
                            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="s1">&#39;x2&#39;</span><span class="p">])</span>
-    
+
     <span class="c1"># add a noise column</span>
     <span class="n">x3</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x3&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">x3</span>
-    
+
     <span class="c1"># code z as color and add that as a column to the dataframe</span>
     <span class="n">color_z</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">}</span>
     <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">color_z</span><span class="p">[</span><span class="n">z_i</span><span class="p">]</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">]</span>
-   
+
     <span class="k">return</span> <span class="n">latent_df</span>
 </pre></div>
 

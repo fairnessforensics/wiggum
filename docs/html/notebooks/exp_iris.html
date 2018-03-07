@@ -243,7 +243,7 @@ div.nboutput div.output_area.stderr {
 <a class="reference external" href="https://archive.ics.uci.edu/ml/datasets/iris">Iris data set</a>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [2]:
+<span></span>In [15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -253,6 +253,7 @@ div.nboutput div.output_area.stderr {
 <span class="kn">import</span> <span class="nn">matplotlib.colors</span> <span class="k">as</span> <span class="nn">mcolors</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">it</span>
 
 <span class="c1"># our code packaged for easy use</span>
 <span class="kn">import</span> <span class="nn">detect_simpsons_paradox</span> <span class="k">as</span> <span class="nn">dsp</span>
@@ -266,7 +267,7 @@ div.nboutput div.output_area.stderr {
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">iris_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../data/iris.csv&#39;</span><span class="p">)</span>
+<span></span><span class="n">iris_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../../../data/iris.csv&#39;</span><span class="p">)</span>
 <span class="n">iris_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -278,17 +279,17 @@ div.nboutput div.output_area.stderr {
 </div>
 <div class="output_area docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -421,17 +422,17 @@ bit of post-processing to improve readability.</p>
 </div>
 <div class="output_area docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
@@ -540,7 +541,7 @@ each pair of candidate attributes. For each plot we add the overall
 trendline and the trend line for each occurence of Simpson’s Paradox.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [7]:
+<span></span>In [9]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -611,7 +612,7 @@ trendline and the trend line for each occurence of Simpson’s Paradox.</p>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [8]:
+<span></span>In [10]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -620,7 +621,9 @@ trendline and the trend line for each occurence of Simpson’s Paradox.</p>
 <span class="n">markers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Iris-setosa&#39;</span><span class="p">:</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;Iris-versicolor&#39;</span><span class="p">:</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;Iris-virginica&#39;</span><span class="p">:</span><span class="s1">&#39;s&#39;</span><span class="p">}</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;sepal width&#39;</span><span class="p">])):</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;sepal width&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;petal length&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="n">label</span><span class="o">=</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;sepal width&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+                <span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;petal length&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span>
+                <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="n">label</span><span class="o">=</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;sepal width&#39;</span><span class="p">,</span>  <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;petal length&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
@@ -679,7 +682,7 @@ trendline and the trend line for each occurence of Simpson’s Paradox.</p>
 </div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [9]:
+<span></span>In [11]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -688,7 +691,9 @@ trendline and the trend line for each occurence of Simpson’s Paradox.</p>
 <span class="n">markers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Iris-setosa&#39;</span><span class="p">:</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;Iris-versicolor&#39;</span><span class="p">:</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="s1">&#39;Iris-virginica&#39;</span><span class="p">:</span><span class="s1">&#39;s&#39;</span><span class="p">}</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;sepal width&#39;</span><span class="p">])):</span>
-    <span class="n">test</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;sepal width&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;petal width&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span><span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="n">label</span><span class="o">=</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">test</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;sepal width&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;petal width&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span>
+                       <span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span>
+                       <span class="n">marker</span><span class="o">=</span><span class="n">markers</span><span class="p">[</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="n">label</span><span class="o">=</span><span class="n">iris_df</span><span class="p">[</span><span class="s1">&#39;class&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">])</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;sepal width&#39;</span><span class="p">,</span>  <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;petal width&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
@@ -746,659 +751,214 @@ trendline and the trend line for each occurence of Simpson’s Paradox.</p>
 </div>
 </div>
 </div>
-<div class="section" id="Experiments-on-sampled-data">
-<h2>Experiments on sampled data<a class="headerlink" href="#Experiments-on-sampled-data" title="Permalink to this headline">¶</a></h2>
-<p>We run our algorithm on 10%, 30%, 50%, 60%, 90% sampled data set and
-print out the results.</p>
-<div class="nbinput nblast docutils container">
+<div class="section" id="Plotting-with-data-frame">
+<h2>Plotting with data frame<a class="headerlink" href="#Plotting-with-data-frame" title="Permalink to this headline">¶</a></h2>
+<p>Plots in simpler code</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [14]:
+<span></span>In [136]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">random</span>
-<span class="c1"># sample 0.1</span>
-
-<span class="n">portions</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">6</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
+<span></span><span class="c1"># create a set (to keep only unique) or the attribute pairs that had SP</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s2">&quot;talk&quot;</span><span class="p">)</span>
+<span class="n">sp_meas</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">result_df</span><span class="p">[</span><span class="s1">&#39;attr1&#39;</span><span class="p">]),</span> <span class="n">result_df</span><span class="p">[</span><span class="s1">&#39;attr2&#39;</span><span class="p">])])</span>
+<span class="c1"># for x,y in it.combinations(measurements,2):</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">sp_meas</span><span class="p">:</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">iris_df</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">markers</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="s1">&#39;s&#39;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
+    <span class="c1"># adda whole data regression line, but don&#39;t cover the scatter data</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">regplot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">x</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">iris_df</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">scatter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_exp_iris_13_0.png" src="../_images/notebooks_exp_iris_13_0.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_exp_iris_13_1.png" src="../_images/notebooks_exp_iris_13_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_exp_iris_13_2.png" src="../_images/notebooks_exp_iris_13_2.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Experiments-on-subsampled-data">
+<h2>Experiments on subsampled data<a class="headerlink" href="#Experiments-on-subsampled-data" title="Permalink to this headline">¶</a></h2>
+<p>We run our algorithm on 10%, 30%, 50%, 60%, 90% sampled data set with 5
+random repeats and for each couont the number of detections.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [63]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">portions</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mi">3</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">6</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]</span>
+<span class="n">num_repeats</span> <span class="o">=</span> <span class="mi">5</span>
 
 <span class="c1"># for sampling</span>
 <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
 <span class="n">iris_df_portion</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">res_df</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">res_df</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">iris_df</span><span class="p">)</span>
+<span class="n">res_df</span><span class="p">[</span><span class="s1">&#39;portion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">res_df</span><span class="p">[</span><span class="s1">&#39;exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
-<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">portions</span><span class="p">):</span>
-    <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">iris_df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">iris_df</span><span class="p">)</span><span class="o">*</span><span class="n">p</span><span class="p">)))</span>
-    <span class="n">iris_df_portion</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">iris_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span>
-    <span class="n">res_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">iris_df_portion</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+<span class="n">summary_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;portion&#39;</span><span class="p">,</span> <span class="s1">&#39;exp&#39;</span><span class="p">,</span> <span class="s1">&#39;SPcount&#39;</span><span class="p">]</span>
+<span class="n">summary_data</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">res_df</span><span class="p">)]]</span>
+
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">cur_portion</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">portions</span><span class="p">,</span><span class="n">num_repeats</span><span class="p">)):</span>
+    <span class="c1"># sample and run detector algorithm</span>
+    <span class="n">res_tmp</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">iris_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="n">cur_portion</span><span class="p">))</span>
+    <span class="c1"># append results with info on this trial</span>
+    <span class="n">res_tmp</span><span class="p">[</span><span class="s1">&#39;portion&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cur_portion</span>
+    <span class="n">res_tmp</span><span class="p">[</span><span class="s1">&#39;exp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span><span class="mi">1</span>
+    <span class="n">res_df</span> <span class="o">=</span> <span class="n">res_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res_tmp</span><span class="p">)</span>
+    <span class="n">summary_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">cur_portion</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_tmp</span><span class="p">)])</span>
+
+<span class="c1"># make a dataframe of the summary stats</span>
+<span class="n">summary_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span><span class="n">summary_data</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span><span class="n">summary_cols</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
+<p>Now, we can compute descriptive statistics on the occurences summary,
+using the grouby feature</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [13]:
+<span></span>In [71]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="n">iris_df</span><span class="o">.</span><span class="n">index</span>
+<span></span><span class="n">exp_summary</span> <span class="o">=</span> <span class="n">summary_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;portion&#39;</span><span class="p">)[</span><span class="s1">&#39;SPcount&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+<span class="c1"># exp_summary.count()</span>
+<span class="c1"># summary_df</span>
+<span class="n">exp_summary</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[13]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>RangeIndex(start=0, stop=150, step=1)
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [22]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># for outputting all alone variables</span>
-<span class="kn">from</span> <span class="nn">IPython.core.interactiveshell</span> <span class="k">import</span> <span class="n">InteractiveShell</span>
-<span class="n">InteractiveShell</span><span class="o">.</span><span class="n">ast_node_interactivity</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
-
-
-<span class="k">for</span> <span class="n">p</span><span class="p">,</span><span class="n">tab</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">portions</span><span class="p">,</span> <span class="n">res_df</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;SP Detections in &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="si">% o</span><span class="s1">f the data&#39;</span><span class="p">)</span>
-    <span class="n">tab</span>
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-SP Detections in 10.0% of the data
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[22]:
+<span></span>Out[71]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
 <div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
     }
 
     .dataframe tbody tr th {
         vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
     }
 </style>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>allCorr</th>
-      <th>attr1</th>
-      <th>attr2</th>
-      <th>reverseCorr</th>
-      <th>groupbyAttr</th>
-      <th>subgroup</th>
+      <th>count</th>
+      <th>mean</th>
+      <th>std</th>
+      <th>min</th>
+      <th>25%</th>
+      <th>50%</th>
+      <th>75%</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>portion</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th>0</th>
-      <td>-0.165623</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.416705</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
+      <th>0.1</th>
+      <td>5.0</td>
+      <td>8.2</td>
+      <td>0.836660</td>
+      <td>7.0</td>
+      <td>8.0</td>
+      <td>8.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
     </tr>
     <tr>
-      <th>1</th>
-      <td>0.894290</td>
-      <td>0</td>
-      <td>3</td>
+      <th>0.3</th>
+      <td>5.0</td>
+      <td>8.2</td>
+      <td>1.303840</td>
+      <td>6.0</td>
+      <td>8.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>0.5</th>
+      <td>5.0</td>
+      <td>8.8</td>
+      <td>0.447214</td>
+      <td>8.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>0.6</th>
+      <td>5.0</td>
+      <td>9.0</td>
+      <td>0.000000</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>0.9</th>
+      <td>5.0</td>
+      <td>9.0</td>
+      <td>0.000000</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <th>1.0</th>
+      <td>1.0</td>
+      <td>9.0</td>
       <td>NaN</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.178854</td>
-      <td>1</td>
-      <td>3</td>
-      <td>NaN</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>0.974820</td>
-      <td>2</td>
-      <td>3</td>
-      <td>NaN</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.165623</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.534071</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>-0.328170</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.886920</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>-0.178854</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.861858</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>-0.165623</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.090021</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>-0.328170</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.161819</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>-0.178854</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.851688</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-SP Detections in 30.0% of the data
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[22]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>allCorr</th>
-      <th>attr1</th>
-      <th>attr2</th>
-      <th>reverseCorr</th>
-      <th>groupbyAttr</th>
-      <th>subgroup</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>-0.252348</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.253872</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>-0.252348</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.421605</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.471543</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.453772</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>-0.353459</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.490119</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.353459</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.445029</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-SP Detections in 50.0% of the data
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[22]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>allCorr</th>
-      <th>attr1</th>
-      <th>attr2</th>
-      <th>reverseCorr</th>
-      <th>groupbyAttr</th>
-      <th>subgroup</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>-0.061169</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.751555</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>-0.350865</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.251056</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.061169</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.546027</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>-0.424396</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.498380</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.350865</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.590920</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>-0.061169</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.582588</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>-0.424396</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.491255</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>-0.350865</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.442125</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-SP Detections in 60.0% of the data
-</pre></div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[22]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>allCorr</th>
-      <th>attr1</th>
-      <th>attr2</th>
-      <th>reverseCorr</th>
-      <th>groupbyAttr</th>
-      <th>subgroup</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>-0.134016</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.783969</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>-0.419081</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.298338</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.390097</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.160843</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>-0.134016</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.539898</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.419081</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.448555</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>-0.390097</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.576094</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>-0.134016</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.447124</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>-0.419081</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.344330</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>-0.390097</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.388474</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-  </tbody>
-</table>
-</div></div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-SP Detections in 90.0% of the data
-</pre></div></div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[22]:
-</pre></div>
-</div>
-<div class="output_area docutils container">
-<div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>allCorr</th>
-      <th>attr1</th>
-      <th>attr2</th>
-      <th>reverseCorr</th>
-      <th>groupbyAttr</th>
-      <th>subgroup</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>-0.112816</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.746780</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>-0.424198</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.176695</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>-0.361556</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.279973</td>
-      <td>class</td>
-      <td>Iris-setosa</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>-0.112816</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.456305</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>-0.424198</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.564720</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>-0.361556</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.636601</td>
-      <td>class</td>
-      <td>Iris-versicolor</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>-0.112816</td>
-      <td>0</td>
-      <td>1</td>
-      <td>0.461508</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>-0.424198</td>
-      <td>1</td>
-      <td>2</td>
-      <td>0.402582</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>-0.361556</td>
-      <td>1</td>
-      <td>3</td>
-      <td>0.558692</td>
-      <td>class</td>
-      <td>Iris-virginica</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
+      <td>9.0</td>
     </tr>
   </tbody>
 </table>

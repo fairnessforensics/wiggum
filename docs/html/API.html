@@ -35,13 +35,9 @@
 <li class="toctree-l1"><a class="reference internal" href="FLAIRS31.html">Reproducing the FLAIRS31 paper</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html#Regression-Based-SImpson’s-Paradox">Regression Based SImpson’s Paradox</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/exp_autompg.html">Auto Miles Per Gallon Data Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/exp_autompg.html#Plotting">Plotting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/exp_time.html">Timing Experiment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/exp_iris.html">Iris Data Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/exp_iris.html#Plotting">Plotting</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/exp_iris.html#Experiments-on-sampled-data">Experiments on sampled data</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
@@ -123,8 +119,8 @@ TODO: Clarify the return information</p>
 <dt id="sp_data_util.simple_regression_sp">
 <code class="descclassname">sp_data_util.</code><code class="descname">simple_regression_sp</code><span class="sig-paren">(</span><em>N</em>, <em>mu</em>, <em>cov</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/SPData.html#simple_regression_sp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.simple_regression_sp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>generate synthetic data for simplest case of group-wise SP of the </dt>
-<dd>regression type, generates data from $k$k clusters with centers 
+<dt>generate synthetic data for simplest case of group-wise SP of the</dt>
+<dd>regression type, generates data from $k$k clusters with centers
 mu each with covariance cov</dd>
 </dl>
 <p>mu and cov must induce SP, this does not make SP happen
@@ -155,8 +151,8 @@ adds 1 noisy dimensions</p>
 <dt id="sp_data_util.noise_regression_sp">
 <code class="descclassname">sp_data_util.</code><code class="descname">noise_regression_sp</code><span class="sig-paren">(</span><em>N</em>, <em>mu</em>, <em>cov</em>, <em>d_noise</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/SPData.html#noise_regression_sp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.noise_regression_sp" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
-<dt>generate synthetic data for simplest case of group-wise SP of the </dt>
-<dd>regression type, generates data from $k$k clusters with centers 
+<dt>generate synthetic data for simplest case of group-wise SP of the</dt>
+<dd>regression type, generates data from $k$k clusters with centers
 mu each with covariance cov</dd>
 </dl>
 <p>mu and cov must induce SP, this does not make SP happen
@@ -184,82 +180,54 @@ adds d_noise noisy dimensions</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="sp_data_util.kSE">
-<code class="descclassname">sp_data_util.</code><code class="descname">kSE</code><span class="sig-paren">(</span><em>x1</em>, <em>x2</em>, <em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/gp_data_gen.html#kSE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.kSE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Squared Exponential (SE) kernel function</p>
+<dt id="sp_data_util.generateDataset">
+<code class="descclassname">sp_data_util.</code><code class="descname">generateDataset</code><span class="sig-paren">(</span><em>N</em>, <em>numClu</em>, <em>numExtra</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/SPData.html#generateDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.generateDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate synthetic dataset for time experiments</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">k(x1,x2; theta)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>N</strong> : scalar</p>
+<blockquote>
+<div><p>total samples to draw</p>
+</div></blockquote>
+<p><strong>numClu: number of clusters</strong></p>
+<p class="last"><strong>numberOfExtraColumn: number of extra categorical columns and continuous columns</strong></p>
+</td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
 <dl class="function">
-<dt id="sp_data_util.kPER">
-<code class="descclassname">sp_data_util.</code><code class="descname">kPER</code><span class="sig-paren">(</span><em>x1</em>, <em>x2</em>, <em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/gp_data_gen.html#kPER"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.kPER" title="Permalink to this definition">¶</a></dt>
-<dd><p>Periodic (PER) Kernel
-Inputs
-——-
-x1, x2:scalar</p>
-<blockquote>
-<div>inputs at two points</div></blockquote>
-<dl class="docutils">
-<dt>theta: vector of length 2</dt>
-<dd>where 1.lengthscale and 2.period</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="sp_data_util.kLIN">
-<code class="descclassname">sp_data_util.</code><code class="descname">kLIN</code><span class="sig-paren">(</span><em>x1</em>, <em>x2</em>, <em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/gp_data_gen.html#kLIN"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.kLIN" title="Permalink to this definition">¶</a></dt>
-<dd><p>Linear Kernel
-Inputs
-——-
-x1, x2:scalar</p>
-<blockquote>
-<div>inputs at two points</div></blockquote>
-<dl class="docutils">
-<dt>theta:vector of length 3</dt>
-<dd><ol class="first last arabic simple">
-<li>variance of y-intercept</li>
-<li>slope variance</li>
-<li>x that all samples go through</li>
-</ol>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="sp_data_util.kRQ">
-<code class="descclassname">sp_data_util.</code><code class="descname">kRQ</code><span class="sig-paren">(</span><em>x1</em>, <em>x2</em>, <em>theta</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/gp_data_gen.html#kRQ"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.kRQ" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rational Quadratic Kernel
-Inputs
-——-
-x1, x2:scalar</p>
-<blockquote>
-<div>inputs at two points</div></blockquote>
-<dl class="docutils">
-<dt>theta:vector of length 2</dt>
-<dd>1. lengthscale
-2.alpha ()</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="sp_data_util.ySample">
-<code class="descclassname">sp_data_util.</code><code class="descname">ySample</code><span class="sig-paren">(</span><em>x</em>, <em>k</em>, <em>theta</em>, <em>mu</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/gp_data_gen.html#ySample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.ySample" title="Permalink to this definition">¶</a></dt>
-<dd><p>sample from a GP at inputs x, for kernel function k with parameters
-theta and mean function mu</p>
+<dt id="sp_data_util.mixed_regression_sp_extra">
+<code class="descclassname">sp_data_util.</code><code class="descname">mixed_regression_sp_extra</code><span class="sig-paren">(</span><em>N</em>, <em>mu</em>, <em>cov</em>, <em>extra</em>, <em>p=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/SPData.html#mixed_regression_sp_extra"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.mixed_regression_sp_extra" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate synthetic data for simplest case of group-wise SP of the regression type
+mu and cov must induce SP, this does not make SP happen
+adds 1 noisy dimensions and an interacting char attribute</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">y: vector</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>N</strong> : scalar integer</p>
+<blockquote>
+<div><p>number of samples total to draw</p>
+</div></blockquote>
+<p><strong>mu</strong> : k cluster centers in d dimensions</p>
+<blockquote>
+<div><p>locations of the clusters</p>
+</div></blockquote>
+<p><strong>cov</strong> : d_1 xd_1 covariance</p>
+<blockquote>
+<div><p>shared covariance of all subgroup clusters</p>
+</div></blockquote>
+<p><strong>extra</strong> : scalar</p>
+<blockquote>
+<div><p>number of extra variables ot add.</p>
+</div></blockquote>
+<p><strong>p</strong> : vector length k</p>
 <blockquote class="last">
-<div><p>y ~ GP(mu(x),k(x,x’;theta))</p>
+<div><p>probability of each cluster</p>
 </div></blockquote>
 </td>
 </tr>
@@ -268,22 +236,9 @@ theta and mean function mu</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="sp_data_util.ySampleNoisy">
-<code class="descclassname">sp_data_util.</code><code class="descname">ySampleNoisy</code><span class="sig-paren">(</span><em>x</em>, <em>k</em>, <em>theta</em>, <em>mu</em>, <em>eta</em>, <em>N</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/gp_data_gen.html#ySampleNoisy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.ySampleNoisy" title="Permalink to this definition">¶</a></dt>
-<dd><p>sample from a GP at inputs x, for kernel function k with parameters
-theta and mean function mu</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">y: vector</p>
-<blockquote class="last">
-<div><p>y ~ GP(mu(x),k(x,x’;theta))</p>
-</div></blockquote>
-</td>
-</tr>
-</tbody>
-</table>
+<dt id="sp_data_util.sp_plot">
+<code class="descclassname">sp_data_util.</code><code class="descname">sp_plot</code><span class="sig-paren">(</span><em>df</em>, <em>x_col</em>, <em>y_col</em>, <em>color_col</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sp_data_util/spplots.html#sp_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#sp_data_util.sp_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>create SP vizualization plot from 2 columns of a df</p>
 </dd></dl>
 
 </div>

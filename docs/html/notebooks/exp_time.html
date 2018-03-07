@@ -16,6 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Iris Data Experiments" href="exp_iris.html" />
     <link rel="prev" title="Auto Miles Per Gallon Data Experiments" href="exp_autompg.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -33,18 +34,17 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../FLAIRS31.html">Reproducing the FLAIRS31 paper</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../API.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../spintro.html">SP Intro</a></li>
 <li class="toctree-l1"><a class="reference internal" href="simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
-<li class="toctree-l1"><a class="reference internal" href="simple_simpsons_paradox_intro.html#Regression-Based-SImpson’s-Paradox">Regression Based SImpson’s Paradox</a></li>
 <li class="toctree-l1"><a class="reference internal" href="exp_autompg.html">Auto Miles Per Gallon Data Experiments</a></li>
-<li class="toctree-l1"><a class="reference internal" href="exp_autompg.html#Plotting">Plotting</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Timing Experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="exp_iris.html">Iris Data Experiments</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="exp_autompg.html" title="previous chapter">Auto Miles Per Gallon Data Experiments</a></li>
+      <li>Next: <a href="exp_iris.html" title="next chapter">Iris Data Experiments</a></li>
   </ul></li>
 </ul>
 </div>
@@ -254,124 +254,50 @@ div.nboutput div.output_area.stderr {
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">detect_simpsons_paradox</span> <span class="k">as</span> <span class="nn">dsp</span>
-<span class="kn">import</span> <span class="nn">data_util</span> <span class="k">as</span> <span class="nn">sp_dat</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">sp_data_util</span> <span class="k">as</span> <span class="nn">sp_dat</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">gauss</span>
 </pre></div>
 </div>
 </div>
-<p>Add extra parameter to method mixed_regression_sp for controling the
-number of extra attributes for continuous attributes and categorical
-attributes</p>
+<p>We will draw samples from a number of clusters according to a Gaussian
+Mixture Model and add both continuous and categorical noise values.</p>
+<p>First we have to set up the number of clusters, samples and extra
+values.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">mixed_regression_sp</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">extra</span><span class="p">):</span>
-
-    <span class="n">k</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
-
-    <span class="c1"># sample from clusters</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">N</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mu</span><span class="p">[</span><span class="n">z_i</span><span class="p">],</span><span class="n">cov</span><span class="p">)</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">])</span>
-
-    <span class="c1"># make a dataframe</span>
-    <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
-                           <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span> <span class="s1">&#39;x2&#39;</span><span class="p">])</span>
-
-    <span class="c1"># add extra continuous column</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">extra</span><span class="p">):</span>
-        <span class="n">attrName</span> <span class="o">=</span> <span class="s2">&quot;con_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">N</span><span class="p">),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">attrName</span><span class="p">])</span>
-        <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">latent_df</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># code z as color and add that as a column to the dataframe</span>
-    <span class="n">color_z</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="s1">&#39;g&#39;</span><span class="p">}</span>
-
-    <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">z_i</span> <span class="k">for</span> <span class="n">z_i</span> <span class="ow">in</span> <span class="n">z</span><span class="p">]</span>
-
-
-    <span class="c1"># add extra categorical column</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">extra</span><span class="p">):</span>
-        <span class="n">attrName</span> <span class="o">=</span> <span class="s2">&quot;cat_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="n">N</span><span class="p">),</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">attrName</span><span class="p">])</span>
-        <span class="n">latent_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">latent_df</span><span class="p">,</span> <span class="n">y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">latent_df</span>
+<span></span><span class="c1"># set the data size</span>
+<span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="mi">5</span><span class="p">)</span>
+<span class="c1"># and 5 extra continuous attributes and 5 extra categorical attributes</span>
+<span class="n">num_clusters</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">numExtra</span> <span class="o">=</span> <span class="mi">5</span>
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
+<p>First, we generate cluseters that are roughly distributed with a
+positive trend that will help us ensure that SP occurs throughout the
+dataset</p>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">randint</span>
-<span class="k">def</span> <span class="nf">random_with_N_digits</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <span class="n">range_start</span> <span class="o">=</span> <span class="mi">10</span><span class="o">**</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">range_end</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">n</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
-    <span class="k">return</span> <span class="n">randint</span><span class="p">(</span><span class="n">range_start</span><span class="p">,</span> <span class="n">range_end</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [4]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="k">def</span> <span class="nf">generateDataset</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">numClu</span><span class="p">,</span> <span class="n">numExtra</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    generate synthetic dataset for time experiments</span>
+<span></span><span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    --------------</span>
-<span class="sd">    size: 10 to the power of size</span>
-<span class="sd">    numClu: number of clusters</span>
-<span class="sd">    numberOfExtraColumn: number of extra categorical columns and continuous columns</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="n">variance</span> <span class="o">=</span> <span class="mi">1000</span>
 
-    <span class="c1"># set the data size</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="n">size</span><span class="p">))</span>
+<span class="c1"># generate rest of the mu</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_clusters</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">mu_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">99</span><span class="p">);</span>
+    <span class="n">mu_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">mu_x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">))</span>
+    <span class="n">mu_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">mu_x</span><span class="p">,</span><span class="n">mu_y</span><span class="p">])</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mu</span><span class="p">,[</span><span class="n">mu_new</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
-    <span class="c1"># generate numClu mu_x and mu_y for sampling data from numClu clusters</span>
-    <span class="c1"># create first two mu</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
-
-    <span class="c1"># generate rest of the mu</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numClu</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
-        <span class="n">mu_x</span> <span class="o">=</span> <span class="n">random_with_N_digits</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
-        <span class="n">variance</span> <span class="o">=</span> <span class="mi">1000</span>
-        <span class="n">mu_y</span> <span class="o">=</span> <span class="n">gauss</span><span class="p">(</span><span class="n">mu_x</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">variance</span><span class="p">))</span>
-        <span class="n">mu_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">mu_x</span><span class="p">,</span><span class="n">mu_y</span><span class="p">])</span>
-        <span class="n">mu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mu</span><span class="p">,[</span><span class="n">mu_new</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="n">cov</span> <span class="o">=</span> <span class="p">[[</span><span class="o">.</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">.</span><span class="mi">6</span><span class="p">]]</span>
-
-    <span class="c1"># call mixed_regression_sp methods to generate the data set</span>
-    <span class="n">latent_df</span> <span class="o">=</span> <span class="n">mixed_regression_sp</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">,[</span><span class="o">.</span><span class="mi">7</span><span class="p">,</span><span class="o">.</span><span class="mi">3</span><span class="p">],</span> <span class="n">numExtra</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">latent_df</span>
-</pre></div>
-</div>
-</div>
-<div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [5]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># call the generateDataset method to generate 10K, 32 clusters</span>
-<span class="c1"># and 5 extra continuous attributes and 5 extra categorical attributes</span>
-<span class="n">latent_df</span> <span class="o">=</span> <span class="n">generateDataset</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">],</span> <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">],</span>
-            <span class="n">c</span> <span class="o">=</span>  <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span> <span class="s1">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">mu</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span><span class="n">mu</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -380,60 +306,88 @@ attributes</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_exp_time_6_0.png" src="../_images/notebooks_exp_time_6_0.png" />
+<img alt="../_images/notebooks_exp_time_5_0.png" src="../_images/notebooks_exp_time_5_0.png" />
 </div>
 </div>
-<p>Time experiment for the whole dataset and the sampled dataset</p>
+<p>Next we use a built in function to our package that takes a list of
+means and a covariance</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># covariance of each cluster</span>
+<span class="n">cov</span> <span class="o">=</span> <span class="p">[[</span><span class="o">.</span><span class="mi">6</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="o">.</span><span class="mi">6</span><span class="p">]]</span>
+
+<span class="c1"># call mixed_regression_sp to generate the data set</span>
+<span class="n">latent_df</span> <span class="o">=</span> <span class="n">sp_dat</span><span class="o">.</span><span class="n">mixed_regression_sp_extra</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="n">mu</span><span class="p">,</span><span class="n">cov</span><span class="p">,</span> <span class="n">numExtra</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="stderr output_area docutils container">
+<div class="highlight"><pre>
+/home/smb/anaconda2/envs/simpsonsparadox/lib/python3.6/site-packages/sp_data_util/SPData.py:134: RuntimeWarning: covariance is not positive-semidefinite.
+  x = np.asarray([np.random.multivariate_normal(mu[z_i],cov) for z_i in z])
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span><span class="mi">20</span><span class="p">,)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[5]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>array([3, 3, 3, 2, 2, 2, 4, 0, 1, 2, 1, 3, 0, 3, 4, 3, 4, 0, 3, 4])
+</pre></div>
+</div>
+</div>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
 <span></span>In [6]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
-<span></span><span class="c1"># whole data set</span>
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">test</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
-
-<span class="c1">#10% sampled data set</span>
-<span class="n">rows1</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">latent_df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">latent_df</span><span class="p">)</span><span class="o">*</span><span class="mf">0.1</span><span class="p">))</span>
-<span class="n">latent_df1</span> <span class="o">=</span> <span class="n">latent_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows1</span><span class="p">]</span>
-
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">test1</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df1</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;10 Percent--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
-
-<span class="c1">#30% sampled data set</span>
-<span class="n">rows3</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">latent_df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">latent_df</span><span class="p">)</span><span class="o">*</span><span class="mf">0.3</span><span class="p">))</span>
-<span class="n">latent_df3</span> <span class="o">=</span> <span class="n">latent_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows3</span><span class="p">]</span>
-
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">test3</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df3</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;30 Percent--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
-
-<span class="c1">#50% sampled data set</span>
-<span class="n">rows5</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">latent_df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">latent_df</span><span class="p">)</span><span class="o">*</span><span class="mf">0.5</span><span class="p">))</span>
-<span class="n">latent_df5</span> <span class="o">=</span> <span class="n">latent_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows5</span><span class="p">]</span>
-
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">test5</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df5</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;50 Percent--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
-
-<span class="c1">#60% sampled data set</span>
-<span class="n">rows6</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">latent_df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">latent_df</span><span class="p">)</span><span class="o">*</span><span class="mf">0.6</span><span class="p">))</span>
-<span class="n">latent_df6</span> <span class="o">=</span> <span class="n">latent_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows6</span><span class="p">]</span>
-
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">test6</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df6</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;60 Percent--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
-
-<span class="c1">#90% sampled data set</span>
-<span class="n">rows9</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">latent_df</span><span class="o">.</span><span class="n">index</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">latent_df</span><span class="p">)</span><span class="o">*</span><span class="mf">0.9</span><span class="p">))</span>
-<span class="n">latent_df9</span> <span class="o">=</span> <span class="n">latent_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rows9</span><span class="p">]</span>
-
-<span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<span class="n">test9</span> <span class="o">=</span> <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df9</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;90 Percent--- </span><span class="si">%s</span><span class="s2"> seconds ---&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">))</span>
+<span></span><span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;cluster&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[6]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>0    26
+1    27
+2     0
+3     8
+4     8
+Name: cluster, dtype: int64
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">],</span> <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">],</span>
+            <span class="n">c</span> <span class="o">=</span>  <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;cluster&#39;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span> <span class="s1">&#39;o&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -441,14 +395,539 @@ attributes</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
+<img alt="../_images/notebooks_exp_time_10_0.png" src="../_images/notebooks_exp_time_10_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># check the size of the data</span>
+<span class="n">latent_df</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[8]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>(100000, 13)
+</pre></div>
+</div>
+</div>
+<p>Since we store the data in a pandas dataframe, we can easily sample a
+subset of the rows and we can check how that works:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">subset_df</span> <span class="o">=</span> <span class="n">latent_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subset_df</span><span class="p">))</span>
+<span class="n">subset_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
 <div class="highlight"><pre>
---- 3.631239175796509 seconds ---
-10 Percent--- 3.8243939876556396 seconds ---
-30 Percent--- 3.3809428215026855 seconds ---
-50 Percent--- 3.424717903137207 seconds ---
-60 Percent--- 3.443617105484009 seconds ---
-90 Percent--- 4.2975242137908936 seconds ---
+10000
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>x1</th>
+      <th>x2</th>
+      <th>cluster</th>
+      <th>con_0</th>
+      <th>con_1</th>
+      <th>con_2</th>
+      <th>con_3</th>
+      <th>con_4</th>
+      <th>cat_0</th>
+      <th>cat_1</th>
+      <th>cat_2</th>
+      <th>cat_3</th>
+      <th>cat_4</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>47787</th>
+      <td>40.285355</td>
+      <td>8.279074</td>
+      <td>4</td>
+      <td>42.821083</td>
+      <td>-5.945982</td>
+      <td>9.116584</td>
+      <td>47.626833</td>
+      <td>-7.233663</td>
+      <td>70</td>
+      <td>54</td>
+      <td>27</td>
+      <td>91</td>
+      <td>96</td>
+    </tr>
+    <tr>
+      <th>97210</th>
+      <td>34.170575</td>
+      <td>4.504379</td>
+      <td>29</td>
+      <td>-17.100323</td>
+      <td>-29.930051</td>
+      <td>-157.993357</td>
+      <td>26.581181</td>
+      <td>74.024540</td>
+      <td>72</td>
+      <td>64</td>
+      <td>23</td>
+      <td>13</td>
+      <td>60</td>
+    </tr>
+    <tr>
+      <th>42521</th>
+      <td>19.381192</td>
+      <td>-21.545576</td>
+      <td>28</td>
+      <td>-168.137523</td>
+      <td>-76.675448</td>
+      <td>146.536801</td>
+      <td>168.084883</td>
+      <td>178.468823</td>
+      <td>92</td>
+      <td>16</td>
+      <td>66</td>
+      <td>89</td>
+      <td>76</td>
+    </tr>
+    <tr>
+      <th>96452</th>
+      <td>51.975142</td>
+      <td>61.556268</td>
+      <td>11</td>
+      <td>35.396721</td>
+      <td>109.826010</td>
+      <td>98.528868</td>
+      <td>-37.957128</td>
+      <td>-179.428724</td>
+      <td>58</td>
+      <td>4</td>
+      <td>70</td>
+      <td>54</td>
+      <td>71</td>
+    </tr>
+    <tr>
+      <th>47115</th>
+      <td>42.532394</td>
+      <td>40.353842</td>
+      <td>6</td>
+      <td>91.515160</td>
+      <td>99.488643</td>
+      <td>-24.809279</td>
+      <td>-95.285213</td>
+      <td>145.379252</td>
+      <td>52</td>
+      <td>95</td>
+      <td>82</td>
+      <td>75</td>
+      <td>79</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Now, we can do the Time experiment for the whole dataset and the sampled
+dataset.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1"># whole data set</span>
+<span class="n">data_portions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="n">time_data</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">cur_portion</span> <span class="ow">in</span> <span class="n">data_portions</span><span class="p">:</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="n">cur_portion</span><span class="p">))</span>
+    <span class="n">time_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">cur_portion</span><span class="p">,</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">time_res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">time_data</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;portion of data&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+<span class="n">time_res</span> <span class="c1"># show the results</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>portion of data</th>
+      <th>time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.1</td>
+      <td>3.679361</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.2</td>
+      <td>3.910151</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.3</td>
+      <td>3.797533</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.4</td>
+      <td>4.676100</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.5</td>
+      <td>3.796321</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.6</td>
+      <td>4.221745</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.7</td>
+      <td>4.523880</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.8</td>
+      <td>4.056846</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.9</td>
+      <td>5.073282</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>1.0</td>
+      <td>5.017606</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>Computing it just once, is not the most indicative, so we can repeat the
+experiment and then compute statistics on that. We repeat it 4 more
+times to get a total of 5</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">num_repeats</span> <span class="o">=</span> <span class="mi">4</span>
+
+<span class="k">for</span> <span class="n">cur_portion</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">data_portions</span><span class="p">,</span><span class="n">num_repeats</span><span class="p">):</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">dsp</span><span class="o">.</span><span class="n">detect_simpsons_paradox</span><span class="p">(</span><span class="n">latent_df</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">frac</span><span class="o">=</span><span class="n">cur_portion</span><span class="p">))</span>
+    <span class="n">time_data</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">cur_portion</span><span class="p">,</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">time_res</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">time_data</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;portion&#39;</span><span class="p">,</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">time_res</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[13]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>50
+</pre></div>
+</div>
+</div>
+<p>Now we have 50 rows in our result table and we can compute the
+statistics that we want. We want to first, group the data by the portion
+of the data so that we can compute the mean and variance of all of the
+trials of each portion.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">time_repeats</span> <span class="o">=</span> <span class="n">time_res</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;portion&#39;</span><span class="p">)</span>
+<span class="n">time_repeats</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[14]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th colspan="8" halign="left">time</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>count</th>
+      <th>mean</th>
+      <th>std</th>
+      <th>min</th>
+      <th>25%</th>
+      <th>50%</th>
+      <th>75%</th>
+      <th>max</th>
+    </tr>
+    <tr>
+      <th>portion</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0.1</th>
+      <td>5.0</td>
+      <td>4.446497</td>
+      <td>0.826705</td>
+      <td>3.679361</td>
+      <td>3.812636</td>
+      <td>4.061862</td>
+      <td>5.313767</td>
+      <td>5.364857</td>
+    </tr>
+    <tr>
+      <th>0.2</th>
+      <td>5.0</td>
+      <td>4.256970</td>
+      <td>0.259700</td>
+      <td>3.910151</td>
+      <td>4.060727</td>
+      <td>4.379942</td>
+      <td>4.405277</td>
+      <td>4.528751</td>
+    </tr>
+    <tr>
+      <th>0.3</th>
+      <td>5.0</td>
+      <td>4.704718</td>
+      <td>0.929317</td>
+      <td>3.797533</td>
+      <td>4.171579</td>
+      <td>4.323587</td>
+      <td>5.094294</td>
+      <td>6.136595</td>
+    </tr>
+    <tr>
+      <th>0.4</th>
+      <td>5.0</td>
+      <td>3.936846</td>
+      <td>0.418850</td>
+      <td>3.666440</td>
+      <td>3.735602</td>
+      <td>3.749104</td>
+      <td>3.856985</td>
+      <td>4.676100</td>
+    </tr>
+    <tr>
+      <th>0.5</th>
+      <td>5.0</td>
+      <td>4.456102</td>
+      <td>0.752906</td>
+      <td>3.796321</td>
+      <td>4.026359</td>
+      <td>4.129114</td>
+      <td>4.646039</td>
+      <td>5.682674</td>
+    </tr>
+    <tr>
+      <th>0.6</th>
+      <td>5.0</td>
+      <td>4.540301</td>
+      <td>0.607244</td>
+      <td>4.137453</td>
+      <td>4.173215</td>
+      <td>4.221745</td>
+      <td>4.592580</td>
+      <td>5.576510</td>
+    </tr>
+    <tr>
+      <th>0.7</th>
+      <td>5.0</td>
+      <td>4.545214</td>
+      <td>0.508978</td>
+      <td>4.006332</td>
+      <td>4.097922</td>
+      <td>4.523880</td>
+      <td>4.911530</td>
+      <td>5.186406</td>
+    </tr>
+    <tr>
+      <th>0.8</th>
+      <td>5.0</td>
+      <td>4.289220</td>
+      <td>0.594578</td>
+      <td>3.791577</td>
+      <td>3.839077</td>
+      <td>4.056846</td>
+      <td>4.552631</td>
+      <td>5.205971</td>
+    </tr>
+    <tr>
+      <th>0.9</th>
+      <td>5.0</td>
+      <td>4.318349</td>
+      <td>0.453169</td>
+      <td>3.968818</td>
+      <td>4.045736</td>
+      <td>4.099937</td>
+      <td>4.403975</td>
+      <td>5.073282</td>
+    </tr>
+    <tr>
+      <th>1.0</th>
+      <td>5.0</td>
+      <td>4.496278</td>
+      <td>0.573671</td>
+      <td>3.903625</td>
+      <td>3.998321</td>
+      <td>4.404508</td>
+      <td>5.017606</td>
+      <td>5.157329</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+<p>We can plot the means to see if there’s a clear trend</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">time_repeats</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Out[15]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7fe04763efd0&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_exp_time_23_1.png" src="../_images/notebooks_exp_time_23_1.png" />
+</div>
 </div>
 </div>
 

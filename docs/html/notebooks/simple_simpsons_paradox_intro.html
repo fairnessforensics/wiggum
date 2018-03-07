@@ -256,8 +256,8 @@ problem</p>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 
 <span class="c1"># for outputting all alone variables</span>
-<span class="kn">from</span> <span class="nn">IPython.core.interactiveshell</span> <span class="k">import</span> <span class="n">InteractiveShell</span>
-<span class="n">InteractiveShell</span><span class="o">.</span><span class="n">ast_node_interactivity</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span>
+<span class="c1"># from IPython.core.interactiveshell import InteractiveShell</span>
+<span class="c1"># InteractiveShell.ast_node_interactivity = &quot;all&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -299,19 +299,10 @@ It can manifest in relationsships among variables.</p>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">N</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="p">[</span><span class="o">.</span><span class="mi">7</span><span class="p">,</span><span class="o">.</span><span class="mi">3</span><span class="p">])</span>
 <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
 <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;char&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">char_zy</span><span class="p">[</span><span class="n">zi</span><span class="p">][</span><span class="n">yi</span><span class="p">]</span> <span class="k">for</span> <span class="n">zi</span><span class="p">,</span><span class="n">yi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">z</span><span class="p">,</span><span class="n">y</span><span class="p">)]</span>
-
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x1&#39;</span><span class="p">],</span> <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;x2&#39;</span><span class="p">],</span>
-            <span class="n">c</span> <span class="o">=</span>  <span class="n">latent_df</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span> <span class="s1">&#39;o&#39;</span><span class="p">)</span>
-<span class="c1">#plt.scatter(clust_x[&#39;x1&#39;], clust_x[&#39;x2&#39;],</span>
-          <span class="c1">#  c =  clust_x[&#39;color&#39;], marker= &#39;x&#39;)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x_1&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;x_2&#39;</span><span class="p">)</span>
-<span class="c1"># , marker = &#39;char&#39; , c = &#39;color&#39;</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
+<div class="nboutput nblast docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="stderr output_area docutils container">
@@ -320,33 +311,27 @@ It can manifest in relationsships among variables.</p>
   import sys
 </pre></div></div>
 </div>
-<div class="nboutput docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[2]:
+<span></span>In [3]:
 </pre></div>
 </div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>&lt;matplotlib.collections.PathCollection at 0x7f94388b2b70&gt;
-</pre></div>
-</div>
-</div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[2]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Text(0.5,0,&#39;x_1&#39;)
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+
+<span></span><span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span><span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">latent_df</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s1">&#39;color&#39;</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">markers</span> <span class="o">=</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span><span class="s1">&#39;o&#39;</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;Set1&quot;</span><span class="p">)</span>
+<span class="c1"># adda whole data regression line, but don&#39;t cover the scatter data</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">regplot</span><span class="p">(</span><span class="s1">&#39;x1&#39;</span><span class="p">,</span><span class="s1">&#39;x2&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">latent_df</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">scatter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ci</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="nboutput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[2]:
+<span></span>Out[3]:
 </pre></div>
 </div>
 <div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Text(0,0.5,&#39;x_2&#39;)
+<span></span>&lt;matplotlib.axes._subplots.AxesSubplot at 0x7f1e220959b0&gt;
 </pre></div>
 </div>
 </div>
@@ -354,14 +339,35 @@ It can manifest in relationsships among variables.</p>
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_simple_simpsons_paradox_intro_4_4.png" src="../_images/notebooks_simple_simpsons_paradox_intro_4_4.png" />
+<img alt="../_images/notebooks_simple_simpsons_paradox_intro_5_1.png" src="../_images/notebooks_simple_simpsons_paradox_intro_5_1.png" />
 </div>
 </div>
-<p>in this, if we ignore the color, x_1 and x_2 are posiiely correlated,
-but in each color, they’re negatively correlated.</p>
+<p>in this, if we ignore the color, x_1 and x_2 are posiiely correlate,
+show by the black line, but in each color, they’re negatively
+correlated. This is a type of plot that we will want to generate a lot,
+so we’ve included it in the package</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>In [3]:
+<span></span>In [4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">sp_data_util</span> <span class="k">import</span> <span class="n">sp_plot</span>
+
+<span class="n">sp_plot</span><span class="p">(</span><span class="n">latent_df</span><span class="p">,</span> <span class="s1">&#39;x1&#39;</span><span class="p">,</span><span class="s1">&#39;x2&#39;</span><span class="p">,</span><span class="s1">&#39;color&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_simple_simpsons_paradox_intro_7_0.png" src="../_images/notebooks_simple_simpsons_paradox_intro_7_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
+<span></span>In [5]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
@@ -370,19 +376,9 @@ but in each color, they’re negatively correlated.</p>
 </pre></div>
 </div>
 </div>
-<div class="nboutput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[3]:
-</pre></div>
-</div>
-<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
-<span></span>0.7995728839844514
-</pre></div>
-</div>
-</div>
 <div class="nboutput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre>
-<span></span>Out[3]:
+<span></span>Out[5]:
 </pre></div>
 </div>
 <div class="output_area docutils container">
@@ -419,24 +415,24 @@ but in each color, they’re negatively correlated.</p>
     <tr>
       <th rowspan="2" valign="top">b</th>
       <th>x1</th>
-      <td>1.000000</td>
-      <td>-0.558943</td>
+      <td>1.00000</td>
+      <td>-0.53890</td>
     </tr>
     <tr>
       <th>x2</th>
-      <td>-0.558943</td>
-      <td>1.000000</td>
+      <td>-0.53890</td>
+      <td>1.00000</td>
     </tr>
     <tr>
       <th rowspan="2" valign="top">r</th>
       <th>x1</th>
-      <td>1.000000</td>
-      <td>-0.580503</td>
+      <td>1.00000</td>
+      <td>-0.50993</td>
     </tr>
     <tr>
       <th>x2</th>
-      <td>-0.580503</td>
-      <td>1.000000</td>
+      <td>-0.50993</td>
+      <td>1.00000</td>
     </tr>
   </tbody>
 </table>
