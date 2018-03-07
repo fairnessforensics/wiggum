@@ -14,6 +14,18 @@ To use the package, download (or clone) and:
   cd DetectSimpsonParadox/
   pip install .
 
+To use the package, after installed::
+
+  import detect_simpsons_paradox as dsp
+
+
+To use the data generation utilities, after installed::
+
+  import sp_data_utils as sp_data
+
+
+Development
+============
 
 To compile docs, sphinx and some extensions are required, all are included in
 `requirements.txt` and can be installed with
@@ -30,14 +42,7 @@ then
   make html
 
 
-To use the package, after installed::
 
-  import detect_simpsons_paradox as dsp
-
-
-To use the data generation utilities, after installed::
-
-  import sp_data_utils as sp_data
 
 
 To reinstall after changes
