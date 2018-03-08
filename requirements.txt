@@ -6,7 +6,7 @@ chardet==3.0.4
 CommonMark==0.5.4
 cycler==0.10.0
 decorator==4.2.1
-detect-simpsons-paradox==0.1
+detect-simpsons-paradox==0.2
 Django==2.0.3
 docutils==0.14
 entrypoints==0.2.3

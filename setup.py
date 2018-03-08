@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='detect_simpsons_paradox',
-      version='0.1',
+      version='0.2',
       description='utilities to detect simpson\'s paradox',
       url='http://github.com/brownsarahm/DetectSimpsonParadox',
       author='Sarah M Brown',
