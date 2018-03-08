@@ -1,12 +1,16 @@
 import seaborn as sns
 import pandas as pd
+import matplotlib.markers as mk
 
 
 def sp_plot(df, x_col, y_col, color_col):
     """
     create SP vizualization plot from 2 columns of a df
     """
-    all_markers = ['x', 'o', 's', '*', '^', '>', '<']
+    all_markers = list(mk.MarkerStyle.markers.keys())
+
+
+
     n_markers = df[color_col].unique().shape[0] # number unique
     cur_markers = all_markers[:n_markers]
 
