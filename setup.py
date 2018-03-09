@@ -8,5 +8,6 @@ setup(name='detect_simpsons_paradox',
       author_email='smb@sarahmbrown.org',
       license='MIT',
       packages=['detect_simpsons_paradox','sp_data_util'],
-      zip_safe=False,
-      install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas'])
+      zip_safe=False)
+    #   ,
+    #   install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas'])
