@@ -431,20 +431,27 @@ def geometric_indep_views_gmm_sp(d,r_clusters,cluster_size,cluster_spread,p_sp_c
         domain_range = sclar_to_list(domain_range)
 
 
-    x = []
+    # set x to none for logic below to add stuff
+    x = None
     z = []
 
     for r,c_std,c_sp,p_sp, d_r,k,rho in zip(r_clusters,cluster_size,cluster_spread,p_sp_clusters,
                             domain_range,k,p_clusters):
         # sample the data
         x_tmp, z_tmp = data_only_geometric_2d_gmm(r,c_std,c_sp,p_sp, d_r,k,N,rho)
-        x.append(x_tmp)
+        # x.append(x_tmp)
+        if x is None:
+            x = x_tmp
+        else:
+            x = np.append(x,x_tmp,axis=1)
         z.append(z_tmp)
 
     col_names = ['x'+ str(i+1) for i in range(d*2)]
 
     # make a dataframe
-    x = np.append(*x,axis=1)
+    print(len(x))
+    print(len(x[0]))
+
     latent_df = pd.DataFrame(data=x,
                            columns = col_names )
 
