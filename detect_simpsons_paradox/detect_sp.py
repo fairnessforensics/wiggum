@@ -54,27 +54,6 @@ def upper_triangle_df(matrix):
 
     return result_df
 
-def isReverse(a, b):
-    """
-    Compare the signs of a and b
-
-    Parameters
-    -----------
-    a : number(int or float)
-    b : number(int or float)
-
-    Returns
-    --------
-    boolean value : If True turns, a and b have the reverse sign.
-                    If False returns, a and b have the same sign.
-    """
-
-    if a > 0 and b < 0:
-       return True
-    elif a < 0 and b > 0:
-       return True
-    else:
-       return False
 
 def isReverse(a, b):
     """
@@ -165,9 +144,14 @@ def detect_simpsons_paradox(latent_df,
                 all_corr_info = [all_corr_df.loc[i].values for i in index_list]
                 temp_df = pd.DataFrame(data=all_corr_info,columns=['allCorr','attr1','attr2'])
 
-                # Convert index from float to int
+                # # Convert index from float to int
                 temp_df.attr1 = temp_df.attr1.astype(int)
                 temp_df.attr2 = temp_df.attr2.astype(int)
+                # Convert indices to attribute names for readabiity
+                temp_df.attr1 = temp_df.attr1.replace({i:a for i, a in
+                                            enumerate(continuousAttrs_labels)})
+                temp_df.attr2 = temp_df.attr2.replace({i:a for i, a in
+                                            enumerate(continuousAttrs_labels)})
 
                 temp_df["reverseCorr"] = reverse_list
                 len_list = len(reverse_list)
@@ -175,5 +159,37 @@ def detect_simpsons_paradox(latent_df,
                 temp_df['groupbyAttr'] = [groupbyAttr for i in range(len_list)]
                 temp_df['subgroup'] = [subgroup for i in range(len_list)]
                 result_df = result_df.append(temp_df, ignore_index=True)
+
+    return result_df
+
+
+def mark_designed_rows(result_df,design_list_tuples):
+    """
+    add a colomn to a result_df that marks which are designed
+
+    Parameters
+    -----------
+    result_df : DataFrame
+        generaed from detect_simpsons_paradox
+    design_list_tuples : list of tuples
+        a list of the attributes with designed in SP. in the form
+        [(attr1,attr2,groupbyAttr),...]
+
+    Returns
+    --------
+    result_df : DataFrame
+        with added column 'designed' with boolean values
+    """
+
+    des = []
+    # create a list of the rows with the designed in cases
+    for i,r in enumerate(result_df[['attr1','attr2','groupbyAttr']].values):
+        if tuple(r) in design_list_tuples:
+            des.append(i)
+
+    # add a column of all False values
+    result_df['designed'] = False
+    # change the designed ones to true
+    result_df.loc[des,'designed'] = True
 
     return result_df
