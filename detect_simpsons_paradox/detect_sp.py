@@ -193,3 +193,19 @@ def mark_designed_rows(result_df,design_list_tuples):
     result_df.loc[des,'designed'] = True
 
     return result_df
+
+# def detect_sp_pandas():
+#     total_data = np.asarray([np.sign(many_sp_df_diff.corr().values)]*3).reshape(18,6)
+#     A_data = np.sign(many_sp_df_diff.groupby('A').corr().values)
+#     sp_mask = total_data*A_data
+# sp_idx = np.argwhere(sp_mask<0)
+# #     Comput corr, take sign
+# # conditionn and compute suc corrs, take sign
+# # mutliply two together, all negative arer SP
+# # get locations to dtermine laels
+#     labels_levels = many_sp_df_diff.groupby('A').corr().index
+#     groupByAttr_list = [labels_levels.levels[0][ll] for ll in labels_levels.labels[0]]
+#     var_list_dn  = [labels_levels.levels[1][li] for li in labels_levels.labels[1]]
+#     var_list_ac = many_sp_df_diff.groupby('A').corr().columns
+#     # labels_levels.levels
+#     SP_cases = [(groupByAttr_list[r],var_list_dn[r],var_list_ac[c]) for r,c in sp_idx ]
