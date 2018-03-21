@@ -4,7 +4,7 @@ import matplotlib.markers as mk
 import matplotlib.pylab as plt
 
 
-def sp_plot(df, x_col, y_col, color_col,ci = None):
+def sp_plot(df, x_col, y_col, color_col,ci = None,domain_range=[0, 20, 0 , 20]):
     """
     create SP vizualization plot from 2 columns of a df
     """
@@ -27,3 +27,5 @@ def sp_plot(df, x_col, y_col, color_col,ci = None):
 
     # adda whole data regression line, but don't cover the scatter data
     sns.regplot(x_col, y_col, data=df, color='black', scatter=False, ci=ci)
+
+    plt.axis(domain_range)

@@ -1,5 +1,7 @@
-import numpy as np
 import pandas as pd
+import numpy as np
+import scipy.stats as stats
+import itertools as itert
 
 # Function s
 def upper_triangle_element(matrix):
@@ -162,37 +164,6 @@ def detect_simpsons_paradox(latent_df,
 
     return result_df
 
-
-def mark_designed_rows(result_df,design_list_tuples):
-    """
-    add a colomn to a result_df that marks which are designed
-
-    Parameters
-    -----------
-    result_df : DataFrame
-        generaed from detect_simpsons_paradox
-    design_list_tuples : list of tuples
-        a list of the attributes with designed in SP. in the form
-        [(attr1,attr2,groupbyAttr),...]
-
-    Returns
-    --------
-    result_df : DataFrame
-        with added column 'designed' with boolean values
-    """
-
-    des = []
-    # create a list of the rows with the designed in cases
-    for i,r in enumerate(result_df[['attr1','attr2','groupbyAttr']].values):
-        if tuple(r) in design_list_tuples:
-            des.append(i)
-
-    # add a column of all False values
-    result_df['designed'] = False
-    # change the designed ones to true
-    result_df.loc[des,'designed'] = True
-
-    return result_df
 
 # def detect_sp_pandas():
 #     total_data = np.asarray([np.sign(many_sp_df_diff.corr().values)]*3).reshape(18,6)

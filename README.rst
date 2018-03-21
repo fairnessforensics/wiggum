@@ -42,13 +42,13 @@ then
   make html
 
 
-
-
-
 To reinstall after changes
 
 .. code-block:: bash
 
   pip install --upgrade .
+
+When updating the package and working in a notebook, the notebook's kernel will
+need to be restarted to get the updates, if they're done outside of the notebook.
 
 (only needed in development or after upgrade)
