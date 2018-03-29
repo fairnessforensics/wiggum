@@ -375,7 +375,7 @@ def geometric_2d_gmm_sp(r_clusters,cluster_size,cluster_spread,p_sp_clusters,
     return latent_df
 
 def geometric_indep_views_gmm_sp(d,r_clusters,cluster_size,cluster_spread,p_sp_clusters,
-                domain_range,k,N,p_clusters=None):
+                domain_range,k,N,p_clusters=None,numeric_categorical=False):
     """
     Sample from a gaussian mixture model with Simpson's Paradox and spread means
     return data in a data fram
@@ -399,6 +399,8 @@ def geometric_indep_views_gmm_sp(d,r_clusters,cluster_size,cluster_spread,p_sp_c
         number of clusters
     N : scalar
         number of points, shared across all views
+    numeric_categorical=False
+        use numerical (ordinal) values instead of letters
     """
 
     # if not defined, set uniform cluster probaiblity
@@ -460,7 +462,10 @@ def geometric_indep_views_gmm_sp(d,r_clusters,cluster_size,cluster_spread,p_sp_c
     z_names = list(string.ascii_uppercase[:d])
     # code cluster as and add it a column to the dataframe
     for z_i,name in zip(z,z_names):
-        latent_df[name] = [name + str(z_ii) for z_ii in z_i]
+        if numeric_categorical:
+            latent_df[name] = [z_ii for z_ii in z_i]
+        else:
+            latent_df[name] = [name + str(z_ii) for z_ii in z_i]
 
 
     return latent_df
