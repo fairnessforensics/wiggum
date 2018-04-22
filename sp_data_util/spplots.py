@@ -1,10 +1,11 @@
 import seaborn as sns
 import pandas as pd
+import numpy as np
 import matplotlib.markers as mk
 import matplotlib.pylab as plt
 
 
-def sp_plot(df, x_col, y_col, color_col,ci = None,domain_range=[0, 20, 0 , 20]):
+def sp_plot(df, x_col, y_col, color_col,ci = None,domain_range=[0, 20, 0 , 20],ax=None):
     """
     create SP vizualization plot from 2 columns of a df
     """
@@ -47,8 +48,7 @@ def plot_clustermat(z,fmt=None):
     'list' : a list, but not nparray otherwise ready to plot
     """
 
-    K = np.max(z)
-    N = len(z)
+
 
     processing = {'crplist': lambda x: list_to_mat(x),
                   'ibplist': lambda x: make_square(x),
@@ -56,6 +56,8 @@ def plot_clustermat(z,fmt=None):
                   None: lambda x: x}
 
     z_mat = processing[fmt](z)
+    # print(z_mat)
+    N,K = z_mat.shape
 
     # no white grid
     sns.set_style("whitegrid", {'axes.grid' : False})
@@ -91,5 +93,6 @@ def list_to_mat(z):
     """
     make a list of length N with values 1 to K into an NxK binanry matrix
     """
+    K = np.max(z)
     tmp = np.eye(K+1)
     return np.asarray([tmp[z_i] for z_i in z])
