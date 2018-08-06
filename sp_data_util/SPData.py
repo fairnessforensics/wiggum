@@ -532,3 +532,41 @@ def data_only_geometric_2d_gmm(r_clusters,cluster_size,cluster_spread,p_sp_clust
                                         cluster_covs[c_sp[z_i]]) for z_i in z])
 
     return x,z
+
+def get_categorical_proxy( z,rho,z_opts=None):
+    """
+    generate a proxy variable with rho agreement to z
+
+    Parameters
+    -----------
+    z : list
+        categorical variables
+    rho : scalar or list
+        agreemment of new variable to z indepentt of value of z by scalar
+        or such that rho_i  p(zp_i = z_i)
+
+    Returns
+    --------
+    zp : list
+        same sizze as z and in same space as z is z_opts empty o rin space of
+        z_opts if specified
+    """
+
+    if z_opts is None:
+        # get type-invariant unique elemsents of z
+        z_opts = set(z)
+
+    if len(rho) ==1:
+        rho = [rho]*len(z_opts)
+
+        # assign rho prob all over
+    n_rho = len(rho)
+    off_diag = np.tile(np.asarray([(1-rho_i)/(n_rho-1) for rho_i in rho]),[len(rho),1]).T
+    off_diag = off_diag - np.diag(np.diag(off_diag)) # zero out diag
+    p_mat = np.diag(rho) + off_diag
+    prob = {z_i:rho_i for z_i,rho_i in zip(set(z),p_mat)}
+
+    # sample sing genrated probmat
+    zp = [np.random.choice(z_opts, p = prob[z_i]) for z_i in z]
+
+    return zp

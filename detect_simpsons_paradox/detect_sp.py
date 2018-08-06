@@ -74,6 +74,30 @@ def isReverse(a, b):
 
     return not (np.sign(a) == np.sign(b))
 
+def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
+    """
+    brute force cluster in every pair of
+
+    Parameters
+    -----------
+    latent_df : dataframe
+        data organized in a pandas dataframe containing continuous attributes
+        and potentially also categorical variables but those are not necessary
+    continuousAttrs_labels : list
+        list of continuous attributes by name in dataframe
+    """
+    for x1,x2 in itert.combinations(continuousAttrs_labels,2):
+    # run clustering
+    dpgmm = mixture.BayesianGaussianMixture(n_components=20,
+                                        covariance_type='full').fit(df[[x1,x2]])
+
+    # check if clusters are good separation or nonsense
+
+    # agument data with clusters
+    df['clust_'+ x1+ '_' + x2] = dpgmm.predict(df[[x1,x2]])
+
+    return df
+
 def detect_simpsons_paradox(latent_df,
                             continuousAttrs_labels=None,
                             groupbyAttrs_labels=None ):
