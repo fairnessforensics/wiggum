@@ -8,3 +8,5 @@ docs/source/notebooks/.ipynb_checkpoints
 
 # ignore compiled stuff
 *.pyc
+
+env/
