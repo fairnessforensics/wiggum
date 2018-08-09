@@ -9,4 +9,7 @@ setup(name='detect_simpsons_paradox',
       license='MIT',
       packages=['detect_simpsons_paradox', 'spviz'],
       zip_safe=False,
-      install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas','fairsim'])
+      install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas','fairsim','flask'],
+      dependency_links=[
+        'git+http://github.com/brownsarahm/fair-sim/.git@master#egg=fair-sim'
+    ])

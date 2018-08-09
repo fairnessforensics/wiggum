@@ -7,21 +7,36 @@ Toward scalable, interactive detection of Simpson's Paradox.
 Published in:
  - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`_ to appear
 
+First install data generators (fair-sim):
+
+Data generators are in a separate package, that is requires for install, it can
+ be found at
+TODO CHANGE THIS WHEN PUBLIC
+.. code-block:: bash
+
+  git clone http://github.com/brownsarahm/fair-sim/.git
+  cd fair-sim
+  pip install .
+
 To use the package, download (or clone) and:
 
 .. code-block:: bash
 
   cd DetectSimpsonParadox/
-  pip install .
+  pip install -r requirements.txt
 
 To use the package, after installed::
 
+.. code-block:: python
+
   import detect_simpsons_paradox as dsp
 
+To run the app:
 
-To use the data generation utilities, after installed::
+.. code-block:: bash
 
-  import sp_data_utils as sp_data
+  \\ FILL THIS IN
+
 
 
 Development
