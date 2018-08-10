@@ -35,7 +35,7 @@ To run the app:
 
 .. code-block:: bash
 
-  \\ FILL THIS IN
+  python3 run.py
 
 
 
