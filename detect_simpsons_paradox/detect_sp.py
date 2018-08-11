@@ -87,14 +87,14 @@ def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
         list of continuous attributes by name in dataframe
     """
     for x1,x2 in itert.combinations(continuousAttrs_labels,2):
-    # run clustering
-    dpgmm = mixture.BayesianGaussianMixture(n_components=20,
+        # run clustering
+        dpgmm = mixture.BayesianGaussianMixture(n_components=20,
                                         covariance_type='full').fit(df[[x1,x2]])
 
-    # check if clusters are good separation or nonsense
+        # check if clusters are good separation or nonsense
 
-    # agument data with clusters
-    df['clust_'+ x1+ '_' + x2] = dpgmm.predict(df[[x1,x2]])
+        # agument data with clusters
+        df['clust_'+ x1+ '_' + x2] = dpgmm.predict(df[[x1,x2]])
 
     return df
 
