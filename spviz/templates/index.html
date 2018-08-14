@@ -1,1 +1,89 @@
-<h1>Flask is fun.</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Correlation Matrix</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script>
+        var divs = ["container", "tree", "scatterplot"];
+        var visibleDivId = null;
+        function toggleVisibility(divId) {
+          //if(visibleDivId === divId) {
+          //  visibleDivId = null;
+          //} else {
+          //  visibleDivId = divId;
+          //}
+          visibleDivId = divId;
+          hideNonVisibleDivs();
+        }
+        function hideNonVisibleDivs() {
+          var i, divId, div;
+          var x = document.getElementById("scatterplot"); 
+
+          for(i = 0; i < divs.length; i++) {
+            divId = divs[i];
+            div = document.getElementById(divId);
+
+            if(visibleDivId === divId) {
+              div.style.display = "block";
+            } else {
+              div.style.display = "none";
+            }
+            // Set for scatterplot
+            if((x.id === divId) && (selectTypeValue == "Regression")) {
+              x.style.display = "inline-block";
+            } else {
+              x.style.display = "none";
+            }
+          }
+        }
+    </script>
+</head>
+<body class="center">
+    <div class= "row">
+        <div id="extra">
+            <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="file" onchange="loadFile()" />
+            <a href="#" onclick="toggleVisibility('container')">Linear Layout</a>
+            &nbsp;&nbsp;&nbsp;
+            <div id="extra_regression" style="display:inline-block;" >
+                <a href="#" onclick="toggleVisibility('tree')">Tree Hierarchy</a>
+            </div>
+            &nbsp;&nbsp;&nbsp;(Click a title to select a detail plot or a cell to focus a detail plot)       
+        </div> 
+        <div id="typeSelector">
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        <div id="selectors">
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+        <div style="display:inline-block; float:left" id ="slider" class="slider"></div>
+        <br/><br/>
+        <div style="display:inline-block; float:left" id="legend"></div>
+    </div>
+    <div style="display:inline-block; float:left" id="rankingdiv">
+            <select multiple id ="ranking"></select>   
+    </div>
+    <div style="display:none; float:left" id="container"></div>
+    <div style="display:none; float:left" id="tree"></div>
+    <div class="vl"></div>
+    <div id="slopeLabel"></div>
+    <div style="display:none; float:left" id="scatterplot"></div>
+    <div id="slopegraph"></div>
+    <div id="groupedbarchart"></div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tree.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/scatterplot.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/correlationMatrix.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/rateMatrix.js') }}"></script>
+    <script> d3.eesur = {}; </script>
+    <script src="{{ url_for('static', filename='js/d3_code_slopegraph.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/slopegraph.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/groupedbarchart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/rankingListbox.js') }}"></script>
+</body>

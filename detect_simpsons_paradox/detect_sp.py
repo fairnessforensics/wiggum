@@ -99,8 +99,8 @@ def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
     # check if clusters are good separation or nonsense
     # maybe not?
 
-    # agument data with clusters
-    df['clust_'+ x1+ '_' + x2] = dpgmm.predict(df[[x1,x2]])
+        # agument data with clusters
+        df['clust_'+ x1+ '_' + x2] = dpgmm.predict(df[[x1,x2]])
 
     return df
 
