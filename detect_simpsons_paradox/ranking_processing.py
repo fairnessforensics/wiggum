@@ -156,7 +156,7 @@ def rank_weighted(df,cols_list,weights):
     rank by a new column that is the weighted sum of other columns
     """
     name = '_'.join([str(w) + c for c,w, in zip(cols_list,weights)])
-    # df[name] =
+    return add_weighted(df,cols_list,weights).sort(name)
 
 def get_SP_views(results_df):
     """
