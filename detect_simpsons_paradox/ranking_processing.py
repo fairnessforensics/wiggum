@@ -110,7 +110,7 @@ def rank_weighted(df,cols_list,weights):
     rank by a new column that is the weighted sum of other columns
     """
     name = '_'.join([str(w) + c for c,w, in zip(cols_list,weights)])
-    df[name] = 
+    df[name] =  name # FIXME added by @cegme, what is supposed to go here?
 
 def get_SP_views(results_df):
     """
@@ -194,6 +194,7 @@ def count_sp_views(results_df, colored= False,portion =False,data_df= None):
             #add error message here
     if portions :
         # count possible values for groupby attributes
+        pass # FIXME added my @cegme what us supposed to be here
 
 
     # group by variables that define a colored view
