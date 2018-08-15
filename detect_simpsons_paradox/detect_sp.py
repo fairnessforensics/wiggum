@@ -113,7 +113,7 @@ def detect_simpsons_paradox(latent_df,
 
     Parameters
     -----------
-    latent_df : dataframe
+    latent_df : DataFrame
         data organized in a pandas dataframe containing both categorical
         and continuous attributes.
     continuousAttrs_labels : list [None]
