@@ -74,7 +74,7 @@ def isReverse(a, b):
 
     return not (np.sign(a) == np.sign(b))
 
-def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
+def cluster_augment_data_dpgmm(df,regression_vars):
     """
     brute force cluster in every pair of
 
@@ -83,7 +83,7 @@ def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
     df : DataFrame
         data organized in a pandas dataframe containing continuous attributes
         and potentially also categorical variables but those are not necessary
-    continuousAttrs_labels : list
+    regression_vars : list
         list of continuous attributes by name in dataframe
 
     Returns
@@ -91,7 +91,7 @@ def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
     df : DataFrame
         input DataFrame with column added with label `clust_<var1>_<var2>`
     """
-    for x1,x2 in itert.combinations(continuousAttrs_labels,2):
+    for x1,x2 in itert.combinations(regression_vars,2):
         # run clustering
         dpgmm = mixture.BayesianGaussianMixture(n_components=20,
                                         covariance_type='full').fit(df[[x1,x2]])
@@ -104,48 +104,50 @@ def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
 
     return df
 
-def detect_simpsons_paradox(latent_df,
-                            continuousAttrs_labels=None,
-                            groupbyAttrs_labels=None ):
+def detect_simpsons_paradox(data_df,
+                            regression_vars=None,
+                            groupby_vars=None,type='linreg' ):
     """
     A detection function which can detect Simpson Paradox happened in the data's
     subgroup.
 
     Parameters
     -----------
-    latent_df : DataFrame
+    data_df : DataFrame
         data organized in a pandas dataframe containing both categorical
         and continuous attributes.
-    continuousAttrs_labels : list [None]
+    regression_vars : list [None]
         list of continuous attributes by name in dataframe, if None will be
         detected by all float64 type columns in dataframe
-    groupbyAttrs_labels  : list [None]
+    groupby_vars  : list [None]
         list of group by attributes by name in dataframe, if None will be
         detected by all object and int64 type columns in dataframe
+    type : {'linreg',} ['linreg']
+        default is linreg for backward compatibility
+
 
     Returns
     --------
     result_df : dataframe
-                In the result dataframe, it stores the information of the subgroup
-                which is detected having Simpson Paradox.
+        a dataframe with columns ['attr1','attr2',...]
                 TODO: Clarify the return information
 
     """
     # if not specified, detect continous attributes and categorical attributes
     # from dataset
-    if groupbyAttrs_labels is None:
-        groupbyAttrs = latent_df.select_dtypes(include=['object','int64'])
-        groupbyAttrs_labels = list(groupbyAttrs)
+    if groupby_vars is None:
+        groupbyAttrs = data_df.select_dtypes(include=['object','int64'])
+        groupby_vars = list(groupbyAttrs)
 
-    if continuousAttrs_labels is None:
-        continuousAttrs = latent_df.select_dtypes(include=['float64'])
-        continuousAttrs_labels = list(continuousAttrs)
+    if regression_vars is None:
+        continuousAttrs = data_df.select_dtypes(include=['float64'])
+        regression_vars = list(continuousAttrs)
 
 
     # Compute correaltion matrix for all of the data, then extract the upper
     # triangle of the matrix.
     # Generate the correaltion dataframe by correlation values.
-    all_corr = latent_df[continuousAttrs_labels].corr()
+    all_corr = data_df[regression_vars].corr()
     all_corr_df = upper_triangle_df(all_corr)
     all_corr_element = all_corr_df['value'].values
 
@@ -153,8 +155,8 @@ def detect_simpsons_paradox(latent_df,
     result_df = pd.DataFrame()
 
     # Loop by group-by attributes
-    for groupbyAttr in groupbyAttrs_labels:
-        grouped_df_corr = latent_df.groupby(groupbyAttr)[continuousAttrs_labels].corr()
+    for groupbyAttr in groupby_vars:
+        grouped_df_corr = data_df.groupby(groupbyAttr)[regression_vars].corr()
         groupby_value = grouped_df_corr.index.get_level_values(groupbyAttr).unique()
 
         # Get subgroup correlation
@@ -181,9 +183,9 @@ def detect_simpsons_paradox(latent_df,
                 temp_df.attr2 = temp_df.attr2.astype(int)
                 # Convert indices to attribute names for readabiity
                 temp_df.attr1 = temp_df.attr1.replace({i:a for i, a in
-                                            enumerate(continuousAttrs_labels)})
+                                            enumerate(regression_vars)})
                 temp_df.attr2 = temp_df.attr2.replace({i:a for i, a in
-                                            enumerate(continuousAttrs_labels)})
+                                            enumerate(regression_vars)})
 
                 temp_df["reverseCorr"] = reverse_list
                 len_list = len(reverse_list)
@@ -193,6 +195,41 @@ def detect_simpsons_paradox(latent_df,
                 result_df = result_df.append(temp_df, ignore_index=True)
 
     return result_df
+
+def detect_sp_robust(data_df,groupby_vars=None,
+                            regression_vars=None,
+                            rate_vars =None):
+    """
+    Simpson's Paradox detection algorithm that works for multiple forms of SP
+
+    Parameters
+    -----------
+    data_df : DataFrame
+        data to find SP in, must be tidy
+    groupby_vars : list of strings
+        column names to use as grouping variables
+    regression_vars : list of strings
+        column names to use in regresison based trends
+    rate_vars : list of strings
+        column names to use in rate based trends
+    """
+
+    # if not specified, detect continous attributes and categorical attributes
+    # from dataset
+    if groupby_vars is None:
+        groupby_data = data_df.select_dtypes(include=['object','int64'])
+        groupby_vars = list(groupby_data)
+
+    if regression_vars is None:
+        regression_data = data_df.select_dtypes(include=['float64'])
+        regression_vars = list(regression_data)
+
+    if rate_vars is None:
+        rate_data = data_df
+
+
+    # Comp
+
 
 
 # def detect_sp_pandas():
