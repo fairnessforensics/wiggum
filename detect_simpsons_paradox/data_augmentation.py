@@ -2,6 +2,9 @@ import numpy as np
 import pandas as import pd
 import sklearn as skl
 
+clustering_techniques = {'dpgmm': lambda df,var_list : skl.mixture.BayesianGaussianMixture(n_components=20,
+                                covariance_type='full').fit(df[var_list]).predict(df[var_list])}
+
 
 def add_cluster(data_df,view,name):
     """
@@ -13,12 +16,13 @@ def add_cluster(data_df,view,name):
         tidy data to cluster and augment
     view : list of strings
         list of column names that defines a view of the data to perform
-    clustering in    
+    clustering in
     name : string
         name of clustering method to apply
     """
 
     #cluster the data_df
+
 
 
     #create column_name
