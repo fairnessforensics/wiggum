@@ -3,6 +3,12 @@ import numpy as np
 import scipy.stats as stats
 import itertools as itert
 
+## constants
+
+RESULTS_DF_HEADER = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
+
+
+
 # Function s
 def upper_triangle_element(matrix):
     """
@@ -40,8 +46,8 @@ def upper_triangle_df(matrix):
     Returns
     --------
     result_df : dataframe
-               A dataframe stores all the values in the upper half of the input matrix and
-               their corresponding rows and columns' index information into a dataframe
+        A dataframe stores all the values in the upper half of the input matrix and
+    their corresponding rows and columns' index information into a dataframe
     """
     #upper triangle construction
     tri_upper = np.triu(matrix, k=1)
@@ -74,35 +80,7 @@ def isReverse(a, b):
 
     return not (np.sign(a) == np.sign(b))
 
-def cluster_augment_data_dpgmm(df,regression_vars):
-    """
-    brute force cluster in every pair of
 
-    Parameters
-    -----------
-    df : DataFrame
-        data organized in a pandas dataframe containing continuous attributes
-        and potentially also categorical variables but those are not necessary
-    regression_vars : list
-        list of continuous attributes by name in dataframe
-
-    Returns
-    --------
-    df : DataFrame
-        input DataFrame with column added with label `clust_<var1>_<var2>`
-    """
-    for x1,x2 in itert.combinations(regression_vars,2):
-        # run clustering
-        dpgmm = mixture.BayesianGaussianMixture(n_components=20,
-                                        covariance_type='full').fit(df[[x1,x2]])
-
-    # check if clusters are good separation or nonsense
-    # maybe not?
-
-        # agument data with clusters
-        df['clust_'+ x1+ '_' + x2] = dpgmm.predict(df[[x1,x2]])
-
-    return df
 
 def detect_simpsons_paradox(data_df,
                             regression_vars=None,
@@ -152,7 +130,7 @@ def detect_simpsons_paradox(data_df,
     all_corr_element = all_corr_df['value'].values
 
     # Define an empty dataframe for result
-    result_df = pd.DataFrame()
+    results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
     # Loop by group-by attributes
     for groupbyAttr in groupby_vars:
@@ -187,7 +165,7 @@ def detect_simpsons_paradox(data_df,
                 temp_df.attr2 = temp_df.attr2.replace({i:a for i, a in
                                             enumerate(regression_vars)})
 
-                temp_df["reverseCorr"] = reverse_list
+                temp_df['subgroupCorr'] = reverse_list
                 len_list = len(reverse_list)
                 # Store group attributes' information
                 temp_df['groupbyAttr'] = [groupbyAttr for i in range(len_list)]
@@ -196,11 +174,41 @@ def detect_simpsons_paradox(data_df,
 
     return result_df
 
-def detect_sp_robust(data_df,groupby_vars=None,
+
+def get_correlations(data_df,regression_vars,corr_name):
+    """
+    return a DataFrame of the linear trends in a DataFrame or groupby
+
+    Parameters
+    -----------
+    data_df : DataFrame
+        tidy data
+    regression_vars : list of strings
+        column names to use for correlatio compuations
+    corr_name : string
+        title for column of data frame tht will be created
+    """
+    # get locations of upper right triangle
+    triu_indices = np.triu_indices(len(regression_vars))
+
+    # compute correlations, only store vlaues from upper right triangle
+    corr_triu = data_df[regression_vars].corr(), k=1)[triu_indices]
+
+    # create dataframe with rows, att1 label, attr2 label, correlation
+    reg_df = pd.DataFrame(data=[[regression_vars[x],regression_vars[y],val]
+                                for x,y,val in zip(*triu_indices,triu_valuess)],
+                columns = ['attr1','attr2',corr_name])
+
+    return reg_df
+
+
+
+def get_subgroup_trends(data_df,groupby_vars=None,
                             regression_vars=None,
                             rate_vars =None):
     """
-    Simpson's Paradox detection algorithm that works for multiple forms of SP
+    find subgroup and aggregate trends in the dataset, return a DataFrame that
+    contains information necessary to filter for SP and relaxations
 
     Parameters
     -----------
@@ -224,11 +232,37 @@ def detect_sp_robust(data_df,groupby_vars=None,
         regression_data = data_df.select_dtypes(include=['float64'])
         regression_vars = list(regression_data)
 
-    if rate_vars is None:
-        rate_data = data_df
+    # TODO: fix this to work
+    # if rate_vars is None:
+        # rate_data = data_df.select_dtypes(include=['Boolean'])
+
+    # apply clustering and augment data with clusters
+
+    results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
+
+    # Tabulate aggregate statistics
+    all_lin_trends = get_lin_trends(data_df,regression_vars)
+
+    # iterate over groupby attributes
+    for groupbyAttr in groupby_vars:
+        #condition the data
+        cur_grouping = data_df.groupby(groupbyAttr)
+
+        # get subgoup trends
+
+        # check rates
+
+        # append
+
+    # merge all trends with subgroup trends
 
 
-    # Comp
+
+    return results_df
+
+
+
+
 
 
 
