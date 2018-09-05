@@ -21,5 +21,5 @@ Model stores the algorithms for all operations performed on the data.
 - Ranking SP
 
 
-.. image:: images/ball1.gif
+.. image:: docs/source/appstructure.png
 
