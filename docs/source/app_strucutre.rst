@@ -21,8 +21,5 @@ Model stores the algorithms for all operations performed on the data.
 - Ranking SP
 
 
-.. graphviz::
-Digraph {
-  "From" -> "To"
-}
+
 
