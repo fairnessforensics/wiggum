@@ -11,6 +11,7 @@ D3 graphs on the front end are generated in different js files.
 Controller
 ###########
 The controller reads the user uploading file as a dataframe and passes the data to the model.
+After the model returns the result, controller pass the result data to the view.
 
 Model
 ###########
@@ -19,5 +20,7 @@ Model stores the algorithms for all operations performed on the data.
 - Detecting SP
 - Ranking SP
 
-
+Digraph {
+  "From" -> "To"
+}
 
