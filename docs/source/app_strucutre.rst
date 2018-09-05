@@ -20,6 +20,8 @@ Model stores the algorithms for all operations performed on the data.
 - Detecting SP
 - Ranking SP
 
+
+.. graphviz::
 Digraph {
   "From" -> "To"
 }
