@@ -1,5 +1,5 @@
 import numpy as np
-import pandas as import pd
+import pandas as pd
 import sklearn as skl
 
 clustering_techniques = {'dpgmm': lambda df,var_list : skl.mixture.BayesianGaussianMixture(n_components=20,

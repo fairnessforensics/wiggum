@@ -5,8 +5,10 @@ import itertools as itert
 
 ## constants
 
-RESULTS_DF_HEADER = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
+RESULTS_DF_HEADER_old = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
 
+RESULTS_DF_HEADER = ['feat1','feat2','trend_type','agg_trend','group_feat',
+                    'subgroup','subgroup_trend']
 
 
 # Function s
@@ -87,7 +89,7 @@ def detect_simpsons_paradox(data_df,
                             groupby_vars=None,type='linreg' ):
     """
     A detection function which can detect Simpson Paradox happened in the data's
-    subgroup.
+    subgroup. (legacy)
 
     Parameters
     -----------
@@ -195,7 +197,8 @@ def get_correlations(data_df,regression_vars,corr_name):
     triu_indices_0 = np.triu_indices(num_vars,k=1)
 
     # append for all groups if groupby instead of single DataFrame
-    if type(data_df) is pd.core.groupby.groupby.DataFrameGroupBy:
+
+    if type(data_df) is pd.core.groupby.DataFrameGroupBy:
         # construct a list of the upper triangle of the submatrices per group
         num_groups = len(data_df.groups)
         # need to increment this many values
@@ -206,24 +209,30 @@ def get_correlations(data_df,regression_vars,corr_name):
         # ad the increment amounts to the row values, keep the col values
         triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
                                         triu_indices_0[1].repeat(num_groups))
+        triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
+                                        triu_indices_0[1].repeat(num_groups))
     else:
         # if not a gropby then the original is correct, use that
         triu_indices = triu_indices_0
+        triu_feat_indices = triu_indices
 
     # compute correlations, only store vlaues from upper right triangle
     corr_triu = data_df[regression_vars].corr().values[triu_indices]
 
+
     # create dataframe with rows, att1 label, attr2 label, correlation
     reg_df = pd.DataFrame(data=[[regression_vars[x],regression_vars[y],val]
-                                for x,y,val in zip(*triu_indices,corr_triu)],
-                columns = ['attr1','attr2',corr_name])
+                                for x,y,val in zip(*triu_feat_indices,corr_triu)],
+                columns = ['feat1','feat2',corr_name])
 
-    # if groupby add subgroup vars
-    if type(data_df) is pd.core.groupby.groupby.DataFrameGroupBy:
+    # if groupby add subgroup indicator columns
+    if type(data_df) is pd.core.groupby.DataFrameGroupBy:
         #same for all
-        reg_df['groupbyAttr'] = data_df.count().index.name
+        reg_df['group_feat'] = data_df.count().index.name
         # repeat the values each the number of time sfor the size of the triu
-        reg_df['subgroup'] = list(data_df).groups.keys())*n_triu_values
+        reg_df['subgroup'] = list(data_df.groups.keys())*n_triu_values
+
+    reg_df['trend_type'] = 'pearson_corr'
 
     return reg_df
 
@@ -239,24 +248,24 @@ def get_lin_trends(data_df,regression_vars,corr_name):
     regression_vars : list of strings
         column names to use for correlatio compuations
     corr_name : string
-        title for column of data frame tht will be created
+        title for column of data frame tht will be created (group or all)
     """
     # get locations of upper right triangle
-    triu_indices = np.triu_indices(len(regression_vars))
+    triu_indices = np.triu_indices(len(regression_vars), k=1)
 
-    # compute correlations, only store vlaues from upper right triangle
-    corr_triu = data_df[regression_vars].corr(), k=1)[triu_indices]
+    # compute slopes, only store vlaues from upper right triangle
+    corr_triu = data_df[regression_vars].corr()[triu_indices] #
 
     # create dataframe with rows, att1 label, attr2 label, correlation
     reg_df = pd.DataFrame(data=[[regression_vars[x],regression_vars[y],val]
                                 for x,y,val in zip(*triu_indices,triu_valuess)],
-                columns = ['attr1','attr2',corr_name])
+                columns = ['feat1','feat2',corr_name])
 
     return reg_df
 
-def get_rate_trends(data_df,groupby_vars):
+def get_rate_trends(data_df,groupby_vars,corr_name):
     """
-    return a DataFrame of the linear corelations in a DataFrame
+    return a DataFrame of the rate rankings in a DataFrame
 
     Parameters
     -----------
@@ -271,10 +280,12 @@ def get_rate_trends(data_df,groupby_vars):
 
     # cannot layer them, must et list of all combos?
 
+get_trend_vars = {'pearson_corr':lambda df: list(df.select_dtypes(include=['float64'])),
+              'rate': lambda df: list(data_df.select_dtypes(include=['bool'])) }
+get_trend_funcs = {'pearson_corr':get_correlations,
+                'rate':get_rate_trends}
 
-def get_subgroup_trends(data_df,groupby_vars=None,
-                            regression_vars=None,
-                            rate_vars =None):
+def get_subgroup_trends(data_df,trend_types,groupby_vars=None):
     """
     find subgroup and aggregate trends in the dataset, return a DataFrame that
     contains information necessary to filter for SP and relaxations
@@ -283,12 +294,17 @@ def get_subgroup_trends(data_df,groupby_vars=None,
     -----------
     data_df : DataFrame
         data to find SP in, must be tidy
+    trend_types: list of strings or list of dicts
+        info on what trends to compute and the variables to use, dict is of form
+    {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
     groupby_vars : list of strings
         column names to use as grouping variables
-    regression_vars : list of strings
+    trend_vars : list of strings
         column names to use in regresison based trends
     rate_vars : list of strings
         column names to use in rate based trends
+    trend_func : function handle
+        to compute the trend
     """
 
     # if not specified, detect continous attributes and categorical attributes
@@ -297,36 +313,52 @@ def get_subgroup_trends(data_df,groupby_vars=None,
         groupby_data = data_df.select_dtypes(include=['object','int64'])
         groupby_vars = list(groupby_data)
 
-    if regression_vars is None:
-        regression_data = data_df.select_dtypes(include=['float64'])
-        regression_vars = list(regression_data)
+    if type(trend_types[0]) is str:
+        # create dict
+        trend_dict_list = [{'name':trend,
+                        'vars':get_trend_vars[trend](data_df),
+                        'func':get_trend_funcs[trend]} for trend in trend_types]
+    else:
+        # use provided
+        trend_dict_list = trend_types
 
-    # TODO: fix this to work
-    # if rate_vars is None:
-        # rate_data = data_df.select_dtypes(include=['Boolean'])
-
-    # apply clustering and augment data with clusters
-
+    # prep the result df to add data to later
     results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
-    # Tabulate aggregate statistics
-    all_lin_trends = get_correlations(data_df,regression_vars,'allCorr')
+    # create empty lists
+    all_lin_trends = []
+    subgroup_trends = []
 
-    # iterate over groupby attributes
-    for groupbyAttr in groupby_vars:
-        #condition the data
-        cur_grouping = data_df.groupby(groupbyAttr)
+    for td in trend_dict_list:
+        trend_func = td['func']
+        trend_vars = td['vars']
+        # Tabulate aggregate statistics
+        agg_lin_trends = trend_func(data_df,trend_vars,'agg_trend')
 
-        # get subgoup trends
-        curgroup_corr = get_correlations(cur_grouping,regression_vars,'subgroupCorr')
 
-        # check rates
+        # iterate over groupby attributes
+        for groupbyAttr in groupby_vars:
+            #condition the data
+            cur_grouping = data_df.groupby(groupbyAttr)
 
-        # append
+            # get subgoup trends
+            curgroup_corr = trend_func(cur_grouping,trend_vars,'subgroup_trend')
+
+            # check rates
+
+            # append
+            subgroup_trends.append(curgroup_corr)
+
+
+        all_lin_trends.append(agg_lin_trends)
 
     # merge all trends with subgroup trends
-
-
+    all_lin_trends = pd.concat(all_lin_trends)
+    print(all_lin_trends)
+    subgroup_trends = pd.concat(subgroup_trends)
+    print(subgroup_trends)
+    results_df = pd.merge(subgroup_trends,all_lin_trends)
+    # ,on=['feat1','feat2'], how='left
 
     return results_df
 
