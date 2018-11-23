@@ -4,7 +4,7 @@ We use Model-View-Controller (MVC) as our system architecture. Flask is used as 
 
 View
 ##########
-In the view, the user uploads data file and our application sends data to backend server. 
+In the view, the user uploads data file and our application sends data to backend server through the Ajax.data. 
 User can uploads csv files from any local directory to our application.
 D3 graphs on the front end are generated in different js files.
 The JSON result from the controller is parsed to the js variable and the result will be shown in the D3 graphs.
