@@ -1,8 +1,9 @@
 import numpy as np
 import pandas as pd
-import sklearn as skl
+from sklearn import mixture
+import itertools
 
-clustering_techniques = {'dpgmm': lambda df,var_list : skl.mixture.BayesianGaussianMixture(n_components=20,
+clustering_techniques = {'dpgmm': lambda df,var_list : mixture.BayesianGaussianMixture(n_components=20,
                                 covariance_type='full').fit(df[var_list]).predict(df[var_list])}
 
 
@@ -22,12 +23,43 @@ def add_cluster(data_df,view,name):
     """
 
     #cluster the data_df
-
-
+    clust_assignments = clustering_techniques[name](data_df,view)
 
     #create column_name
     col_name = '_'.join(['_'.join(view),name])
     data_df[col_name] = clust_assignments
+
+    return data_df
+
+def generate_views(data_df,n_dim):
+    """
+    add a column to a DataFrame gernated by a clustering solution
+
+    Parameters
+    -----------
+    data_df : DataFrame
+        tidy data to cluster and augment
+    """
+    view_vars = list(data_df.select_dtypes(include=['float64']))
+
+    # select all groups of the desired length, convert to list
+    view_list = [list(v) for v in itertools.combinations(view_vars,n_dim)]
+
+    return view_list
+
+def add_all_dpgmm(data_df,n_dim):
+    """
+    add dpgmm clusters for all ndimviews of continuous variables
+
+    Parameters
+    -----------
+    data_df : DataFrame
+        tidy data to cluster and augment
+    """
+    view_list =  generate_views(data_df,n_dim)
+
+    for view in view_list:
+        data_df = add_cluster(data_df,view,'dpgmm')
 
     return data_df
 
@@ -69,7 +101,6 @@ def add_quantile(data_df,vars_in,q,q_names=None):
     # get quantile cutoffs for the columns of interest
     quantile_df = data_df[var_list].quantile(q)
 
-    # create names
 
     # transform to labels for merging
     q_l = q.copy()
@@ -77,6 +108,7 @@ def add_quantile(data_df,vars_in,q,q_names=None):
     q_l.insert(0,0)
     q_u.append(1)
 
+    # create names
     min_names = {col:col+'_min' for col in var_list}
     max_names = {col:col+'_max' for col in var_list}
 

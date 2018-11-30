@@ -263,7 +263,7 @@ def get_lin_trends(data_df,regression_vars,corr_name):
 
     return reg_df
 
-def get_rate_trends(data_df,groupby_vars,corr_name):
+def get_rate_rank_trends(data_df,rate_vars,corr_name):
     """
     return a DataFrame of the rate rankings in a DataFrame
 
@@ -271,24 +271,72 @@ def get_rate_trends(data_df,groupby_vars,corr_name):
     -----------
     data_df : DataFrame
         tidy data
+    rate_vars : list of tuples
+        list of (outcome, protected) pairs for computing rates
     """
 
     # groupby
-
+    result_tab = []
     # compute means
+    for cur_rate in rate_vars:
+        cur_outcome = cur_rate[0]
+        cur_protected_explanatory = cur_rate[1:]
+        outcome_df = data_df.groupby(cur_protected_explanatory)[cur_outcome].mean()
 
+        if len(cur_protected_explanatory) ==1:
+            # aggregate trend
+            # sort by the outcome return the protected
+            rank_list = outcome_df.reset_index().sort_values(by=cur_outcome,ascending=False)[cur_protected_explanatory].values
+            # result_row['feat1'] = cur_outcome
+            # result_row['feat2'] = cur_protected_explanatory
+            # result_row['trend_type'] = 'rate'
+            # result_row['agg_trend'] = rank_list
+            result_row = [cur_outcome,cur_protected_explanatory,'rate',rank_list]
+        else:
+            #subgroup trend
+            # split vars
+            pro = cur_protected_explanatory[0]
+            exp = cur_protected_explanatory[1]
+            # get the vars for the split
+            exp_groups = list(set(data_df[exp]))
+
+            # rearrange to have one column per, then retrun list of ranked lists
+            rank_list = [outcome_df.unstack().reset_index().sort_values(by=exp_lev,ascending=False)[pro]
+                        for exp_lev in exp_groups]
+
+            # create one row per
+            result_row = [[cur_outcome,cur_protected_explanatory,'rate',exp,exp_l,r_l]
+                            for exp_l,r_l in zip(exp_groups, rank_list)]
+        # per_group = df_rate.groupby(['protected','explanatory']).mean().unstack()
+
+        result_tab.extend(result_row)
+
+    # make DF from lists
+    if len(cur_protected_explanatory) ==1:
+        col_header = ['feat1','feat2','trend_type','agg_trend']
+    else:
+        col_header = ['feat1','feat2','trend_type','group_feat',
+                            'subgroup','subgroup_trend']
+
+    results_df = pd.DataFrame(data = result_tab,columns = col_header)
+
+    return result_df
 
     # cannot layer them, must et list of all combos?
+
+    return results_df
+
 
 get_trend_vars = {'pearson_corr':lambda df: list(df.select_dtypes(include=['float64'])),
               'rate': lambda df: list(data_df.select_dtypes(include=['bool'])) }
 get_trend_funcs = {'pearson_corr':get_correlations,
-                'rate':get_rate_trends}
+                'rate':get_rate_rank_trends}
 
-def get_subgroup_trends(data_df,trend_types,groupby_vars=None):
+def get_subgroup_trends_1lev(data_df,trend_types,groupby_vars=None):
     """
     find subgroup and aggregate trends in the dataset, return a DataFrame that
     contains information necessary to filter for SP and relaxations
+    computes for 1 level grouby (eg correlation and linear trends)
 
     Parameters
     -----------
@@ -326,15 +374,16 @@ def get_subgroup_trends(data_df,trend_types,groupby_vars=None):
     results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
     # create empty lists
-    all_lin_trends = []
+    all_trends = []
     subgroup_trends = []
 
     for td in trend_dict_list:
         trend_func = td['func']
         trend_vars = td['vars']
         # Tabulate aggregate statistics
-        agg_lin_trends = trend_func(data_df,trend_vars,'agg_trend')
+        agg_trends = trend_func(data_df,trend_vars,'agg_trend')
 
+        all_trends.append(agg_trends)
 
         # iterate over groupby attributes
         for groupbyAttr in groupby_vars:
@@ -344,25 +393,94 @@ def get_subgroup_trends(data_df,trend_types,groupby_vars=None):
             # get subgoup trends
             curgroup_corr = trend_func(cur_grouping,trend_vars,'subgroup_trend')
 
-            # check rates
+            # append
+            subgroup_trends.append(curgroup_corr)
+
+
+
+
+    # condense and merge all trends with subgroup trends
+    all_trends = pd.concat(all_trends)
+    subgroup_trends = pd.concat(subgroup_trends)
+    results_df = pd.merge(subgroup_trends,all_trends)
+    # ,on=['feat1','feat2'], how='left
+
+    return results_df
+
+def get_subgroup_trends_2lev(data_df,trend_types,groupby_vars=None):
+    """
+    find subgroup and aggregate trends in the dataset, return a DataFrame that
+    contains information necessary to filter for SP and relaxations
+    for 2 levels og groupby (eg rate trends)
+
+    Parameters
+    -----------
+    data_df : DataFrame
+        data to find SP in, must be tidy
+    trend_types: list of strings or list of dicts
+        info on what trends to compute and the variables to use, dict is of form
+    {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
+    groupby_vars : list of strings
+        column names to use as grouping variables
+    trend_vars : list of strings
+        column names to use in regresison based trends
+    rate_vars : list of strings
+        column names to use in rate based trends
+    trend_func : function handle
+        to compute the trend
+    """
+
+    # if not specified, detect continous attributes and categorical attributes
+    # from dataset
+    if groupby_vars is None:
+        groupby_data = data_df.select_dtypes(include=['object','int64'])
+        groupby_vars = list(groupby_data)
+
+    if type(trend_types[0]) is str:
+        # create dict
+        trend_dict_list = [{'name':trend,
+                        'vars':get_trend_vars[trend](data_df),
+                        'func':get_trend_funcs[trend]} for trend in trend_types]
+    else:
+        # use provided
+        trend_dict_list = trend_types
+
+    # prep the result df to add data to later
+    results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
+
+    # create empty lists
+    all_trends = []
+    subgroup_trends = []
+
+    for td in trend_dict_list:
+        trend_func = td['func']
+        trend_vars = td['vars']
+        # Tabulate aggregate statistics
+        agg_trends = trend_func(data_df,trend_vars,'agg_trend')
+
+        all_trends.append(agg_trends)
+
+        # iterate over groupby attributes
+        for groupbyAttr in groupby_vars:
+            # add groupbyAttr to list of splits
+            trend_vars_gb = [tv.append(groupbyAttr) for tv in trend_vars]
+
+            # get subgoup trends
+            curgroup_corr = trend_func(cur_grouping,trend_vars_gb,'subgroup_trend')
 
             # append
             subgroup_trends.append(curgroup_corr)
 
 
-        all_lin_trends.append(agg_lin_trends)
 
-    # merge all trends with subgroup trends
-    all_lin_trends = pd.concat(all_lin_trends)
-    print(all_lin_trends)
+
+    # condense and merge all trends with subgroup trends
+    all_trends = pd.concat(all_trends)
     subgroup_trends = pd.concat(subgroup_trends)
-    print(subgroup_trends)
-    results_df = pd.merge(subgroup_trends,all_lin_trends)
+    results_df = pd.merge(subgroup_trends,all_trends)
     # ,on=['feat1','feat2'], how='left
 
     return results_df
-
-
 
 
 
