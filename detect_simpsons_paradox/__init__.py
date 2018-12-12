@@ -18,4 +18,4 @@ __all__ = ['detect_simpsons_paradox','mark_designed_rows', 'compute_angle',
             'add_slope_sp','compute_slope_all','add_angle_col','count_sp_views',
             'add_slope_cols','get_SP_colored_views','add_view_count',
             'add_weighted','get_subgroup_trends_1lev','add_all_dpgmm',
-            'get_subgroup_trends_2lev','add_quantile']
+            'get_subgroup_trends_2lev','add_quantile','get_correlations']

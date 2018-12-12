@@ -86,7 +86,7 @@ def add_quantile(data_df,vars_in,q,q_names=None):
     """
 
     # make sure var is a list
-    if type(var) == list:
+    if type(vars_in) == list:
         var_list = vars_in
     else:
         var_list = [vars_in]
@@ -120,17 +120,19 @@ def add_quantile(data_df,vars_in,q,q_names=None):
     # get quantile tops and rename to _max
     qu_df = data_df[var_list].quantile(q_u).rename(columns= max_names)
     # round up the last interval's upper limit for <=, < ranges
-    q_u.iloc[-1] = np.ceil(q_u.iloc[-1])
+    qu_df.iloc[-1] = np.ceil(qu_df.iloc[-1])
     # rename index of uppers for concat to work properly
     qu_df = qu_df.rename(index={u:l for l,u in zip(q_l,q_u)})
 
-    if q_names is None:
-        q_df['quantile_name'] = [' - '.join([str(l),str(u)]) for l,u in zip(q_l,q_u)]
-    else:
-        q_df['quantile_name'] = q_names
+
 
     # concatenate uppers and lwoers
     q_intervals = pd.concat([ql_df,qu_df],axis=1)
+
+    if q_names is None:
+        q_intervals['quantile_name'] = [' - '.join([str(l),str(u)]) for l,u in zip(q_l,q_u)]
+    else:
+        q_intervals['quantile_name'] = q_names
 
     # iterate over vars
     for var in var_list:
@@ -175,7 +177,7 @@ def interval_merge(data_df, interval_df,interval_column_key):
     label_col = interval_column_key['label']
 
     # create piecewise function
-    input_domain = np.linspace(np.min(interval_df[start_col]),np.max)
+    input_domain = np.linspace(np.min(interval_df[start_col]),np.max(interval_df[start_col]))
     assign_interval_label = np.piecewise()
 
     # evaluate a row and return true if val in [start,end)

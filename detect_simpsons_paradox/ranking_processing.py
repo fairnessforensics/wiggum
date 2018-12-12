@@ -223,7 +223,7 @@ def get_SP_colored_views(results_df):
     return list(sp_colored_views_unique)
 
 def count_sp_views(results_df, colored= False, portions =False,data_df= None,
-                    groupby_count =False,append_counts=False):
+                    groupby_count =False, append_counts=False):
     """
     return the count of SP occurences for a given view or colored view,
     optionally also count the share of possible sp occurences that were found
@@ -395,9 +395,11 @@ def rank_occurences_by_view(result_df,data_df=None,view_score=None,occurence_sco
 
     if view_score is None:
         # add slope
+        view_score = ''
 
     if occurence_score is None:
         # add slope
+        occurence_score = ''
 
     if not(view_score in results_df.columns):
         # then compute and augmented
