@@ -57,7 +57,7 @@ def upper_triangle_df(matrix):
     return result_df
 
 
-def isReverse(a, b):
+def isReverse(a, b, threshold):
     """
     Reversal is the logical opposite of signs matching.
 
@@ -65,6 +65,7 @@ def isReverse(a, b):
     -----------
     a : number(int or float)
     b : number(int or float)
+    threshold: float
 
     Returns
     --------
@@ -72,7 +73,12 @@ def isReverse(a, b):
                     If False returns, a and b have the same sign.
     """
 
-    return not (np.sign(a) == np.sign(b))
+    if ((abs(a) > threshold) and (abs(b) > threshold)):
+        result = not (np.sign(a) == np.sign(b))
+    else:
+        result = False
+
+    return result
 
 def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
     """
@@ -98,9 +104,10 @@ def cluster_augment_data_dpgmm(df,continuousAttrs_labels):
 
     return df
 
-def detect_simpsons_paradox(latent_df,
+def detect_simpsons_paradox(latent_df, 
+                            threshold,
                             continuousAttrs_labels=None,
-                            groupbyAttrs_labels=None ):
+                            groupbyAttrs_labels=None):
     """
     A detection function which can detect Simpson Paradox happened in the data's
     subgroup.
@@ -110,6 +117,8 @@ def detect_simpsons_paradox(latent_df,
     latent_df : dataframe
         data organized in a pandas dataframe containing both categorical
         and continuous attributes.
+    threshold: float
+        the threshold for the SP from the threshold slider in the user control panel         
     continuousAttrs_labels : list [None]
         list of continuous attributes by name in dataframe, if None will be
         detected by all float64 type columns in dataframe
@@ -160,10 +169,10 @@ def detect_simpsons_paradox(latent_df,
 
             # Compare the signs of each element in subgroup to the correlation for all of the data
             # Get the index for reverse element
-            index_list = [i for i, (a,b) in enumerate(zip(all_corr_element, subgroup_corr_elements)) if isReverse(a, b)]
+            index_list = [i for i, (a,b) in enumerate(zip(all_corr_element, subgroup_corr_elements)) if isReverse(a, b, threshold)]
 
             # Get reverse elements' correlation values
-            reverse_list = [j for i, j in zip(all_corr_element, subgroup_corr_elements) if isReverse(i, j)]
+            reverse_list = [j for i, j in zip(all_corr_element, subgroup_corr_elements) if isReverse(i, j, threshold)]
 
             if reverse_list:
                 # Retrieve attribute information from all_corr_df
