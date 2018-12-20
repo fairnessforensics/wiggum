@@ -480,7 +480,6 @@ var clickRateMatrixCell = function() {
 	var allsvg = d3.select(container);
 	allsvg.selectAll(".cell").classed("clicked", false);
 	var clickFlg = d3.select(this).classed("clicked", true);
-
 	if (clickFlg) { clickFlg.call(prepareDetail); }
 };
 
@@ -501,6 +500,7 @@ function prepareDetail() {
 
 	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
 				index: d.index, protectedAttr: d.protectedAttr};
+
 	//console.log(csvData);
 	//console.log(vars);
 	updateSlopeGraph(vars);
@@ -510,6 +510,7 @@ function prepareDetail() {
 var updateSlopeGraph = function(vars) {
 	d3.select("#slopegraph").selectAll('svg').remove();
 	//console.log(arraySlopeGraph);
+
 
 	DrawSlopeGraph(
 	{

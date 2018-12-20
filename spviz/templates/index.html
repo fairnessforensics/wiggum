@@ -6,7 +6,9 @@
 	<title>Correlation Matrix</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <script>
         var divs = ["container", "tree", "scatterplot"];
         var visibleDivId = null;
@@ -40,6 +42,7 @@
             }
           }
         }
+
 
         $(function() {
             $('#upload-file-btn').click(function() {
@@ -103,10 +106,12 @@
 <body class="center">
                <form id="upload-file" method="post" enctype="multipart/form-data"> 
    <!--  <form action="/" method="post" role="form">   -->
+
     <div class= "row">
         <div id="extra">
             <br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
             <!--
             <input type="file" onchange="loadFile()" />
             -->
@@ -120,6 +125,7 @@
             <input name="file" type="file" style = "width:170px">
             <button id="upload-file-btn" type="button" value="upload">Upload</button>
             &nbsp;&nbsp;&nbsp;
+
             <a href="#" onclick="toggleVisibility('container')">Linear Layout</a>
             &nbsp;&nbsp;&nbsp;
             <div id="extra_regression" style="display:inline-block;" >
@@ -139,6 +145,7 @@
         <br/><br/>
         <div style="display:inline-block; float:left" id="legend"></div>
     </div>
+
            <!--
     <div style="display:inline-block;" id="categoricalVars">
         <select id="categoricalVarsSelect">
@@ -151,14 +158,17 @@
     </div>
     <div style="display:none; float:left" id="container">
     </div>
+
     <div style="display:none; float:left" id="tree"></div>
     <div class="vl"></div>
     <div id="slopeLabel"></div>
     <div style="display:none; float:left" id="scatterplot"></div>
     <div id="slopegraph"></div>
     <div id="groupedbarchart"></div>
+
     <script src="{{ url_for('static', filename='js/main1.js') }}"></script>
     <script src="{{ url_for('static', filename='js/newmain25.js') }}"></script>
+
     <script src="{{ url_for('static', filename='js/tree.js') }}"></script>
     <script src="{{ url_for('static', filename='js/scatterplot.js') }}"></script>
     <script src="{{ url_for('static', filename='js/correlationMatrix.js') }}"></script>
@@ -168,5 +178,7 @@
     <script src="{{ url_for('static', filename='js/slopegraph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/groupedbarchart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rankingListbox.js') }}"></script>
+
     </form>
+
 </body>

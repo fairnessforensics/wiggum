@@ -2,12 +2,14 @@
 var margin = {top: 30, right: 30, bottom: 30, left: 30},
 	width = 360,
 	height = 360;	
+
 var scatterplot;
 //var scatterplot = d3.select("div#scatterplot")
 //	.append("svg")
 //	.attr("width", width + margin.left + margin.right)
 //	.attr("height", height + margin.top + margin.bottom)									
 //	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 // Draw frame
 var drawFrame = function() {
@@ -225,6 +227,7 @@ function getCategoricalAttrs(data){
 	return categoricalAttrs;
 }
 
+
 function createScatterplot(data) {
 
 	scatterplot = d3.select("div#scatterplot")
@@ -327,13 +330,16 @@ function createScatterplot(data) {
 
 }
 
+
 var reader = new FileReader();  
 var file;
 
 function loadFile() {      
 	d3.selectAll("svg").remove();
 	file = document.querySelector('input[type=file]').files[0];    
+
 	openFile();
+
 	reader.addEventListener("load", openFile, false);
 	if (file) {
 		reader.readAsText(file);
@@ -411,6 +417,7 @@ function calcLinear(data, x, y, minX, maxX){
 
 var UpdateMatrixFormat = function(matrix, vars, category) {
 
+
 	if (autoDetectFlag == 0 || autoDetectResult == null) {
 		matrix.forEach(function(row, i) {
 			row.forEach(function(cell, j) {
@@ -429,10 +436,12 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 		matrix.forEach(function(row, i) {
 			row.forEach(function(cell, j) {
 				matrix[i][j] = {
+
 					rowVar: vars[i],
 					colVar: vars[j],
 					value: cell,
 					categoryAttr: category.groupby,
+
 					category: category.value,
 					autoDetectFlg: 0 
 				};
@@ -458,6 +467,7 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 		});		
 	}
 
+
 	return matrix;
 };
 
@@ -478,6 +488,7 @@ function updateScatter() {
 
 function openFile(){
 
+
 	//d3.csv("iris.csv", function(error, data) {
 
 	d3.csv("/static/data/syntheticdata.csv", function(error, data) {
@@ -486,12 +497,13 @@ function openFile(){
 
 		csvData = data;	
 		//console.log(csvData);
+
 		// Reset color after removed by loading new file
 		color = d3.scale.category10();
 
 		conAttrs = getcontinousAttrs(data);
 		catAttrs = getCategoricalAttrs(data);
-		//console.log(catAttrs);
+
 
 		// Categorical attributes' value list
 		categoryValuesList = [];
