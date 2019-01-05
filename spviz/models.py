@@ -12,7 +12,7 @@ def getContinuousVariableName(data_df):
     -------------------
     data_df: DataFrame
 
-    Returens
+    Returns
     -------------------
     continuousAttrs_labels: list
             A list has all the names for continuous variables
@@ -32,7 +32,7 @@ def getCategoricalVariableName(data_df):
     -------------------
     data_df: DataFrame
 
-    Returens
+    Returns
     -------------------
     list: list
             A list has all the names for categorical variables
@@ -50,7 +50,7 @@ def getBinaryVariableName(data_df):
     -------------------
     data_df: DataFrame
 
-    Returens
+    Returns
     -------------------
     list: list
             A list has all the names for binary variables
