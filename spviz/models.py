@@ -99,7 +99,7 @@ def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
 
 def auto_detect(df, threshold):
     print("===============auto======================")
-    result = dsp.detect_simpsons_paradox(df, threshold)
+    result = dsp.detect_simpsons_paradox_threshold(df, threshold)
     print(result)
     return result
 
