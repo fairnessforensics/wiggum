@@ -10,3 +10,6 @@ docs/source/notebooks/.ipynb_checkpoints
 *.pyc
 
 env/
+
+#binaries
+*.DS_Store
