@@ -1,7 +1,7 @@
 function DrawTree(options) {
 	var margin = {top: 30, right: 30, bottom: 10, left: 230},
 		width = 560,
-		height = 500;
+		height = 360;
 
 	var data = options.data,
 		matrixAll = options.matrixAll,

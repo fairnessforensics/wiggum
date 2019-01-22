@@ -447,15 +447,15 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 				};
 
 				if (!isEmpty(autoDetectResult)) {
-					var len = Object.keys(autoDetectResult.allCorr).length
+					var len = Object.keys(autoDetectResult.agg_trend).length
 					for (var k = 0; k < len; k++){
-						if ((autoDetectResult.attr1[k] == vars[i] &&
-							autoDetectResult.attr2[k] == vars[j] &&
-							autoDetectResult.groupbyAttr[k] == category.groupby &&
+						if ((autoDetectResult.feat1[k] == vars[i] &&
+							autoDetectResult.feat2[k] == vars[j] &&
+							autoDetectResult.group_feat[k] == category.groupby &&
 							autoDetectResult.subgroup[k] == category.value) ||
-							(autoDetectResult.attr1[k] == vars[j] &&
-								autoDetectResult.attr2[k] == vars[i] &&
-								autoDetectResult.groupbyAttr[k] == category.groupby &&
+							(autoDetectResult.feat1[k] == vars[j] &&
+								autoDetectResult.feat2[k] == vars[i] &&
+								autoDetectResult.group_feat[k] == category.groupby &&
 								autoDetectResult.subgroup[k] == category.value)
 							) {
 							matrix[i][j].autoDetectFlg = 1
@@ -484,6 +484,7 @@ function updateScatter() {
 		categoryAttr: d.categoryAttr, category: d.category};
 
 	updateScatterplot(csvData, vars);
+	updateTabulate(vars);
 }
 
 function openFile(){

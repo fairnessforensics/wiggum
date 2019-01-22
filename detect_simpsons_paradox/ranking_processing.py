@@ -300,7 +300,7 @@ def count_sp_views(results_df, colored= False, portions =False,data_df= None,
         count_df['portions'] =  count_df['SP_subgroups']/levels_per_sp_view
 
     if append_counts:
-        return_df = add_view_count(result_df,count_df,colored)
+        return_df = add_view_count(results_df,count_df,colored)
     else:
         return_df = count_df
 
@@ -401,7 +401,7 @@ def rank_occurences_by_view(result_df,data_df=None,view_score=None,occurence_sco
         # add slope
         occurence_score = ''
 
-    if not(view_score in results_df.columns):
+    if not(view_score in result_df.columns):
         # then compute and augmented
         # add slope
         result_df = add_slope_cols(data_df,result_df)

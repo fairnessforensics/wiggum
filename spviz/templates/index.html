@@ -68,8 +68,13 @@
                         for (var i = 0; i < data.length; i++) {
                             $categoricalVarsSelect.append('<option id=' + data[i] + ' value=' + data[i] + '>' + data[i] + '</option>');
                         }
-                        //console.log(data)
+                        // Get data from controller return data
                         drawGraph(data);
+
+                        // Display info table
+                        tableRecords = JSON.parse(data.table)
+                        d3.select("#table").style("display", "inline-block");
+                        tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 'subgroup', 'subgroup_slope','subgroup_trend']);
                     },
                 });
             });
@@ -86,13 +91,18 @@
                     data: {'action' : action, 'threshold': threshold, 'sptype': sp_type},     
                     type: 'POST',      
                     success: function(data) { 
+                        // Get data from controller return data
                         autoDetectResult = JSON.parse(data.result)
-
                         autoDetectFlag = 1;
-                        //console.log(autoDetectResult)
-                        //console.log(Object.keys(autoDetectResult.allCorr).length)
+
                         if (selectTypeValue == "Regression") {
                             updateContainer();
+
+                            // Display info table
+                            tableRecords = JSON.parse(data.table)
+                            // remove existing table
+                            d3.select("#table").selectAll('table').remove();
+                            tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 'subgroup', 'subgroup_slope','subgroup_trend']);
                         } else {
                             updateRateSPContainer();
                         }
@@ -160,14 +170,15 @@
     </div>
 
     <div style="display:none; float:left" id="tree"></div>
+    <div style="display:none; float:left" id="table"></div>
     <div class="vl"></div>
     <div id="slopeLabel"></div>
     <div style="display:none; float:left" id="scatterplot"></div>
     <div id="slopegraph"></div>
     <div id="groupedbarchart"></div>
 
-    <script src="{{ url_for('static', filename='js/main1.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/newmain25.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/newmain.js') }}"></script>
 
     <script src="{{ url_for('static', filename='js/tree.js') }}"></script>
     <script src="{{ url_for('static', filename='js/scatterplot.js') }}"></script>
@@ -178,7 +189,7 @@
     <script src="{{ url_for('static', filename='js/slopegraph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/groupedbarchart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rankingListbox.js') }}"></script>
-
+    <script src="{{ url_for('static', filename='js/table.js') }}"></script>
     </form>
 
 </body>
