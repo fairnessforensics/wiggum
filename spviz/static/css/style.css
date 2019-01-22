@@ -169,12 +169,22 @@ table {
   table {
     margin: auto;
   }
+
   table, td, th {
     padding: 7px;
     text-align: center;
     border: 1px solid rgb(8,48,107);
   }
+  
   th {
     background-color: rgb(8,81,156);
     color: white;
+  }
+
+  th.aes:after {
+    content: "\21E9";
+  }
+  
+  th.des:after {
+    content: "\21E7";
   }

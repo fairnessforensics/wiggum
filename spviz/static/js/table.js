@@ -1,17 +1,31 @@
 function tabulate(data, columns) {	
 	
-	var table = d3.select("div#table").append('table')
-	var thead = table.append('thead')
-	var	tbody = table.append('tbody');
+	var table = d3.select("div#table").append('table');
+	var thead = table.append('thead');
+	var sortAscending = true;
 
 	// append the header row
-	thead.append('tr')
+	var thead = table.append('thead').append('tr')
 	  .selectAll('th')
 	  .data(columns).enter()
 	  .append('th')
 	  .style("font-size", "9px")
-		.text(function (column) { return column; });
+		.text(function (column) { return column; })
+		.on('click', function (d) {
+			thead.attr('class', 'th');
+			if (sortAscending) {
+				rows.sort(function(a, b) {return d3.ascending(b[d], a[d]);  });
+				sortAscending = false;
+				this.className = 'aes';
+				} 
+		else {
+				rows.sort(function(a, b) { return d3.descending(b[d], a[d]); });
+				sortAscending = true;
+				this.className = 'des';
+				}
+	});
 
+	var	tbody = table.append('tbody');
 	// create a row for each object in the data
 	var rows = tbody.selectAll('tr')
 	  .data(data)
