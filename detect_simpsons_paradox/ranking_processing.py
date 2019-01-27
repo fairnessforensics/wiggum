@@ -81,8 +81,11 @@ def add_slope_cols(data_df, result_df):
     """
 
     # find sp variables from result_df
-    all_sp_vars = set(np.append(result_df.feat1.values,
-                                result_df.feat2.values))
+    all_sp_vars_dupes = np.append(result_df.feat1.values,
+                                result_df.feat2.values)
+    # order preserving and no duplicates
+    all_sp_vars = []
+    [all_sp_vars.append(i) for i in all_sp_vars_dupes if not all_sp_vars.count(i)]
 
     result_df = add_slope_sp(data_df,result_df)
 
