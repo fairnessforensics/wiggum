@@ -132,7 +132,7 @@ def detect_simpsons_paradox(data_df,
     all_corr_element = all_corr_df['value'].values
 
     # Define an empty dataframe for result
-    results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
+    result_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
     # Loop by group-by attributes
     for groupbyAttr in groupby_vars:
@@ -318,17 +318,17 @@ def get_rate_rank_trends(data_df,rate_vars,corr_name):
         col_header = ['feat1','feat2','trend_type','group_feat',
                             'subgroup','subgroup_trend']
 
-    results_df = pd.DataFrame(data = result_tab,columns = col_header)
+    result_df = pd.DataFrame(data = result_tab,columns = col_header)
 
     return result_df
 
     # cannot layer them, must et list of all combos?
 
-    return results_df
+    return result_df
 
 
 get_trend_vars = {'pearson_corr':lambda df: list(df.select_dtypes(include=['float64'])),
-              'rate': lambda df: list(data_df.select_dtypes(include=['bool'])) }
+              'rate': lambda df: list(df.select_dtypes(include=['bool'])) }
 get_trend_funcs = {'pearson_corr':get_correlations,
                 'rate':get_rate_rank_trends}
 
@@ -371,7 +371,7 @@ def get_subgroup_trends_1lev(data_df,trend_types,groupby_vars=None):
         trend_dict_list = trend_types
 
     # prep the result df to add data to later
-    results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
+    result_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
     # create empty lists
     all_trends = []
@@ -402,10 +402,10 @@ def get_subgroup_trends_1lev(data_df,trend_types,groupby_vars=None):
     # condense and merge all trends with subgroup trends
     all_trends = pd.concat(all_trends)
     subgroup_trends = pd.concat(subgroup_trends)
-    results_df = pd.merge(subgroup_trends,all_trends)
+    result_df = pd.merge(subgroup_trends,all_trends)
     # ,on=['feat1','feat2'], how='left
 
-    return results_df
+    return result_df
 
 def get_subgroup_trends_2lev(data_df,trend_types,groupby_vars=None):
     """
@@ -446,7 +446,7 @@ def get_subgroup_trends_2lev(data_df,trend_types,groupby_vars=None):
         trend_dict_list = trend_types
 
     # prep the result df to add data to later
-    results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
+    result_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
     # create empty lists
     all_trends = []
@@ -477,10 +477,10 @@ def get_subgroup_trends_2lev(data_df,trend_types,groupby_vars=None):
     # condense and merge all trends with subgroup trends
     all_trends = pd.concat(all_trends)
     subgroup_trends = pd.concat(subgroup_trends)
-    results_df = pd.merge(subgroup_trends,all_trends)
+    result_df = pd.merge(subgroup_trends,all_trends)
     # ,on=['feat1','feat2'], how='left
 
-    return results_df
+    return result_df
 
 
 
