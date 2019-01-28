@@ -1,7 +1,8 @@
 import detect_simpsons_paradox as dsp
 from itertools import combinations
 import pandas as pd
-
+import sys
+import logging
 # Your models here.
 
 def getContinuousVariableName(data_df):
@@ -12,7 +13,7 @@ def getContinuousVariableName(data_df):
     -------------------
     data_df: DataFrame
 
-    Returens
+    Returns
     -------------------
     continuousAttrs_labels: list
             A list has all the names for continuous variables
@@ -32,7 +33,7 @@ def getCategoricalVariableName(data_df):
     -------------------
     data_df: DataFrame
 
-    Returens
+    Returns
     -------------------
     list: list
             A list has all the names for categorical variables
@@ -50,7 +51,7 @@ def getBinaryVariableName(data_df):
     -------------------
     data_df: DataFrame
 
-    Returens
+    Returns
     -------------------
     list: list
             A list has all the names for binary variables
@@ -97,11 +98,52 @@ def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
 
     return correlationMatrixSubgroup, groupby_info
 
-def auto_detect(df, threshold):
+def auto_detect(df):
+    """
+    Auto detect SP
+    Parameters
+    -----------
+    df : DataFrame
+        data organized in a pandas dataframe containing both categorical
+        and continuous attributes.
+    Returns
+    --------
+    result : dataframe
+        a dataframe with SP info
+    """
     print("===============auto======================")
-    result = dsp.detect_simpsons_paradox(df, threshold)
-    print(result)
+    #result = dsp.get_subgroup_trends_1lev(df,['pearson_corr'])
+    result = dsp.detect_simpsons_paradox(df)
+
+    result = dsp.add_slope_cols(df,result)
+    result = dsp.add_angle_col(result)
+
+    print("===============auto end======================")
     return result
+
+def getInfoTable(df):
+    """
+    Auto detect SP
+    Parameters
+    -----------
+    df : DataFrame
+        data organized in a pandas dataframe containing both categorical
+        and continuous attributes.
+    Returns
+    --------
+    result : dataframe
+        a DataFrame that contains information for 1 level grouby
+    """
+    print("===============Table======================")
+    result = dsp.get_subgroup_trends_1lev(df,['pearson_corr'])
+    #logging.basicConfig(format='%(asctime)s %(levelname)s:%(name)s %(message)s', level=logging.DEBUG)
+    #print(result, file=sys.stderr)
+    #logging.info("test")
+    result = dsp.add_slope_cols(df,result)
+    result = dsp.add_angle_col(result)
+    print(result)
+    print("===============Table end======================")
+    return result    
 
 def getRatioRateAll(data_df, target_var, grouping_vars):
     """

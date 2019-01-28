@@ -31,6 +31,7 @@ var rateAllSlopeGraph = [];
 var rateAllKeySlopeGraph = [];
 var rateSubSlopeGraph = [];
 var rateSubKeySlopeGraph = [];
+var tableRecords;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["Regression", "Rate"];

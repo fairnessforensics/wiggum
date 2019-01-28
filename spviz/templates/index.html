@@ -6,7 +6,9 @@
 	<title>Correlation Matrix</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <script>
         var divs = ["container", "tree", "scatterplot"];
         var visibleDivId = null;
@@ -41,6 +43,7 @@
           }
         }
 
+
         $(function() {
             $('#upload-file-btn').click(function() {
                 var form_data = new FormData($('#upload-file')[0]);
@@ -65,8 +68,13 @@
                         for (var i = 0; i < data.length; i++) {
                             $categoricalVarsSelect.append('<option id=' + data[i] + ' value=' + data[i] + '>' + data[i] + '</option>');
                         }
-                        //console.log(data)
+                        // Get data from controller return data
                         drawGraph(data);
+
+                        // Display info table
+                        tableRecords = JSON.parse(data.table)
+                        d3.select("#table").style("display", "inline-block");
+                        tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 'subgroup', 'subgroup_slope','subgroup_trend']);
                     },
                 });
             });
@@ -83,13 +91,18 @@
                     data: {'action' : action, 'threshold': threshold, 'sptype': sp_type},     
                     type: 'POST',      
                     success: function(data) { 
+                        // Get data from controller return data
                         autoDetectResult = JSON.parse(data.result)
-
                         autoDetectFlag = 1;
-                        //console.log(autoDetectResult)
-                        //console.log(Object.keys(autoDetectResult.allCorr).length)
+
                         if (selectTypeValue == "Regression") {
                             updateContainer();
+
+                            // Display info table
+                            tableRecords = JSON.parse(data.table)
+                            // remove existing table
+                            d3.select("#table").selectAll('table').remove();
+                            tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 'subgroup', 'subgroup_slope','subgroup_trend']);
                         } else {
                             updateRateSPContainer();
                         }
@@ -103,10 +116,12 @@
 <body class="center">
                <form id="upload-file" method="post" enctype="multipart/form-data"> 
    <!--  <form action="/" method="post" role="form">   -->
+
     <div class= "row">
         <div id="extra">
             <br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
             <!--
             <input type="file" onchange="loadFile()" />
             -->
@@ -120,6 +135,7 @@
             <input name="file" type="file" style = "width:170px">
             <button id="upload-file-btn" type="button" value="upload">Upload</button>
             &nbsp;&nbsp;&nbsp;
+
             <a href="#" onclick="toggleVisibility('container')">Linear Layout</a>
             &nbsp;&nbsp;&nbsp;
             <div id="extra_regression" style="display:inline-block;" >
@@ -135,30 +151,35 @@
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
-        <div style="display:inline-block; float:left" id ="slider" class="slider"></div>
+        <div id ="slider" class="slider"></div>
         <br/><br/>
-        <div style="display:inline-block; float:left" id="legend"></div>
+        <div id="legend"></div>
     </div>
+
            <!--
     <div style="display:inline-block;" id="categoricalVars">
         <select id="categoricalVarsSelect">
             <option id='all' value='all'>ALL</option>
         </select>
     </div>            -->
-    <div style="display:inline-block; float:left" id="rankingdiv">
+    <div id="rankingdiv">
             <select multiple id ="ranking"></select>      
             <button id="autodetect" type="button" name="autodetect" value="autodetect">AutoDetect</button>  
     </div>
     <div style="display:none; float:left" id="container">
     </div>
+
     <div style="display:none; float:left" id="tree"></div>
+    <div style="display:none; float:left" id="table"></div>
     <div class="vl"></div>
     <div id="slopeLabel"></div>
     <div style="display:none; float:left" id="scatterplot"></div>
     <div id="slopegraph"></div>
     <div id="groupedbarchart"></div>
-    <script src="{{ url_for('static', filename='js/main1.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/newmain25.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/newmain.js') }}"></script>
+
     <script src="{{ url_for('static', filename='js/tree.js') }}"></script>
     <script src="{{ url_for('static', filename='js/scatterplot.js') }}"></script>
     <script src="{{ url_for('static', filename='js/correlationMatrix.js') }}"></script>
@@ -168,5 +189,7 @@
     <script src="{{ url_for('static', filename='js/slopegraph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/groupedbarchart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rankingListbox.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/table.js') }}"></script>
     </form>
+
 </body>

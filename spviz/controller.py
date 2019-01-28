@@ -43,9 +43,13 @@ def main():
                 #jsonStr = json.dumps(correlationMatrixSubgroup)
                 print(groupby_info)
 
+                # generate table
+                tableResult = models.getInfoTable(df)
+
                 #return jsonify({'categoricalVars': categoricalVars, 'continousVars': continuousVars, 
                 #                'corrAll': corrAll.to_json(), 'corrSub': json.dumps(correlationMatrixSubgroup)})
                 return jsonify({'csv_data':csv_data,
+                                'table': tableResult.to_json(orient='records'),
                                 'categoricalVars': categoricalVars, 
                                 'continousVars': continuousVars, 
                                 'corrAll': corrAll.to_json(),
@@ -70,11 +74,12 @@ def main():
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
         # Auto Detect
         elif action == 'autodetect':
-            threshold = float(request.form['threshold'])
+            # threshold = float(request.form['threshold'])
 
-            result = models.auto_detect(df, threshold)
+            result = models.auto_detect(df)
 
-            return jsonify({'result': result.to_json()})
+            return jsonify({'result': result.to_json(),
+                            'table': result.to_json(orient='records')})
 
 
 
