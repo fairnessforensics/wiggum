@@ -30,7 +30,12 @@ function tabulate(data, columns) {
 	var rows = tbody.selectAll('tr')
 	  .data(data)
 	  .enter()
-	  .append('tr');
+		.append('tr')
+		.attr("row", function(d) { return d.feat1+"_"+d.feat2+"_"+d.group_feat+"_"+d.subgroup; })
+		.attr("class", "tablerow")
+		.on("click", function(d, i) {
+			var vars = {x: d.feat1, y: d.feat2, categoryAttr: d.group_feat, category: d.subgroup};
+			return interactBivariateMatrix(vars, i); });
 
 	// create a cell in each row for each column
 	var cells = rows.selectAll('td')
@@ -48,18 +53,24 @@ function tabulate(data, columns) {
 }
 
 function updateTabulate(vars) {	
-	
-	d3.selectAll("tr").style("background-color", function(d, i){
-		// skip the first title row
-		if (i>0) {
-			if(tableRecords[i-1].feat1 == vars.x && tableRecords[i-1].feat2 == vars.y
-					&& tableRecords[i-1].group_feat == vars.categoryAttr 
-					&& tableRecords[i-1].subgroup == vars.category) {
-				return "#D8D8D8";
-			} else {
-				return "#FFFFFF";
-			}
-		}
-	})
 
+	d3.selectAll(".tablerow").classed("highlighted", false);
+	var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
+	d3.select("tr[row='" + cell_id + "']").classed("highlighted", true);
+	
 }
+
+function interactBivariateMatrix(vars) {
+
+	updateScatterplot(csvData, vars);
+
+	// update bivariate matrix
+	var allsvg = d3.select(container);
+	allsvg.selectAll(".cell").classed("clicked", false);
+
+	var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
+
+	d3.select("#"+cell_id).classed("clicked", true);	
+
+	updateTabulate(vars);
+};
