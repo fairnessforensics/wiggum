@@ -96,6 +96,19 @@ def add_slope_cols(data_df, result_df):
 
     return results_df_slopes
 
+def get_trend_row(result_df,feat1,feat2,subgroup):
+    """
+    return a row of a data frame from the above
+    """
+    # get the rows for each
+    f1_rows = result_df.feat1 ==feat1
+    f2_rows = result_df.feat2== feat2
+    sg_rows = result_df.subgroup == subgroup
+    # take the intersection
+    target_row = f1_rows & f2_rows &sg_rows
+    # return that row
+    return result_df[target_row]
+
 def compute_angle(row):
     """
     compute angle between the overall ('all_slope') and subgroup
@@ -110,11 +123,13 @@ def compute_angle(row):
     """
     # take absolute value, because the two will be in opposite directions
     # relative to the angle of interest
-    theta_sub = np.abs(np.arctan(row['subgroup_slope']))
-    theta_all = np.abs(np.arctan(row['all_slope']))
+    theta_sub = np.arctan(row['subgroup_slope'])
+    theta_all = np.arctan(row['all_slope'])
+    # theta_sub = np.abs(np.arctan(row['subgroup_slope']))
+    # theta_all = np.abs(np.arctan(row['all_slope']))
 
     # add them and convert to degrees
-    return np.rad2deg(theta_all + theta_sub)
+    return np.rad2deg(np.abs(theta_all - theta_sub))
 
 def add_angle_col(results_df_slopes):
     """
