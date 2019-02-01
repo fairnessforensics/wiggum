@@ -408,7 +408,8 @@ function Matrix(options) {
 	    .data(function(d) { return d; })
 		.enter()
 		.append("rect")	
-	    .attr("class", "cell")
+		.attr("class", "cell")
+		.attr("id", function(d) {return d.colVar + "_" + d.rowVar + "_" + d.categoryAttr + "_" + d.category})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
 
 	cells.attr("width", x.rangeBand()-1)

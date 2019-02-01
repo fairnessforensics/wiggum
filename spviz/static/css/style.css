@@ -188,3 +188,7 @@ table {
   th.des:after {
     content: "\21E7";
   }
+  
+  .tablerow.highlighted {
+    background-color:#D8D8D8;
+}
