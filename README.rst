@@ -7,16 +7,6 @@ Toward scalable, interactive detection of Simpson's Paradox.
 Published in:
  - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`_ to appear
 
-First install data generators (fair-sim):
-
-Data generators are in a separate package, that is requires for install, it can
- be found at
-TODO CHANGE THIS WHEN PUBLIC
-.. code-block:: bash
-
-  git clone http://github.com/brownsarahm/fair-sim/.git
-  cd fair-sim
-  pip install .
 
 To use the package, download (or clone) and:
 

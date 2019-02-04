@@ -89,10 +89,13 @@ def add_slope_cols(data_df, result_df):
 
     result_df = add_slope_sp(data_df,result_df)
 
+
     all_slopes_df = compute_slope_all(data_df,all_sp_vars)
+    
 
     results_df_slopes = result_df.merge(all_slopes_df,
-                        left_on=['feat1','feat2'], right_on=['feat1','feat2'])
+                        left_on=['feat1','feat2'], right_on=['feat1','feat2'],
+                        how='outer')
 
     return results_df_slopes
 
