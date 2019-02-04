@@ -57,8 +57,24 @@ var updateScatterplot = function(data, vars) {
 		yMin = yMin - 0.1 * yDiff,
 		yMax = yMax + 0.1 * yDiff;
 
-	x.domain([xMin, xMax]);
-	y.domain([yMin, yMax]);
+	// Set the axes squarely
+	var tempMax, tempMin;
+	if (xMax > yMax) {
+		tempMax = xMax;
+	} else {
+		tempMax = yMax;
+	}
+	if (xMin > yMin) {
+		tempMin = yMin;
+	} else {
+		tempMin = xMin;
+	}	
+	x.domain([tempMin, tempMax]);
+	y.domain([tempMin, tempMax]);
+
+	// Old Scale
+	//x.domain([xMin, xMax]);
+	//y.domain([yMin, yMax]);
 
 	var getX = function(d) {return x(d[vars.x]) ; };
 	var getY = function(d) {return y(d[vars.y]) ; };
@@ -250,8 +266,23 @@ function createScatterplot(data) {
 		yMin = yMin - 0.1 * yDiff,
 		yMax = yMax + 0.1 * yDiff;
 
-	x.domain([xMin, xMax]);
-	y.domain([yMin, yMax]);		
+	// Set the axes squarely
+	var tempMax, tempMin;
+	if (xMax > yMax) {
+		tempMax = xMax;
+	} else {
+		tempMax = yMax;
+	}
+	if (xMin > yMin) {
+		tempMin = yMin;
+	} else {
+		tempMin = xMin;
+	}	
+	x.domain([tempMin, tempMax]);
+	y.domain([tempMin, tempMax]);
+
+	//x.domain([xMin, xMax]);
+	//y.domain([yMin, yMax]);	
 
 	scatterplot.append("g")
 		.attr("class", "x axis")
