@@ -23,7 +23,7 @@
     display: block;
     background: white;
     margin-left: 260px;
-    margin-top: -50px;
+    margin-top: -30px;
 }
 
 #legend {
@@ -98,7 +98,7 @@ line.slope-line4all{
     border-left: 2px solid grey;
     height: 630px;
     position: absolute;
-    left: 22%;
+    left: 25%;
     margin-left: -3px;
     margin-top: 80px;
     top: 0;
@@ -151,4 +151,44 @@ line.slope-line4all{
     background: white;
     margin-left: 270px;
     margin-top: -115px;
+}
+
+#table {
+    width: 600px;
+    display: block;
+    background: white;
+    margin-left: 260px;
+    margin-top: 90px;
+}
+table {
+    font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
+    box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+  table {
+    margin: auto;
+  }
+
+  table, td, th {
+    padding: 7px;
+    text-align: center;
+    border: 1px solid rgb(8,48,107);
+  }
+  
+  th {
+    background-color: rgb(8,81,156);
+    color: white;
+  }
+
+  th.aes:after {
+    content: "\21E9";
+  }
+  
+  th.des:after {
+    content: "\21E7";
+  }
+  
+  .tablerow.highlighted {
+    background-color:#D8D8D8;
 }

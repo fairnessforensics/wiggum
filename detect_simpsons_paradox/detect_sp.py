@@ -64,7 +64,6 @@ def upper_triangle_df(matrix):
 
     return result_df
 
-
 def isReverse(a, b):
     """
     Reversal is the logical opposite of signs matching.
@@ -132,7 +131,7 @@ def detect_simpsons_paradox(data_df,
     all_corr_element = all_corr_df['value'].values
 
     # Define an empty dataframe for result
-    results_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
+    result_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
     # Loop by group-by attributes
     for groupbyAttr in groupby_vars:
@@ -156,21 +155,21 @@ def detect_simpsons_paradox(data_df,
             if reverse_list:
                 # Retrieve attribute information from all_corr_df
                 all_corr_info = [all_corr_df.loc[i].values for i in index_list]
-                temp_df = pd.DataFrame(data=all_corr_info,columns=['allCorr','attr1','attr2'])
+                temp_df = pd.DataFrame(data=all_corr_info,columns=['agg_trend','feat1','feat2'])
 
                 # # Convert index from float to int
-                temp_df.attr1 = temp_df.attr1.astype(int)
-                temp_df.attr2 = temp_df.attr2.astype(int)
+                temp_df.feat1 = temp_df.feat1.astype(int)
+                temp_df.feat2 = temp_df.feat2.astype(int)
                 # Convert indices to attribute names for readabiity
-                temp_df.attr1 = temp_df.attr1.replace({i:a for i, a in
+                temp_df.feat1 = temp_df.feat1.replace({i:a for i, a in
                                             enumerate(regression_vars)})
-                temp_df.attr2 = temp_df.attr2.replace({i:a for i, a in
+                temp_df.feat2 = temp_df.feat2.replace({i:a for i, a in
                                             enumerate(regression_vars)})
 
-                temp_df['subgroupCorr'] = reverse_list
+                temp_df['subgroup_trend'] = reverse_list
                 len_list = len(reverse_list)
                 # Store group attributes' information
-                temp_df['groupbyAttr'] = [groupbyAttr for i in range(len_list)]
+                temp_df['group_feat'] = [groupbyAttr for i in range(len_list)]
                 temp_df['subgroup'] = [subgroup for i in range(len_list)]
                 result_df = result_df.append(temp_df, ignore_index=True)
 
