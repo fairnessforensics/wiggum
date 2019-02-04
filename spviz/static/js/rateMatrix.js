@@ -11,7 +11,7 @@ function getRateMatrixAll(data, groupAttr1, groupAttr2) {
 					};
 				})
 				.entries(data);
-//console.log(resultArray);
+
 	// Construct Slope Graph array --------->
 	arraySlopeGraph[rateMatrixIndex] = [];
 	var singleObj = {};
@@ -501,12 +501,16 @@ function prepareDetail() {
 	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
 				index: d.index, protectedAttr: d.protectedAttr};
 
-		updateSlopeGraph(csvData, vars);
-		updateGroupedBar(csvData, vars);
+	//console.log(csvData);
+	//console.log(vars);
+	updateSlopeGraph(vars);
+	//updateGroupedBar(csvData, vars);
 }
 
-var updateSlopeGraph = function(data, vars) {
+var updateSlopeGraph = function(vars) {
 	d3.select("#slopegraph").selectAll('svg').remove();
+	//console.log(arraySlopeGraph);
+
 
 	DrawSlopeGraph(
 	{

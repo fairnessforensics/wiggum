@@ -20,6 +20,18 @@ var rateColKeys;
 // Default, change by user input in TODO work
 var legendAdjustValue = 0.05;
 var arrayRankingList;
+var autoDetectFlag = 0;
+var autoDetectResult;
+// for ratio
+var rateTrendMatrixAll;
+var rateTrendMatrixSub = [];
+var protectedAttrs;
+var explanaryAttrs;
+var rateAllSlopeGraph = [];
+var rateAllKeySlopeGraph = [];
+var rateSubSlopeGraph = [];
+var rateSubKeySlopeGraph = [];
+var tableRecords;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["Regression", "Rate"];
@@ -47,6 +59,7 @@ var options = select.selectAll('option')
 function onchange() {
 
 	selectValue = d3.select(this).property('value');
+
 	legendValue = -1;
 	d3.select("#legend").selectAll('svg').remove();
 
@@ -71,19 +84,20 @@ function ontypechange() {
 		d3.select("#extra_regression").style("display", "inline-block");
 		d3.select("#slopegraph").style("display", "none");
 		d3.select("#scatterplot").style("display", "inline-block");
-		updateContainer();
+//		updateContainer();
 	} else {
 		d3.select("#extra_regression").style("display", "none");
 		d3.select("#scatterplot").style("display", "none");
 		d3.select("#slopegraph").style("display", "inline-block");
 		// Get binary decision variable
-		var attrs = getBinaryAttrs(csvData, catAttrs);
+//		var attrs = getBinaryAttrs(csvData, catAttrs);
 
-		targetAttr = attrs[0];
-		groupingAttrs =  attrs[1];
+//		targetAttr = attrs[0];
+//		groupingAttrs =  attrs[1];
 
-		updateRateSPContainer();
+//		updateRateSPContainer();
 	}
+
 };
 
 function getBinaryAttrs(data, attrs){
@@ -164,8 +178,95 @@ function updateContainer() {
 	.on("click", clickMatrixCell);	
 }
 
-
 function updateRateSPContainer() {
+
+	d3.select("#container").selectAll('svg').remove();
+
+	arraySlopeGraph = [];
+	rateMatrixIndex = 0;
+	arrayRankingList = [];
+
+	for (var i = 0; i < rateTrendMatrixSub.length; i++){
+		// Prepare for Slope Graph
+		arraySlopeGraph[rateMatrixIndex] = [];
+		// Construct Slope Graph array for ALL--------->
+		arraySlopeGraph[rateMatrixIndex] = [];
+		var singleObj = {};
+
+		for (var j = 0; j < rateAllSlopeGraph[i].length; j++){
+			singleObj[rateAllKeySlopeGraph[i][j]] = precisionRound(rateAllSlopeGraph[i][j], 3);
+		}
+		singleObj[explanaryAttrs[i]] = 'ALL';
+		arraySlopeGraph[rateMatrixIndex].push(singleObj);
+		// <-------------------------------------
+
+		// Construct Slope Graph array for subgroups--------->
+		rateColKeys = [];
+		for (var j = 0; j < rateColLabels[i].length; j++){
+			var singleObj = {};
+			var keyObj = rateColLabels[i][j]
+
+		  	for (var k = 0; k < rateSubSlopeGraph[i].length; k++){
+				singleObj[rateSubKeySlopeGraph[i][k]] = precisionRound(rateSubSlopeGraph[i][k][keyObj], 3);
+		  	}
+  
+		  	singleObj[explanaryAttrs[i]] = rateColLabels[i][j];
+			arraySlopeGraph[rateMatrixIndex].push(singleObj);
+			  
+			rateColKeys.push(j);
+		}	
+
+		// <-------------------------------------
+
+		// rate SP matrix for all
+		//var rateMatrix = getRateMatrixAll(csvData, groupingAttrs[i], groupingAttrs[j]);
+		//var rateTrendMatrixAll = getRateTrendMatrixAll(rateMatrix);
+		// rate SP matrix for subgroups
+		//var rateMatrixGroups = getRateMatrixSub(csvData, groupingAttrs[i], groupingAttrs[j]);
+		//var rateTrendMatrixSub = getRateTrendMatrixSub(rateMatrixGroups);
+
+		var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll[i], rateTrendMatrixSub[i]);
+
+
+		// Ranking the matrix
+		var averageWeight = getAverageWeight(bivariateMatrix);
+		var singleObj = {};
+
+		var subgroupLabel = protectedAttrs[i] + ' - ' + explanaryAttrs[i];
+
+		singleObj["label"] = subgroupLabel;
+		singleObj["weight"] = averageWeight;
+		arrayRankingList.push(singleObj);
+
+		rateSPMatrix({
+			container : '#container',
+			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
+							rateRowVars[i], explanaryAttrs[i], rateMatrixIndex, protectedAttrs[i]),
+			rowLabels : rateRowLabels[i],
+			colLabels : rateColLabels[i],
+			subLabel  : subgroupLabel
+		});
+
+		rateMatrixIndex =  rateMatrixIndex + 1;
+
+	}
+
+	arrayRankingList.sort(function(x, y){
+		return d3.descending(x.weight, y.weight);
+	})
+
+	rankingListbox(arrayRankingList);
+
+	// Cell Click Event
+	d3.select(container).selectAll(".cell")
+		.on("click", clickRateMatrixCell);	
+
+	// Double click event: Reset
+	d3.select(container).selectAll(".cell")
+		.on("dblclick", doubleClickRateMatrixCell);		
+}
+
+function updateRateSPContainer_bak() {
 
 	d3.select("#container").selectAll('svg').remove();
 
@@ -214,7 +315,7 @@ function updateRateSPContainer() {
 	arrayRankingList.sort(function(x, y){
 		return d3.descending(x.weight, y.weight);
 	})
-//	console.log(arrayRankingList);
+
 	rankingListbox(arrayRankingList);
 
 /*
@@ -250,6 +351,13 @@ function updateRateSPContainer() {
 		.on("dblclick", doubleClickRateMatrixCell);		
 }
 
+/**
+ * Constructs a bivariate matrix.
+ *
+ *  Parameters
+ *  options: contain, data, labels, subLabel 
+ * 
+ */
 function Matrix(options) {
 
 	var margin = {top: 63, right: 30, bottom: 30, left: 63},
@@ -300,7 +408,8 @@ function Matrix(options) {
 	    .data(function(d) { return d; })
 		.enter()
 		.append("rect")	
-	    .attr("class", "cell")
+		.attr("class", "cell")
+		.attr("id", function(d) {return d.colVar + "_" + d.rowVar + "_" + d.categoryAttr + "_" + d.category})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
 
 	cells.attr("width", x.rangeBand()-1)
@@ -315,6 +424,8 @@ function Matrix(options) {
 		.filter(function(d){
 			if (legendValue != -1) {
 				return d.value == legendValue;
+			} else if (autoDetectFlag != 0) {
+				return d.autoDetectFlg == 1; 
 			} else 
 			{
 				return d;
@@ -462,6 +573,8 @@ function DrawLegend() {
 	height = 120;
 	var colorMap4Legend;
 	
+	selectValue = d3.select("#selectors").select('select').property('value');
+
 	if (selectValue == 'Sequential 3x3'){
 		colorMap4Legend = [
 			["#be64ac", "#8c62aa", "#3b4994"], 
@@ -919,4 +1032,3 @@ function BivariateMatrixDiverging5(correlationMatrix, correlationMatrixSubgroup)
 
 	return bivariateMatrix;
 }
-  

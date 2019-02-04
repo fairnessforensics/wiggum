@@ -3,11 +3,13 @@ var margin = {top: 30, right: 30, bottom: 30, left: 30},
 	width = 360,
 	height = 360;	
 
-var scatterplot = d3.select("div#scatterplot")
-	.append("svg")
-	.attr("width", width + margin.left + margin.right)
-	.attr("height", height + margin.top + margin.bottom)									
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+var scatterplot;
+//var scatterplot = d3.select("div#scatterplot")
+//	.append("svg")
+//	.attr("width", width + margin.left + margin.right)
+//	.attr("height", height + margin.top + margin.bottom)									
+//	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
 // Draw frame
 var drawFrame = function() {
@@ -40,7 +42,7 @@ var yAxis = d3.svg.axis()
 	.orient("left");
 
 var updateScatterplot = function(data, vars) {
-	
+
 	d3.selectAll('.axis').remove();
 
 	// Zoom out
@@ -55,8 +57,24 @@ var updateScatterplot = function(data, vars) {
 		yMin = yMin - 0.1 * yDiff,
 		yMax = yMax + 0.1 * yDiff;
 
-	x.domain([xMin, xMax]);
-	y.domain([yMin, yMax]);
+	// Set the axes squarely
+	var tempMax, tempMin;
+	if (xMax > yMax) {
+		tempMax = xMax;
+	} else {
+		tempMax = yMax;
+	}
+	if (xMin > yMin) {
+		tempMin = yMin;
+	} else {
+		tempMin = xMin;
+	}	
+	x.domain([tempMin, tempMax]);
+	y.domain([tempMin, tempMax]);
+
+	// Old Scale
+	//x.domain([xMin, xMax]);
+	//y.domain([yMin, yMax]);
 
 	var getX = function(d) {return x(d[vars.x]) ; };
 	var getY = function(d) {return y(d[vars.y]) ; };
@@ -225,12 +243,133 @@ function getCategoricalAttrs(data){
 	return categoricalAttrs;
 }
 
+
+function createScatterplot(data) {
+
+	scatterplot = d3.select("div#scatterplot")
+					.append("svg")
+					.attr("width", width + margin.left + margin.right)
+					.attr("height", height + margin.top + margin.bottom)									
+					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+	// Default: first two continous attributes
+	// Zoom out
+	var xMax = d3.max(data, function(d) { return d[conAttrs[0]]; }),
+		xMin = d3.min(data, function(d) { return d[conAttrs[0]]; }),
+		xDiff = xMax - xMin,
+		xMin = xMin - 0.1 * xDiff,
+		xMax = xMax + 0.1 * xDiff,
+		yMax = d3.max(data, function(d) { return d[conAttrs[1]]; }),
+		yMin = d3.min(data, function(d) { return d[conAttrs[1]]; }),
+		yDiff = yMax - yMin,
+		yMin = yMin - 0.1 * yDiff,
+		yMax = yMax + 0.1 * yDiff;
+
+	// Set the axes squarely
+	var tempMax, tempMin;
+	if (xMax > yMax) {
+		tempMax = xMax;
+	} else {
+		tempMax = yMax;
+	}
+	if (xMin > yMin) {
+		tempMin = yMin;
+	} else {
+		tempMin = xMin;
+	}	
+	x.domain([tempMin, tempMax]);
+	y.domain([tempMin, tempMax]);
+
+	//x.domain([xMin, xMax]);
+	//y.domain([yMin, yMax]);	
+
+	scatterplot.append("g")
+		.attr("class", "x axis")
+		.attr("transform", "translate("+margin.left+"," + (height + margin.top) + ")")
+		.call(xAxis)
+		.append("text")
+		.attr("id", "xTitle")
+		.attr("class", "label")
+		.attr("x", width)
+		.attr("y", -6)
+		.style("text-anchor", "end")
+		.text(conAttrs[0]);
+
+	scatterplot.append("g")
+		.attr("class", "y axis")
+		.attr("transform", "translate("+margin.left+"," + margin.top + ")")		  
+		.call(yAxis)
+		.append("text")
+		.attr("id", "yTitle")
+		.attr("class", "label")
+		.attr("transform", "rotate(-90)")
+		.attr("y", 6)
+		.attr("dy", ".71em")
+		.style("text-anchor", "end")
+		.text(conAttrs[1]);
+
+	scatterplot.selectAll(".dot")
+		.data(data)
+		.enter().append("circle")
+		.attr("class", "dot")
+		.attr("r", 5)
+		.attr("cx", function(d) { return x(d[conAttrs[0]]); })
+		.attr("cy", function(d) { return y(d[conAttrs[1]]); })
+		.style("opacity", 0.6)
+		.attr("stroke", "black")
+		.attr("stroke-width", 1)		  
+		.style("fill", function(d) { return color(d[catAttrs[0]]); })
+		.attr("transform", "translate("+margin.left+"," + margin.top + ")");
+
+	// Regression line
+	var lg = calcLinear(data, conAttrs[0], conAttrs[1], 
+		d3.min(data, function(d){ return d[conAttrs[0]]}), 
+		d3.max(data, function(d){ return d[conAttrs[0]]}));
+
+	scatterplot.append("line")
+		.attr("class", "regression")
+		.attr("x1", x(lg.ptA.x))
+		.attr("y1", y(lg.ptA.y))
+		.attr("x2", x(lg.ptB.x))
+		.attr("y2", y(lg.ptB.y))
+		.attr("stroke", "black")
+		.attr("stroke-dasharray", "5,5")
+		.attr("stroke-width", 2)
+		.attr("transform", "translate("+margin.left+"," + margin.top + ")");
+
+	// Legend
+	var legend = scatterplot.selectAll(".legend")
+		.data(color.domain())
+		.enter().append("g")
+		.attr("class", "legend")
+		.attr("transform", function(d, i) { return "translate("+margin.left+" ," + (margin.top+ i * 20) + ")"; });
+
+	legend.append("rect")
+		.attr("x", width - 18)
+		.attr("width", 18)
+		.attr("height", 18)
+		.style("opacity", 0.6)
+		.style("fill", color);
+
+	legend.append("text")
+		.attr("x", width - 24)
+		.attr("y", 9)
+		.attr("dy", ".35em")
+		.style("text-anchor", "end")
+		.text(function(d) { return d; });	
+
+}
+
+
 var reader = new FileReader();  
 var file;
 
 function loadFile() {      
 	d3.selectAll("svg").remove();
 	file = document.querySelector('input[type=file]').files[0];    
+
+	openFile();
 
 	reader.addEventListener("load", openFile, false);
 	if (file) {
@@ -308,18 +447,58 @@ function calcLinear(data, x, y, minX, maxX){
 }
 
 var UpdateMatrixFormat = function(matrix, vars, category) {
-	matrix.forEach(function(row, i) {
-		row.forEach(function(cell, j) {
-		
-			matrix[i][j] = {
+
+
+	if (autoDetectFlag == 0 || autoDetectResult == null) {
+		matrix.forEach(function(row, i) {
+			row.forEach(function(cell, j) {
+			
+				matrix[i][j] = {
+						rowVar: vars[i],
+						colVar: vars[j],
+						value: cell,
+						categoryAttr: category.groupby,
+						category: category.value,
+						autoDetectFlg: 0 
+					};
+			});
+		});
+	} else {
+		matrix.forEach(function(row, i) {
+			row.forEach(function(cell, j) {
+				matrix[i][j] = {
+
 					rowVar: vars[i],
 					colVar: vars[j],
 					value: cell,
 					categoryAttr: category.groupby,
-					category: category.value 
+
+					category: category.value,
+					autoDetectFlg: 0 
 				};
-		});
-	});
+
+				if (!isEmpty(autoDetectResult)) {
+					var len = Object.keys(autoDetectResult.agg_trend).length
+					for (var k = 0; k < len; k++){
+						if ((autoDetectResult.feat1[k] == vars[i] &&
+							autoDetectResult.feat2[k] == vars[j] &&
+							autoDetectResult.group_feat[k] == category.groupby &&
+							autoDetectResult.subgroup[k] == category.value) ||
+							(autoDetectResult.feat1[k] == vars[j] &&
+								autoDetectResult.feat2[k] == vars[i] &&
+								autoDetectResult.group_feat[k] == category.groupby &&
+								autoDetectResult.subgroup[k] == category.value)
+							) {
+							matrix[i][j].autoDetectFlg = 1
+							break;						
+						}
+					}
+				}
+			});
+		});		
+	}
+
+
 	return matrix;
 };
 
@@ -336,20 +515,27 @@ function updateScatter() {
 		categoryAttr: d.categoryAttr, category: d.category};
 
 	updateScatterplot(csvData, vars);
+	updateTabulate(vars);
 }
 
 function openFile(){
+
+
 	//d3.csv("iris.csv", function(error, data) {
-	d3.csv("/static/data/" + file.name, function(error, data) {
+
+	d3.csv("/static/data/syntheticdata.csv", function(error, data) {
+	//d3.csv("/static/data/" + file.name, function(error, data) {
 		if (error) throw error;	
 
 		csvData = data;	
+		//console.log(csvData);
 
 		// Reset color after removed by loading new file
 		color = d3.scale.category10();
 
 		conAttrs = getcontinousAttrs(data);
 		catAttrs = getCategoricalAttrs(data);
+
 
 		// Categorical attributes' value list
 		categoryValuesList = [];
