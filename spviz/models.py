@@ -117,6 +117,17 @@ def auto_detect(df):
 
     result = dsp.add_slope_cols(df,result)
     result = dsp.add_angle_col(result)
+    #print(result)
+    #result = dsp.add_view_score(result, 'angle', 'sum', True)
+    colored_view_df = dsp.count_sp_views(result, colored=True, portions=True, 
+                                data_df = df, groupby_count=True)
+    result = dsp.add_view_count(result, colored_view_df,colored=True)                                
+    #print(result)
+
+    std_weights = {'subgroup_trend':.25,
+                'angle':.25,
+                'portions':.5}
+    result = dsp.add_weighted(result,std_weights,name='std_wt').sort_values(by='std_wt',ascending=False)
 
     print("===============auto end======================")
     return result
@@ -141,7 +152,6 @@ def getInfoTable(df):
     #logging.info("test")
     result = dsp.add_slope_cols(df,result)
     result = dsp.add_angle_col(result)
-    print(result)
     print("===============Table end======================")
     return result    
 

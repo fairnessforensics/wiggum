@@ -35,13 +35,13 @@ def main():
                 categoricalVars = models.getCategoricalVariableName(df)
 
                 corrAll = df.corr()
-                print(corrAll)
+                # print(corrAll)
 
                 # subgroup correlation matrix
                 correlationMatrixSubgroups = []
                 correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(df, regression_vars, categoricalVars)
                 #jsonStr = json.dumps(correlationMatrixSubgroup)
-                print(groupby_info)
+                # print(groupby_info)
 
                 # generate table
                 tableResult = models.getInfoTable(df)

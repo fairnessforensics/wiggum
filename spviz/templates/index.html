@@ -100,9 +100,11 @@
 
                             // Display info table
                             tableRecords = JSON.parse(data.table)
+
                             // remove existing table
                             d3.select("#table").selectAll('table').remove();
-                            tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 'subgroup', 'subgroup_slope','subgroup_trend']);
+                            tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
+                                'subgroup', 'subgroup_slope','subgroup_trend', 'SP_subgroups', 'gby_counts', 'portions', 'std_wt']);
                         } else {
                             updateRateSPContainer();
                         }
