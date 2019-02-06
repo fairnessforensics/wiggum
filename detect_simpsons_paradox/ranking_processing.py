@@ -182,7 +182,11 @@ def add_weighted(df,cols_weight_dict,name=None):
 
     # normalize data so that columns add together better
     col_names = list(cols_weight_dict.keys())
-    df_normalized = np.abs((df[col_names]-df[col_names].min())/(df[col_names].max()-df[col_names].min()))
+
+    # get absolute value before normalize
+    df_temp = df[col_names].abs()
+
+    df_normalized = np.abs((df_temp[col_names]-df_temp[col_names].min())/(df_temp[col_names].max()-df_temp[col_names].min()))
 
     #aggreate
     wsum = lambda r: np.average(r,weights=list(cols_weight_dict.values()))
