@@ -70,7 +70,6 @@ function interactBivariateMatrix(vars) {
 
 	var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
 
-	d3.select("#"+cell_id).classed("clicked", true);	
-
+	d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
 	updateTabulate(vars);
 };
