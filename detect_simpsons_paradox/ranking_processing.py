@@ -95,8 +95,7 @@ def add_slope_cols(data_df, result_df):
 
     results_df_slopes = result_df.merge(all_slopes_df,
                         left_on=['feat1','feat2'], right_on=['feat1','feat2'],
-                        how='outer')
-
+                        how='left')
     return results_df_slopes
 
 def get_trend_row(result_df,feat1,feat2,subgroup):
