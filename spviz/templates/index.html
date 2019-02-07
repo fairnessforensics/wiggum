@@ -75,7 +75,7 @@
                         tableRecords = JSON.parse(data.table)
                         d3.select("#table").style("display", "inline-block");
                         tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
-                        'subgroup', 'subgroup_slope','subgroup_trend', 'SP_subgroups', 'gby_counts', 'portions', 'std_wt']);
+                        'subgroup', 'subgroup_slope','subgroup_trend', 'gby_counts', 'portions', 'std_wt']);
                     },
                 });
             });
