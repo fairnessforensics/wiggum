@@ -34,8 +34,8 @@ def main():
 
                 categoricalVars = models.getCategoricalVariableName(df)
 
-                corrAll = df.corr()
-                # print(corrAll)
+                # get correlation for all continuous variables
+                corrAll = df[continuousVars].corr()
 
                 # subgroup correlation matrix
                 correlationMatrixSubgroups = []
