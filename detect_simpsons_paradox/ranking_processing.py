@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import itertools as itert
-
+from sklearn import preprocessing
 
 def add_slope_sp(data_df, result_df):
     """
@@ -185,7 +185,13 @@ def add_weighted(df,cols_weight_dict,name=None):
     # get absolute value before normalize
     df_temp = df[col_names].abs()
 
-    df_normalized = np.abs((df_temp[col_names]-df_temp[col_names].min())/(df_temp[col_names].max()-df_temp[col_names].min()))
+    #df_normalized = np.abs((df_temp[col_names]-df_temp[col_names].min())/(df_temp[col_names].max()-df_temp[col_names].min()))
+    
+    # use sklearn MinMaxScaler to normalize
+    min_max_scaler = preprocessing.MinMaxScaler()
+    df_temp_scaled = min_max_scaler.fit_transform(df_temp)
+    df_temp[col_names] = pd.DataFrame(df_temp_scaled)
+    df_normalized = df_temp
 
     #aggreate
     wsum = lambda r: np.average(r,weights=list(cols_weight_dict.values()))
