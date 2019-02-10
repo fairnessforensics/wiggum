@@ -44,12 +44,13 @@ def main():
                 # print(groupby_info)
 
                 # generate table
-                tableResult = models.getInfoTable(df)
+                tableResult, rankViewResult = models.getInfoTable(df)
 
                 #return jsonify({'categoricalVars': categoricalVars, 'continousVars': continuousVars, 
                 #                'corrAll': corrAll.to_json(), 'corrSub': json.dumps(correlationMatrixSubgroup)})
                 return jsonify({'csv_data':csv_data,
                                 'table': tableResult.to_json(orient='records'),
+                                'rankViewResult': rankViewResult.to_json(orient='records'),
                                 'categoricalVars': categoricalVars, 
                                 'continousVars': continuousVars, 
                                 'corrAll': corrAll.to_json(),
@@ -76,10 +77,11 @@ def main():
         elif action == 'autodetect':
             # threshold = float(request.form['threshold'])
 
-            result = models.auto_detect(df)
+            result, ranking_view_df = models.auto_detect(df)
 
             return jsonify({'result': result.to_json(),
-                            'table': result.to_json(orient='records')})
+                            'table': result.to_json(orient='records'),
+                            'rankViewResult': ranking_view_df.to_json(orient='records')})
 
 
 

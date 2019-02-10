@@ -33,13 +33,13 @@
     width: 230px;
     display: block;
     background: white;
-    position: fixed;
+    position: absolute;
 }
 
 #scatterplot {
     display: block;
     background: white;
-    position: fixed;
+    position: absolute;
     border-style: solid;
     border-width: 2px;
     border-color: grey;
@@ -101,7 +101,7 @@ line.slope-line4all{
     border-left: 2px solid grey;
     height: 630px;
     position: absolute;
-    left: 25%;
+    left: 28%;
     margin-left: -3px;
     margin-top: 80px;
     top: 0;
@@ -152,8 +152,15 @@ line.slope-line4all{
     size: 3;
     display: block;
     background: white;
-    margin-left: 270px;
-    margin-top: -115px;
+    margin-left: 50px;
+    margin-top: 10px;
+    position: absolute;
+    top: 60px;
+    left: 500px;
+}
+
+.row {
+    height: 160px;
 }
 
 #table {

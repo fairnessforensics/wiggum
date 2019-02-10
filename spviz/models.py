@@ -115,9 +115,9 @@ def auto_detect(data_df):
     result_df = dsp.detect_simpsons_paradox(data_df)
 
     # ranking
-    result_df = getRankInfo(result_df, data_df)
+    result_df, ranking_view_df = getRankInfo(result_df, data_df)
 
-    return result_df
+    return result_df, ranking_view_df
 
 def getInfoTable(data_df):
     """
@@ -136,9 +136,9 @@ def getInfoTable(data_df):
     result_df = dsp.get_subgroup_trends_1lev(data_df,['pearson_corr'])
 
     # ranking
-    result_df = getRankInfo(result_df, data_df)
+    result_df, ranking_view_df = getRankInfo(result_df, data_df)
 
-    return result_df    
+    return result_df, ranking_view_df    
 
 def getRankInfo(result_df,data_df):
     """
@@ -160,8 +160,6 @@ def getRankInfo(result_df,data_df):
     
     # add angle
     result_df = dsp.add_angle_col(result_df)
-
-    #result = dsp.add_view_score(result, 'angle', 'sum', True)
     
     # view counts    
     colored_view_df = dsp.count_sp_views(result_df, colored=True, portions=True, 
@@ -174,7 +172,21 @@ def getRankInfo(result_df,data_df):
                 'portions':.5}
     result_df = dsp.add_weighted(result_df,std_weights,name='std_wt').sort_values(by='std_wt',ascending=False)
 
-    return result_df
+    # rank by view
+    # add angle view score
+    result_df = dsp.add_view_score(result_df, 'angle', 'mean', True)
+    # add subgroup_trend view score
+    result_df = dsp.add_view_score(result_df, 'subgroup_trend', 'mean', True)
+    # weight for view
+    std_weights = {'subgroup_trend_y':.25,
+                'angle_y':.25,
+                'portions':.5}
+    result_df = dsp.add_weighted(result_df,std_weights,name='std_wt_view')
+
+    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', 'std_wt_view']].drop_duplicates()
+    ranking_view_df = ranking_view_df.sort_values(by='std_wt_view',ascending=False)
+
+    return result_df, ranking_view_df
 
 def getRatioRateAll(data_df, target_var, grouping_vars):
     """

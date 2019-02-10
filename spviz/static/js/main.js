@@ -32,6 +32,7 @@ var rateAllKeySlopeGraph = [];
 var rateSubSlopeGraph = [];
 var rateSubKeySlopeGraph = [];
 var tableRecords;
+var ranking = {};
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["Regression", "Rate"];
@@ -133,12 +134,13 @@ function updateContainer() {
 
 	d3.select("#container").selectAll('svg').remove();
 
-	arrayRankingList = [];
+	//arrayRankingList = [];
 
 	for (var i = 0; i < correlationMatrixSubgroup.length; i++){
 		var bivariateMatrix = BivariateMatrix(correlationMatrix, correlationMatrixSubgroup[i]);
 		var subgroupLabel = categoryValuesList[i].groupby +": "+ categoryValuesList[i].value;
 
+		/*
 		// Ranking the matrix
 		var averageWeight = getAverageWeight(bivariateMatrix);
 		var singleObj = {};
@@ -146,6 +148,7 @@ function updateContainer() {
 		singleObj["label"] = subgroupLabel;
 		singleObj["weight"] = averageWeight;
 		arrayRankingList.push(singleObj);
+		*/
 
 		Matrix({
 			container : '#container',
@@ -155,11 +158,13 @@ function updateContainer() {
 		});
 	}
 
+	/*
 	arrayRankingList.sort(function(x, y){
 		return d3.descending(x.weight, y.weight);
 	})
-	
+
 	rankingListbox(arrayRankingList);
+	*/
 
 	d3.select("#tree").selectAll('svg').remove();
 	DrawTree(
@@ -423,13 +428,32 @@ function Matrix(options) {
 	cells.style("opacity", 0.1)
 		.filter(function(d){
 			if (legendValue != -1) {
-				return d.value == legendValue;
+				if (autoDetectFlag != 0) {
+					if (isEmpty(ranking)) {
+						return d.value == legendValue && d.autoDetectFlg == 1; 
+					} else {
+						return d.value == legendValue && d.autoDetectFlg == 1 && d.colVar == ranking.feat1 && 
+							d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;
+					}					
+				} else if (!isEmpty(ranking)) {
+					return d.value == legendValue && d.colVar == ranking.feat1 && 
+						d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;					
+				} else {
+					return d.value == legendValue;
+				}
 			} else if (autoDetectFlag != 0) {
-				return d.autoDetectFlg == 1; 
+				if (isEmpty(ranking)) {
+					return d.autoDetectFlg == 1; 
+				} else {
+					return d.autoDetectFlg == 1 && d.colVar == ranking.feat1 && 
+						d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;; 
+				}
+			} else if (!isEmpty(ranking)) {
+				return d.colVar == ranking.feat1 && d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;
 			} else 
 			{
 				return d;
-			}			
+			}					
 		})
 		.style("opacity", 1);
 

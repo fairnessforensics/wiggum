@@ -74,8 +74,13 @@
                         // Display info table
                         tableRecords = JSON.parse(data.table)
                         d3.select("#table").style("display", "inline-block");
-                        tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
-                        'subgroup', 'subgroup_slope','subgroup_trend', 'gby_counts', 'portions', 'std_wt']);
+                        tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle_x', 'feat1', 'feat2', 'group_feat', 
+                                'subgroup', 'subgroup_slope', 'subgroup_trend_x', 'gby_counts', 'portions', 'std_wt',
+                                'angle_y', 'subgroup_trend_y', 'std_wt_view']);
+
+                        // Ranking
+                        rankViewResult = JSON.parse(data.rankViewResult)
+                        rankingView(rankViewResult);
                     },
                 });
             });
@@ -95,6 +100,7 @@
                         // Get data from controller return data
                         autoDetectResult = JSON.parse(data.result)
                         autoDetectFlag = 1;
+                        ranking = {};
 
                         if (selectTypeValue == "Regression") {
                             updateContainer();
@@ -104,8 +110,14 @@
 
                             // remove existing table
                             d3.select("#table").selectAll('table').remove();
-                            tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
-                                'subgroup', 'subgroup_slope','subgroup_trend', 'SP_subgroups', 'gby_counts', 'portions', 'std_wt']);
+                            tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle_x', 'feat1', 'feat2', 'group_feat', 
+                                'subgroup', 'subgroup_slope','subgroup_trend_x', 'SP_subgroups', 'gby_counts', 'portions', 'std_wt',
+                                'angle_y', 'subgroup_trend_y', 'std_wt_view']);
+
+                            // Ranking
+                            rankViewResult = JSON.parse(data.rankViewResult)
+                            rankingView(rankViewResult);
+
                         } else {
                             updateRateSPContainer();
                         }
@@ -166,7 +178,9 @@
         </select>
     </div>            -->
     <div id="rankingdiv">
-            <select multiple id ="ranking"></select>      
+        <!--
+            <select multiple id ="ranking"></select>     --> 
+            <select id ="ranking" size="5"></select>
             <button id="autodetect" type="button" name="autodetect" value="autodetect">AutoDetect</button>  
     </div>
     <div style="display:none; float:left" id="container">
@@ -193,6 +207,7 @@
     <script src="{{ url_for('static', filename='js/groupedbarchart.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rankingListbox.js') }}"></script>
     <script src="{{ url_for('static', filename='js/table.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/rankingView.js') }}"></script>    
     </form>
 
 </body>
