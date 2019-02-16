@@ -14,19 +14,31 @@ def main():
         action = request.form['action']
         spType = request.form['sptype']
 
+        # weight for individual
+        weight_param = request.form['weight_param']
+        std_weights =json.loads(weight_param)
+ 
+        # weight for the view
+        weight_param_view = request.form['weight_param_view']        
+        std_weights_view =json.loads(weight_param_view)
+
+        #view score parameter
+        view_score_param = request.form['view_score_param']        
+        view_score_param =json.loads(view_score_param)
+
         # Upload File
         if action == 'upload':
             file = request.files.get('file')
-            #flash(file.content_type)
 
             global df
             df = pd.read_csv(file)
-            #import pdb; pdb.set_trace()
+
+            # initial result
+            global initial_result_df
             
             # Construct the csv data fitting d3.csv format
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
-            #data = {'chart_data': chart_data}
 
             if spType =='Regression':
                 continuousVars = models.getContinuousVariableName(df)
@@ -40,16 +52,12 @@ def main():
                 # subgroup correlation matrix
                 correlationMatrixSubgroups = []
                 correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(df, regression_vars, categoricalVars)
-                #jsonStr = json.dumps(correlationMatrixSubgroup)
-                # print(groupby_info)
 
                 # generate table
-                tableResult, rankViewResult = models.getInfoTable(df)
+                initial_result_df, rankViewResult = models.getInfoTable(df, std_weights, std_weights_view, view_score_param)
 
-                #return jsonify({'categoricalVars': categoricalVars, 'continousVars': continuousVars, 
-                #                'corrAll': corrAll.to_json(), 'corrSub': json.dumps(correlationMatrixSubgroup)})
                 return jsonify({'csv_data':csv_data,
-                                'table': tableResult.to_json(orient='records'),
+                                'table': initial_result_df.to_json(orient='records'),
                                 'rankViewResult': rankViewResult.to_json(orient='records'),
                                 'categoricalVars': categoricalVars, 
                                 'continousVars': continuousVars, 
@@ -74,14 +82,11 @@ def main():
                                 'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
         # Auto Detect
-        elif action == 'autodetect':
+        elif action == 'autodetect':      
             # threshold = float(request.form['threshold'])
 
-            result, ranking_view_df = models.auto_detect(df)
+            result, ranking_view_df = models.auto_detect(df, initial_result_df, std_weights, std_weights_view, view_score_param)
 
             return jsonify({'result': result.to_json(),
                             'table': result.to_json(orient='records'),
                             'rankViewResult': ranking_view_df.to_json(orient='records')})
-
-
-

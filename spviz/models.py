@@ -98,7 +98,7 @@ def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
 
     return correlationMatrixSubgroup, groupby_info
 
-def auto_detect(data_df):
+def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_score_param):
     """
     Auto detect SP
     Parameters
@@ -106,41 +106,62 @@ def auto_detect(data_df):
     data_df : DataFrame
         data organized in a pandas dataframe containing both categorical
         and continuous attributes.
+    initial_result_df : DataFrame
+        a DataFrame that contains initial trend information. 
+    std_weights: nparray or list of decimal numbers
+        weights to add columns with
+    std_weights_view: nparray or list of decimal numbers
+        weights for the view to add columns with      
+    view_score_param: dict of the parameter for add_view_score function          
     Returns
     --------
     result_df : dataframe
         a dataframe with SP info
     """
-    # detect SP
-    result_df = dsp.detect_simpsons_paradox(data_df)
+    # get SP rows
+    result_df = dsp.get_SP_rows(initial_result_df, cols_pair = ['agg_trend','subgroup_trend_x'], colored=True)
 
     # ranking
-    result_df, ranking_view_df = getRankInfo(result_df, data_df)
+    result_df, ranking_view_df = getSPRankInfo(result_df, data_df, std_weights, std_weights_view, view_score_param)
 
     return result_df, ranking_view_df
 
-def getInfoTable(data_df):
+def getInfoTable(data_df, std_weights, std_weights_view, view_score_param):
     """
-    Auto detect SP
+    Get trends infomation
     Parameters
     -----------
     data_df : DataFrame
         data organized in a pandas dataframe containing both categorical
         and continuous attributes.
+    std_weights: nparray or list of decimal numbers
+        weights to add columns with
+    std_weights_view: nparray or list of decimal numbers
+        weights for the view to add columns with      
+    view_score_param: dict of the parameter for add_view_score function   
     Returns
     --------
-    result_df : dataframe
-        a DataFrame that contains information for 1 level grouby
+    initial_result_df : dataframe
+        a DataFrame that contains initial trend information
+    ranking_view_df : dataframe
+        a DataFrame that contains ranking information        
     """
     # get subgroup trends' info
-    result_df = dsp.get_subgroup_trends_1lev(data_df,['pearson_corr'])
+    initial_result_df = dsp.get_subgroup_trends_1lev(data_df,['pearson_corr'])
 
-    # ranking
-    result_df, ranking_view_df = getRankInfo(result_df, data_df)
+    # add slope
+    initial_result_df = dsp.add_slope_cols(data_df,initial_result_df)
+    
+    # add angle
+    initial_result_df = dsp.add_angle_col(initial_result_df)
 
-    return result_df, ranking_view_df    
+    # get ranking info
+    initial_result_df, ranking_view_df = getInitialRankInfo(initial_result_df, 
+                                                data_df, std_weights, std_weights_view, view_score_param)
 
-def getRankInfo(result_df,data_df):
+    return initial_result_df, ranking_view_df 
+
+def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param):
     """
     return a DataFrame of trends with the views ranked
     Parameters
@@ -150,43 +171,75 @@ def getRankInfo(result_df,data_df):
     data_df : DataFrame
         data organized in a pandas dataframe containing both categorical
         and continuous attributes.
+    std_weights: nparray or list of decimal numbers
+        weights to add columns with   
+    std_weights_view: nparray or list of decimal numbers
+        weights for the view to add columns with 
+    view_score_param: dict of the parameter for add_view_score function                           
     Returns
     --------
     result_df : dataframe
         a DataFrame that contains ranked information
+    ranking_view_df : dataframe
+        a DataFrame that contains ranking information          
     """ 
-    # add slope
-    result_df = dsp.add_slope_cols(data_df,result_df)
-    
-    # add angle
-    result_df = dsp.add_angle_col(result_df)
-    
-    # view counts    
-    colored_view_df = dsp.count_sp_views(result_df, colored=True, portions=True, 
-                                data_df = data_df, groupby_count=True)                        
-    result_df = dsp.add_view_count(result_df, colored_view_df,colored=True)                                
-
     # weight
-    std_weights = {'subgroup_trend':.25,
-                'angle':.25,
-                'portions':.5}
     result_df = dsp.add_weighted(result_df,std_weights,name='std_wt').sort_values(by='std_wt',ascending=False)
 
     # rank by view
-    # add angle view score
-    result_df = dsp.add_view_score(result_df, 'angle', 'mean', True)
-    # add subgroup_trend view score
-    result_df = dsp.add_view_score(result_df, 'subgroup_trend', 'mean', True)
+    # add view score
+    for key,val in view_score_param.items():    
+        result_df = dsp.add_view_score(result_df, key, val, True)
+
     # weight for view
-    std_weights = {'subgroup_trend_y':.25,
-                'angle_y':.25,
-                'portions':.5}
-    result_df = dsp.add_weighted(result_df,std_weights,name='std_wt_view')
+    result_df = dsp.add_weighted(result_df,std_weights_view,name='std_wt_view')
 
     ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', 'std_wt_view']].drop_duplicates()
     ranking_view_df = ranking_view_df.sort_values(by='std_wt_view',ascending=False)
 
     return result_df, ranking_view_df
+
+def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param):
+    """
+    return a DataFrame of trends with the views ranked for SP records
+    Parameters
+    -----------
+    results_df : DataFrame
+        results contain SP rows
+    data_df : DataFrame
+        data organized in a pandas dataframe containing both categorical
+        and continuous attributes.
+    std_weights: nparray or list of decimal numbers
+        weights to add columns with   
+    std_weights_view: nparray or list of decimal numbers
+        weights for the view to add columns with 
+    view_score_param: dict of the parameter for add_view_score function          
+    Returns
+    --------
+    result_df : dataframe
+        a DataFrame that contains SP ranked information
+    """ 
+    # weight
+    result_df = dsp.add_weighted(result_df,std_weights,name='std_wt').sort_values(by='std_wt',ascending=False)    
+
+    # view counts    
+    colored_view_df = dsp.count_sp_views(result_df, colored=True, portions=True, 
+                                data_df = data_df, groupby_count=True)       
+                                      
+    result_df = dsp.add_view_count(result_df, colored_view_df,colored=True)                                
+
+    # rank by view
+    # add view score
+    for key,val in view_score_param.items():    
+        result_df = dsp.add_view_score(result_df, key, val, True)
+
+    # weight for view
+    result_df = dsp.add_weighted(result_df,std_weights_view,name='std_wt_view')
+
+    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', 'std_wt_view']].drop_duplicates()
+    ranking_view_df = ranking_view_df.sort_values(by='std_wt_view',ascending=False)
+
+    return result_df, ranking_view_df    
 
 def getRatioRateAll(data_df, target_var, grouping_vars):
     """
@@ -216,10 +269,10 @@ def getRatioRateAll(data_df, target_var, grouping_vars):
             if protected_var != explanatory_var:
                 overall_dat = data_df.groupby(protected_var)[target_var].mean()
                 overall_dat_all.append(overall_dat)
-                #print(overall_dat)
+
                 comb = list(combinations(overall_dat, 2))
                 overall_ratio = [element[0]/element[1] for element in comb]
-                #print(overall_ratio)
+
                 overall_ratio_all.append(overall_ratio)
                 protectedVars.append(protected_var)               
                 explanaryVars.append(explanatory_var)
@@ -267,7 +320,7 @@ def getRatioRateSub(data_df, target_var, grouping_vars):
                                             [idx.levels[0].astype(str), idx.levels[1].astype(str)])
  
                 partion_ratio.columns = partion_ratio.columns.map('/'.join)
-                #print(partion_ratio)
+
                 partition_ratio_all.append(partion_ratio)
                 
     return partition_ratio_all, partition_dat_all

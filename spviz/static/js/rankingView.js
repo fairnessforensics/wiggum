@@ -55,6 +55,11 @@ function updateContainerForRanking(selections) {
 	
 		updateScatterplot(csvData, vars);
 
+		// Update Table
+		var filter_data = tableRecords.filter(function(d){
+			return d.feat1 == ranking.feat1 && d.feat2 == ranking.feat2 && d.group_feat == ranking.group_feat;})
+		tabulate(filter_data, tableColumns);
+
 	} else {
 		updateRateSPContainer();
 	}

@@ -23,7 +23,7 @@
     display: block;
     background: white;
     margin-left: 260px;
-    margin-top: 10px;
+    margin-top: 80px;
     height: 560px;
     max-height: 560px;    
     overflow-y: scroll;
@@ -43,6 +43,7 @@
     border-style: solid;
     border-width: 2px;
     border-color: grey;
+    margin-left: 30px;    
 }
 
 #tree {
@@ -201,4 +202,37 @@ table {
   
   .tablerow.highlighted {
     background-color:#D8D8D8;
+}
+
+.rankingparam {
+    border: none;
+    box-shadow: none;
+}
+
+.paramtr {
+    height: 10px;
+  }
+.paramth {
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    border: none;
+    padding: 6px;
+  }
+.param {
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    border: none;
+    text-align: left;
+    padding: 3px;
+}
+
+.paramslider {
+    height: 10px;
+    width: 90px;
+  }
+.paramselection {
+    font-size: 10px;
+    height: 10px;
 }

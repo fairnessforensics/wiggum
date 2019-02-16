@@ -19,7 +19,6 @@ var rateMatrixIndex;
 var rateColKeys;
 // Default, change by user input in TODO work
 var legendAdjustValue = 0.05;
-var arrayRankingList;
 var autoDetectFlag = 0;
 var autoDetectResult;
 // for ratio
@@ -33,6 +32,7 @@ var rateSubSlopeGraph = [];
 var rateSubKeySlopeGraph = [];
 var tableRecords;
 var ranking = {};
+var tableColumns = [];
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["Regression", "Rate"];
@@ -101,6 +101,10 @@ function ontypechange() {
 
 };
 
+function updateTextInput(id, val) {
+	document.getElementById(id+'_label').innerText=val + "%"; 
+}
+
 function getBinaryAttrs(data, attrs){
 	var binaryAttrs = [];
 	var groupAttrs = [];
@@ -134,21 +138,9 @@ function updateContainer() {
 
 	d3.select("#container").selectAll('svg').remove();
 
-	//arrayRankingList = [];
-
 	for (var i = 0; i < correlationMatrixSubgroup.length; i++){
 		var bivariateMatrix = BivariateMatrix(correlationMatrix, correlationMatrixSubgroup[i]);
 		var subgroupLabel = categoryValuesList[i].groupby +": "+ categoryValuesList[i].value;
-
-		/*
-		// Ranking the matrix
-		var averageWeight = getAverageWeight(bivariateMatrix);
-		var singleObj = {};
-
-		singleObj["label"] = subgroupLabel;
-		singleObj["weight"] = averageWeight;
-		arrayRankingList.push(singleObj);
-		*/
 
 		Matrix({
 			container : '#container',
@@ -157,14 +149,6 @@ function updateContainer() {
 			subLabel  : subgroupLabel
 		});
 	}
-
-	/*
-	arrayRankingList.sort(function(x, y){
-		return d3.descending(x.weight, y.weight);
-	})
-
-	rankingListbox(arrayRankingList);
-	*/
 
 	d3.select("#tree").selectAll('svg').remove();
 	DrawTree(
@@ -189,7 +173,6 @@ function updateRateSPContainer() {
 
 	arraySlopeGraph = [];
 	rateMatrixIndex = 0;
-	arrayRankingList = [];
 
 	for (var i = 0; i < rateTrendMatrixSub.length; i++){
 		// Prepare for Slope Graph
@@ -232,17 +215,6 @@ function updateRateSPContainer() {
 
 		var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll[i], rateTrendMatrixSub[i]);
 
-
-		// Ranking the matrix
-		var averageWeight = getAverageWeight(bivariateMatrix);
-		var singleObj = {};
-
-		var subgroupLabel = protectedAttrs[i] + ' - ' + explanaryAttrs[i];
-
-		singleObj["label"] = subgroupLabel;
-		singleObj["weight"] = averageWeight;
-		arrayRankingList.push(singleObj);
-
 		rateSPMatrix({
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
@@ -255,97 +227,6 @@ function updateRateSPContainer() {
 		rateMatrixIndex =  rateMatrixIndex + 1;
 
 	}
-
-	arrayRankingList.sort(function(x, y){
-		return d3.descending(x.weight, y.weight);
-	})
-
-	rankingListbox(arrayRankingList);
-
-	// Cell Click Event
-	d3.select(container).selectAll(".cell")
-		.on("click", clickRateMatrixCell);	
-
-	// Double click event: Reset
-	d3.select(container).selectAll(".cell")
-		.on("dblclick", doubleClickRateMatrixCell);		
-}
-
-function updateRateSPContainer_bak() {
-
-	d3.select("#container").selectAll('svg').remove();
-
-	arraySlopeGraph = [];
-	rateMatrixIndex = 0;
-	arrayRankingList = [];
-
-	for (var i = 0; i < groupingAttrs.length; i++){
-		for (var j = 0; j < groupingAttrs.length; j++){
-			//for (var i = 0; i < 1; i++){
-			//	for (var j = 0; j < 2; j++){			
-			if (groupingAttrs[i] != groupingAttrs[j]) {
-				arraySlopeGraph[rateMatrixIndex] = [];
-				// rate SP matrix for all
-				var rateMatrix = getRateMatrixAll(csvData, groupingAttrs[i], groupingAttrs[j]);
-				var rateTrendMatrixAll = getRateTrendMatrixAll(rateMatrix);
-				// rate SP matrix for subgroups
-				var rateMatrixGroups = getRateMatrixSub(csvData, groupingAttrs[i], groupingAttrs[j]);
-				var rateTrendMatrixSub = getRateTrendMatrixSub(rateMatrixGroups);
-
-				var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll, rateTrendMatrixSub);
-
-				// Ranking the matrix
-				var averageWeight = getAverageWeight(bivariateMatrix);
-				var singleObj = {};
-
-				var subgroupLabel = groupingAttrs[i] + ' - ' + groupingAttrs[j];
-
-				singleObj["label"] = subgroupLabel;
-				singleObj["weight"] = averageWeight;
-				arrayRankingList.push(singleObj);
-
-				rateSPMatrix({
-					container : '#container',
-					data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, rateRowVars, groupingAttrs[j], rateMatrixIndex, groupingAttrs[i]),
-					rowLabels : rateRowLabels,
-					colLabels : rateColLabels,
-					subLabel  : subgroupLabel
-				});
-
-				rateMatrixIndex =  rateMatrixIndex + 1;
-			}
-		}
-	}
-
-	arrayRankingList.sort(function(x, y){
-		return d3.descending(x.weight, y.weight);
-	})
-
-	rankingListbox(arrayRankingList);
-
-/*
-	var testData = [
-		{
-		  "2000": "1.56",
-		  "2012": 3,
-		  "country": "US"
-		},
-		{
-		  "2000": 0.74,
-		  "2012": 1.79,
-		  "country": "Germany"
-		}]
-
-	DrawSlopeGraph(
-		{
-			data        : arraySlopeGraph,
-			keyStart	: rateRowVars[0][0],
-			keyEnd		: rateRowVars[0][1],
-			keyName		: 
-		}
-		
-	);
-	*/
 
 	// Cell Click Event
 	d3.select(container).selectAll(".cell")

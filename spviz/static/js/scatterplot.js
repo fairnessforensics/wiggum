@@ -698,20 +698,10 @@ function openFile(){
 				labels.push(conAttrs[i]);
 			}
 
-			arrayRankingList = [];
-
 			for (var i = 0; i < correlationMatrixSubgroup.length; i++){
 
 				var bivariateMatrix = BivariateMatrix(correlationMatrix, correlationMatrixSubgroup[i]);
-				var subgroupLabel = categoryValuesList[i].groupby +": "+ categoryValuesList[i].value;
-
-				// Ranking the matrix
-				var averageWeight = getAverageWeight(bivariateMatrix);
-				var singleObj = {};
-
-				singleObj["label"] = subgroupLabel;
-				singleObj["weight"] = averageWeight;
-				arrayRankingList.push(singleObj);				
+				var subgroupLabel = categoryValuesList[i].groupby +": "+ categoryValuesList[i].value;			
 
 				Matrix({
 					container : '#container',
@@ -720,12 +710,6 @@ function openFile(){
 					subLabel  : subgroupLabel
 				});
 			}
-
-			arrayRankingList.sort(function(x, y){
-				return d3.descending(x.weight, y.weight);
-			})
-			
-			rankingListbox(arrayRankingList);
 
 			// Draw Tree
 			DrawTree(

@@ -1,5 +1,8 @@
 function tabulate(data, columns) {	
 	
+	// remove existing table
+	d3.select("#table").selectAll('table').remove();
+
 	var table = d3.select("div#table").append('table');
 	var thead = table.append('thead');
 	var sortAscending = true;
