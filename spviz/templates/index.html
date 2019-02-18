@@ -58,22 +58,22 @@
 
                 // Sending weight parameters
                 var weight_param = 
-                    {   agg_trend: document.getElementById("agg_trend").value/100, 
-                        all_slope: document.getElementById("all_slope").value/100,
-                        angle: document.getElementById("angle").value/100, 
-                        subgroup_slope: document.getElementById("subgroup_slope").value/100,  
-                        subgroup_trend: document.getElementById("subgroup_trend").value/100,                                            
+                    {   agg_trend: document.getElementById("agg_trend").value, 
+                        all_slope: document.getElementById("all_slope").value,
+                        angle: document.getElementById("angle").value, 
+                        subgroup_slope: document.getElementById("subgroup_slope").value,  
+                        subgroup_trend: document.getElementById("subgroup_trend").value,                                            
                     };
                 weight_param = JSON.stringify(weight_param);
                 form_data.append('weight_param', weight_param);
 
                 // Sending weight parameters for view
                 var weight_param_view = 
-                    {   agg_trend: document.getElementById("agg_trend_view").value/100, 
-                        all_slope: document.getElementById("all_slope_view").value/100,
-                        angle_y: document.getElementById("angle_view").value/100, 
-                        subgroup_slope_y: document.getElementById("subgroup_slope_view").value/100,  
-                        subgroup_trend_y: document.getElementById("subgroup_trend_view").value/100,                                            
+                    {   agg_trend: document.getElementById("agg_trend_view").value, 
+                        all_slope: document.getElementById("all_slope_view").value,
+                        angle_y: document.getElementById("angle_view").value, 
+                        subgroup_slope_y: document.getElementById("subgroup_slope_view").value,  
+                        subgroup_trend_y: document.getElementById("subgroup_trend_view").value,                                            
                     };
                 weight_param_view = JSON.stringify(weight_param_view);
                 form_data.append('weight_param_view', weight_param_view);    
@@ -131,21 +131,21 @@
                 
                 // Sending weight parameters
                 var weight_param = 
-                    {   agg_trend: document.getElementById("agg_trend").value/100, 
-                        all_slope: document.getElementById("all_slope").value/100,
-                        angle_x: document.getElementById("angle").value/100, 
-                        subgroup_slope_x: document.getElementById("subgroup_slope").value/100,  
-                        subgroup_trend_x: document.getElementById("subgroup_trend").value/100,                                            
+                    {   agg_trend: document.getElementById("agg_trend").value, 
+                        all_slope: document.getElementById("all_slope").value,
+                        angle_x: document.getElementById("angle").value, 
+                        subgroup_slope_x: document.getElementById("subgroup_slope").value,  
+                        subgroup_trend_x: document.getElementById("subgroup_trend").value,                                            
                     };
                 weight_param = JSON.stringify(weight_param);
 
                 // Sending weight parameters for view
                 var weight_param_view = 
-                    {   agg_trend: document.getElementById("agg_trend_view").value/100, 
-                        all_slope: document.getElementById("all_slope_view").value/100,
-                        angle_y: document.getElementById("angle_view").value/100, 
-                        subgroup_slope_y: document.getElementById("subgroup_slope_view").value/100,  
-                        subgroup_trend_y: document.getElementById("subgroup_trend_view").value/100,                                            
+                    {   agg_trend: document.getElementById("agg_trend_view").value, 
+                        all_slope: document.getElementById("all_slope_view").value,
+                        angle_y: document.getElementById("angle_view").value, 
+                        subgroup_slope_y: document.getElementById("subgroup_slope_view").value,  
+                        subgroup_trend_y: document.getElementById("subgroup_trend_view").value,                                            
                     };
                 weight_param_view = JSON.stringify(weight_param_view);
                 
@@ -189,6 +189,13 @@
 
                     }
                 });
+            });
+
+            // number change
+            $('input[type="number"]').change(function () {
+                var str = $(this).attr("id");
+                var sliderid = str.substring(0, str.length - 7);
+                $("#"+sliderid).val($(this).val());
             });
         });    
     </script>
@@ -255,46 +262,46 @@
                         <tr class = "paramtr">
                             <td class="param">agg_trend</td>
                             <td class="param">
-                                <input type="range" class="paramslider" min="0" max="100" id="agg_trend" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_trend" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>                    
                             <td class="param">
-                                <label id = "agg_trend_label">0%</label>
+                                <input type="number" id="agg_trend_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>
                         </tr>
                         <tr class = "paramtr">
                             <td class="param">all_slope</td>
                             <td class="param">
-                                <input type="range" class="paramslider" min="0" max="100" id="all_slope" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="all_slope" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>    
                             <td class="param">                       
-                                <label id = "all_slope_label">0%</label>
+                                <input type="number" id="all_slope_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>
                         </tr>                    
                         <tr class = "paramtr">
                             <td class="param">angle</td>                 
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="angle" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="angle" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>                        
                             <td class="param">
-                                <label id = "angle_label">0%</label>
+                                <input type="number" id="angle_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>
                         </tr>                    
                         <tr class = "paramtr">
                             <td class="param">subgroup_slope</td>                    
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="subgroup_slope" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_slope" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>
                             <td class="param">
-                                    <label id = "subgroup_slope_label">0%</label>
+                                <input type="number" id="subgroup_slope_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                    
                         </tr>                    
                         <tr class = "paramtr">
                             <td class="param">subgroup_trend</td>
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="subgroup_trend" value = "0" onchange="updateTextInput(this.id, this.value);">  
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_trend" value = "0" onchange="updateNumberInput(this.id, this.value);">  
                             </td>    
                             <td class="param">
-                                <label id = "subgroup_trend_label">0%</label>
+                                <input type="number" id="subgroup_trend_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                         
                         </tr>
                         <tr class="paramtr"><td class="param">&nbsp;</td></tr>
@@ -313,20 +320,20 @@
                             <td class="param">agg_trend</td>
                             <td class="param"></td>
                             <td class="param">
-                                <input type="range" class="paramslider" min="0" max="100" id="agg_trend_view" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_trend_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>
                             <td class="param">
-                                <label id = "agg_trend_view_label">0%</label>
+                                <input type="number" id="agg_trend_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                        
                         </tr>
                         <tr class = "paramtr">
                             <td class="param">all_slope</td>
                             <td class="param"></td>                            
                             <td class="param">
-                                <input type="range" class="paramslider" min="0" max="100" id="all_slope_view" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="all_slope_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td> 
                             <td class="param">
-                                <label id = "all_slope_view_label">0%</label>
+                                <input type="number" id="all_slope_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                        
                         </tr>                    
                         <tr class = "paramtr">
@@ -338,10 +345,10 @@
                                 </select>
                             </td>                            
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="angle_view" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="angle_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>
                             <td class="param">
-                                <label id = "angle_view_label">0%</label>
+                                <input type="number" id="angle_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                        
                         </tr>                    
                         <tr class = "paramtr">
@@ -353,10 +360,10 @@
                                 </select>                                
                             </td>                            
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="subgroup_slope_view" value = "0" onchange="updateTextInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_slope_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>
                             <td class="param">
-                                <label id = "subgroup_slope_view_label">0%</label>
+                                <input type="number" id="subgroup_slope_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                        
                         </tr>                    
                         <tr class = "paramtr">
@@ -368,40 +375,40 @@
                                 </select>                                
                             </td>                           
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="subgroup_trend_view" value = "0" onchange="updateTextInput(this.id, this.value);">  
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_trend_view" value = "0" onchange="updateNumberInput(this.id, this.value);">  
                             </td>   
                             <td class="param">
-                                <label id = "subgroup_trend_view_label">0%</label>
+                                <input type="number" id="subgroup_trend_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                              
                         </tr>
                         <tr class = "paramtr">
                             <td class="param">SP_subgroups</td>
                             <td class="param"></td>                            
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="sp_subgroups" value = "0" onchange="updateTextInput(this.id, this.value);">  
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="sp_subgroups" value = "0" onchange="updateNumberInput(this.id, this.value);">  
                             </td>   
                             <td class="param">
-                                <label id = "sp_subgroups_label">0%</label>
+                                <input type="number" id="sp_subgroups_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                              
                         </tr>
                         <tr class = "paramtr">
                             <td class="param">gby_counts</td>
                             <td class="param"></td>                            
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="gby_counts" value = "0" onchange="updateTextInput(this.id, this.value);">  
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="gby_counts" value = "0" onchange="updateNumberInput(this.id, this.value);">  
                             </td>  
                             <td class="param">
-                                <label id = "gby_counts_label">0%</label>
+                                <input type="number" id="gby_counts_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                               
                         </tr>
                         <tr class = "paramtr">
                             <td class="param">portions</td>
                             <td class="param"></td>                            
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="100" id="portions" value = "0" onchange="updateTextInput(this.id, this.value);">  
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="portions" value = "0" onchange="updateNumberInput(this.id, this.value);">  
                             </td> 
                             <td class="param">
-                                <label id = "portions_label">0%</label>
+                                <input type="number" id="portions_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                                
                         </tr>                                                            
                     </table>  

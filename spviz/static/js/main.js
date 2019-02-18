@@ -105,6 +105,10 @@ function updateTextInput(id, val) {
 	document.getElementById(id+'_label').innerText=val + "%"; 
 }
 
+function updateNumberInput(id, val) {
+	document.getElementById(id+'_number').value=val;
+}
+
 function getBinaryAttrs(data, attrs){
 	var binaryAttrs = [];
 	var groupAttrs = [];
