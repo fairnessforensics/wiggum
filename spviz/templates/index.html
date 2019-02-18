@@ -58,22 +58,22 @@
 
                 // Sending weight parameters
                 var weight_param = 
-                    {   agg_trend: document.getElementById("agg_trend").value, 
-                        all_slope: document.getElementById("all_slope").value,
-                        angle: document.getElementById("angle").value, 
-                        subgroup_slope: document.getElementById("subgroup_slope").value,  
-                        subgroup_trend: document.getElementById("subgroup_trend").value,                                            
+                    {   agg_trend: Number(document.getElementById("agg_trend").value), 
+                        all_slope: Number(document.getElementById("all_slope").value),
+                        angle: Number(document.getElementById("angle").value), 
+                        subgroup_slope: Number(document.getElementById("subgroup_slope").value),  
+                        subgroup_trend: Number(document.getElementById("subgroup_trend").value)                                           
                     };
                 weight_param = JSON.stringify(weight_param);
                 form_data.append('weight_param', weight_param);
 
                 // Sending weight parameters for view
                 var weight_param_view = 
-                    {   agg_trend: document.getElementById("agg_trend_view").value, 
-                        all_slope: document.getElementById("all_slope_view").value,
-                        angle_y: document.getElementById("angle_view").value, 
-                        subgroup_slope_y: document.getElementById("subgroup_slope_view").value,  
-                        subgroup_trend_y: document.getElementById("subgroup_trend_view").value,                                            
+                    {   agg_trend: Number(document.getElementById("agg_trend_view").value), 
+                        all_slope: Number(document.getElementById("all_slope_view").value),
+                        angle_y: Number(document.getElementById("angle_view").value), 
+                        subgroup_slope_y: Number(document.getElementById("subgroup_slope_view").value),  
+                        subgroup_trend_y: Number(document.getElementById("subgroup_trend_view").value)                                           
                     };
                 weight_param_view = JSON.stringify(weight_param_view);
                 form_data.append('weight_param_view', weight_param_view);    
@@ -131,21 +131,21 @@
                 
                 // Sending weight parameters
                 var weight_param = 
-                    {   agg_trend: document.getElementById("agg_trend").value, 
-                        all_slope: document.getElementById("all_slope").value,
-                        angle_x: document.getElementById("angle").value, 
-                        subgroup_slope_x: document.getElementById("subgroup_slope").value,  
-                        subgroup_trend_x: document.getElementById("subgroup_trend").value,                                            
+                    {   agg_trend: Number(document.getElementById("agg_trend").value), 
+                        all_slope: Number(document.getElementById("all_slope").value),
+                        angle_x: Number(document.getElementById("angle").value), 
+                        subgroup_slope_x: Number(document.getElementById("subgroup_slope").value),  
+                        subgroup_trend_x: Number(document.getElementById("subgroup_trend").value)                                            
                     };
                 weight_param = JSON.stringify(weight_param);
 
                 // Sending weight parameters for view
                 var weight_param_view = 
-                    {   agg_trend: document.getElementById("agg_trend_view").value, 
-                        all_slope: document.getElementById("all_slope_view").value,
-                        angle_y: document.getElementById("angle_view").value, 
-                        subgroup_slope_y: document.getElementById("subgroup_slope_view").value,  
-                        subgroup_trend_y: document.getElementById("subgroup_trend_view").value,                                            
+                    {   agg_trend: Number(document.getElementById("agg_trend_view").value), 
+                        all_slope: Number(document.getElementById("all_slope_view").value),
+                        angle_y: Number(document.getElementById("angle_view").value), 
+                        subgroup_slope_y: Number(document.getElementById("subgroup_slope_view").value),  
+                        subgroup_trend_y: Number(document.getElementById("subgroup_trend_view").value)                                            
                     };
                 weight_param_view = JSON.stringify(weight_param_view);
                 
