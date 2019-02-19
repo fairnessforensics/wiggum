@@ -107,6 +107,9 @@ function updateTextInput(id, val) {
 
 function updateNumberInput(id, val) {
 	document.getElementById(id+'_number').value=val;
+
+	var event = new Event('change');
+	document.getElementById(id+'_number').dispatchEvent(event);
 }
 
 function getBinaryAttrs(data, attrs){
