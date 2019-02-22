@@ -28,11 +28,24 @@ function CircularProgress(element, settings){
 	
 	var g = svg.append('g').attr('transform', 'translate(' + w / 2 + ',' + h / 2 + ')');
 	
+	//Define the circle
+	var circle = d3.svg.arc()
+		.startAngle(0)
+		.innerRadius(innerRadius+1)
+		.outerRadius(outerRadius-1);	
+	var endAngle = Math.PI * 2;
+	
+	//Setup track
+	g.append('path')
+		.attr('fill', "#CCCCCC")
+		.attr('d', circle.endAngle(endAngle));
+
 	//initialise the control
-	g.datum([0]).selectAll("path")
+	g.datum([0]).selectAll(".progresspath")
 		.data(paths)
 	.enter()
 		.append("path")
+		.attr('class', 'progresspath')		
 		.attr("fill", fill)
 		.attr("d", arc)
 	.each(function(d){ this._current = d; });
@@ -46,7 +59,7 @@ function CircularProgress(element, settings){
 		.text(function(d){return d.value});
 	
 	this.update = function(percent) {
-		g.datum(percent).selectAll("path").data(paths).transition().duration(duration).attrTween("d", arcTween);
+		g.datum(percent).selectAll(".progresspath").data(paths).transition().duration(duration).attrTween("d", arcTween);
 		svg.datum(percent).selectAll("text").data(paths).text(function(d){return formatText(d.value/100);});
 	};
 	
