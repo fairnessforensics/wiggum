@@ -26,6 +26,10 @@ def main():
         view_score_param = request.form['view_score_param']        
         view_score_param =json.loads(view_score_param)
 
+        # weighting name
+        individual_weight_name = request.form['individual_weight_name']
+        view_weight_name = request.form['view_weight_name']
+
         # Upload File
         if action == 'upload':
             file = request.files.get('file')
@@ -54,7 +58,8 @@ def main():
                 correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(df, regression_vars, categoricalVars)
 
                 # generate table
-                initial_result_df, rankViewResult = models.getInfoTable(df, std_weights, std_weights_view, view_score_param)
+                initial_result_df, rankViewResult = models.getInfoTable(df, std_weights, std_weights_view, view_score_param,
+                                                    individual_weight_name, view_weight_name)
 
                 return jsonify({'csv_data':csv_data,
                                 'table': initial_result_df.to_json(orient='records'),
@@ -85,8 +90,9 @@ def main():
         elif action == 'autodetect':      
             threshold = float(request.form['threshold'])
 
-            result, ranking_view_df = models.auto_detect(df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold)
+            initial_result_df, ranking_view_df = models.auto_detect(df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold,
+                                                        individual_weight_name, view_weight_name)
 
-            return jsonify({'result': result.to_json(),
-                            'table': result.to_json(orient='records'),
+            return jsonify({'result': initial_result_df.to_json(),
+                            'table': initial_result_df.to_json(orient='records'),
                             'rankViewResult': ranking_view_df.to_json(orient='records')})

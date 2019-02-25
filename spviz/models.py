@@ -98,7 +98,7 @@ def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
 
     return correlationMatrixSubgroup, groupby_info
 
-def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold):
+def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold, individual_weight_name, view_weight_name):
     """
     Auto detect SP
     Parameters
@@ -121,14 +121,15 @@ def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_
     """
     # get SP rows
     result_df = dsp.get_SP_rows(initial_result_df, sp_type='SP_thresh', 
-                    cols_pair = ['agg_trend','subgroup_trend_x'], colored=True, sp_args = threshold)
+                    cols_pair = ['agg_trend','subgroup_trend'], colored=True, sp_args = threshold)
 
     # ranking
-    result_df, ranking_view_df = getSPRankInfo(result_df, data_df, std_weights, std_weights_view, view_score_param)
+    result_df, ranking_view_df = getSPRankInfo(result_df, data_df, std_weights, std_weights_view, 
+                                                view_score_param, individual_weight_name, view_weight_name)
 
     return result_df, ranking_view_df
 
-def getInfoTable(data_df, std_weights, std_weights_view, view_score_param):
+def getInfoTable(data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
     """
     Get trends infomation
     Parameters
@@ -159,11 +160,12 @@ def getInfoTable(data_df, std_weights, std_weights_view, view_score_param):
 
     # get ranking info
     initial_result_df, ranking_view_df = getInitialRankInfo(initial_result_df, 
-                                                data_df, std_weights, std_weights_view, view_score_param)
+                                                data_df, std_weights, std_weights_view, view_score_param,
+                                                individual_weight_name, view_weight_name)
 
     return initial_result_df, ranking_view_df 
 
-def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param):
+def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
     """
     return a DataFrame of trends with the views ranked
     Parameters
@@ -186,7 +188,7 @@ def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_sc
         a DataFrame that contains ranking information          
     """ 
     # weight
-    result_df = dsp.add_weighted(result_df,std_weights,name='std_wt').sort_values(by='std_wt',ascending=False)
+    result_df = dsp.add_weighted(result_df,std_weights,name=individual_weight_name).sort_values(by=individual_weight_name,ascending=False)
 
     # rank by view
     # add view score
@@ -194,14 +196,14 @@ def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_sc
         result_df = dsp.add_view_score(result_df, key, val, True)
 
     # weight for view
-    result_df = dsp.add_weighted(result_df,std_weights_view,name='std_wt_view')
+    result_df = dsp.add_weighted(result_df,std_weights_view,name=view_weight_name)
 
-    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', 'std_wt_view']].drop_duplicates()
-    ranking_view_df = ranking_view_df.sort_values(by='std_wt_view',ascending=False)
+    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', view_weight_name]].drop_duplicates()
+    ranking_view_df = ranking_view_df.sort_values(by=view_weight_name,ascending=False)
 
     return result_df, ranking_view_df
 
-def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param):
+def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
     """
     return a DataFrame of trends with the views ranked for SP records
     Parameters
@@ -222,9 +224,13 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
         a DataFrame that contains SP ranked information
     """ 
     # weight
-    result_df = dsp.add_weighted(result_df,std_weights,name='std_wt').sort_values(by='std_wt',ascending=False)    
+    result_df = dsp.add_weighted(result_df,std_weights,name=individual_weight_name).sort_values(by=individual_weight_name,ascending=False)    
 
-    # view counts    
+    # check if the column already exists
+    if 'SP_subgroups' in result_df.columns:   
+        result_df = result_df.drop(columns=['SP_subgroups', 'gby_counts', 'portions'])
+    
+    # view counts 
     colored_view_df = dsp.count_sp_views(result_df, colored=True, portions=True, 
                                 data_df = data_df, groupby_count=True)       
                                       
@@ -232,14 +238,17 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
 
     # rank by view
     # add view score
-    for key,val in view_score_param.items():    
+    for key,val in view_score_param.items():   
+        # remove the same column 
+        column_name = key + "_" + val
+        result_df = result_df.drop(columns=column_name)
         result_df = dsp.add_view_score(result_df, key, val, True)
 
     # weight for view
-    result_df = dsp.add_weighted(result_df,std_weights_view,name='std_wt_view')
+    result_df = dsp.add_weighted(result_df,std_weights_view,name=view_weight_name)
 
-    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', 'std_wt_view']].drop_duplicates()
-    ranking_view_df = ranking_view_df.sort_values(by='std_wt_view',ascending=False)
+    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', view_weight_name]].drop_duplicates()
+    ranking_view_df = ranking_view_df.sort_values(by=view_weight_name,ascending=False)
 
     return result_df, ranking_view_df    
 

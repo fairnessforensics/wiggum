@@ -74,25 +74,39 @@
                 weight_param = JSON.stringify(weight_param);
                 form_data.append('weight_param', weight_param);
 
+                var angle_agg_type = document.getElementById("angle_selection").value;
+                var subgroup_slope_agg_type = document.getElementById("subgroup_slope_selection").value;
+                var subgroup_trend_agg_type = document.getElementById("subgroup_trend_selection").value;
+
+                var angle_key = "angle_" + angle_agg_type;
+                var subgroup_slope_key = "subgroup_slope_" + subgroup_slope_agg_type;
+                var subgroup_trend_key = "subgroup_trend_" + subgroup_trend_agg_type;                                
+
                 // Sending weight parameters for view
                 var weight_param_view = 
                     {   agg_trend: Number(document.getElementById("agg_trend_view").value), 
                         all_slope: Number(document.getElementById("all_slope_view").value),
-                        angle_y: Number(document.getElementById("angle_view").value), 
-                        subgroup_slope_y: Number(document.getElementById("subgroup_slope_view").value),  
-                        subgroup_trend_y: Number(document.getElementById("subgroup_trend_view").value)                             
+                        [angle_key]: Number(document.getElementById("angle_view").value), 
+                        [subgroup_slope_key]: Number(document.getElementById("subgroup_slope_view").value),  
+                        [subgroup_trend_key]: Number(document.getElementById("subgroup_trend_view").value)                             
                     };
                 weight_param_view = JSON.stringify(weight_param_view);
                 form_data.append('weight_param_view', weight_param_view);    
                 
                 // Sending view score parameters
                 var view_score_param = 
-                    {   angle: document.getElementById("angle_selection").value, 
-                        subgroup_slope: document.getElementById("subgroup_slope_selection").value,  
-                        subgroup_trend: document.getElementById("subgroup_trend_selection").value                                            
+                    {   angle: angle_agg_type, 
+                        subgroup_slope: subgroup_slope_agg_type,  
+                        subgroup_trend: subgroup_trend_agg_type                                            
                     };
                 view_score_param = JSON.stringify(view_score_param);
                 form_data.append('view_score_param', view_score_param);                  
+
+                // Sending weighting name
+                var individual_weight_name = document.getElementById("individual_weight_name").value;
+                form_data.append('individual_weight_name', individual_weight_name);
+                var view_weight_name = document.getElementById("view_weight_name").value;
+                form_data.append('view_weight_name', view_weight_name);                
 
                 $.ajax({
                     type: 'POST',
@@ -117,9 +131,9 @@
                         tableRecords = JSON.parse(data.table)
                         //d3.select("#table").style("display", "inline-block");                  
 
-                        tableColumns = ['agg_trend', 'all_slope', 'angle_x', 'feat1', 'feat2', 'group_feat', 
-                                'subgroup', 'subgroup_slope_x', 'subgroup_trend_x','std_wt',
-                                'angle_y', 'subgroup_slope_y', 'subgroup_trend_y', 'std_wt_view'];
+                        tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
+                                'subgroup', 'subgroup_slope', 'subgroup_trend',
+                                angle_key, subgroup_slope_key, subgroup_trend_key, individual_weight_name, view_weight_name];
                         tabulate(tableRecords, tableColumns);
 
                         // Ranking
@@ -140,19 +154,27 @@
                 var weight_param = 
                     {   agg_trend: Number(document.getElementById("agg_trend_individual").value), 
                         all_slope: Number(document.getElementById("all_slope_individual").value),
-                        angle_x: Number(document.getElementById("angle_individual").value), 
-                        subgroup_slope_x: Number(document.getElementById("subgroup_slope_individual").value),  
-                        subgroup_trend_x: Number(document.getElementById("subgroup_trend_individual").value)                                            
+                        angle: Number(document.getElementById("angle_individual").value), 
+                        subgroup_slope: Number(document.getElementById("subgroup_slope_individual").value),  
+                        subgroup_trend: Number(document.getElementById("subgroup_trend_individual").value)                                            
                     };
                 weight_param = JSON.stringify(weight_param);
+
+                var angle_agg_type = document.getElementById("angle_selection").value;
+                var subgroup_slope_agg_type = document.getElementById("subgroup_slope_selection").value;
+                var subgroup_trend_agg_type = document.getElementById("subgroup_trend_selection").value;
+
+                var angle_key = "angle_" + angle_agg_type;
+                var subgroup_slope_key = "subgroup_slope_" + subgroup_slope_agg_type;
+                var subgroup_trend_key = "subgroup_trend_" + subgroup_trend_agg_type;     
 
                 // Sending weight parameters for view
                 var weight_param_view = 
                     {   agg_trend: Number(document.getElementById("agg_trend_view").value), 
                         all_slope: Number(document.getElementById("all_slope_view").value),
-                        angle_y: Number(document.getElementById("angle_view").value), 
-                        subgroup_slope_y: Number(document.getElementById("subgroup_slope_view").value),  
-                        subgroup_trend_y: Number(document.getElementById("subgroup_trend_view").value),
+                        [angle_key]: Number(document.getElementById("angle_view").value), 
+                        [subgroup_slope_key]: Number(document.getElementById("subgroup_slope_view").value),  
+                        [subgroup_trend_key]: Number(document.getElementById("subgroup_trend_view").value),
                         SP_subgroups: Number(document.getElementById("sp_subgroups_view").value),
                         gby_counts: Number(document.getElementById("gby_counts_view").value),
                         portions: Number(document.getElementById("portions_view").value)                                                                    
@@ -161,20 +183,32 @@
                 
                 // Sending view score parameters
                 var view_score_param = 
-                    {   angle_x: document.getElementById("angle_selection").value, 
-                        subgroup_slope_x: document.getElementById("subgroup_slope_selection").value,  
-                        subgroup_trend_x: document.getElementById("subgroup_trend_selection").value                                            
+                    {   angle: angle_agg_type, 
+                        subgroup_slope: subgroup_slope_agg_type,  
+                        subgroup_trend: subgroup_trend_agg_type                                            
                     };
                 view_score_param = JSON.stringify(view_score_param);              
+
+                // Sending weighting name
+                var individual_weight_name = document.getElementById("individual_weight_name").value;
+                var view_weight_name = document.getElementById("view_weight_name").value;
 
                 $.ajax({
                     url: '/',
                     data: {'action' : action, 'threshold': threshold, 'sptype': sp_type, 'weight_param': weight_param, 
-                            'weight_param_view': weight_param_view, 'view_score_param': view_score_param},     
+                            'weight_param_view': weight_param_view, 'view_score_param': view_score_param,
+                            'individual_weight_name': individual_weight_name, 'view_weight_name': view_weight_name},     
                     type: 'POST',      
                     success: function(data) { 
                         // Get data from controller return data
                         autoDetectResult = JSON.parse(data.result)
+
+                        if (autoDetectFlag == 0) {
+                            tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
+                                'subgroup', 'subgroup_slope',subgroup_trend_key, 'SP_subgroups', 'gby_counts', 'portions',
+                                angle_key, subgroup_trend_key];
+                        }
+
                         autoDetectFlag = 1;
                         ranking = {};
 
@@ -183,10 +217,10 @@
 
                             // Display info table
                             tableRecords = JSON.parse(data.table)
-                            console.log(tableRecords);
-                            tableColumns = ['agg_trend', 'all_slope', 'angle_x', 'feat1', 'feat2', 'group_feat', 
-                                'subgroup', 'subgroup_slope','subgroup_trend_x', 'SP_subgroups', 'gby_counts', 'portions', 'std_wt',
-                                'angle_y', 'subgroup_trend_y', 'std_wt_view'];
+
+                            tableColumns.push(individual_weight_name);                              
+                            tableColumns.push(view_weight_name);                              
+                            
                             tabulate(tableRecords, tableColumns);
 
                             // Ranking
@@ -282,9 +316,17 @@
                         <tr class = "paramtr">
                             <th class = "paramth" colspan="3">
                                 Weight Setting for Individuals
-                                <div id="totalweightchart"></div>
-                            </th>
+                            </th>                           
                         </tr>
+                        <tr class = "paramtr">
+                            <td class="param">weight name</td>
+                            <td class="param">                        
+                                <input type="text" id="individual_weight_name" size="12">  
+                            </td> 
+                            <td class="param">
+                                <div id="totalweightchart"></div>   
+                            </td>                                                        
+                        </tr>                           
                         <tr class = "paramtr">
                             <td class="param">agg_trend</td>
                             <td class="param">
@@ -329,7 +371,7 @@
                             <td class="param">
                                 <input type="number" id="subgroup_trend_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                         
-                        </tr>        
+                        </tr>                                      
                     </table>
                 </td>
                 <td>
@@ -337,9 +379,17 @@
                         <tr class = "paramtr">
                             <th class = "paramth" colspan="8">
                                 Weight Setting for Views
-                                <div id="totalweightviewchart"></div>
                             </th>
                         </tr>
+                        <tr class = "paramtr">
+                                <td class="param">weight name</td>
+                                <td class="param" colspan="2">                        
+                                    <input type="text" id="view_weight_name" size="21">  
+                                </td> 
+                                <td class="param">
+                                    <div id="totalweightviewchart"></div>   
+                                </td>                                                        
+                            </tr>                          
                         <tr class = "paramtr">
                             <td class="param">agg_trend</td>
                             <td class="param"></td>
