@@ -285,7 +285,7 @@ def get_SP_views(results_df,sp_type='SP',
 
 def get_SP_rows(results_df,sp_type='SP',
             cols_pair = ['agg_trend','subgroup_trend'],
-            colored=False):
+            colored=False, sp_args = None):
     """
     return a list of tuples of the rows of the dataset that have at least one
     occurence of SP. 
@@ -311,7 +311,7 @@ def get_SP_rows(results_df,sp_type='SP',
     # add SP label if not already added
     col_name = '_'.join(cols_pair) + '_' + sp_type
     if not col_name in results_df.columns:
-        results_df = label_SP_rows(results_df,sp_type,cols_pair)
+        results_df = label_SP_rows(results_df,sp_type,cols_pair, sp_args)
 
     # filter
     sp_df = results_df[results_df[col_name] == True]

@@ -83,9 +83,9 @@ def main():
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
         # Auto Detect
         elif action == 'autodetect':      
-            # threshold = float(request.form['threshold'])
+            threshold = float(request.form['threshold'])
 
-            result, ranking_view_df = models.auto_detect(df, initial_result_df, std_weights, std_weights_view, view_score_param)
+            result, ranking_view_df = models.auto_detect(df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold)
 
             return jsonify({'result': result.to_json(),
                             'table': result.to_json(orient='records'),

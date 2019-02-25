@@ -98,7 +98,7 @@ def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
 
     return correlationMatrixSubgroup, groupby_info
 
-def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_score_param):
+def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold):
     """
     Auto detect SP
     Parameters
@@ -112,14 +112,16 @@ def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_
         weights to add columns with
     std_weights_view: nparray or list of decimal numbers
         weights for the view to add columns with      
-    view_score_param: dict of the parameter for add_view_score function          
+    view_score_param: dict of the parameter for add_view_score function
+    threshold: an argument for SP detector          
     Returns
     --------
     result_df : dataframe
         a dataframe with SP info
     """
     # get SP rows
-    result_df = dsp.get_SP_rows(initial_result_df, cols_pair = ['agg_trend','subgroup_trend_x'], colored=True)
+    result_df = dsp.get_SP_rows(initial_result_df, sp_type='SP_thresh', 
+                    cols_pair = ['agg_trend','subgroup_trend_x'], colored=True, sp_args = threshold)
 
     # ranking
     result_df, ranking_view_df = getSPRankInfo(result_df, data_df, std_weights, std_weights_view, view_score_param)
