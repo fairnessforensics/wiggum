@@ -191,6 +191,7 @@ def add_weighted(df,cols_weight_dict,name=None):
     # use sklearn MinMaxScaler to normalize
     min_max_scaler = preprocessing.MinMaxScaler()
     df_temp_scaled = min_max_scaler.fit_transform(df_temp)
+
     df_temp[col_names] = pd.DataFrame(df_temp_scaled)
     df_normalized = df_temp
 
@@ -491,9 +492,12 @@ def add_view_score(result_df,score_col,agg_type,colored=False):
     # create df with score for each view
     view_df = view_score[agg_type](result_df).reset_index()
 
-    # merge with result and return
+    # define suffix
+    suffix = '_'+agg_type
 
-    return result_df.merge(view_df, left_on = view_vars, right_on=view_vars)
+    # merge with result and return
+    
+    return result_df.merge(view_df, left_on = view_vars, right_on=view_vars, suffixes=['', suffix])
 
 def mark_designed_rows(result_df,design_list_tuples):
     """
