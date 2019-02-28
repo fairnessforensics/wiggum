@@ -55,6 +55,8 @@
             var totalWeightViewChart = document.getElementById("totalweightviewchart");					
             var totalWeightViewProgress = new CircularProgress(totalWeightViewChart, 
                                     {fill: "#dd1c77", range:{min:0,max:100}, innerRadius: 15, outerRadius: 20});                                    
+            var individual_weight_name;
+            var view_weight_name;
 
             $('#upload-file-btn').click(function() {
                 var form_data = new FormData($('#upload-file')[0]);
@@ -103,9 +105,9 @@
                 form_data.append('view_score_param', view_score_param);                  
 
                 // Sending weighting name
-                var individual_weight_name = document.getElementById("individual_weight_name").value;
+                individual_weight_name = document.getElementById("individual_weight_name").value;
                 form_data.append('individual_weight_name', individual_weight_name);
-                var view_weight_name = document.getElementById("view_weight_name").value;
+                view_weight_name = document.getElementById("view_weight_name").value;
                 form_data.append('view_weight_name', view_weight_name);                
 
                 $.ajax({
@@ -190,8 +192,16 @@
                 view_score_param = JSON.stringify(view_score_param);              
 
                 // Sending weighting name
-                var individual_weight_name = document.getElementById("individual_weight_name").value;
-                var view_weight_name = document.getElementById("view_weight_name").value;
+                var individual_weight_name_flg, view_weight_name_flg = false;
+                if (individual_weight_name != document.getElementById("individual_weight_name").value) {
+                    individual_weight_name = document.getElementById("individual_weight_name").value;
+                    individual_weight_name_flg = true;
+                }
+                if (view_weight_name != document.getElementById("view_weight_name").value) {
+                    view_weight_name = document.getElementById("view_weight_name").value;
+                    view_weight_name_flg = true;
+                }               
+                
 
                 $.ajax({
                     url: '/',
@@ -206,7 +216,7 @@
                         if (autoDetectFlag == 0) {
                             tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
                                 'subgroup', 'subgroup_slope',subgroup_trend_key, 'SP_subgroups', 'gby_counts', 'portions',
-                                angle_key, subgroup_trend_key];
+                                angle_key, subgroup_trend_key, individual_weight_name, view_weight_name];
                         }
 
                         autoDetectFlag = 1;
@@ -218,8 +228,11 @@
                             // Display info table
                             tableRecords = JSON.parse(data.table)
 
-                            tableColumns.push(individual_weight_name);                              
-                            tableColumns.push(view_weight_name);                              
+                            // name changed, then update
+                            if (individual_weight_name_flg)
+                                tableColumns.push(individual_weight_name);                              
+                            if (view_weight_name_flg)
+                                tableColumns.push(view_weight_name);                              
                             
                             tabulate(tableRecords, tableColumns);
 
