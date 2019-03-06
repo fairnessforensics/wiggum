@@ -69,12 +69,14 @@ var updateScatterplot = function(data, vars) {
 	} else {
 		tempMin = xMin;
 	}	
-	x.domain([tempMin, tempMax]);
-	y.domain([tempMin, tempMax]);
 
-	// Old Scale
-	//x.domain([xMin, xMax]);
-	//y.domain([yMin, yMax]);
+	if(d3.select("#samerange").property("checked")){
+		x.domain([tempMin, tempMax]);
+		y.domain([tempMin, tempMax]);
+	}else {
+		x.domain([xMin, xMax]);
+		y.domain([yMin, yMax]);
+	}
 
 	var getX = function(d) {return x(d[vars.x]) ; };
 	var getY = function(d) {return y(d[vars.y]) ; };
@@ -252,6 +254,20 @@ function createScatterplot(data) {
 					.attr("height", height + margin.top + margin.bottom)									
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	// axis range selection
+	updateVars = { x: conAttrs[0], y: conAttrs[1],  
+		categoryAttr: catAttrs[0], category: "all"};
+	var controls = scatterplot.append("foreignObject")
+							.attr("width", 630)
+							.attr("height", 30)
+							.append("xhtml:body")
+							.html("<form><input type=checkbox id=samerange checked /></form>")
+							.on("click", function(){
+								updateScatterplot(csvData, updateVars);
+							});
+	controls.append("text")
+			.style("font-size", "13px")
+			.text("Same Axis Range (Warning: angles are not preserved when unchecked!)");	
 
 	// Default: first two continous attributes
 	// Zoom out
@@ -278,9 +294,9 @@ function createScatterplot(data) {
 	} else {
 		tempMin = xMin;
 	}	
-	x.domain([tempMin, tempMax]);
-	y.domain([tempMin, tempMax]);
 
+	x.domain([tempMin, tempMax]);
+	y.domain([tempMin, tempMax]);	
 	//x.domain([xMin, xMax]);
 	//y.domain([yMin, yMax]);	
 
@@ -514,6 +530,8 @@ function updateScatter() {
 	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
 		categoryAttr: d.categoryAttr, category: d.category};
 
+	// updateVars used for same axis range
+	updateVars = vars;	
 	updateScatterplot(csvData, vars);
 	updateTabulate(vars);
 }
