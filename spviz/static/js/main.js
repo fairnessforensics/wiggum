@@ -223,6 +223,8 @@ function updateRateSPContainer() {
 
 		var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll[i], rateTrendMatrixSub[i]);
 
+		var subgroupLabel = protectedAttrs[i] + ' - ' + explanaryAttrs[i];
+
 		rateSPMatrix({
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
