@@ -49,12 +49,25 @@
 
 
         $(function() {
+            // regression-based SP
             var totalWeightChart = document.getElementById("totalweightchart");					
             var totalWeightProgress = new CircularProgress(totalWeightChart, 
                                     {fill: "#dd1c77", range:{min:0,max:100}, innerRadius: 15, outerRadius: 20});
             var totalWeightViewChart = document.getElementById("totalweightviewchart");					
             var totalWeightViewProgress = new CircularProgress(totalWeightViewChart, 
-                                    {fill: "#dd1c77", range:{min:0,max:100}, innerRadius: 15, outerRadius: 20});                                    
+                                    {fill: "#dd1c77", range:{min:0,max:100}, innerRadius: 15, outerRadius: 20});      
+            
+            // rate-based SP
+            var rate_totalWeightChart = document.getElementById("rate_totalweightchart");					
+            var rate_totalWeightProgress = new CircularProgress(rate_totalWeightChart, 
+                                    {fill: "#dd1c77", range:{min:0,max:100}, innerRadius: 15, outerRadius: 20});
+            var rate_totalWeightViewChart = document.getElementById("rate_totalweightviewchart");					
+            var rate_totalWeightViewProgress = new CircularProgress(rate_totalWeightViewChart, 
+                                    {fill: "#dd1c77", range:{min:0,max:100}, innerRadius: 15, outerRadius: 20});  
+
+            // initialize 
+            selectTypeValue = "Regression";
+
             var individual_weight_name;
             var view_weight_name;
 
@@ -257,17 +270,38 @@
 
                 // Total counting for individual
                 var totalValue = 0;
-                $("[id$='_individual_number']").each(function () { 
-                    totalValue = totalValue + Math.round(this.value*100);
-                });
-                totalWeightProgress.update([totalValue]);
+
+
+                if (selectTypeValue == "Regression") {
+                    $("[id$='_individual_number']").each(function () { 
+                        totalValue = totalValue + Math.round(this.value*100);
+                    });
+
+                    totalWeightProgress.update([totalValue]);
+                } else {
+                    // rate SP
+                    $("[id$='_individual_number_rate']").each(function () { 
+                        totalValue = totalValue + Math.round(this.value*100);
+                    });
+
+                    rate_totalWeightProgress.update([totalValue]);
+                }        
 
                 // Total counting for view
                 var totalValueView = 0;
-                $("[id$='_view_number']").each(function () { 
-                    totalValueView =  totalValueView + Math.round(this.value*100);
-                });
-                totalWeightViewProgress.update([totalValueView]);
+
+                if (selectTypeValue == "Regression") {
+                    $("[id$='_view_number']").each(function () { 
+                        totalValueView =  totalValueView + Math.round(this.value*100);
+                    });
+                    totalWeightViewProgress.update([totalValueView]);
+                } else {
+                    $("[id$='_view_number_rate']").each(function () { 
+                        totalValueView =  totalValueView + Math.round(this.value*100);
+                    });
+                    rate_totalWeightViewProgress.update([totalValueView]);
+                }                
+                
             });       
         });    
     </script>
@@ -515,6 +549,200 @@
             </td></tr>
         </table>    
     </div>
+    <div id="rate_rankingdiv" style="display:none;">
+        <table class="rankingparam" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <table class="rankingparam" cellspacing="0" cellpadding="0">
+                        <tr class = "paramtr">
+                            <th class = "paramth" colspan="3">
+                                Weight Setting for Individuals
+                            </th>                           
+                        </tr>
+                        <tr class = "paramtr">
+                            <td class="param">weight name</td>
+                            <td class="param">                        
+                                <input type="text" id="individual_weight_name" size="12">  
+                            </td> 
+                            <td class="param">
+                                <div id="rate_totalweightchart"></div>   
+                            </td>                                                        
+                        </tr>                           
+                        <tr class = "paramtr">
+                            <td class="param">agg_rate</td>
+                            <td class="param">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_rate_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td>                    
+                            <td class="param">
+                                <input type="number" id="agg_rate_individual_number_rate" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>
+                        </tr>
+                        <tr class = "paramtr">
+                            <td class="param">all_slope</td>
+                            <td class="param">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="all_slope_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td>    
+                            <td class="param">                       
+                                <input type="number" id="all_slope_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>
+                        </tr>                    
+                        <tr class = "paramtr">
+                            <td class="param">angle</td>                 
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="angle_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td>                        
+                            <td class="param">
+                                <input type="number" id="angle_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>
+                        </tr>                    
+                        <tr class = "paramtr">
+                            <td class="param">subgroup_slope</td>                    
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_slope_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td>
+                            <td class="param">
+                                <input type="number" id="subgroup_slope_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>                    
+                        </tr>                    
+                        <tr class = "paramtr">
+                            <td class="param">subgroup_rate</td>
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_rate_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">  
+                            </td>    
+                            <td class="param">
+                                <input type="number" id="subgroup_rate_individual_number_rate" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>                         
+                        </tr>                                      
+                    </table>
+                </td>
+                <td>
+                    <table class="rankingparam" cellspacing="0" cellpadding="0">
+                        <tr class = "paramtr">
+                            <th class = "paramth" colspan="8">
+                                Weight Setting for Views
+                            </th>
+                        </tr>
+                        <tr class = "paramtr">
+                                <td class="param">weight name</td>
+                                <td class="param" colspan="2">                        
+                                    <input type="text" id="view_weight_name" size="21">  
+                                </td> 
+                                <td class="param">
+                                    <div id="rate_totalweightviewchart"></div>   
+                                </td>                                                        
+                            </tr>                          
+                        <tr class = "paramtr">
+                            <td class="param">agg_rate</td>
+                            <td class="param"></td>
+                            <td class="param">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_rate_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td>
+                            <td class="param">
+                                <input type="number" id="agg_rate_view_number_rate" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>  
+                            <td class="param">&nbsp;&nbsp;&nbsp;SP_subgroups</td>
+                            <td class="param"></td>                            
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="sp_subgroups_view" value = "0" onchange="updateNumberInput(this.id, this.value);">  
+                            </td>   
+                            <td class="param">
+                                <input type="number" id="sp_subgroups_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>                                                                                
+                        </tr>
+                        <tr class = "paramtr">
+                            <td class="param">all_slope</td>
+                            <td class="param"></td>                            
+                            <td class="param">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="all_slope_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td> 
+                            <td class="param">
+                                <input type="number" id="all_slope_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>    
+                            <td class="param">&nbsp;&nbsp;&nbsp;gby_counts</td>
+                            <td class="param"></td>                            
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="gby_counts_view" value = "0" onchange="updateNumberInput(this.id, this.value);">  
+                            </td>  
+                            <td class="param">
+                                <input type="number" id="gby_counts_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>                                                 
+                        </tr>                    
+                        <tr class = "paramtr">
+                            <td class="param">angle</td>
+                            <td class="param">
+                                <select id = "angle_selection" class="paramselection">
+                                    <option value="sum">Sum</option>
+                                    <option value="mean">Mean</option>
+                                </select>
+                            </td>                            
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="angle_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td>
+                            <td class="param">
+                                <input type="number" id="angle_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>                               
+                            <td class="param">&nbsp;&nbsp;&nbsp;portions</td>
+                            <td class="param"></td>                            
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="portions_view" value = "0" onchange="updateNumberInput(this.id, this.value);">  
+                            </td> 
+                            <td class="param">
+                                <input type="number" id="portions_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>                               
+                        </tr>                    
+                        <tr class = "paramtr">
+                            <td class="param">subgroup_slope</td>
+                            <td class="param">
+                                <select id = "subgroup_slope_selection" class="paramselection">
+                                    <option value="sum">Sum</option>
+                                    <option value="mean">Mean</option>
+                                </select>                                
+                            </td>                            
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_slope_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                            </td>
+                            <td class="param">
+                                <input type="number" id="subgroup_slope_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>
+                            <td class="param"></td>
+                            <td class="param"></td>
+                            <td class="param" rowspan="2">
+                                <button id="autodetect" type="button" name="autodetect" value="autodetect">AutoDetect</button> 
+                            </td>                                                 
+                        </tr>                    
+                        <tr class = "paramtr">
+                            <td class="param">subgroup_rate</td>
+                            <td class="param">
+                                <select id = "subgroup_rate_selection" class="paramselection">
+                                    <option value="sum">Sum</option>
+                                    <option value="mean">Mean</option>
+                                </select>                                
+                            </td>                           
+                            <td class="param">                        
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_rate_view" value = "0" onchange="updateNumberInput(this.id, this.value);">  
+                            </td>   
+                            <td class="param">
+                                <input type="number" id="subgroup_rate_view_number_rate" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                            </td>                            
+                        </tr>                                                        
+                    </table>  
+                </td>
+                <td>
+                    <table class="rankingparam" cellspacing="0" cellpadding="0">
+                        <tr class = "paramtr">
+                            <th class = "paramth" nowrap style="vertical-align: top;">
+                                Ranked Views
+                            </th>
+                        </tr>
+                        <tr class = "paramtr">
+                            <td class="param" style="text-align: center;">                    
+                                <select id ="ranking" size="10"></select>
+                            </td>                         
+                        </tr>                                                                                                                                    
+                    </table>                      
+            </td></tr>
+        </table>    
+    </div>    
     <div style="display:none; float:left" id="container">
     </div>
 

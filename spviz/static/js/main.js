@@ -86,11 +86,16 @@ function ontypechange() {
 		d3.select("#extra_regression").style("display", "inline-block");
 		d3.select("#slopegraph").style("display", "none");
 		d3.select("#scatterplot").style("display", "inline-block");
+		d3.select("#rankingdiv").style("display", "inline-block");	
+		d3.select("#rate_rankingdiv").style("display", "none");				
 //		updateContainer();
 	} else {
 		d3.select("#extra_regression").style("display", "none");
 		d3.select("#scatterplot").style("display", "none");
 		d3.select("#slopegraph").style("display", "inline-block");
+		d3.select("#rankingdiv").style("display", "none");
+		d3.select("#rate_rankingdiv").style("display", "inline-block");			
+		
 		// Get binary decision variable
 //		var attrs = getBinaryAttrs(csvData, catAttrs);
 
@@ -107,10 +112,17 @@ function updateTextInput(id, val) {
 }
 
 function updateNumberInput(id, val) {
-	document.getElementById(id+'_number').value=val;
+	if (selectTypeValue == "Regression") {
+		document.getElementById(id+'_number').value=val;
 
-	var event = new Event('change');
-	document.getElementById(id+'_number').dispatchEvent(event);
+		var event = new Event('change');
+		document.getElementById(id+'_number').dispatchEvent(event);
+	} else {
+		document.getElementById(id+'_number_rate').value=val;
+
+		var event = new Event('change');
+		document.getElementById(id+'_number_rate').dispatchEvent(event);
+	}
 }
 
 function getBinaryAttrs(data, attrs){
