@@ -12,6 +12,7 @@ Upload File
   
   4 Click “Upload”: upload the data file to the web application.
   
+.. image:: uploadfile.png  
 
 Data Analysis
 ##########
