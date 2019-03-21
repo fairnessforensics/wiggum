@@ -16,12 +16,38 @@ Upload File
 
 Data Analysis
 ##########
+  1 Click “Linear Layout”: bivariate matrix heatmaps will shown.
+  
+  2 Select bivariate color scheme for bivariate matrix heatmaps.
+  
+  3 Click a cell of the bivariate color legend to filter the unmatched colored cells in A. Double Click release the filtering.
+  
+  4 Click a cell of Bivariate matrix heatmaps to show the detail in B and C.
+
+.. image:: dataanalysis.png  
 
 Auto Detect
 ##########
+  1 Adjust the threshold of correlation.
 
-Interactive with Scatterplot
-##########
+  2 Select SP-related weights
+  
+  3 Click “AutoDetect”: detect the SP automatically and rank the views.
+  
+  4 Click a view in ranked views box to filter irrelevant components in A and B.
 
-Interactive with Table
+.. image:: autodetect.png  
+
+Interact with Scatterplot
 ##########
+  1 Click “Same Axis Range”: use the same range for both axes. Otherwise, axes’ ranges use each corresponding attributes’ data range.
+
+.. image:: interactscatterplot.png  
+
+Interact with Table
+##########
+  1 Click the header to sort the table.
+  
+  2 Click a row to highlight the corresponding information in A and C.
+
+.. image:: interacttable.png  
