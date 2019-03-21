@@ -1,5 +1,8 @@
 function tabulate(data, columns) {	
 	
+	// remove existing table
+	d3.select("#table").selectAll('table').remove();
+
 	var table = d3.select("div#table").append('table');
 	var thead = table.append('thead');
 	var sortAscending = true;
@@ -70,7 +73,6 @@ function interactBivariateMatrix(vars) {
 
 	var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
 
-	d3.select("#"+cell_id).classed("clicked", true);	
-
+	d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
 	updateTabulate(vars);
 };

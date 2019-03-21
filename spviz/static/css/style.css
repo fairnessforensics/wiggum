@@ -23,23 +23,25 @@
     display: block;
     background: white;
     margin-left: 260px;
-    margin-top: -30px;
+    margin-top: 90px;
+    height: 560px;
+    max-height: 560px;    
+    overflow-y: scroll;
 }
 
 #legend {
     width: 230px;
     display: block;
     background: white;
-    position: fixed;
+    position: absolute;
 }
 
 #scatterplot {
     display: block;
     background: white;
-    position: fixed;
-    border-style: solid;
-    border-width: 2px;
-    border-color: grey;
+    position: absolute;
+    margin-left: 30px;    
+    margin-top: 130px;      
 }
 
 #tree {
@@ -67,18 +69,18 @@ path.link {
     display: block;
     position: fixed;
     background: white;
-    right: 50px;
+    right: 150px;
     border-style: solid;
     border-width: 2px;
     border-color: grey;
-    top: 50px;
+    top: 350px;
 }
 
 #slopeLabel {
     display: block;
     position: fixed;
-    right: 115px;
-    top: 30px;
+    right: 215px;
+    top: 330px;
 }
 
 #groupedbarchart {
@@ -98,7 +100,7 @@ line.slope-line4all{
     border-left: 2px solid grey;
     height: 630px;
     position: absolute;
-    left: 25%;
+    left: 28%;
     margin-left: -3px;
     margin-top: 80px;
     top: 0;
@@ -144,13 +146,20 @@ line.slope-line4all{
     top: -3px;
 }
 
-#rankingdiv {
+#rankingdiv, #rate_rankingdiv {
     width: 60px;
     size: 3;
     display: block;
     background: white;
-    margin-left: 270px;
-    margin-top: -115px;
+    margin-left: 50px;
+    margin-top: 10px;
+    position: absolute;
+    top: 60px;
+    left: 500px;
+}
+
+.row {
+    height: 160px;
 }
 
 #table {
@@ -158,7 +167,7 @@ line.slope-line4all{
     display: block;
     background: white;
     margin-left: 260px;
-    margin-top: 90px;
+    margin-top: 10px;
 }
 table {
     font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
@@ -191,4 +200,40 @@ table {
   
   .tablerow.highlighted {
     background-color:#D8D8D8;
+}
+
+.rankingparam {
+    border: none;
+    box-shadow: none;
+}
+
+.paramtr {
+    height: 10px;
+  }
+.paramth {
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    border: none;
+    padding: 6px;
+  }
+.param {
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    border: none;
+    text-align: left;
+    padding: 3px;
+}
+
+.paramslider {
+    height: 10px;
+    width: 90px;
+  }
+.paramselection {
+    font-size: 10px;
+    height: 10px;
+}
+.paramnumber {
+    height: 8px;
 }
