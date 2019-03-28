@@ -40,21 +40,22 @@ Auto Detect
 
 Ranking
 ##########
-  1 agg_trend:
+  1 Regression-based
+    *agg_trend:
 
-  2 all_slope:
+    *all_slope:
   
-  3 angle:
+    *angle:
   
-  4 subgroup_slope:
+    *subgroup_slope:
   
-  5 subgroup_trend:
+    *subgroup_trend:
   
-  6 SP_sbugroups:
+    *SP_sbugroups:
   
-  7 gby_counts:
+    *gby_counts:
   
-  8 portions:
+    *portions:
 
 .. image:: regressionrank.png  
 
