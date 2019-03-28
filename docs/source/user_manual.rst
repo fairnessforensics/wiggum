@@ -38,6 +38,26 @@ Auto Detect
 
 .. image:: autodetect.png  
 
+Ranking
+##########
+  1 agg_trend:
+
+  2 all_slope:
+  
+  3 angle:
+  
+  4 subgroup_slope:
+  
+  5 subgroup_trend:
+  
+  6 SP_sbugroups:
+  
+  7 gby_counts:
+  
+  8 portions:
+
+.. image:: regressionrank.png  
+
 Interact with Scatterplot
 ##########
   1 Click “Same Axis Range”: use the same range for both axes. Otherwise, axes’ ranges use each corresponding attributes’ data range.
