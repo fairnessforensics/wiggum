@@ -504,7 +504,7 @@ function prepareDetail() {
 	//console.log(csvData);
 	//console.log(vars);
 	updateSlopeGraph(vars);
-	//updateGroupedBar(csvData, vars);
+	updateGroupedBar(csvData, vars);
 }
 
 var updateSlopeGraph = function(vars) {
@@ -525,7 +525,9 @@ var updateSlopeGraph = function(vars) {
 
 var updateGroupedBar = function(data, vars) {
 	d3.select("#groupedbarchart").selectAll('svg').remove();
-
+	
+	console.log(data);
+	console.log(vars);
 	DrawGroupedBarChart(
 	{
 		data	: data,

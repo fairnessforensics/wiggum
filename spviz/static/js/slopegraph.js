@@ -20,7 +20,7 @@ function DrawSlopeGraph(options) {
         .keyName(keyName)
             .keyValueStart(keyStart)
             .keyValueEnd(keyEnd)
-            .h(300);
+            .h(260);
 
 	d3.select('#slopegraph')
 	.datum(data)

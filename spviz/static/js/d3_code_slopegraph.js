@@ -5,7 +5,7 @@
 
         // input vars for getter setters
         var w = 400,
-            h = 300,
+            h = 260,
             margin = {top: 50, bottom: 40, left: 100, right: 100},
             strokeColour = 'black',
             // key data values start for left(axis) and end for right(axis)
