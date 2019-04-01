@@ -526,9 +526,7 @@ var updateSlopeGraph = function(vars) {
 var updateGroupedBar = function(data, vars) {
 	d3.select("#groupedbarchart").selectAll('svg').remove();
 	
-	console.log(data);
-	console.log(vars);
-	DrawGroupedBarChart(
+	DrawGroupedStackedBarChart2(
 	{
 		data	: data,
 		protectedAttr: vars.protectedAttr,

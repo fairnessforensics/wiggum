@@ -82,6 +82,7 @@ def main():
                 return jsonify({'csv_data':csv_data,
                                 'protectedVars': protectedVars,
                                 'explanaryVars': explanaryVars, 
+                                'targetAttr': targetAttr,
                                 'ratioRateAll':ratioRateAll,
                                 'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
                                 'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
