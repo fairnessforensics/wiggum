@@ -76,3 +76,99 @@ function interactBivariateMatrix(vars) {
 	d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
 	updateTabulate(vars);
 };
+
+function roleTable(data) {
+
+		var myArray = [];
+		data.forEach(function(d,i) {
+			myArray.push({"name": d, "dropdown": d});
+
+		});
+		//console.log(myArray);
+		var columns = ["name", "dropdown"];
+		
+		var roleTable = d3.select("#roleSelection")
+											.append("table")
+											.style("border", "none")
+											.style("box-shadow", "none")
+											.style("margin-left", "20px");			
+
+		var rows = roleTable.selectAll("tr")
+												.data(myArray).enter()
+												.append("tr");
+
+		var cells = rows.selectAll("td")
+										.data(function(d) {
+											return columns.map(function(column) {
+												return {column:column, value: d[column]};
+											});
+										})
+										.enter()
+										.append("td")
+										.style("font-size", "12px")			
+										.style("text-align", "left")	
+										.style("border", "none")		
+										.style("padding", "2px")																
+										.text(function(d,i) { 
+											if(i==0){
+												return d.value;
+											} 
+										})
+										.each(function(d,i) {
+											if (i==1) {
+												var optionData = ["Categorical", "Continuous", "Boolean"];
+												var select = d3.select(this).append('select');
+												var options = select.selectAll('option')
+																						.data(optionData).enter()
+																						.append('option')
+																						.text(function(d){return d;})
+											}
+										})
+											
+}
+
+function roleTable_bak(data) {
+
+	var myArray = [];
+	data.forEach(function(d,i) {
+		myArray.push({"name": d, "dropdown": d});
+
+	});
+	console.log(myArray);
+	var columns = ["name", "dropdown"];
+	
+	var roleTable = d3.select("#roleSelection")
+										.append("table")
+										.style("border", "none")
+										.style("box-shadow", "none")
+										.style("margin-left", "20px");			
+
+	var rows = roleTable.selectAll("tr")
+											.data(myArray).enter()
+											.append("tr");
+											
+	var cells = rows.selectAll("td")
+									.data(function(d) {
+											return d;
+									})
+									.enter()
+									.append("td")
+									.style("font-size", "12px")			
+									.style("text-align", "left")	
+									.style("border", "none")																		
+									.text(function(d,i) { 
+										if(i!=2){
+											return d;
+										} 
+									})
+									.each(function(d,i) {
+										if (i==2) {
+											d3.select(this).append('select');
+											var options = select.selectAll('option')
+																					.data(optionData).enter()
+																					.append('option')
+																					.text(function(d){return d;})
+										}
+									})
+										
+}

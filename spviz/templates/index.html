@@ -70,6 +70,26 @@
 
             var individual_weight_name;
             var view_weight_name;
+  
+            $('#open-file-btn').click(function() {
+                d3.select('#roleSelection').select("table").remove();
+                var header;
+                var file = document.querySelector('input[type=file]').files[0]; 
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onloadend = function(evt) {
+                        var dataUrl = evt.target.result;
+
+                        d3.csv( dataUrl, function( rows ) {
+                            header = Object.keys(rows[0]);
+                            roleTable(header);
+                        })
+                    };
+
+                    reader.readAsDataURL(file);
+
+                }
+            });
 
             $('#upload-file-btn').click(function() {
                 var form_data = new FormData($('#upload-file')[0]);
@@ -134,11 +154,6 @@
                     processData: false,
                     success: function(data) {
 
-                        var $categoricalVarsSelect = $('#categoricalVarsSelect');
-
-                        for (var i = 0; i < data.length; i++) {
-                            $categoricalVarsSelect.append('<option id=' + data[i] + ' value=' + data[i] + '>' + data[i] + '</option>');
-                        }
                         // Get data from controller return data
                         drawGraph(data);
 
@@ -325,7 +340,8 @@
                     {% endfor %}
                 {% endif %}
                 {% endwith %}
-            <input name="file" type="file" style = "width:170px">
+            <input name="file" type="file" id="myFile" style = "width:170px">
+            <button id="open-file-btn" type="button" value="open">Open</button>
             <button id="upload-file-btn" type="button" value="upload">Upload</button>
             &nbsp;&nbsp;&nbsp;
 
@@ -340,21 +356,17 @@
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
+        <div id="roleSelection">
+        </div>           
         <div id="selectors">
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>
+        </div>     
         <div id ="slider" class="slider"></div>
         <br/><br/>
         <div id="legend"></div>
     </div>
 
-           <!--
-    <div style="display:inline-block;" id="categoricalVars">
-        <select id="categoricalVarsSelect">
-            <option id='all' value='all'>ALL</option>
-        </select>
-    </div>            -->
     <div id="rankingdiv">
         <table class="rankingparam" cellspacing="0" cellpadding="0">
             <tr>
