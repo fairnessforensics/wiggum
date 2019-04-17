@@ -77,53 +77,94 @@ function interactBivariateMatrix(vars) {
 	updateTabulate(vars);
 };
 
-function roleTable(data) {
+function roleTable(data, dtypes, samples) {
 
 		var myArray = [];
+		var my_dtype = {};
+		var my_sample = {};
 		data.forEach(function(d,i) {
-			myArray.push({"name": d, "dropdown": d});
-
+			myArray.push({"name": d, "type_dropdown": d, "role_dropdown":d, "isCount_dropdown":d, "sample": d});
+			my_dtype[d] = dtypes[i];
+			my_sample[d] = samples[i];
 		});
-		//console.log(myArray);
-		var columns = ["name", "dropdown"];
+
+		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "sample"];
 		
 		var roleTable = d3.select("#roleSelection")
-											.append("table")
-											.style("border", "none")
-											.style("box-shadow", "none")
-											.style("margin-left", "20px");			
+							.append("table")
+							.attr("id", "roleTable")							
+							.style("border", "none")
+							.style("box-shadow", "none")
+							.style("margin-left", "20px");			
 
-		var rows = roleTable.selectAll("tr")
-												.data(myArray).enter()
-												.append("tr");
+		// append the header row
+		var META_COLUMNS = ['dtype','var_type','role','isCount', 'sample']
+		var thead = roleTable.append('thead').append('tr')
+							.selectAll('th')
+							.data(META_COLUMNS).enter()
+							.append('th')
+							.style("font-size", "12px")
+							.style("border", "none")		
+							.style("padding", "2px")	
+							.style("background-color", "#ffffff")
+							.style("color", "black")
+							.text(function (column) { return column; });
+
+		var	tbody = roleTable.append('tbody');
+		var rows = tbody.selectAll("tr")
+						.data(myArray).enter()
+						.append("tr");
 
 		var cells = rows.selectAll("td")
-										.data(function(d) {
-											return columns.map(function(column) {
-												return {column:column, value: d[column]};
-											});
-										})
-										.enter()
-										.append("td")
-										.style("font-size", "12px")			
-										.style("text-align", "left")	
-										.style("border", "none")		
-										.style("padding", "2px")																
-										.text(function(d,i) { 
-											if(i==0){
-												return d.value;
-											} 
-										})
-										.each(function(d,i) {
-											if (i==1) {
-												var optionData = ["Categorical", "Continuous", "Boolean"];
-												var select = d3.select(this).append('select');
-												var options = select.selectAll('option')
-																						.data(optionData).enter()
-																						.append('option')
-																						.text(function(d){return d;})
-											}
-										})
+						.data(function(d) {
+							return columns.map(function(column) {
+								return {column:column, value: d[column]};
+							});
+						})
+						.enter()
+						.append("td")
+						.style("font-size", "12px")			
+						.style("text-align", "left")	
+						.style("border", "none")		
+						.style("padding", "10px")	
+						.style("white-space", "nowrap")																						
+						.text(function(d,i) { 
+							if(i==0){
+								return d.value;
+							} 
+							if(i==4){
+								return my_sample[d.value];
+							} 
+						})
+						.each(function(d,i) {
+							if (i==1) {
+								var dtype = my_dtype[d.value];
+								var optionData = ['binary', 'ordinal', 'categorical', 'continuous'];
+								var select = d3.select(this).append('select');
+								var options = select.selectAll('option')
+													.data(optionData).enter()
+													.append('option')
+													.text(function(d){return d;})
+													.property("selected", 
+													function(d){ return d === dtype; });
+							}
+							if (i==2) {
+								var optionData = ["groupby", "explanatory", "trend"];
+								var select = d3.select(this).append('select');
+								var options = select.selectAll('option')
+													.data(optionData).enter()
+													.append('option')
+													.text(function(d){return d;})
+							}	
+							if (i==3) {
+								var optionData = ["Y", "N"];
+								var select = d3.select(this).append('select');
+								var options = select.selectAll('option')
+													.data(optionData).enter()
+													.append('option')
+													.text(function(d){return d;})
+							}																		
+						})
 											
 }
 
@@ -134,7 +175,7 @@ function roleTable_bak(data) {
 		myArray.push({"name": d, "dropdown": d});
 
 	});
-	console.log(myArray);
+
 	var columns = ["name", "dropdown"];
 	
 	var roleTable = d3.select("#roleSelection")

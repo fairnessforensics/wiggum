@@ -1,17 +1,47 @@
 from spviz import app, render_template
 from spviz import models
-from flask import request, flash, redirect,jsonify
+from flask import request, flash, redirect,jsonify, url_for
 import pandas as pd
 import json
+import detect_simpsons_paradox as dsp
 
 @app.route("/")
 def index():
     return render_template("index.html") 
-    
+
+@app.route("/visualize", methods=['GET', 'POST'])
+def visualize():
+    print("====@????===========")
+    return render_template("visualize.html")
+
 @app.route("/", methods = ['POST'])
 def main():
     if request.method == 'POST':
+
         action = request.form['action']
+
+        if action == 'open':
+            file = request.files.get('file')
+            global df
+            df = pd.read_csv(file)
+
+            dtypes = []
+            dtypes = dsp.simple_type_map(df)
+            sample_list = []
+            sample_list = dsp.get_data_sample(df)
+
+            return jsonify({'dtypes': dtypes,
+                            'samples': sample_list})
+
+        if action == 'visualize':
+            print("====@vvvv===========")
+            roles = request.form['roleList']
+            role_list =json.loads(roles)
+            global labeled_df
+            labeled_df = pd.DataFrame(role_list)
+            print(labeled_df)
+            return redirect(url_for("visualize"))
+
         spType = request.form['sptype']
 
         # weight for individual
@@ -32,10 +62,13 @@ def main():
 
         # Upload File
         if action == 'upload':
-            file = request.files.get('file')
+            print("====@upload===========")
+            print(labeled_df)
+            print("====@upload2===========")
+            #file = request.files.get('file')
 
-            global df
-            df = pd.read_csv(file)
+            #global df
+            #df = pd.read_csv(file)
 
             # initial result
             global initial_result_df

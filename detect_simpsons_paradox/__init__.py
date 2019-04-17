@@ -16,10 +16,13 @@ from .ranking_processing import (mark_designed_rows, compute_angle,
 
 from .data_augmentation import add_quantile, add_all_dpgmm
 
+from .labeled_dataframe import (labeled_df, possible_roles, var_types, simple_type_map,
+                                get_data_sample)
+
 __all__ = ['detect_simpsons_paradox','mark_designed_rows', 'compute_angle',
             'add_slope_sp','compute_slope_all','add_angle_col','count_sp_views',
             'add_slope_cols','add_view_count',
             'add_weighted','get_subgroup_trends_1lev','add_all_dpgmm',
             'get_subgroup_trends_2lev','add_quantile','get_correlations',
             'add_view_score','get_trend_row','label_SP_rows','get_views', 
-            'get_SP_rows']
+            'get_SP_rows', 'simple_type_map', 'get_data_sample']
