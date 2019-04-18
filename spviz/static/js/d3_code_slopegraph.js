@@ -1,10 +1,9 @@
 (function() {
-    'use strict';
     
-    d3.eesur.slopegraph = function module() {
+    d3.my.slopegraph = function module() {
 
         // input vars for getter setters
-        var w = 400,
+        var w = 300,
             h = 260,
             margin = {top: 50, bottom: 40, left: 100, right: 100},
             strokeColour = 'black',
@@ -13,7 +12,7 @@
             keyValueEnd = '',
             // key value (used for ref/titles)
             keyName = '', 
-            format = d3.format('');
+            format = d3.format('.3f');
 
         var dispatch = d3.dispatch('_hover');
 
@@ -71,7 +70,7 @@
                         y: function(d) { return yScale(d[keyValueEnd]) + 4; },
                     })
                     .text(function (d) {
-                        return d[keyName] + ':   ' + format(d[keyValueEnd]);
+                        return format(d[keyValueEnd]) + '\u00A0\u00A0\u00A0' + d[keyName];
                     })
                     .style('text-anchor','start')
                     .on('mouseover', dispatch._hover);
@@ -86,7 +85,7 @@
                         y: function(d) { return yScale(d[keyValueStart]) + 4; }
                     })
                     .text(function (d) {
-                        return d[keyName] + ':   ' + format(d[keyValueStart]);
+                        return d[keyName] + '\u00A0\u00A0\u00A0' + format(d[keyValueStart]);
                     })
                     .style('text-anchor','end')
                     .on('mouseover', dispatch._hover);

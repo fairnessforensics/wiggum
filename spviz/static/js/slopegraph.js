@@ -14,7 +14,7 @@ function DrawSlopeGraph(options) {
         .style("font-size", "16px") 
         .text("Rate by Per Subgroup and Protected Class");	
 
-    var slopegraph = d3.eesur.slopegraph()
+    var slopegraph = d3.my.slopegraph()
         //.margin({top: 20, bottom: 20, left: 100, right:100})
         .strokeColour('#130C0E')
         .keyName(keyName)
