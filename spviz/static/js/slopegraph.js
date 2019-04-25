@@ -4,6 +4,7 @@ function DrawSlopeGraph(options) {
     var keyStart = options.keyStart;
     var keyEnd = options.keyEnd;
     var keyName = options.keyName;
+    var protectedAttr = options.protectedAttr;
 
     //Title
     d3.select('#slopeLabel').select("text").remove();
@@ -20,7 +21,8 @@ function DrawSlopeGraph(options) {
         .keyName(keyName)
             .keyValueStart(keyStart)
             .keyValueEnd(keyEnd)
-            .h(260);
+            .keyProtectedAttr(protectedAttr)
+            .h(360);
 
 	d3.select('#slopegraph')
 	.datum(data)

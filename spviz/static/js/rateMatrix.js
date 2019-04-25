@@ -517,7 +517,8 @@ var updateSlopeGraph = function(vars) {
 		data        : arraySlopeGraph[vars.index],
 		keyStart		: vars.left,
 		keyEnd			: vars.right,
-		keyName     : vars.keyName
+		keyName     : vars.keyName,
+		protectedAttr: vars.protectedAttr
 	});
 
 	highlightLine(parseInt(vars.x)+1);
@@ -525,7 +526,7 @@ var updateSlopeGraph = function(vars) {
 
 var updateGroupedBar = function(data, vars) {
 	d3.select("#groupedbarchart").selectAll('svg').remove();
-	
+	/*
 	DrawGroupedStackedBarChart(
 	{
 		data	: data,
@@ -534,6 +535,6 @@ var updateGroupedBar = function(data, vars) {
 		keyStart		: vars.left,
 		keyEnd			: vars.right
 	});
-
+*/
 	highlightBar(parseInt(vars.x));
 }

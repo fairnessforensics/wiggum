@@ -177,7 +177,6 @@ function DrawGroupedStackedBarChart(options) {
             for (var i = 0; i < d[protectedAttr].length; i++){
                 d[protectedAttr][i][explanatoryAttr] = d[explanatoryAttr];
             }
-
             return d[protectedAttr]})
         .enter().append("rect")
         .attr("width", x1.rangeBand())
@@ -189,7 +188,6 @@ function DrawGroupedStackedBarChart(options) {
                 var object = data.filter(function(d) {
                     return d[explanatoryAttr] == explanatoryValue;
                 });
-
                 return y(object[0][d.name]); 
             })
         .attr("height", function(d) { return height - y(d.value); })
