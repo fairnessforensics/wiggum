@@ -49,6 +49,7 @@
                     singleObj[keyValueEnd] = yScale(d[keyValueEnd]);     
                     position4bars.push(singleObj);                                   
                 }); 
+
                 var svg = d3.select(this).append('svg')
                     .attr({
                         width: w + width_vb*2,
