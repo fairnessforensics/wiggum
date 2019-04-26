@@ -72,14 +72,14 @@ path.link {
     right: 50px;
     border-style: solid;
     border-width: 2px;
-    border-color: grey;
+    border-color: white;
     top: 320px;
 }
 
 #slopeLabel {
     display: block;
     position: fixed;
-    right: 260px;
+    right: 270px;
     top: 300px;
 }
 
@@ -253,3 +253,9 @@ div.tooltip {
     border-width: 2px;	
     border-radius: 5px;	
 }
+
+.border-lines {
+    stroke: black;
+    stroke-width: 2px;
+    stroke-opacity: 1;  
+  }

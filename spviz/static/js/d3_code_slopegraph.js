@@ -66,7 +66,7 @@
                         y1: function(d) { return yScale(d[keyValueStart]); },
                         y2: function(d) { return yScale(d[keyValueEnd]); },
                         stroke: strokeColour,
-                        'stroke-width': 1,
+                        'stroke-width': 2,
                         class: function (d, i) { 
 							if (d[keyName] == 'ALL') {
 								return 'slope-line4all';
@@ -75,6 +75,18 @@
                     })
                     .on('mouseover', dispatch._hover)
                     .attr("transform", "translate(" + width_vb + ",0)");
+
+                var borderLines = svg.append("g");
+                
+                borderLines.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", margin.left+width_vb).attr("y1", 30)
+                    .attr("x2", margin.left+width_vb).attr("y2", h-20);
+
+                borderLines.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", width_vb + w - margin.right).attr("y1", 30)
+                    .attr("x2", width_vb + w - margin.right).attr("y2", h-20);
 
                 var rightLabels = svg.selectAll('.labels')
                     .data(data);
@@ -118,6 +130,16 @@
                     .style('text-anchor','end')
                     .attr("transform", "translate(" + width_vb + ",0)");
 
+                var leftBottemTitle = svg.append('text')
+                    .attr({
+                        class: 's-title',
+                        x: margin.left + 10,
+                        y: h - margin.top/2 + 20
+                    })
+                    .text('Rate')
+                    .style('text-anchor','end')
+                    .attr("transform", "translate(" + width_vb + ",0)");                    
+
                 var rightTitle = svg.append('text')
                     .attr({
                         class: 's-title',
@@ -127,6 +149,16 @@
                     .text('↓ ' + keyValueEnd)
                     .style('text-anchor','start')
                     .attr("transform", "translate(" + width_vb + ",0)");
+
+                var rightBottemTitle = svg.append('text')
+                    .attr({
+                        class: 's-title',
+                        x: w - margin.right + 10,
+                        y: h - margin.top/2 + 20
+                    })
+                    .text('Rate')
+                    .style('text-anchor','end')
+                    .attr("transform", "translate(" + width_vb + ",0)");    
 
                 // Prepare data for vertical bar
                 var protectedAttr = keyProtectedAttr;
@@ -250,6 +282,19 @@
                     function(d) { 
                         return d3.max(d[protectedAttr], 
                             function(d) { return d.value; }); })]);
+ 
+                var borderLines4Bars = svg.append("g");
+    
+                borderLines4Bars.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", width_vb).attr("y1", 30)
+                    .attr("x2", width_vb).attr("y2", h-20);
+
+                borderLines4Bars.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", width_vb + w - margin_bar).attr("y1", 30)
+                    .attr("x2", width_vb + w - margin_bar).attr("y2", h-20);
+
 
                 var xAxis = d3.svg.axis()
                             .scale(x_vb)
@@ -323,7 +368,7 @@
                                 var object = data4bars.filter(function(d) {
                                     return d[explanatoryAttr] == explanatoryValue;
                                 });                                  
-                                return x_vb_left(object[0][d.name]);
+                                return x_vb_left(object[0][d.name]) + margin_bar;
                             } else {
                                 // right side
                                 var explanatoryValue = d[explanatoryAttr];
@@ -379,7 +424,7 @@
                     .attr("x", function(d) { 
                         if (d.name == keyValueStart) {
                             // left side
-                            return x_vb_left(d.value);
+                            return x_vb_left(d.value) + margin_bar;
                         } else {
                             // right side
                             return width_vb+w-margin_bar;
