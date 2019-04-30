@@ -1,10 +1,18 @@
+import os
 import pandas as pd
+from detect_sp import RESULTS_DF_HEADER
+
 
 META_COLUMNS = ['dtype','var_type','role','isCount']
 
 possible_roles = ['groupby','explanatory','trend']
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
+
+meta_csv = 'meta.csv'
+result_csv = 'result_df.csv'
+data_csv = 'df.csv'
+
 
 def simple_type_map(df):
     """
@@ -38,7 +46,26 @@ def simple_type_map(df):
 
 class labeled_df():
 
-    def __init__(self,data=None,meta=None):
+    def __init__(self,data=None,meta=None,results=None):
+        """
+        initialize
+
+        Parameters
+        ----------
+        data :
+        meta :
+        results : None, callable, or string
+            none initializes empty, callable initializes with that function,
+            string must be a filename
+        """
+        # check if re-opening a saved labeled_df
+        if os.path.isdir(data) and meta ==None and results ==None:
+            # if so, make all strings of filepaths
+            meta = os.path.join(data,meta_csv)
+            results = os.path.join(data,result_csv)
+            data = os.path.join(data,data_csv)
+
+        # set data
         if data == None:
             df = pd.DataFrame()
         elif type(data) is  pd.core.frame.DataFrame:
@@ -46,14 +73,25 @@ class labeled_df():
         elif type(data) is str:
             df = pd.read_csv(data)
 
+        # initialize metadata
         if meta == None:
-            info = pd.DataFrame(index = df.columns,
+            meta_df = pd.DataFrame(index = df.columns,
                                columns = META_COLUMNS)
-            info['dtype'] = df.dtypes
+            meta_df['dtype'] = df.dtypes
         elif type(meta) is  pd.core.frame.DataFrame:
-            info = meta
+            meta_df = meta
         elif type(data) is str:
-            info = pd.read_csv(data)
+            meta_df = pd.read_csv(data)
+
+
+        # initialize results_df
+        if results == None:
+            # call function
+            result_df = pd.DataFrame(columns= RESULTS_DF_HEADER)
+        elif callable(results):
+            result_df = results(self)
+        else:
+            result_df = pd.read_csv(results)
 
 
     def infer_var_types(self,dtype_var_func = simple_type_mapper):
@@ -82,3 +120,16 @@ class labeled_df():
         return the data of one role
         """
         cols_to_return = self.info['role'] == role
+
+    def to_csvs(self,dirname):
+        """
+        write out info as csvs to the same directory
+        """
+        # make file names
+        meta_file = os.path.join(dirname,meta_csv)
+        results_file = os.path.join(dirname,result_csv)
+        data_file = os.path.join(dirname,data_csv)
+
+        self.df.to_csv(data_file)
+        self.meta_df.to_csv(meta_file)
+        self.result_df.to_csv(results_file)
