@@ -3,7 +3,7 @@ from itertools import combinations
 import pandas as pd
 import sys
 import logging
-# Your models here.
+from sklearn import mixture
 
 def getContinuousVariableName(data_df):
     """
@@ -335,3 +335,29 @@ def getRatioRateSub(data_df, target_var, grouping_vars):
                 partition_ratio_all.append(partion_ratio)
                 
     return partition_ratio_all, partition_dat_all
+
+def getClustering(data_df, regression_vars):
+    """
+    Generate a dataframe after clustering
+    Parameters
+    -----------
+    data_df : DataFrame
+        data organized in a pandas dataframe containing both categorical
+        and continuous attributes.
+    regression_vars : list
+        list of continuous attributes by name in dataframe, if None will be
+        detected by all float64 type columns in dataframe        
+    Returns
+    --------
+    result : DataFrame
+        a df with clustering infomation
+    """
+    for x1,x2 in combinations(data_df[regression_vars].columns,2):
+        # run clustering
+        dpgmm = mixture.BayesianGaussianMixture(n_components=20,
+                                        covariance_type='full').fit(data_df[[x1,x2]])
+    
+        # agument data with clusters
+        data_df['clust_'+ x1+ '_' + x2] = dpgmm.predict(data_df[[x1,x2]])
+                
+    return data_df  

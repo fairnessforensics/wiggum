@@ -78,8 +78,17 @@ def main():
             csv_data = json.dumps(csv_data, indent=2)
 
             if spType =='Regression':
+
                 continuousVars = models.getContinuousVariableName(df)
                 regression_vars = list(continuousVars)
+
+                clusteringFlg = request.form['clustering']
+                print(type(clusteringFlg))
+
+                if clusteringFlg == 'true':
+                    df = models.getClustering(df, regression_vars)
+                    csv_data = df.to_dict(orient='records')
+                    csv_data = json.dumps(csv_data, indent=2)
 
                 categoricalVars = models.getCategoricalVariableName(df)
 

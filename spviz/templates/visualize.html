@@ -123,6 +123,15 @@
                 view_weight_name = document.getElementById("view_weight_name").value;
                 form_data.append('view_weight_name', view_weight_name);                
 
+                var clusteringFlg = false;
+                if($("input:checkbox:checked").prop("checked") == true){
+                    clusteringFlg = true;
+                }
+                else{
+                    clusteringFlg = false;
+                }
+                form_data.append('clustering', clusteringFlg);
+
                 $.ajax({
                     type: 'POST',
                     url: '/',
@@ -329,7 +338,10 @@
         <div id="selectors">
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>    
+        </div>
+        <div id="clustering">
+            <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label><br/>   
+        </div>
         <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button id="upload-file-btn" type="button" value="upload">Visualize</button> 
         <div id ="slider" class="slider"></div>
