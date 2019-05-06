@@ -33,9 +33,7 @@ function DrawSlopeGraph(options) {
 function highlightLine(i) {
     d3.selectAll('.elm').transition().style('opacity', 0.2);
     d3.selectAll('.sel-' + i).transition().style('opacity', 1);
-    d3.selectAll('.s-line').style('stroke', '#FDBB30');
-    d3.selectAll('.s-line.sel-' + i).style('stroke', '#130C0E');
-
+    
     // All always showing
     d3.selectAll('.sel-' + '0').transition().style('opacity', 1);
     d3.selectAll('.s-line.sel-' + '0').style('stroke', '#130C0E');

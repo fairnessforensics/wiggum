@@ -3,9 +3,9 @@
     d3.my.slopegraph = function module() {
 
         // input vars for getter setters
-        var w = 120,
+        var w = 300,
             h = 360,
-            margin = {top: 50, bottom: 40, left: 0, right: 0},
+            margin = {top: 50, bottom: 40, left: 100, right: 100},
             strokeColour = 'black',
             // key data values start for left(axis) and end for right(axis)
             keyValueStart = '',
@@ -50,19 +50,6 @@
                     position4bars.push(singleObj);                                   
                 }); 
 
-                var c20 = d3.scale.category20().range(),
-                    darkColor = c20.map(function(d, i, all) { return i<10 ? all[i*2] : null }).filter(Boolean),
-                    lightColor = c20.map(function(d, i, all) { return i<10 ? null : all[(i-10)*2+1] }).filter(Boolean);
-
-                var color4zero = d3.scale.ordinal()
-                                    .range(lightColor);
-
-                var color4target = d3.scale.ordinal()
-                                    .range(darkColor);    
-
-                var color4Line = d3.scale.ordinal()
-                                    .range(darkColor);  
-
                 var svg = d3.select(this).append('svg')
                     .attr({
                         width: w + width_vb*2,
@@ -71,18 +58,14 @@
 
                 var lines = svg.selectAll('line')
                     .data(data);
- 
+                    
                 lines.enter().append('line')
                     .attr({
                         x1: margin.left,
                         x2: w - margin.right,
                         y1: function(d) { return yScale(d[keyValueStart]); },
                         y2: function(d) { return yScale(d[keyValueEnd]); },
-                        //stroke: strokeColour,
-                        stroke: function(d, i){
-                            if (d[keyName] != 'ALL') {
-                                return color4Line(d[explanatoryAttr])
-                            }},
+                        stroke: strokeColour,
                         'stroke-width': 2,
                         class: function (d, i) { 
 							if (d[keyName] == 'ALL') {
@@ -92,50 +75,48 @@
                     })
                     .on('mouseover', dispatch._hover)
                     .attr("transform", "translate(" + width_vb + ",0)");
+
+                var borderLines = svg.append("g");
                 
-                // Vertical Axis
-                var yAxisLeft = d3.svg.axis()
-                                    .scale(yScale)
-                                    .ticks(4)
-                                    .orient("right");
+                borderLines.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", margin.left+width_vb).attr("y1", 30)
+                    .attr("x2", margin.left+width_vb).attr("y2", h-20);
 
-                svg.append("g")
-                    .attr("class", "y axis")
-                    .attr("transform", "translate("+width_vb+",0)")		  
-                    .call(yAxisLeft);
+                borderLines.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", width_vb + w - margin.right).attr("y1", 30)
+                    .attr("x2", width_vb + w - margin.right).attr("y2", h-20);
+
+                var rightLabels = svg.selectAll('.labels')
+                    .data(data);
                     
-                var yAxisRight = d3.svg.axis()
-                                    .scale(yScale)
-                                    .ticks(4)
-                                    .orient("left");
-
-                svg.append("g")
-                    .attr("class", "y axis")
-                    .attr("transform", "translate("+(width_vb+w)+",0)")		  
-                    .call(yAxisRight);                        
-
-                var circles = svg.selectAll('.circles')
-                    .data(data.filter(function(d) {
-                        return d[keyName] == 'ALL'}));
-
-                // right circle for all                    
-                var rightCircle = circles.enter().append('circle')
+                rightLabels.enter().append('text')
                     .attr({
-                        cx: w - margin.right,
-                        cy: function(d) { return yScale(d[keyValueEnd]); },
+                        class: function (d, i) { return 'r-labels elm ' + 'sel-' + i; },
+                        x: w - margin.right + 3,
+                        y: function(d) { return yScale(d[keyValueEnd]) + 4; },
                     })
-                    .attr('r', 5)
+                    .text(function (d) {
+                        return format(d[keyValueEnd]) + '\u00A0\u00A0\u00A0' + d[keyName];
+                    })
+                    .style('text-anchor','start')
                     .on('mouseover', dispatch._hover)
                     .attr("transform", "translate(" + width_vb + ",0)");
-             
-                // left circle for all
-                var leftCircle = circles.enter().append('circle')
+                
+                var leftLabels = svg.selectAll('.left-labels')
+                    .data(data);
+                    
+                leftLabels.enter().append('text')
                     .attr({
-                        class: function (d, i) { return 'l-circles elm ' + 'sel-' + i; },
-                        cx: margin.left,
-                        cy: function(d) { return yScale(d[keyValueStart]); }
+                        class: function (d, i) { return 'l-labels elm ' + 'sel-' + i; },
+                        x: margin.left - 3,
+                        y: function(d) { return yScale(d[keyValueStart]) + 4; }
                     })
-                    .attr('r', 5)
+                    .text(function (d) {
+                        return d[keyName] + '\u00A0\u00A0\u00A0' + format(d[keyValueStart]);
+                    })
+                    .style('text-anchor','end')
                     .on('mouseover', dispatch._hover)
                     .attr("transform", "translate(" + width_vb + ",0)");
 
@@ -149,13 +130,15 @@
                     .style('text-anchor','end')
                     .attr("transform", "translate(" + width_vb + ",0)");
 
-                /*var leftBottemTitle = svg.append('text')
-                    .attr("x", -h+margin.bottom+15)
-                    .attr("y", width_vb-8)
+                var leftBottemTitle = svg.append('text')
+                    .attr({
+                        class: 's-title',
+                        x: margin.left + 10,
+                        y: h - margin.top/2 + 20
+                    })
                     .text('Rate')
-                    .style("font-size", "13px")                       
-                    .style('text-anchor','start')                  
-                    .attr("transform", "rotate(-90)");    */            
+                    .style('text-anchor','end')
+                    .attr("transform", "translate(" + width_vb + ",0)");                    
 
                 var rightTitle = svg.append('text')
                     .attr({
@@ -167,13 +150,15 @@
                     .style('text-anchor','start')
                     .attr("transform", "translate(" + width_vb + ",0)");
 
-                /*var rightBottemTitle = svg.append('text') 
-                    .attr("x", h-margin.bottom-15)
-                    .attr("y", 0-width_vb-w-8)
+                var rightBottemTitle = svg.append('text')
+                    .attr({
+                        class: 's-title',
+                        x: w - margin.right + 10,
+                        y: h - margin.top/2 + 20
+                    })
                     .text('Rate')
-                    .style("font-size", "13px")                       
-                    .style('text-anchor','end')                  
-                    .attr("transform", "rotate(90)");*/
+                    .style('text-anchor','end')
+                    .attr("transform", "translate(" + width_vb + ",0)");    
 
                 // Prepare data for vertical bar
                 var protectedAttr = keyProtectedAttr;
@@ -283,8 +268,14 @@
                     d[protectedAttr] = protectedNames.map(function(name) { return {name: name, value: +d[name]}; });
                 });
 
+                var color4zero = d3.scale.ordinal()
+                                .range(["#fdae61", "#abd9e9"]);
+                var color4target = d3.scale.ordinal()
+                                .range(["#d7191c", "#2c7bb6"]);
+                var color4Legend = d3.scale.ordinal()
+                                .range(["#abd9e9", "#2c7bb6", "#fdae61", "#d7191c"]);
                 // Vertical bar axis Right
-                var margin_bar = 0;
+                var margin_bar = 5;
                 var x_vb = d3.scale.linear()
                             .range([0, width_vb-margin_bar]);
                 x_vb.domain([0, d3.max(data4bars, 
@@ -292,6 +283,19 @@
                         return d3.max(d[protectedAttr], 
                             function(d) { return d.value; }); })]);
  
+                var borderLines4Bars = svg.append("g");
+    
+                borderLines4Bars.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", width_vb).attr("y1", 30)
+                    .attr("x2", width_vb).attr("y2", h-20);
+
+                borderLines4Bars.append("line")
+                    .attr("class", "border-lines")
+                    .attr("x1", width_vb + w - margin_bar).attr("y1", 30)
+                    .attr("x2", width_vb + w - margin_bar).attr("y2", h-20);
+
+
                 var xAxis = d3.svg.axis()
                             .scale(x_vb)
                             .orient("bottom")
@@ -299,7 +303,7 @@
  
                 svg.append("g")
                     .attr("class", "x axis")
-                    .attr("transform", "translate(" + (width_vb+w-margin_bar) +"," + (h-margin.bottom-10) + ")")                    
+                    .attr("transform", "translate(" + (width_vb+w-margin_bar) +"," + (h-20) + ")")                    
                     .call(xAxis)
                     .append("text")                
                     .style("text-anchor", "end")
@@ -322,7 +326,7 @@
 
                 svg.append("g")
                     .attr("class", "x axis")
-                    .attr("transform", "translate("+ margin_bar +"," + (h-margin.bottom-10) + ")")                 
+                    .attr("transform", "translate("+ margin_bar +"," + (h-20) + ")")                 
                     .call(xAxis_left)
                     .append("text")
                     .attr("transform", "translate(0, -10)")                    
@@ -338,7 +342,7 @@
                     .enter().append("g")
                     .attr("class", "g");
 
-                var zeroBars = state.selectAll("rect")
+                state.selectAll("rect")
                     .data(function(d) { 
                         for (var i = 0; i < d[protectedAttr].length; i++){
                             d[protectedAttr][i][explanatoryAttr] = d[explanatoryAttr];
@@ -381,10 +385,10 @@
                             var object = position4bars.filter(function(d) {
                                 return d[explanatoryAttr] == explanatoryValue;
                             });
-                            return object[0][d.name] - 3; 
+                            return object[0][d.name] - 4; 
                         })
                     .attr("height", 6)
-                    .style("fill", function(d) { return color4zero(d[explanatoryAttr]); })
+                    .style("fill", function(d) { return color4zero(d.name); })
                     .attr({
                         class: function (d) { 
                             index = index+1;
@@ -400,7 +404,7 @@
                     
                 // reset index
                 index = 0;
-                var targetBars = stateTarget.selectAll("rect")
+                stateTarget.selectAll("rect")
                     .data(function(d) { 
                         for (var i = 0; i < d[protectedAttr].length; i++){
                             d[protectedAttr][i][explanatoryAttr] = d[explanatoryAttr];
@@ -433,10 +437,10 @@
                                 return d[explanatoryAttr] == explanatoryValue;
                             });
 
-                            return object[0][d.name] - 3; 
+                            return object[0][d.name] - 4; 
                         })
                     .attr("height", 6)
-                    .style("fill", function(d) {return color4target(d[explanatoryAttr]); })
+                    .style("fill", function(d) { return color4target(d.name); })
                     .attr({
                         class: function (d) { 
                             index = index+1;
@@ -444,41 +448,34 @@
                         }
                     });
                 
-                // Legend              
+                // Legend
+                var legendNames = [];
+
+                for (var i=0; i < protectedNames.length; i++) {
+                    legendNames.push(protectedNames[i]+"-1");   
+                    legendNames.push(protectedNames[i]+"-0");
+                }
+              
                 var legend = svg.selectAll(".legend")
-                    .data(color4target.domain())
+                    .data(legendNames.slice().reverse())
                     .enter().append("g")
                     .attr("class", "legend")
-                    .attr("transform", function(d, i) { return "translate("+(w/2 + width_vb-60)+"," + (i * 15 +15) + ")"; });
+                    .attr("transform", function(d, i) { return "translate("+(w/2 + width_vb-60)+"," + (i * 15 +5) + ")"; });
             
                 legend.append("rect")
-                    .attr("x", width - 60)
+                    .attr("x", width + 30)
                     .attr("width", 10)
                     .attr("height", 10)
-                    .style("fill", color4target);
-
-                legend.append("rect")
-                    .attr("x", width - 50)
-                    .attr("width", 10)
-                    .attr("height", 10)
-                    .style("fill", color4zero);
+                    .style("fill", color4Legend);
+            //        .style("opacity", ".8");
             
                 legend.append("text")
-                    .attr("x", width - 64)
+                    .attr("x", width + 26)
                     .attr("y", 4)
                     .attr("dy", ".35em")
                     .style("font-size", "12px")                     
                     .style("text-anchor", "end")
                     .text(function(d) { return d; });
-                
-                // Legend Title
-                svg.append("text")
-                    .attr("x", width+ width_vb-40)
-                    .attr("y", 4)
-                    .attr("dy", ".35em")
-                    .style("font-size", "12px")                     
-                    .style("text-anchor", "end")
-                    .text(explanatoryAttr);
 
                 // Tooltip
                 // Define the div for the tooltip
@@ -486,149 +483,61 @@
                             .attr("class", "tooltip")
                             .style("opacity", 0);
 
-                leftCircle.on("mouseover", function(d) {	
-                    var totalZero = 0;
-                    targetZeroData.forEach(function(d) {
-                        totalZero += d[keyValueStart];
-                    }); 
+                rightLabels.on("mouseover", function(d) {	
+                        if (d[explanatoryAttr] != 'ALL') {
+                            var explanatory_Value = d[explanatoryAttr];
+                            var targetZeroObject = targetZeroData.filter(function(d) {
+                                return d[explanatoryAttr] == explanatory_Value;
+                            });
 
-                    var totalTarget = 0;
-                    targetData.forEach(function(d) {
-                        totalTarget += d[keyValueStart];
-                    }); 
+                            var targetObject = targetData.filter(function(d) {
+                                return d[explanatoryAttr] == explanatory_Value;
+                            });
 
-                    div.transition()		
-                        .duration(200)		
-                        .style("opacity", .9);		
-                    div.html(protectedAttr+":&nbsp"+keyValueStart+"<br/>"
-                                + explanatoryAttr+":&nbspALL<br/>"
-                                +"rate:&nbsp"+d[keyValueStart]+"<br/>"+"0:&nbsp" 
-                                + totalZero+ "<br/>" + "1:&nbsp" 
-                                + totalTarget)	
-                        .style("left", (event.pageX+30) + "px")		
-                        .style("top", (event.pageY-120)+ "px");	
-                    })					
+                            div.transition()		
+                                .duration(200)		
+                                .style("opacity", .9);		
+                            div.html(protectedAttr+":&nbsp"+keyValueEnd+"<br/>"
+                                        + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
+                                        +"rate:&nbsp"+d[keyValueEnd]+"<br/>"+"0:&nbsp" 
+                                        + targetZeroObject[0][keyValueEnd]+ "<br/>" + "1:&nbsp" 
+                                        + targetObject[0][keyValueEnd])	
+                                .style("left", (event.pageX+30) + "px")		
+                                .style("top", (event.pageY-120)+ "px");	
+                        }
+                        })					
                     .on("mouseout", function(d) {		
                         div.transition()		
                             .duration(500)		
                             .style("opacity", 0)});
 
-                rightCircle.on("mouseover", function(d) {	
-                    var totalZero = 0;
-                    targetZeroData.forEach(function(d) {
-                        totalZero += d[keyValueEnd];
-                    }); 
+                    leftLabels.on("mouseover", function(d) {	
+                        if (d[explanatoryAttr] != 'ALL') {
+                            var explanatory_Value = d[explanatoryAttr];
+                            var targetZeroObject = targetZeroData.filter(function(d) {
+                                return d[explanatoryAttr] == explanatory_Value;
+                            });
 
-                    var totalTarget = 0;
-                    targetData.forEach(function(d) {
-                        totalTarget += d[keyValueEnd];
-                    }); 
+                            var targetObject = targetData.filter(function(d) {
+                                return d[explanatoryAttr] == explanatory_Value;
+                            });
 
-                    div.transition()		
-                        .duration(200)		
-                        .style("opacity", .9);		
-                    div.html(protectedAttr+":&nbsp"+keyValueEnd+"<br/>"
-                                + explanatoryAttr+":&nbspALL<br/>"
-                                +"rate:&nbsp"+d[keyValueEnd]+"<br/>"+"0:&nbsp" 
-                                + totalZero+ "<br/>" + "1:&nbsp" 
-                                + totalTarget)	
-                        .style("left", (event.pageX+30) + "px")		
-                        .style("top", (event.pageY-120)+ "px");	
-                    })					
+                            div.transition()		
+                                .duration(200)		
+                                .style("opacity", .9);		
+                            div.html(protectedAttr+":&nbsp"+keyValueStart+"<br/>"
+                                        + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
+                                        +"rate:&nbsp"+d[keyValueStart]+"<br/>"+"0:&nbsp" 
+                                        + targetZeroObject[0][keyValueStart]+ "<br/>" + "1:&nbsp" 
+                                        + targetObject[0][keyValueStart])	
+                                .style("left", (event.pageX-130) + "px")		
+                                .style("top", (event.pageY-130)+ "px");	
+                        }
+                        })					
                     .on("mouseout", function(d) {		
                         div.transition()		
                             .duration(500)		
-                            .style("opacity", 0)});
-
-                // for target bars
-                targetBars.on("mouseover", function(d) {	
-                    var explanatory_Value = d[explanatoryAttr];
-                    var targetZeroObject = targetZeroData.filter(function(d) {
-                        return d[explanatoryAttr] == explanatory_Value;
-                    });
-
-                    var targetObject = targetData.filter(function(d) {
-                        return d[explanatoryAttr] == explanatory_Value;
-                    });
-
-                    var rateObject = data.filter(function(d) {
-                        return d[explanatoryAttr] == explanatory_Value;
-                    });
-
-                    div.transition()		
-                        .duration(200)		
-                        .style("opacity", .9);		
-
-                    if (d.name == keyValueStart) {
-                        // left side
-                        div.html(protectedAttr+":&nbsp"+keyValueStart+"<br/>"
-                                    + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
-                                    +"rate:&nbsp"+rateObject[0][keyValueStart]+"<br/>"+"0:&nbsp" 
-                                    + targetZeroObject[0][keyValueStart]+ "<br/>" + "1:&nbsp" 
-                                    + targetObject[0][keyValueStart])	
-                            .style("left", (event.pageX-130) + "px")		
-                            .style("top", (event.pageY-130)+ "px");	
-                    } else {
-                        // right side
-                        div.html(protectedAttr+":&nbsp"+keyValueEnd+"<br/>"
-                                    + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
-                                    +"rate:&nbsp"+rateObject[0][keyValueEnd]+"<br/>"+"0:&nbsp" 
-                                    + targetZeroObject[0][keyValueEnd]+ "<br/>" + "1:&nbsp" 
-                                    + targetObject[0][keyValueEnd])	
-                            .style("left", (event.pageX+30) + "px")		
-                            .style("top", (event.pageY-120)+ "px");	
-                    }   
-
-                })					
-                .on("mouseout", function(d) {		
-                    div.transition()		
-                        .duration(500)		
-                        .style("opacity", 0)});  
-                        
-                // for zero bars
-                zeroBars.on("mouseover", function(d) {	
-                    var explanatory_Value = d[explanatoryAttr];
-                    var targetZeroObject = targetZeroData.filter(function(d) {
-                        return d[explanatoryAttr] == explanatory_Value;
-                    });
-
-                    var targetObject = targetData.filter(function(d) {
-                        return d[explanatoryAttr] == explanatory_Value;
-                    });
-
-                    var rateObject = data.filter(function(d) {
-                        return d[explanatoryAttr] == explanatory_Value;
-                    });
-
-                    div.transition()		
-                        .duration(200)		
-                        .style("opacity", .9);		
-
-                    if (d.name == keyValueStart) {
-                        // left side
-                        div.html(protectedAttr+":&nbsp"+keyValueStart+"<br/>"
-                                    + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
-                                    +"rate:&nbsp"+rateObject[0][keyValueStart]+"<br/>"+"0:&nbsp" 
-                                    + targetZeroObject[0][keyValueStart]+ "<br/>" + "1:&nbsp" 
-                                    + targetObject[0][keyValueStart])	
-                            .style("left", (event.pageX-130) + "px")		
-                            .style("top", (event.pageY-130)+ "px");	
-                    } else {
-                        // right side
-                        div.html(protectedAttr+":&nbsp"+keyValueEnd+"<br/>"
-                                    + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
-                                    +"rate:&nbsp"+rateObject[0][keyValueEnd]+"<br/>"+"0:&nbsp" 
-                                    + targetZeroObject[0][keyValueEnd]+ "<br/>" + "1:&nbsp" 
-                                    + targetObject[0][keyValueEnd])	
-                            .style("left", (event.pageX+30) + "px")		
-                            .style("top", (event.pageY-120)+ "px");	
-                    }   
-
-                })					
-                .on("mouseout", function(d) {		
-                    div.transition()		
-                        .duration(500)		
-                        .style("opacity", 0)});                                         
+                            .style("opacity", 0)});                        
 
             });
 

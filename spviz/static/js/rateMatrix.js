@@ -486,11 +486,9 @@ var clickRateMatrixCell = function() {
 // Reset when double click
 var doubleClickRateMatrixCell = function() {
 
-
 	d3.select("#container").selectAll('.cell').classed("clicked", false);
 
 	d3.selectAll('.elm').transition().style('opacity', 1);
-	d3.selectAll('.s-line').style('stroke', '#130C0E');
 	d3.selectAll('.gbc').transition().style('opacity', 1);
 
 };
