@@ -9,11 +9,12 @@ function DrawSlopeGraph(options) {
     //Title
     d3.select('#slopeLabel').select("text").remove();
     d3.select('#slopeLabel').append("text")
-        .attr("x", 250)             
+        .attr("x", 20)             
         .attr("y", 90)
-        .attr("text-anchor", "middle")  
         .style("font-size", "16px") 
-        .text("Rate by Per Subgroup and Protected Class");	
+        .text("Rate by Per " + keyName +  " and " + protectedAttr)
+        .attr("text-anchor", "middle")          
+        .attr("transform", "translate(200, 0)");   
 
     var slopegraph = d3.my.slopegraph()
         //.margin({top: 20, bottom: 20, left: 100, right:100})

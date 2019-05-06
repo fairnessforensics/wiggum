@@ -145,8 +145,20 @@
                         x: margin.left - 3,
                         y: margin.top/2
                     })
-                    .text(keyValueStart + ' ↓')
+                    .text(keyProtectedAttr + ': ' + keyValueStart + ' ↓')
                     .style('text-anchor','end')
+                    .style("font-size", "13px")                      
+                    .attr("transform", "translate(" + width_vb + ",0)");
+
+                var middleTitle = svg.append('text')
+                    .attr({
+                        class: 's-title',
+                        x: margin.left + w/2,
+                        y: margin.top/2
+                    })
+                    .text(targetAttr + " mean")
+                    .style('text-anchor','middle')
+                    .style("font-size", "13px")                      
                     .attr("transform", "translate(" + width_vb + ",0)");
 
                 /*var leftBottemTitle = svg.append('text')
@@ -163,7 +175,8 @@
                         x: w - margin.right + 3,
                         y: margin.top/2
                     })
-                    .text('↓ ' + keyValueEnd)
+                    .text('↓ ' + keyProtectedAttr + ': ' + keyValueEnd)
+                    .style("font-size", "13px")                         
                     .style('text-anchor','start')
                     .attr("transform", "translate(" + width_vb + ",0)");
 

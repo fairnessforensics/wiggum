@@ -507,8 +507,6 @@ function prepareDetail() {
 
 var updateSlopeGraph = function(vars) {
 	d3.select("#slopegraph").selectAll('svg').remove();
-	//console.log(arraySlopeGraph);
-
 
 	DrawSlopeGraph(
 	{
