@@ -163,6 +163,7 @@ function roleTable(data, dtypes, samples) {
 													.data(optionData).enter()
 													.append('option')
 													.text(function(d){return d;})
+													.property("selected", 1);
 							}																		
 						})
 											
