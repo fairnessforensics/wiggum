@@ -6,143 +6,145 @@ import itertools
 clustering_techniques = {'dpgmm': lambda df,var_list : mixture.BayesianGaussianMixture(n_components=20,
                                 covariance_type='full').fit(df[var_list]).predict(df[var_list])}
 
+class _augmentedData():
 
-def add_cluster(data_df,view,name):
-    """
-    add a column to a DataFrame gernated by a clustering solution
+    def add_cluster(self,view,name):
+        """
+        add a column to a DataFrame gernated by a clustering solution
 
-    Parameters
-    -----------
-    data_df : DataFrame
-        tidy data to cluster and augment
-    view : list of strings
-        list of column names that defines a view of the data to perform
-    clustering in
-    name : string
-        name of clustering method to apply
-    """
+        Parameters
+        -----------
+        data_df : DataFrame
+            tidy data to cluster and augment
+        view : list of strings
+            list of column names that defines a view of the data to perform
+        clustering in
+        name : string
+            name of clustering method to apply
+        """
 
-    #cluster the data_df
-    clust_assignments = clustering_techniques[name](data_df,view)
+        #cluster the data_df
+        clust_assignments = clustering_techniques[name](self.df,view)
 
-    #create column_name
-    col_name = '_'.join(['_'.join(view),name])
-    data_df[col_name] = clust_assignments
+        #create column_name
+        col_name = '_'.join(['_'.join(view),name])
+        self.df[col_name] = clust_assignments
 
-    return data_df
+        return self.df
 
-def generate_views(data_df,n_dim):
-    """
-    add a column to a DataFrame gernated by a clustering solution
+    def generate_continuous_views(self,n_dim=2):
+        """
+        generate all views of a given size
 
-    Parameters
-    -----------
-    data_df : DataFrame
-        tidy data to cluster and augment
-    """
-    view_vars = list(data_df.select_dtypes(include=['float64']))
+        Parameters
+        -----------
+        data_df : DataFrame
+            tidy data to cluster and augment
+        """
+        view_vars = list(self.get_vars_per_type('continuous'))
 
-    # select all groups of the desired length, convert to list
-    view_list = [list(v) for v in itertools.combinations(view_vars,n_dim)]
+        # select all groups of the desired length, convert to list
+        view_list = [list(v) for v in itertools.combinations(view_vars,n_dim)]
 
-    return view_list
+        return view_list
 
-def add_all_dpgmm(data_df,n_dim):
-    """
-    add dpgmm clusters for all ndimviews of continuous variables
+    def add_all_dpgmm(self,n_dim=2):
+        """
+        add dpgmm clusters for all ndimviews of continuous variables
 
-    Parameters
-    -----------
-    data_df : DataFrame
-        tidy data to cluster and augment
-    """
-    view_list =  generate_views(data_df,n_dim)
+        Parameters
+        -----------
+        data_df : DataFrame
+            tidy data to cluster and augment
+        """
+        view_list =  generate_views(data_df,n_dim)
 
-    for view in view_list:
-        data_df = add_cluster(data_df,view,'dpgmm')
+        for view in view_list:
+            self.add_cluster(view,'dpgmm')
 
-    return data_df
-
-
-def add_quantile(data_df,vars_in,q,q_names=None):
-    """
-    add a column to a DataFrame generated from quantiles specified by `q` of
-    variable `var`
+        return self.df
 
 
-    Parameters
-    -----------
-    data_df : DataFrame
-        must be tidy
-    var : string or list of strings
-        column name(s) to compute quantile values of
-    q : float or list
-        if scalar then the new column will be {top, bottom, middle} using the
-        bottom [0,q) [q,1-q), [1-q,1]. If q is a list it specifies the splits.
-        Should be compatible with pandas.quantile
-    q_names : list
-        list of names for quantiles assumed to be in order otherwise numerical
-        names will be assigned unles there q is a float or len(q) ==2
-    """
-
-    # make sure var is a list
-    if type(vars_in) == list:
-        var_list = vars_in
-    else:
-        var_list = [vars_in]
-
-    # transform q and generate names if necessary
-    if type(q) == float:
-        q_str = str(q)
-        q_m_str = str(1-2*q)
-        q_names = ['bottom'+q_str,'middle'+q_m_str,'top'+q_str]
-        q = [q,1-q]
-
-    # get quantile cutoffs for the columns of interest
-    quantile_df = data_df[var_list].quantile(q)
+    def add_quantile(self,vars_in,q,q_names=None):
+        """
+        add a column to a DataFrame generated from quantiles specified by `q` of
+        variable `var`
 
 
-    # transform to labels for merging
-    q_l = q.copy()
-    q_u = q.copy()
-    q_l.insert(0,0)
-    q_u.append(1)
+        Parameters
+        -----------
+        data_df : DataFrame
+            must be tidy
+        vars_in : string or list of strings
+            column name(s) to compute quantile values of
+        q : float or list
+            if scalar then the new column will be {top, bottom, middle} using the
+            bottom [0,q) [q,1-q), [1-q,1]. If q is a list it specifies the splits.
+            Should be compatible with pandas.quantile
+        q_names : list
+            list of names for quantiles assumed to be in order otherwise numerical
+            names will be assigned unles there q is a float or len(q) ==2
+        """
 
-    # create names
-    min_names = {col:col+'_min' for col in var_list}
-    max_names = {col:col+'_max' for col in var_list}
+        # make sure var is a list
+        if type(vars_in) == list:
+            var_list = vars_in
+        else:
+            var_list = [vars_in]
+
+        # transform q and generate names if necessary
+        if type(q) == float:
+            q_str = str(q)
+            q_m_str = str(1-2*q)
+            q_names = ['bottom'+q_str,'middle'+q_m_str,'top'+q_str]
+            q = [q,1-q]
+
+        # get quantile cutoffs for the columns of interest
+        quantile_df = data_df[var_list].quantile(q)
 
 
-    # TODO: for large data, this should be done with copy instead of recompute
+        # transform to labels for merging
+        q_l = q.copy()
+        q_u = q.copy()
+        q_l.insert(0,0)
+        q_u.append(1)
 
-    # get quantile bottoms and rename to _min
-    ql_df = data_df[var_list].quantile(q_l).rename(columns=min_names)
-    # get quantile tops and rename to _max
-    qu_df = data_df[var_list].quantile(q_u).rename(columns= max_names)
-    # round up the last interval's upper limit for <=, < ranges
-    qu_df.iloc[-1] = np.ceil(qu_df.iloc[-1])
-    # rename index of uppers for concat to work properly
-    qu_df = qu_df.rename(index={u:l for l,u in zip(q_l,q_u)})
-
+        # create names
+        min_names = {col:col+'_min' for col in var_list}
+        max_names = {col:col+'_max' for col in var_list}
 
 
-    # concatenate uppers and lwoers
-    q_intervals = pd.concat([ql_df,qu_df],axis=1)
+        # TODO: for large data, this should be done with copy instead of recompute
 
-    if q_names is None:
-        q_intervals['quantile_name'] = [' - '.join([str(l),str(u)]) for l,u in zip(q_l,q_u)]
-    else:
-        q_intervals['quantile_name'] = q_names
+        # get quantile bottoms and rename to _min
+        ql_df = data_df[var_list].quantile(q_l).rename(columns=min_names)
+        # get quantile tops and rename to _max
+        qu_df = data_df[var_list].quantile(q_u).rename(columns= max_names)
+        # round up the last interval's upper limit for <=, < ranges
+        qu_df.iloc[-1] = np.ceil(qu_df.iloc[-1])
+        # rename index of uppers for concat to work properly
+        qu_df = qu_df.rename(index={u:l for l,u in zip(q_l,q_u)})
 
-    # iterate over vars
-    for var in var_list:
-        interval_column_key = {'start':var+'_min',
-                                'end': var + '_max',
-                                'label': 'quantile_name',
-                                'source':var}
-        data_df = interval_merge(data_df,q_intervals,interval_column_key)
 
-    return data_df
+
+        # concatenate uppers and lwoers
+        q_intervals = pd.concat([ql_df,qu_df],axis=1)
+
+        if q_names is None:
+            q_intervals['quantile_name'] = [' - '.join([str(l),str(u)]) for l,u in zip(q_l,q_u)]
+        else:
+            q_intervals['quantile_name'] = q_names
+
+        # iterate over vars
+        for var in var_list:
+            interval_column_key = {'start':var+'_min',
+                                    'end': var + '_max',
+                                    'label': 'quantile_name',
+                                    'source':var}
+            data_df = interval_merge(data_df,q_intervals,interval_column_key)
+
+        return data_df
+
 
 
 def interval_merge(data_df, interval_df,interval_column_key):
@@ -191,36 +193,3 @@ def interval_merge(data_df, interval_df,interval_column_key):
     data_df[label_col] = data_df[source_col].apply(get_label)
 
     return data_df
-
-
-
-
-def cluster_augment_data_dpgmm(df,regression_vars):
-    """
-    brute force cluster in every pair of
-
-    Parameters
-    -----------
-    df : DataFrame
-        data organized in a pandas dataframe containing continuous attributes
-        and potentially also categorical variables but those are not necessary
-    regression_vars : list
-        list of continuous attributes by name in dataframe
-
-    Returns
-    --------
-    df : DataFrame
-        input DataFrame with column added with label `clust_<var1>_<var2>`
-    """
-    for x1,x2 in itert.combinations(regression_vars,2):
-        # run clustering
-        dpgmm = skl.mixture.BayesianGaussianMixture(n_components=20,
-                                        covariance_type='full').fit(df[[x1,x2]])
-
-    # check if clusters are good separation or nonsense
-    # maybe not?
-
-        # agument data with clusters
-        df['clust_'+ x1+ '_' + x2] = dpgmm.predict(df[[x1,x2]])
-
-    return df

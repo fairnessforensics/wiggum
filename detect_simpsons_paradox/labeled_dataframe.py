@@ -1,7 +1,8 @@
 import os
 import pandas as pd
-from .detect_sp import RESULTS_DF_HEADER
-from .resultDataFrame import resultDataFrame
+from .detect_sp import RESULTS_DF_HEADER, _detect_SP_trends
+from .data_augmentation import _augmentedData
+from .ranking_processing import _resultDataFrame
 
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'count_of']
@@ -15,7 +16,62 @@ result_csv = 'result_df.csv'
 data_csv = 'df.csv'
 
 
-class labeledDataFrame(_resultDataFrame):
+def check_meta(row,meta_val,meta_type):
+    """
+    check if the current role/type is equal to or contains role
+    """
+    role_tests = {str: lambda cur,target: cur == target,
+                  list: lambda cur,target: target in cur}
+    return role_tests[type(row[meta_type])](row[meta_type],meta_val)
+
+
+
+def simple_type_mapper(df):
+    """
+    get varialbe types using the data types and counts
+
+    Parameters
+    -----------
+    df : DataFrame
+        source data
+    """
+    var_type_list = []
+
+    for col in df.columns:
+        num_values = len(pd.unique(df[col]))
+        col_dtype = df[col].dtype
+
+
+        if col_dtype == bool or num_values == 2:
+            var_type_list.append('binary')
+        elif 'int' in str(col_dtype):
+            var_type_list.append('ordinal')
+        elif 'object' in str(col_dtype):
+            var_type_list.append('categorical')
+        elif 'float' in str(col_dtype):
+            var_type_list.append('continuous')
+        else:
+            var_type_list.append('unknown')
+
+    return var_type_list
+
+
+
+
+
+
+
+
+
+
+class labeledDataFrame(_resultDataFrame,_detect_SP_trends,_augmentedData):
+    """
+    this is the object
+
+
+    in this file we define the basic operations, the inherited Mixins have more
+    methods in them, spread across files for space and organization
+    """
 
     def __init__(self,data=None,meta=None,results=None):
         """
@@ -59,7 +115,7 @@ class labeledDataFrame(_resultDataFrame):
         # initialize results_df
         if results == None:
             # call function
-            self.result_df = resultDataFrame
+            self.result_df = pd.DataFrame(columns= RESULTS_DF_HEADER)
         elif callable(results):
             self.result_df = results(self)
         else:
@@ -170,7 +226,7 @@ class labeledDataFrame(_resultDataFrame):
 
         all_vars = self.meta_df.index
 
-        return all_vars[is_target_role]
+        return all_vars[target_rows]
 
 
 
@@ -183,48 +239,6 @@ class labeledDataFrame(_resultDataFrame):
         results_file = os.path.join(dirname,result_csv)
         data_file = os.path.join(dirname,data_csv)
 
+        self.result_df.to_csv(results_file)
         self.df.to_csv(data_file)
         self.meta_df.to_csv(meta_file)
-        self.result_df.to_csv(results_file)
-
-
-
-
-def check_meta(row,meta_val,meta_type):
-    """
-    check if the current role/type is equal to or contains role
-    """
-    role_tests = {str: lambda cur,target: cur == target,
-                  list: lambda cur,target: target in cur}
-    return role_tests[type(row[meta_type])](row[meta_type],meta_val)
-
-
-
-def simple_type_mapper(df):
-    """
-    get varialbe types using the data types and counts
-
-    Parameters
-    -----------
-    df : DataFrame
-        source data
-    """
-    var_type_list = []
-
-    for col in df.columns:
-        num_values = len(pd.unique(df[col]))
-        col_dtype = df[col].dtype
-
-
-        if col_dtype == bool or num_values == 2:
-            var_type_list.append('binary')
-        elif 'int' in str(col_dtype):
-            var_type_list.append('ordinal')
-        elif 'object' in str(col_dtype):
-            var_type_list.append('categorical')
-        elif 'float' in str(col_dtype):
-            var_type_list.append('continuous')
-        else:
-            var_type_list.append('unknown')
-
-    return var_type_list

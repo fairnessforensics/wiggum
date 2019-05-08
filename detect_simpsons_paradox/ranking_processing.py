@@ -424,7 +424,7 @@ class _resultDataFrame():
                 #vewi counts
 
                 # create view_score
-                view_score =
+                # view_score =
                 #
 
         if occurence_score is None:

@@ -11,14 +11,14 @@ RESULTS_DF_HEADER = ['feat1','feat2','trend_type','agg_trend','group_feat',
                     'subgroup','subgroup_trend']
 
 
-
-get_trend_vars = {'pearson_corr':lambda l_df: l_df.get_vars_per_roletype('trend'
-                                                            ,'continuous'),
-              'rate': lambda df: list(df.select_dtypes(include=['bool'])),
-              'rank': lambda df: [col for col in df.columns if col[-5:] == '_rate']
-               }
-get_trend_funcs = {'pearson_corr':get_correlations,
-                'rank':get_rank_trends}
+from .trends import all_trend_types
+# get_trend_vars = {'pearson_corr':lambda l_df: l_df.get_vars_per_roletype('trend'
+#                                                             ,'continuous'),
+#               'rate': lambda df: list(df.select_dtypes(include=['bool'])),
+#               'rank': lambda df: [col for col in df.columns if col[-5:] == '_rate']
+#                }
+# get_trend_funcs = {'pearson_corr':get_correlations,
+#                 'rank':get_rank_trends}
 
 
 
@@ -115,13 +115,13 @@ class _detect_SP_trends():
         -----------
         labeled_df : labeledDataFrame
             data to find SP in, must be tidy
-        trend_types: list of strings or list of dicts
+        trend_types: list of strings or list trend objects
             info on what trends to compute and the variables to use, dict is of form
         {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
 
         """
         data_df = self.df
-        groupby_vars = labeled_df.get_vars_per_role('groupby')
+        groupby_vars = self.get_vars_per_role('groupby')
 
         # if not specified, detect continous attributes and categorical attributes
         # from dataset
@@ -130,13 +130,11 @@ class _detect_SP_trends():
             groupby_vars = list(groupby_data)
 
         if type(trend_types[0]) is str:
-            # create dict
-            trend_dict_list = [{'name':trend,
-                            'vars':get_trend_vars[trend](self.df),
-                            'func':get_trend_funcs[trend]} for trend in trend_types]
+            # instantiate objects
+            trend_list = [all_trend_types[trend]() for trend in trend_types]
         else:
             # use provided
-            trend_dict_list = trend_types
+            trend_list = trend_types
 
         # prep the result df to add data to later
         self.result_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
@@ -145,11 +143,10 @@ class _detect_SP_trends():
         all_trends = []
         subgroup_trends = []
 
-        for td in trend_dict_list:
-            trend_func = td['func']
-            trend_vars = td['vars']
+        for cur_trend in trend_list:
+            cur_trend.get_trend_vars(self)
             # Tabulate aggregate statistics
-            agg_trends = trend_func(self.df,trend_vars,'agg_trend')
+            agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
             all_trends.append(agg_trends)
 
@@ -159,7 +156,7 @@ class _detect_SP_trends():
                 cur_grouping = self.df.groupby(groupbyAttr)
 
                 # get subgoup trends
-                curgroup_corr = trend_func(cur_grouping,trend_vars,'subgroup_trend')
+                curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
 
                 # append
                 subgroup_trends.append(curgroup_corr)
@@ -170,7 +167,7 @@ class _detect_SP_trends():
         # condense and merge all trends with subgroup trends
         all_trends = pd.concat(all_trends)
         subgroup_trends = pd.concat(subgroup_trends)
-        result_df = pd.merge(subgroup_trends,all_trends)
+        self.result_df = pd.merge(subgroup_trends,all_trends)
         # ,on=['feat1','feat2'], how='left
 
         return self.result_df
