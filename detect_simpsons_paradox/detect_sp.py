@@ -26,7 +26,7 @@ from .trends import all_trend_types
 ################################################################################
 # helper Mixin class
 ################################################################################
-class _detect_SP_trends():
+class _trendDetectors():
     """
     a mixin class of detectors and trend computations
     """
@@ -122,12 +122,7 @@ class _detect_SP_trends():
         """
         data_df = self.df
         groupby_vars = self.get_vars_per_role('groupby')
-
-        # if not specified, detect continous attributes and categorical attributes
-        # from dataset
-        if groupby_vars is None:
-            groupby_data = self.df.select_dtypes(include=['object','int64'])
-            groupby_vars = list(groupby_data)
+        print(groupby_vars)
 
         if type(trend_types[0]) is str:
             # instantiate objects

@@ -57,7 +57,6 @@ class correlation_trend(continuousTrend,trend):
         # get locations of upper right triangle of a correlation matrix for this
         # many values
         num_vars = len(self.regression_vars)
-        print(num_vars)
         triu_indices_0 = np.triu_indices(num_vars,k=1)
 
 

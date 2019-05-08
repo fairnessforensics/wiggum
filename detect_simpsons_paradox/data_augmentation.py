@@ -57,7 +57,7 @@ class _augmentedData():
         data_df : DataFrame
             tidy data to cluster and augment
         """
-        view_list =  generate_views(data_df,n_dim)
+        view_list =  self.generate_continuous_views(n_dim)
 
         for view in view_list:
             self.add_cluster(view,'dpgmm')

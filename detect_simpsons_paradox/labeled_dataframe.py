@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from .detect_sp import RESULTS_DF_HEADER, _detect_SP_trends
+from .detect_sp import RESULTS_DF_HEADER, _trendDetectors
 from .data_augmentation import _augmentedData
 from .ranking_processing import _resultDataFrame
 
@@ -64,9 +64,12 @@ def simple_type_mapper(df):
 
 
 
-class labeledDataFrame(_resultDataFrame,_detect_SP_trends,_augmentedData):
+class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
     """
     this is the object
+
+    a labeledDataFrame object contains 3 DataFrames of information: the actual data(df),
+    meta data(meta_df) about it and the trends (result_df) in it.
 
 
     in this file we define the basic operations, the inherited Mixins have more
@@ -79,11 +82,15 @@ class labeledDataFrame(_resultDataFrame,_detect_SP_trends,_augmentedData):
 
         Parameters
         ----------
-        data :
-        meta :
+        data : DataFrame, string, or None
+            if DataFrame sets this to .df, string must be a file name of a csv
+            to load or a directory that contains 3 csvs written by to_csvs
+        meta : DataFrame, string or None
+            if DataFrame sets this to .meta_df string must be a file name of a csv
+            to load
         results : None, callable, or string
             none initializes empty, callable initializes with that function,
-            string must be a filename
+            string must be a filename of a csv to load
         """
         # check if re-opening a saved labeled_df
 
@@ -105,12 +112,15 @@ class labeledDataFrame(_resultDataFrame,_detect_SP_trends,_augmentedData):
         if meta == None:
             self.meta_df = pd.DataFrame(index = self.df.columns,
                                columns = META_COLUMNS)
+            self.meta_df.index.name = 'variable'
             self.meta_df['dtype'] = self.df.dtypes
         elif type(meta) is  pd.core.frame.DataFrame:
             self.meta_df = meta
-        elif type(data) is str:
-            self.meta_df = pd.read_csv(data)
-
+        elif type(meta) is str:
+            self.meta_df = pd.read_csv(meta,index_col='variable')
+            # handle lists
+            self.meta_df['role'] = [var.replace("'",'').replace("[",'').replace("]",'').replace(",",'').split()
+                      for var in self.meta_df['role']]
 
         # initialize results_df
         if results == None:
@@ -124,6 +134,13 @@ class labeledDataFrame(_resultDataFrame,_detect_SP_trends,_augmentedData):
 
     def infer_var_types(self,dtype_var_func = simple_type_mapper):
         '''
+        infer variable (meaningful) types based on a mapper function that takes the data as
+        a Parameters
+
+        Parameters
+        dtype_var_func : functionhandle
+            a functiont that takes a self.df and returns a list of the lenght of the number
+            of columns of values from var_types
         '''
         self.meta_df['var_type'] = dtype_var_func(self.df)
 
@@ -195,7 +212,7 @@ class labeledDataFrame(_resultDataFrame,_detect_SP_trends,_augmentedData):
 
         return all_vars[is_target_role]
 
-    def get_vars_per_type(self, role):
+    def get_vars_per_type(self, vartype):
         """
         return the variables of one role
         """
@@ -234,11 +251,25 @@ class labeledDataFrame(_resultDataFrame,_detect_SP_trends,_augmentedData):
         """
         write out info as csvs to the same directory
         """
-        # make file names
+        if not(os.path.isdir(dirname)):
+            os.mkdir(dirname)
+        # save metadata
         meta_file = os.path.join(dirname,meta_csv)
-        results_file = os.path.join(dirname,result_csv)
-        data_file = os.path.join(dirname,data_csv)
-
-        self.result_df.to_csv(results_file)
-        self.df.to_csv(data_file)
         self.meta_df.to_csv(meta_file)
+
+        results_file = os.path.join(dirname,result_csv)
+        self.result_df.to_csv(results_file,index=False)
+
+        data_file = os.path.join(dirname,data_csv)
+        self.df.to_csv(data_file,index=False)
+
+
+    def __repr__(self):
+        return self.df.head().__repr__() + self.meta_df.head().__repr__() + self.result_df.head().__repr__()
+
+    def view(self):
+        print(self.df.head())
+        print(self.meta_df.head())
+        print(self.result_df.head())
+
+        return True
