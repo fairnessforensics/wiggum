@@ -67,7 +67,7 @@ path.link {
 
 #slopegraph {
     display: block;
-    position: fixed;
+    position: absolute;
     background: white;
     right: 100px;
     border-style: solid;
@@ -78,7 +78,7 @@ path.link {
 
 #slopeLabel {
     display: block;
-    position: fixed;
+    position: absolute;
     right: 220px;
     top: 300px;
 }

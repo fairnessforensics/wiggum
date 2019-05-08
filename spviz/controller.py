@@ -77,6 +77,12 @@ def main():
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
 
+            isCountList = labeled_df.loc[labeled_df['isCount'] == 'Y']['name'].tolist()
+            # The logic may change
+            if len(isCountList) > 0:
+                isCountAttr = isCountList[0]
+                spType = 'Rate2'
+
             if spType =='Regression':
 
                 continuousVars = models.getContinuousVariableName(df)
@@ -129,6 +135,27 @@ def main():
                                 'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
                                 'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
+            elif spType == 'Rate2':
+                targetAttrList = labeled_df.loc[labeled_df['role'] == 'trend']['name'].tolist()
+                targetAttr = targetAttrList[0]    
+
+                groupingAttrs =  labeled_df.loc[labeled_df['role'] == 'groupby']['name'].tolist()
+
+                ratioStatAll, protectedVars, explanaryVars, statAll = models.getRatioStatAll(df, targetAttr, groupingAttrs, isCountAttr)
+                print(statAll)
+                print(ratioStatAll)
+                ratioRateSub, rateSub = models.getRatioRateSub(df, targetAttr, groupingAttrs)
+                print(ratioRateSub)
+                print(rateSub)
+                return jsonify({'csv_data':csv_data,
+                                'protectedVars': protectedVars,
+                                'explanaryVars': explanaryVars, 
+                                'targetAttr': targetAttr,
+                                'ratioRateAll':ratioStatAll,
+                                'rateAll':[eachRateAll.to_json() for eachRateAll in statAll],
+                                'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
+                                'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
+
         # Auto Detect
         elif action == 'autodetect':      
             threshold = float(request.form['threshold'])
