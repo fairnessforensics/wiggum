@@ -1,9 +1,10 @@
 import os
 import pandas as pd
-from detect_sp import RESULTS_DF_HEADER
+from .detect_sp import RESULTS_DF_HEADER
+from .resultDataFrame import resultDataFrame
 
 
-META_COLUMNS = ['dtype','var_type','role','isCount']
+META_COLUMNS = ['dtype','var_type','role','isCount', 'count_of']
 
 possible_roles = ['groupby','explanatory','trend']
 
@@ -14,7 +15,192 @@ result_csv = 'result_df.csv'
 data_csv = 'df.csv'
 
 
-def simple_type_map(df):
+class labeledDataFrame(_resultDataFrame):
+
+    def __init__(self,data=None,meta=None,results=None):
+        """
+        initialize
+
+        Parameters
+        ----------
+        data :
+        meta :
+        results : None, callable, or string
+            none initializes empty, callable initializes with that function,
+            string must be a filename
+        """
+        # check if re-opening a saved labeled_df
+
+        if type(data) == str and os.path.isdir(data) and meta ==None and results ==None:
+            # if so, make all strings of filepaths
+            meta = os.path.join(data,meta_csv)
+            results = os.path.join(data,result_csv)
+            data = os.path.join(data,data_csv)
+
+        # set data
+        if type(data) is  pd.core.frame.DataFrame:
+            self.df = data
+        elif type(data) is str:
+            self.df = pd.read_csv(data)
+        elif data == None:
+            self.df = pd.DataFrame()
+
+        # initialize metadata
+        if meta == None:
+            self.meta_df = pd.DataFrame(index = self.df.columns,
+                               columns = META_COLUMNS)
+            self.meta_df['dtype'] = self.df.dtypes
+        elif type(meta) is  pd.core.frame.DataFrame:
+            self.meta_df = meta
+        elif type(data) is str:
+            self.meta_df = pd.read_csv(data)
+
+
+        # initialize results_df
+        if results == None:
+            # call function
+            self.result_df = resultDataFrame
+        elif callable(results):
+            self.result_df = results(self)
+        else:
+            self.result_df = pd.read_csv(results)
+
+
+    def infer_var_types(self,dtype_var_func = simple_type_mapper):
+        '''
+        '''
+        self.meta_df['var_type'] = dtype_var_func(self.df)
+
+
+    def set_roles(self,role_info):
+        """
+        set info column role
+
+        Parameters
+        -----------
+        role_list : list of roles or dict of mappings
+            dict must be {variable:role,...}
+        """
+
+        if type(role_info) == dict:
+            for k,v in role_info.items():
+                self.meta_df['role'][k] = v
+        elif type(role_info) == list:
+            self.meta_df['role'] = role_info
+
+
+
+        # TODO: throw error
+
+    def set_counts(self,count_info=None):
+        """
+
+        Parameters
+        ----------
+        count_info: dict, list, or None
+            a dictionary with var:{True,False} mappings, a list of True/False in
+            length of the number of variables, or a list of the True variables
+        """
+
+        if type(count_info) == dict:
+            # dict of mappings
+            for k,v in count_info.items():
+                self.meta_df.loc[k,'isCount'] = v
+        elif type(count_info) == list or count_info == None:
+            # list of true/false
+            if count_info[0] in [True,False]:
+                self.meta_df['role'] = role_info
+            else:
+                # list of true or none
+                self.meta_df['isCount'] = False
+                for var in count_info:
+                    self.meta_df.loc[var,'isCount'] = True
+
+    def get_data(self):
+        return self.df
+
+    def get_data_per_role(self, role):
+        """
+        return the data of one role
+        """
+        cols_to_return = self.meta_df.apply(check_role,args=(role))
+
+    def get_vars_per_role(self, role):
+        """
+        return the variables of one role
+        """
+        # use a lambda to pass extra var, make it func of only the row
+        check_cur_role = lambda r_l: check_meta(r_l,role,'role')
+
+        # check every row of the meda_df
+        is_target_role = self.meta_df.apply(check_cur_role,axis=1)
+
+        all_vars = self.meta_df.index
+
+        return all_vars[is_target_role]
+
+    def get_vars_per_type(self, role):
+        """
+        return the variables of one role
+        """
+        # use a lambda to pass extra var, make it func of only the row
+        check_cur_type = lambda r_l: check_meta(r_l,vartype,'var_type')
+
+        # check every row of the meda_df
+        is_target_type = self.meta_df.apply(check_cur_type,axis=1)
+
+        all_vars = self.meta_df.index
+
+        return all_vars[is_target_type]
+
+    def get_vars_per_roletype(self,role,vartype):
+        """
+        return variable for a (role,type) pair
+        """
+        # use a lambda to pass extra vars, make it func of only the row
+        check_cur_role = lambda r_l: check_meta(r_l,role,'role')
+        check_cur_type = lambda r_l: check_meta(r_l,vartype,'var_type')
+
+        # check every row of the meda_df
+        is_target_role = self.meta_df.apply(check_cur_role,axis=1)
+        is_target_type = self.meta_df.apply(check_cur_type,axis=1)
+
+        # combine
+        target_rows = [r & t for r,t in zip(is_target_role,is_target_type)]
+
+        all_vars = self.meta_df.index
+
+        return all_vars[is_target_role]
+
+
+
+    def to_csvs(self,dirname):
+        """
+        write out info as csvs to the same directory
+        """
+        # make file names
+        meta_file = os.path.join(dirname,meta_csv)
+        results_file = os.path.join(dirname,result_csv)
+        data_file = os.path.join(dirname,data_csv)
+
+        self.df.to_csv(data_file)
+        self.meta_df.to_csv(meta_file)
+        self.result_df.to_csv(results_file)
+
+
+
+
+def check_meta(row,meta_val,meta_type):
+    """
+    check if the current role/type is equal to or contains role
+    """
+    role_tests = {str: lambda cur,target: cur == target,
+                  list: lambda cur,target: target in cur}
+    return role_tests[type(row[meta_type])](row[meta_type],meta_val)
+
+
+
+def simple_type_mapper(df):
     """
     get varialbe types using the data types and counts
 
@@ -30,7 +216,7 @@ def simple_type_map(df):
         col_dtype = df[col].dtype
 
 
-        if col_dtype == Boolean or num_values == 2:
+        if col_dtype == bool or num_values == 2:
             var_type_list.append('binary')
         elif 'int' in str(col_dtype):
             var_type_list.append('ordinal')
@@ -42,94 +228,3 @@ def simple_type_map(df):
             var_type_list.append('unknown')
 
     return var_type_list
-
-
-class labeled_df():
-
-    def __init__(self,data=None,meta=None,results=None):
-        """
-        initialize
-
-        Parameters
-        ----------
-        data :
-        meta :
-        results : None, callable, or string
-            none initializes empty, callable initializes with that function,
-            string must be a filename
-        """
-        # check if re-opening a saved labeled_df
-        if os.path.isdir(data) and meta ==None and results ==None:
-            # if so, make all strings of filepaths
-            meta = os.path.join(data,meta_csv)
-            results = os.path.join(data,result_csv)
-            data = os.path.join(data,data_csv)
-
-        # set data
-        if data == None:
-            df = pd.DataFrame()
-        elif type(data) is  pd.core.frame.DataFrame:
-            df = data
-        elif type(data) is str:
-            df = pd.read_csv(data)
-
-        # initialize metadata
-        if meta == None:
-            meta_df = pd.DataFrame(index = df.columns,
-                               columns = META_COLUMNS)
-            meta_df['dtype'] = df.dtypes
-        elif type(meta) is  pd.core.frame.DataFrame:
-            meta_df = meta
-        elif type(data) is str:
-            meta_df = pd.read_csv(data)
-
-
-        # initialize results_df
-        if results == None:
-            # call function
-            result_df = pd.DataFrame(columns= RESULTS_DF_HEADER)
-        elif callable(results):
-            result_df = results(self)
-        else:
-            result_df = pd.read_csv(results)
-
-
-    def infer_var_types(self,dtype_var_func = simple_type_mapper):
-        '''
-        '''
-        self.info['var_type'] = dtype_var_func(sel.df)
-
-
-    def set_roles(self,role_list):
-        '''
-        set info column role
-
-        Parameters
-        -----------
-        role_list : list of strings
-        '''
-
-        self.info['role'] = role_list
-
-
-    def get_data(self):
-        return self.df
-
-    def get_data_per_role(self, role):
-        """
-        return the data of one role
-        """
-        cols_to_return = self.info['role'] == role
-
-    def to_csvs(self,dirname):
-        """
-        write out info as csvs to the same directory
-        """
-        # make file names
-        meta_file = os.path.join(dirname,meta_csv)
-        results_file = os.path.join(dirname,result_csv)
-        data_file = os.path.join(dirname,data_csv)
-
-        self.df.to_csv(data_file)
-        self.meta_df.to_csv(meta_file)
-        self.result_df.to_csv(results_file)

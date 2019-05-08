@@ -16,7 +16,7 @@ from .ranking_processing import (mark_designed_rows, compute_angle,
 
 from .data_augmentation import add_quantile, add_all_dpgmm
 
-from .labeled_dataframe import labeled_df, possible_roles, var_types
+from .labeled_dataframe import labeledDataFrame, possible_roles, var_types
 
 __all__ = ['detect_simpsons_paradox','mark_designed_rows', 'compute_angle',
             'add_slope_sp','compute_slope_all','add_angle_col','count_sp_views',
