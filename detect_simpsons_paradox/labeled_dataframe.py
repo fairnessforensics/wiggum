@@ -20,9 +20,21 @@ def check_meta(row,meta_val,meta_type):
     """
     check if the current role/type is equal to or contains role
     """
-    role_tests = {str: lambda cur,target: cur == target,
-                  list: lambda cur,target: target in cur}
-    return role_tests[type(row[meta_type])](row[meta_type],meta_val)
+
+    # set target as list
+    if type(meta_val)==str:
+        target = [meta_val]
+    else:
+        target = meta_val
+
+    # set current value to list
+    if type(row[meta_type]) ==str:
+        current = [row[meta_type]]
+    else:
+        current = row[meta_type]
+
+    # check if at least one of the target types is in the current row
+    return True in [t in current for t in target]
 
 
 

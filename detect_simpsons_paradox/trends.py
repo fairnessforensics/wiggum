@@ -15,14 +15,17 @@ class trend():
             self.get_trend_vars(labeled_df)
 
 
-class continuousTrend():
+class continuousOrdinalTrend():
     """
     common parts for all continuous variable trends
     """
     def get_trend_vars(self,labeled_df):
         """
         """
-        self.regression_vars = labeled_df.get_vars_per_roletype('trend','continuous')
+        # maybe not counts
+
+        self.regression_vars = labeled_df.get_vars_per_roletype('trend',
+                                    ['continuous','ordinal'])
         return self.regression_vars
 
 
