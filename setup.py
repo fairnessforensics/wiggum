@@ -9,6 +9,9 @@ setup(name='detect_simpsons_paradox',
       license='MIT',
       packages=['detect_simpsons_paradox', 'spviz'],
       zip_safe=False,
+      include_package_data = True,
       install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas',
       'mlsim @ https://github.com/brownsarahm/ml-sim/archive/master.zip','flask'],
-      dependency_links=[    ])
+      entry_points = {
+        'console_scripts': ['spviz-app=spviz.command_line:main'],
+    })

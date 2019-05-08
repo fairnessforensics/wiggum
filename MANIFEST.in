@@ -1,0 +1,2 @@
+recursive-include spviz/templates *
+recursive-include spviz/static *
