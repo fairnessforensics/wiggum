@@ -8,13 +8,17 @@ function DrawSlopeGraph(options) {
 
     //Title
     d3.select('#slopeLabel').select("text").remove();
+
     d3.select('#slopeLabel').append("text")
         .attr("x", 20)             
         .attr("y", 90)
         .style("font-size", "16px") 
-        .text("Rate by Per " + keyName +  " and " + protectedAttr)
+        .text("Positive " + targetAttr + " Rate by " + protectedAttr +  " and " + keyName)
         .attr("text-anchor", "middle")          
         .attr("transform", "translate(200, 0)");   
+
+    // when it's the binary and  set it to "<stat> <variable> by <groupby> and <explanatory>" 
+    // in the case where it's liek the gender pay gap example
 
     var slopegraph = d3.my.slopegraph()
         //.margin({top: 20, bottom: 20, left: 100, right:100})
