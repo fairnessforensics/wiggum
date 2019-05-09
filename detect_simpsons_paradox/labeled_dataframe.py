@@ -240,7 +240,9 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
     def get_data_sample(self):
         """
-        get column data sample
+        return a list of strings that describe the data from each column of the
+    data, can be added as a column to meta_df
+
         Parameters
         -----------
         df : DataFrame

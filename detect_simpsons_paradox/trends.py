@@ -12,6 +12,8 @@ class trend():
     """
 
     def __init__(self,labeled_df = None):
+        self.trend_precompute = {}
+
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
 
@@ -68,7 +70,6 @@ class correlationTrend():
     # trend computation functions
     ############################################################################
 
-
     def get_trends(self,data_df,corr_name):
         """
         return a DataFrame of the linear corelations in a DataFrame or pandas
@@ -112,7 +113,11 @@ class correlationTrend():
             triu_feat_indices = triu_indices
 
         # compute correlations, only store vlaues from upper right triangle
-        corr_triu = data_df[self.regression_vars].corr(method=self.corrtype).values[triu_indices]
+        trend_name = '_'.join([self.name , corr_name])
+        corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
+        corr_triu = corr_mat.values[triu_indices]
+
+        self.trend_precompute[trend_name] = corr_mat
 
 
         # create dataframe with rows, att1 label, attr2 label, correlation
@@ -200,19 +205,29 @@ class rankTrend():
         assuming the data is counts and rates that need to be combined in
         weighted ways
         """
+        # use all
+        cur_trendgroup = self.trendgroup
+
+        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+            # remove the grouping var from trendgroup this roung
+            rmv_var = data_df.count().index.name
+            cur_trendgroup = [gv for gv in cur_trendgroup if not(gv==rmv_var)]
+        else:
+
+            # make it tupe-like so that the loop can work
+            data_df = [('',data_df)]
 
 
-        views = itertools.product(self.target,self.trendgroup)
 
 
 
         weight_col_lookup = {t:w for t,w in zip(self.target,self.var_weight_list)}
         rank_res =[]
 
-        if not(type(data_df) is pd.core.groupby.DataFrameGroupBy):
-            data_df = [('',data_df)]
 
         for groupby_lev,df in data_df:
+
+            views = itertools.product(self.target,cur_trendgroup)
 
             for meanfeat,rankfeat  in views:
 
@@ -226,10 +241,13 @@ class rankTrend():
                     # if weighting var is specified use that column to weight
                     mean_df = df.groupby(rankfeat).apply(w_avg,meanfeat,weightfeat)
 
+                # save detailed precompute
+                trend_name = '_'.join([self.name , corr_name,meanfeat,rankfeat])
+                self.trend_precompute[trend_name] = mean_df
 
+                # extract for result_df
                 ordered_rank_feat = mean_df.sort_values().index.values
-
-
+                # create row
                 rank_res.append([meanfeat,rankfeat,ordered_rank_feat,groupby_lev])
 
 
@@ -246,6 +264,18 @@ class rankTrend():
 
         reg_df['trend_type'] = self.name
         return reg_df
+
+    def get_distance(row):
+        """
+        kendalltau distance can be used for permuation distance
+        """
+        trend_numeric_map = {val:i for i,val in enumerate(target_row['agg_trend'].values[0])}
+
+        numeric_agg = [trend_numeric_map[val] for val in target_row['agg_trend'].values[0]]
+        numeric_subgroup = [trend_numeric_map[val] for val in target_row['subgroup_trend'].values[0]]
+        tau,p = stat.kendalltau(numeric_agg,numeric_subgroup)
+        row['distance'] = 1-tau
+        return 1- tau
 
 class mean_rank_trend(rankTrend,weightedMeanRank,trend):
     name = 'rank_trend'
