@@ -25,16 +25,14 @@ class _augmentedData():
 
         #cluster the data_df
         try: #some will fail, just dont add them for now
-            print('clustering')
+
             clust_assignments = clustering_techniques[name](self.df,view)
-            print(clust_assignments)
-            print(type(clust_assignments))
 
             # squash values
             clust_ids = np.unique(clust_assignments)
-            print(clust_ids)
+            
             span_clust = np.max(clust_assignments)
-            print(span_clust)
+            
             if span_clust > len(clust_ids):
                 # map them down
                 cleaned = {learned_id: clean_id for clean_id,learned_id in

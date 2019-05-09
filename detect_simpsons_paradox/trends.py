@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import itertools
 
 ## set all list at bottom
 
@@ -14,8 +15,27 @@ class trend():
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
 
+################################################################################
+#              Components
+################################################################################
+# these parts can be mixed together to create full final classes that are used
+# for importing and only those are revealed in
 
-class continuousOrdinalTrend():
+class ordinalRegression():
+    """
+    common parts for all continuous variable trends
+    """
+    def get_trend_vars(self,labeled_df):
+        """
+        """
+        # maybe not counts
+
+        self.regression_vars = labeled_df.get_vars_per_roletype('trend',
+                                    'ordinal')
+        return self.regression_vars
+
+
+class continuousOrdinalRegression():
     """
     common parts for all continuous variable trends
     """
@@ -28,18 +48,25 @@ class continuousOrdinalTrend():
                                     ['continuous','ordinal'])
         return self.regression_vars
 
+class continuousRegression():
+    """
+    common parts for all continuous variable trends
+    """
+    def get_trend_vars(self,labeled_df):
+        """
+        """
+        # maybe not counts
+
+        self.regression_vars = labeled_df.get_vars_per_roletype('trend',
+                                    'continuous')
+        return self.regression_vars
+
+class correlationTrend():
 
 
-class rankTrend(trend):
-    name = 'rank_trend'
-
-
-class correlation_trend(continuousTrend,trend):
-    name = 'pearson_corr'
-
-    ################################################################################
+    ############################################################################
     # trend computation functions
-    ################################################################################
+    ############################################################################
 
 
     def get_trends(self,data_df,corr_name):
@@ -85,7 +112,7 @@ class correlation_trend(continuousTrend,trend):
             triu_feat_indices = triu_indices
 
         # compute correlations, only store vlaues from upper right triangle
-        corr_triu = data_df[self.regression_vars].corr().values[triu_indices]
+        corr_triu = data_df[self.regression_vars].corr(method=self.corrtype).values[triu_indices]
 
 
         # create dataframe with rows, att1 label, attr2 label, correlation
@@ -105,7 +132,7 @@ class correlation_trend(continuousTrend,trend):
         return reg_df
 
 
-class linear_trend(continuousTrend,trend):
+class linear_trend():
     name = 'linear_reg'
 
     def get_trends(self,data_df,corr_name):
@@ -135,9 +162,104 @@ class linear_trend(continuousTrend,trend):
         reg_df['trend_type'] = self.name
         return reg_df
 
+class binaryMeanRank():
+    """
+    common parts for all continuous variable trends
+    """
+    def get_trend_vars(self,labeled_df):
+        """
+        """
+        # maybe not counts
+
+        self.target = labeled_df.get_vars_per_roletype('trend','binary')
+        self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
+        return
+
+class weightedMeanRank():
+    """
+    common parts for all continuous variable trends
+    """
+    def get_trend_vars(self,labeled_df):
+        """
+        """
+        # maybe not counts
+
+        self.target = labeled_df.get_vars_per_roletype('trend',['binary','continous'])
+        self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
+        self.var_weight_list = labeled_df.get_weightcol_per_var(self.target)
+        return self.target, self.trendgroup
+
+def w_avg(df,avcol,wcol):
+    df.dropna(axis=0,subset=[avcol])
+    return np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+
+class rankTrend():
+
+    def get_trends(self,data_df,corr_name):
+        """
+        assuming the data is counts and rates that need to be combined in
+        weighted ways
+        """
+
+        views = itertools.product(self.target,self.trendgroup)
+
+        weight_col_lookup = {t:w for t,w in zip(self.target,self.var_weight_list)}
+        rank_res =[]
+
+        if not(type(data_df) is pd.core.groupby.DataFrameGroupBy):
+            data_df = [('',data_df)]
+
+        for groupby_lev,df in data_df:
+            for meanfeat,rankfeat  in views:
+                weightfeat = weight_col_lookup[meanfeat]
+                # sort values of view[1] by values of view[0]
+                # if wcol is NaN, then set wegiths to 1
+                if pd.isna(weightfeat):
+                    # if no weighting, take regular mean
+                    mean_df = df.groupby(rankfeat)[meanfeat].mean()
+                else:
+                    # if weighting var is specified use that column to weight
+                    mean_df = df.groupby(rankfeat).apply(w_avg,meanfeat,weightfeat)
+
+                ordered_rank_feat = w_means.sort_values().index.values
+
+                rank_res.append([view[0],view[1],ordered_rank_feat,groupby_lev])
 
 
+        # if groupby add subgroup indicator columns
+        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
+                                                    corr_name,'subgroup'])
+            #same for all
+            reg_df['group_feat'] = data_df.count().index.name
+        else:
+            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',corr_name,'empty'])
+            reg_df.drop('empty',axis=1)
 
-all_trend_types = {'pearson_corr':correlation_trend,
+        reg_df['trend_type'] = self.name
+        return reg_df
+
+class mean_rank_trend(rankTrend,weightedMeanRank,trend):
+    name = 'rank_trend'
+
+class continuous_pearson(correlationTrend,continuousRegression,trend):
+    name = 'pearson_corr'
+    corrtype = 'pearson'
+
+
+class all_pearson(correlationTrend,continuousOrdinalRegression,trend):
+    name = 'pearson_corr'
+    corrtype = 'pearson'
+
+class spearman_correlation(correlationTrend,ordinalRegression,trend):
+    name ='spearman_corr'
+    corrtype = 'spearman'
+
+class kendall_correlation(correlationTrend,continuousRegression,trend):
+    name ='kendall_corr'
+    corrtype = 'kendall'
+
+
+all_trend_types = {'pearson_corr':all_pearson,
                     'rank_trend':rankTrend,
                     'lin_reg':linear_trend}

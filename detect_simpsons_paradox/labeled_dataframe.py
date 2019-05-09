@@ -8,7 +8,7 @@ from .data_augmentation import _augmentedData
 from .ranking_processing import _resultDataFrame
 
 
-META_COLUMNS = ['dtype','var_type','role','isCount', 'count_of']
+META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 
 
 possible_roles = ['groupby','explanatory','trend']
@@ -78,7 +78,6 @@ def column_rate(df, rate_column):
     compute the True rate of a column of a data frame that ha boolean values
     """
 
-<<<<<<< HEAD
     compute_rate = lambda row: row[True]/(row[False]+row[True])
 
     df_ct  = df[rate_column].value_counts().unstack().reset_index()
@@ -94,8 +93,6 @@ def column_rate(df, rate_column):
 
 
 
-=======
->>>>>>> 41e6476198e032bcb15c83fce28c5a73ee33ef74
 class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
     """
     this is the object
@@ -240,7 +237,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
     def get_data(self):
         return self.df
-      
+
     def get_data_sample(self):
         """
         get column data sample
@@ -328,13 +325,13 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
         return all_vars[target_rows]
 
-    def get_countof_pervar(self,var_list):
+    def get_weightcol_per_var(self,var_list):
         """
-        return the corresponding count variables given a list of variables
+        return the corresponding weight variables given a list of variables
         """
-        count_of_idx = [self.meta_df['count_of'][var] for var in var_list]
+        var_weight_list = [self.meta_df['weighting_var'][var] for var in var_list]
 
-        return
+        return var_weight_list
 
 
 
