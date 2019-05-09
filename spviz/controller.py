@@ -1,17 +1,47 @@
 from spviz import app, render_template
 from spviz import models
-from flask import request, flash, redirect,jsonify
+from flask import request, flash, redirect,jsonify, url_for
 import pandas as pd
 import json
+import detect_simpsons_paradox as dsp
 
 @app.route("/")
 def index():
     return render_template("index.html") 
-    
+
+@app.route("/visualize", methods=['GET', 'POST'])
+def visualize():
+    print("====@????===========")
+    return render_template("visualize.html")
+
 @app.route("/", methods = ['POST'])
 def main():
     if request.method == 'POST':
+
         action = request.form['action']
+
+        if action == 'open':
+            file = request.files.get('file')
+            global df
+            df = pd.read_csv(file)
+
+            dtypes = []
+            dtypes = dsp.simple_type_map(df)
+            sample_list = []
+            sample_list = dsp.get_data_sample(df)
+
+            return jsonify({'dtypes': dtypes,
+                            'samples': sample_list})
+
+        if action == 'visualize':
+            print("====@vvvv===========")
+            roles = request.form['roleList']
+            role_list =json.loads(roles)
+            global labeled_df
+            labeled_df = pd.DataFrame(role_list)
+            print(labeled_df)
+            return redirect(url_for("visualize"))
+
         spType = request.form['sptype']
 
         # weight for individual
@@ -32,10 +62,13 @@ def main():
 
         # Upload File
         if action == 'upload':
-            file = request.files.get('file')
+            print("====@upload===========")
+            print(labeled_df)
+            print("====@upload2===========")
+            #file = request.files.get('file')
 
-            global df
-            df = pd.read_csv(file)
+            #global df
+            #df = pd.read_csv(file)
 
             # initial result
             global initial_result_df
@@ -44,9 +77,24 @@ def main():
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
 
+            isCountList = labeled_df.loc[labeled_df['isCount'] == 'Y']['name'].tolist()
+            # The logic may change
+            if len(isCountList) > 0:
+                isCountAttr = isCountList[0]
+                spType = 'Rate2'
+
             if spType =='Regression':
+
                 continuousVars = models.getContinuousVariableName(df)
                 regression_vars = list(continuousVars)
+
+                clusteringFlg = request.form['clustering']
+                print(type(clusteringFlg))
+
+                if clusteringFlg == 'true':
+                    df = models.getClustering(df, regression_vars)
+                    csv_data = df.to_dict(orient='records')
+                    csv_data = json.dumps(csv_data, indent=2)
 
                 categoricalVars = models.getCategoricalVariableName(df)
 
@@ -82,10 +130,32 @@ def main():
                 return jsonify({'csv_data':csv_data,
                                 'protectedVars': protectedVars,
                                 'explanaryVars': explanaryVars, 
+                                'targetAttr': targetAttr,
                                 'ratioRateAll':ratioRateAll,
                                 'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
                                 'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
+            elif spType == 'Rate2':
+                targetAttrList = labeled_df.loc[labeled_df['role'] == 'trend']['name'].tolist()
+                targetAttr = targetAttrList[0]    
+
+                groupingAttrs =  labeled_df.loc[labeled_df['role'] == 'groupby']['name'].tolist()
+
+                ratioStatAll, protectedVars, explanaryVars, statAll = models.getRatioStatAll(df, targetAttr, groupingAttrs, isCountAttr)
+                print(statAll)
+                print(ratioStatAll)
+                ratioRateSub, rateSub = models.getRatioRateSub(df, targetAttr, groupingAttrs)
+                print(ratioRateSub)
+                print(rateSub)
+                return jsonify({'csv_data':csv_data,
+                                'protectedVars': protectedVars,
+                                'explanaryVars': explanaryVars, 
+                                'targetAttr': targetAttr,
+                                'ratioRateAll':ratioStatAll,
+                                'rateAll':[eachRateAll.to_json() for eachRateAll in statAll],
+                                'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
+                                'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
+
         # Auto Detect
         elif action == 'autodetect':      
             threshold = float(request.form['threshold'])

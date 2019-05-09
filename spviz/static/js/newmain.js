@@ -69,7 +69,8 @@ function drawGraph(data) {
 
 		protectedAttrs = data.protectedVars;
 		explanaryAttrs = data.explanaryVars;
-
+		targetAttr = data.targetAttr;
+		
 		var ratioSubs = data.ratioSubs;
 
 

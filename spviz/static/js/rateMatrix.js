@@ -486,11 +486,9 @@ var clickRateMatrixCell = function() {
 // Reset when double click
 var doubleClickRateMatrixCell = function() {
 
-
 	d3.select("#container").selectAll('.cell').classed("clicked", false);
 
 	d3.selectAll('.elm').transition().style('opacity', 1);
-	d3.selectAll('.s-line').style('stroke', '#130C0E');
 	d3.selectAll('.gbc').transition().style('opacity', 1);
 
 };
@@ -504,20 +502,19 @@ function prepareDetail() {
 	//console.log(csvData);
 	//console.log(vars);
 	updateSlopeGraph(vars);
-	//updateGroupedBar(csvData, vars);
+	updateGroupedBar(csvData, vars);
 }
 
 var updateSlopeGraph = function(vars) {
 	d3.select("#slopegraph").selectAll('svg').remove();
-	//console.log(arraySlopeGraph);
-
 
 	DrawSlopeGraph(
 	{
 		data        : arraySlopeGraph[vars.index],
 		keyStart		: vars.left,
 		keyEnd			: vars.right,
-		keyName     : vars.keyName
+		keyName     : vars.keyName,
+		protectedAttr: vars.protectedAttr
 	});
 
 	highlightLine(parseInt(vars.x)+1);
@@ -525,8 +522,8 @@ var updateSlopeGraph = function(vars) {
 
 var updateGroupedBar = function(data, vars) {
 	d3.select("#groupedbarchart").selectAll('svg').remove();
-
-	DrawGroupedBarChart(
+	/*
+	DrawGroupedStackedBarChart(
 	{
 		data	: data,
 		protectedAttr: vars.protectedAttr,
@@ -534,6 +531,6 @@ var updateGroupedBar = function(data, vars) {
 		keyStart		: vars.left,
 		keyEnd			: vars.right
 	});
-
+*/
 	highlightBar(parseInt(vars.x));
 }
