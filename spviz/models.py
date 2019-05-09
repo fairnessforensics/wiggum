@@ -3,7 +3,8 @@ from itertools import combinations
 import pandas as pd
 import sys
 import logging
-# Your models here.
+from sklearn import mixture
+import numpy as np
 
 def getContinuousVariableName(data_df):
     """
@@ -335,3 +336,73 @@ def getRatioRateSub(data_df, target_var, grouping_vars):
                 partition_ratio_all.append(partion_ratio)
                 
     return partition_ratio_all, partition_dat_all
+
+def getRatioStatAll(data_df, target_var, grouping_vars, isCount_var):
+    """
+    Generate an array for the rates of the protected class before further partition
+    Parameters
+    -----------
+    data_df : DataFrame
+        data organized in a pandas dataframe containing both categorical
+        and continuous attributes.
+    target_var : str
+        a variable that will have a rate where the ranking flips
+    grouping_vars  : list
+        list of grouping variables which is either protected class or explanatory class
+    isCount_var : str
+        a variable that will have counting information        
+    Returns
+    --------
+    result : array
+        an array storing the ratio of overall stat
+    """
+
+    overall_dat_all = []
+    overall_ratio_all = []
+    protectedVars = []
+    explanaryVars = []
+
+    for protected_var in grouping_vars:
+        for explanatory_var in grouping_vars:
+            if protected_var != explanatory_var:
+
+                grouped = data_df.groupby(protected_var)
+                get_wavg = lambda g: np.average(g[target_var], weights=g[isCount_var])
+
+                overall_dat = grouped.apply(get_wavg)
+                overall_dat_all.append(overall_dat)
+
+                comb = list(combinations(overall_dat, 2))
+                overall_ratio = [element[0]/element[1] for element in comb]
+
+                overall_ratio_all.append(overall_ratio)
+                protectedVars.append(protected_var)               
+                explanaryVars.append(explanatory_var)
+                
+    return overall_ratio_all, protectedVars, explanaryVars, overall_dat_all
+
+def getClustering(data_df, regression_vars):
+    """
+    Generate a dataframe after clustering
+    Parameters
+    -----------
+    data_df : DataFrame
+        data organized in a pandas dataframe containing both categorical
+        and continuous attributes.
+    regression_vars : list
+        list of continuous attributes by name in dataframe, if None will be
+        detected by all float64 type columns in dataframe        
+    Returns
+    --------
+    result : DataFrame
+        a df with clustering infomation
+    """
+    for x1,x2 in combinations(data_df[regression_vars].columns,2):
+        # run clustering
+        dpgmm = mixture.BayesianGaussianMixture(n_components=20,
+                                        covariance_type='full').fit(data_df[[x1,x2]])
+    
+        # agument data with clusters
+        data_df['clust_'+ x1+ '_' + x2] = dpgmm.predict(data_df[[x1,x2]])
+                
+    return data_df  

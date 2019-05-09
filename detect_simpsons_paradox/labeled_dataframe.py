@@ -1,3 +1,4 @@
+
 import os
 import pandas as pd
 from .detect_sp import RESULTS_DF_HEADER, _trendDetectors
@@ -7,9 +8,11 @@ from .ranking_processing import _resultDataFrame
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'count_of']
 
+
 possible_roles = ['groupby','explanatory','trend']
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
+
 
 meta_csv = 'meta.csv'
 result_csv = 'result_df.csv'
@@ -42,6 +45,7 @@ def simple_type_mapper(df):
     """
     get varialbe types using the data types and counts
 
+
     Parameters
     -----------
     df : DataFrame
@@ -66,14 +70,6 @@ def simple_type_mapper(df):
             var_type_list.append('unknown')
 
     return var_type_list
-
-
-
-
-
-
-
-
 
 
 class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
@@ -201,13 +197,48 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
                 for var in count_info:
                     self.meta_df.loc[var,'isCount'] = True
 
+
     def get_data(self):
         return self.df
+      
+    def get_data_sample(self):
+        """
+        get column data sample
+        Parameters
+        -----------
+        df : DataFrame
+            source data
+        """
+        sample_list = []
+
+        for col in self.df.columns:
+            num_values = len(pd.unique(self.df[col]))
+            values = pd.unique(self.df[col])
+            col_dtype = self.df[col].dtype
+
+            if col_dtype == bool or num_values == 2:
+                sample = ', '.join(str(v) for v in values.tolist())
+            elif 'int' in str(col_dtype):
+                sample = "Max: " + str(self.df[col].max()) + " Min: " + str(self.df[col].min())
+            elif 'object' in str(col_dtype):
+                if num_values <= 5:
+                    sample = ', '.join(str(v) for v in values.tolist())
+                else:
+                    sample = ', '.join(str(v) for v in values[:5].tolist())
+            elif 'float' in str(col_dtype):
+                sample = "Max: " + str(round(self.df[col].max(),3)) + " Min: " + str(round(self.df[col].min(),3))
+            else:
+                sample = "unknown"
+
+            sample_list.append(sample)
+
+        return sample_list
 
     def get_data_per_role(self, role):
         """
         return the data of one role
         """
+
         cols_to_return = self.meta_df.apply(check_role,args=(role))
 
     def get_vars_per_role(self, role):
