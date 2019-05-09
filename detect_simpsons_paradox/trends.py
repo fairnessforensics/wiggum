@@ -184,8 +184,8 @@ class weightedMeanRank():
         """
         # maybe not counts
 
-        self.target = labeled_df.get_vars_per_roletype('trend',['binary','continous'])
-        self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
+        self.target = labeled_df.get_vars_per_roletype('trend',['binary','continuous'])
+        self.trendgroup = labeled_df.get_vars_per_roletype(['trend','explanatory'],'categorical')
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.target)
         return self.target, self.trendgroup
 
@@ -201,7 +201,10 @@ class rankTrend():
         weighted ways
         """
 
+
         views = itertools.product(self.target,self.trendgroup)
+
+
 
         weight_col_lookup = {t:w for t,w in zip(self.target,self.var_weight_list)}
         rank_res =[]
@@ -210,7 +213,9 @@ class rankTrend():
             data_df = [('',data_df)]
 
         for groupby_lev,df in data_df:
+
             for meanfeat,rankfeat  in views:
+
                 weightfeat = weight_col_lookup[meanfeat]
                 # sort values of view[1] by values of view[0]
                 # if wcol is NaN, then set wegiths to 1
@@ -221,9 +226,11 @@ class rankTrend():
                     # if weighting var is specified use that column to weight
                     mean_df = df.groupby(rankfeat).apply(w_avg,meanfeat,weightfeat)
 
-                ordered_rank_feat = w_means.sort_values().index.values
 
-                rank_res.append([view[0],view[1],ordered_rank_feat,groupby_lev])
+                ordered_rank_feat = mean_df.sort_values().index.values
+
+
+                rank_res.append([meanfeat,rankfeat,ordered_rank_feat,groupby_lev])
 
 
         # if groupby add subgroup indicator columns
@@ -234,7 +241,8 @@ class rankTrend():
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',corr_name,'empty'])
-            reg_df.drop('empty',axis=1)
+            reg_df.drop('empty',axis=1,inplace=True)
+
 
         reg_df['trend_type'] = self.name
         return reg_df

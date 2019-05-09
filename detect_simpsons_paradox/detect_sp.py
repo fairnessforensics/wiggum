@@ -122,7 +122,7 @@ class _trendDetectors():
         """
         data_df = self.df
         groupby_vars = self.get_vars_per_role('groupby')
-        print(groupby_vars)
+
 
         if type(trend_types[0]) is str:
             # instantiate objects
@@ -140,6 +140,7 @@ class _trendDetectors():
 
         for cur_trend in trend_list:
             cur_trend.get_trend_vars(self)
+
             # Tabulate aggregate statistics
             agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
@@ -147,6 +148,7 @@ class _trendDetectors():
 
             # iterate over groupby attributes
             for groupbyAttr in groupby_vars:
+
                 #condition the data
                 cur_grouping = self.df.groupby(groupbyAttr)
 
