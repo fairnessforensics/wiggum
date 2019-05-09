@@ -1,5 +1,7 @@
 import os
 import pandas as pd
+import itertools
+
 from .detect_sp import RESULTS_DF_HEADER, _trendDetectors
 from .data_augmentation import _augmentedData
 from .ranking_processing import _resultDataFrame
@@ -67,12 +69,23 @@ def simple_type_mapper(df):
 
     return var_type_list
 
+def column_rate(df, rate_column):
+    """
+    compute the True rate of a column of a data frame that ha boolean values
+    """
+
+    compute_rate = lambda row: row[True]/(row[False]+row[True])
+
+    df_ct  = df[rate_column].value_counts().unstack().reset_index()
+    df_ct.rename(columns={rate_column:'index'},inplace=True)
 
 
+    df_ct[rate_column + '_rate'] = df_ct.apply(compute_rate,axis=1)
+    #     df_ct.drop([True,False],axis=1,inplace=True)
+    tf_to_counts = {True:rate_column+'_true',False:rate_column+'_false'}
+    df_ct.rename(columns=tf_to_counts,inplace=True)
 
-
-
-
+    return df_ct
 
 
 
@@ -142,6 +155,22 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             self.result_df = results(self)
         else:
             self.result_df = pd.read_csv(results)
+
+    def count_compress_binary(self,retain_var_list, compress_var_list):
+        """
+        TODO: FIXME
+        """
+        # iterate over compress_var_list instead o naming the vars
+        search_rate = column_rate(self.df.groupby(retain_var_list),'search_conducted')
+        contraband_rate = column_rate(stops_mj.groupby(grouping_list),'contraband_found')
+        hit_rate = column_rate(stops_mj.groupby(grouping_list),'hit')
+        # a.index.rename('index',inplace=True)
+        # a.drop([True,False],axis=1,inplace=True)
+        # TODO: can this be appended or applied direct without merge
+        self.counts_rate_df = pd.merge( pd.merge(search_rate,contraband_rate),hit_rate)
+
+    def set_data_counts_rate(self):
+        self.counts_rate_df = self.df
 
 
     def infer_var_types(self,dtype_var_func = simple_type_mapper):
@@ -256,6 +285,15 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         all_vars = self.meta_df.index
 
         return all_vars[target_rows]
+
+    def get_countof_pervar(self,var_list):
+        """
+        return the corresponding count variables given a list of variables
+        """
+        count_of_idx = [self.meta_df['count_of'][var] for var in var_list]
+
+        return
+
 
 
 
