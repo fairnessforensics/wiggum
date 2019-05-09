@@ -19,7 +19,7 @@ from .detect_sp import detect_simpsons_paradox
 from .labeled_dataframe import labeledDataFrame, possible_roles, var_types
 
 from .trends import (all_pearson, continuous_pearson, spearman_correlation,
- kendall_correlation,mean_rank_trend)
+ kendall_correlation,mean_rank_trend,linear_trend)
 
 # __all__ = ['detect_simpsons_paradox','mark_designed_rows', 'compute_angle',
 #             'add_slope_sp','compute_slope_all','add_angle_col','count_sp_views',

@@ -227,7 +227,7 @@ class _resultDataFrame():
         self.add_slope_sp()
 
 
-        all_slopes_df = compute_slope_all(self.data_df,self.all_sp_vars)
+        all_slopes_df = self.compute_slope_all()
 
 
 
