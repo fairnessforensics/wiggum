@@ -453,6 +453,22 @@ class _resultDataFrame():
         self.result_df[sum_name] = df_normalized.agg(wsum,axis="columns")
         return self.result_df
 
+    # def dist_helper(self,row):
+    #     """
+    #     """
+    #     trend_dist = {t.name:t.get_distance for t in self.trend_list}
+    #
+    #     return trend_dist[row['trend_type']](row)
+
+    def add_distance(self):
+        """
+        add a column with the trend-appropriate distance
+        """
+        trend_dist = {t.name:t.get_distance for t in self.trend_list}
+
+        dist_helper = lambda row: trend_dist[row['trend_type']](row)
+
+        self.result_df['distance'] = self.result_df.apply(dist_helper,axis=1)
 
 
 ################################################################################

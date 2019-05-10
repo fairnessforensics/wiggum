@@ -187,7 +187,8 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             a functiont that takes a self.df and returns a list of the lenght of the number
             of columns of values from var_types
         '''
-        self.meta_df['var_type'] = dtype_var_func(self.df)
+        var_type_list = dtype_var_func(self.df)
+        self.meta_df['var_type'] = var_type_list
 
 
     def set_roles(self,role_info):
@@ -226,7 +227,9 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
                 self.meta_df.loc[k,'isCount'] = v
         elif type(count_info) == list or count_info == None:
             # list of true/false
-            if count_info[0] in [True,False]:
+            if len(count_info)==0:
+                self.meta_df['isCount'] = False
+            elif count_info[0] in [True,False]:
                 self.meta_df['role'] = role_info
             else:
                 # list of true or none
@@ -234,6 +237,18 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
                 for var in count_info:
                     self.meta_df.loc[var,'isCount'] = True
 
+    def set_weighting_vars(self,weight_vars=None):
+        """
+
+        Parameters
+        ----------
+        count_info: dict, list, or None
+            a dictionary with var:{True,False} mappings, a list of True/False in
+            length of the number of variables, or a list of the True variables
+        """
+
+        for k,v in weight_vars.items():
+            self.meta_df.loc[k,'weighting_var'] = v
 
     def get_data(self):
         return self.df

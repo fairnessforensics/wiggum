@@ -137,9 +137,10 @@ class correlationTrend():
 
         return reg_df
 
-    def get_distance(row):
-        row['distance'] = 'undef'
-        return row['distance']
+    def get_distance(self,row):
+
+        # row['distance'] = 'undef'
+        return 'undef'
 
 
 class linearRegression():
@@ -170,8 +171,8 @@ class linearRegression():
         for groupby_lev,df in data_df:
 
             for a,b in itertools.combinations(data_cols,2):
-                print(a,b)
-            # compute each slope
+
+                # compute each slope
                 slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
                 slopes.append([a,b,slope,groupby_lev])
 
@@ -189,7 +190,7 @@ class linearRegression():
         return reg_df
 
 
-    def get_distance(row):
+    def get_distance(self,row):
         """
         compute angle between the overall ('all_slope') and subgroup
         ('subgroup_slope') slopes for a row of a dataframe. This is the angle
@@ -209,8 +210,9 @@ class linearRegression():
         # theta_all = np.abs(np.arctan(row['all_slope']))
 
         # add them and convert to degrees
-        row['distance'] = np.rad2deg(np.abs(theta_all - theta_sub))
-        return row['distance']
+        # row['distance'] = np.rad2deg(np.abs(theta_all - theta_sub))
+        # return row['distance']
+        return np.rad2deg(np.abs(theta_all - theta_sub))
 
 
 class binaryMeanRank():
@@ -311,17 +313,25 @@ class rankTrend():
         reg_df['trend_type'] = self.name
         return reg_df
 
-    def get_distance(row):
+    def get_distance(self,row):
         """
         kendalltau distance can be used for permuation distance
         """
-        trend_numeric_map = {val:i for i,val in enumerate(target_row['agg_trend'].values[0])}
 
-        numeric_agg = [trend_numeric_map[val] for val in target_row['agg_trend'].values[0]]
-        numeric_subgroup = [trend_numeric_map[val] for val in target_row['subgroup_trend'].values[0]]
-        tau,p = stat.kendalltau(numeric_agg,numeric_subgroup)
-        row['distance'] = 1-tau
-        return 1- tau
+        trend_numeric_map = {val:i for i,val in enumerate(row['agg_trend'])}
+
+        numeric_agg = [trend_numeric_map[val] for val in row['agg_trend']]
+        numeric_subgroup = [trend_numeric_map[val] for val in row['subgroup_trend']]
+
+        n_sg = len(numeric_subgroup)
+        n_ag = len(numeric_agg)
+        if n_sg < n_ag:
+            append_nums = list(range(n_sg,n_ag))
+            numeric_subgroup.extend(append_nums)
+
+        tau,p = stats.kendalltau(numeric_agg,numeric_subgroup)
+        tau_dist = np.round(1- tau,2)
+        return tau_dist
 
 class mean_rank_trend(rankTrend,weightedMeanRank,trend):
     name = 'rank_trend'

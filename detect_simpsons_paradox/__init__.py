@@ -16,7 +16,8 @@ from .detect_sp import detect_simpsons_paradox
 # from .data_augmentation import add_quantile, add_all_dpgmm
 
 
-from .labeled_dataframe import labeledDataFrame, possible_roles, var_types
+from .labeled_dataframe import (labeledDataFrame, possible_roles, var_types,
+                            simple_type_mapper)
 
 from .trends import (all_pearson, continuous_pearson, spearman_correlation,
  kendall_correlation,mean_rank_trend,linear_trend)
