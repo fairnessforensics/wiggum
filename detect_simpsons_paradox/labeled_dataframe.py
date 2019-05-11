@@ -230,7 +230,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             if len(count_info)==0:
                 self.meta_df['isCount'] = False
             elif count_info[0] in [True,False]:
-                self.meta_df['role'] = role_info
+                self.meta_df['role'] = count_info
             else:
                 # list of true or none
                 self.meta_df['isCount'] = False
