@@ -30,9 +30,9 @@ class _augmentedData():
 
             # squash values
             clust_ids = np.unique(clust_assignments)
-            
+
             span_clust = np.max(clust_assignments)
-            
+
             if span_clust > len(clust_ids):
                 # map them down
                 cleaned = {learned_id: clean_id for clean_id,learned_id in
@@ -158,7 +158,7 @@ class _augmentedData():
                                     'source':var}
             data_df = interval_merge(data_df,q_intervals,interval_column_key)
 
-        return data_df
+        return self.df
 
 
 

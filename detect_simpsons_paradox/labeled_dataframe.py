@@ -213,6 +213,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
     def set_counts(self,count_info=None):
         """
+        set the isCount column of the meta_df
 
         Parameters
         ----------
@@ -232,8 +233,10 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             elif count_info[0] in [True,False]:
                 self.meta_df['isCount'] = count_info
             else:
-                # list of true or none
+                # list of true or none:
+                # set all false
                 self.meta_df['isCount'] = False
+                # set specified to True
                 for var in count_info:
                     self.meta_df.loc[var,'isCount'] = True
 
@@ -243,8 +246,8 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         Parameters
         ----------
         count_info: dict, list, or None
-            a dictionary with var:{True,False} mappings, a list of True/False in
-            length of the number of variables, or a list of the True variables
+            a dictionary with <data var>: weighting_var mappings, all keys and
+            values must be column names in the dataset at self.df
         """
 
         for k,v in weight_vars.items():

@@ -12,13 +12,6 @@ RESULTS_DF_HEADER = ['feat1','feat2','trend_type','agg_trend','group_feat',
 
 
 from .trends import all_trend_types
-# get_trend_vars = {'pearson_corr':lambda l_df: l_df.get_vars_per_roletype('trend'
-#                                                             ,'continuous'),
-#               'rate': lambda df: list(df.select_dtypes(include=['bool'])),
-#               'rank': lambda df: [col for col in df.columns if col[-5:] == '_rate']
-#                }
-# get_trend_funcs = {'pearson_corr':get_correlations,
-#                 'rank':get_rank_trends}
 
 
 def get_views(df,colored=False):
