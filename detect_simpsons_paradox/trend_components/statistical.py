@@ -65,6 +65,7 @@ class correlationTrend():
                                         for x,y,val in zip(*triu_feat_indices,corr_triu)],
                         columns = ['feat1','feat2',corr_name])
         else:
+            n_triu_values = 0
             reg_df = pd.DataFrame(columns = ['feat1','feat2',corr_name])
 
         # if groupby add subgroup indicator columns
