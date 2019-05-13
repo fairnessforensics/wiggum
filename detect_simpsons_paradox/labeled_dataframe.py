@@ -190,6 +190,21 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         var_type_list = dtype_var_func(self.df)
         self.meta_df['var_type'] = var_type_list
 
+    def set_var_types(self,var_type_list):
+        '''
+        infer variable (meaningful) types based on a mapper function that takes the data as
+        a Parameters
+
+        Parameters
+        var_type_list : list or dict
+            dict must be {variable:role,...}, list must be length of variables
+        '''
+
+        if type(var_type_list) == dict:
+            for k,v in var_type_list.items():
+                self.meta_df['var_type'][k] = v
+        elif type(var_type_list) == list:
+            self.meta_df['var_type'] = var_type_list
 
     def set_roles(self,role_info):
         """
@@ -250,11 +265,12 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             values must be column names in the dataset at self.df
         """
 
-        for k,v in weight_vars.items():
-            self.meta_df.loc[k,'weighting_var'] = v
+        if type(weight_vars) == dict:
+            for k,v in weight_vars.items():
+                self.meta_df.loc[k,'weighting_var'] = v
+        elif type(weight_vars) == list:
+            self.meta_df['weighting_var'] = weight_vars
 
-        # TODO: fix this
-        # self.meta_df['isCount'] = count_info
 
     def get_data(self):
         return self.df

@@ -2,11 +2,37 @@ import numpy as np
 import pandas as pd
 from sklearn import mixture
 import itertools
+from .labeled_dataframe import META_COLUMNS
 
 clustering_techniques = {'dpgmm': lambda df,var_list : mixture.BayesianGaussianMixture(n_components=20,
                                 covariance_type='full').fit(df[var_list]).predict(df[var_list])}
 
 class _augmentedData():
+
+    def update_meta_df_cluster(self):
+        """
+        update meta_df after clustering or adding other additional groupby vars
+        """
+        # get all vars in data
+        data_vars = self.df.columns
+        # get previous vars with meta information
+        meta_vars = self.meta_df.index
+        # check which are new
+        new_vars = [var for var in data_vars if not(var in meta_vars)]
+        # create a new DataFrame withthe right index and columns
+        new_vars_df = pd.DataFrame(index = new_vars, columns = META_COLUMNS)
+
+        # set all meta info, all will be the same because they're cluster assignments
+        new_vars_df['dtype'] = self.df[new_vars].dtypes
+        new_vars_df['var_type'] = 'categorical'
+        new_vars_df['role'] = 'groupby'
+        new_vars_df['isCount'] = False
+
+        # append new rows
+        self.meta_df.append(new_vars_df)
+        return self.meta_df
+
+
 
     def add_cluster(self,view,name):
         """
@@ -76,6 +102,8 @@ class _augmentedData():
 
         for view in view_list:
             self.add_cluster(view,'dpgmm')
+
+        self.update_meta_df_cluster()
 
         return self.df
 
