@@ -167,7 +167,10 @@ line.slope-line4all{
     display: block;
     background: white;
     margin-left: 260px;
-    margin-top: 10px;
+    margin-top: 3px;
+    height: 126px;
+    max-height: 126px;    
+    overflow-y: scroll;    
 }
 table {
     font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;

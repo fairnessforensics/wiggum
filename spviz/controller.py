@@ -99,10 +99,14 @@ def main():
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
 
             result_dict_dict = {}
+                     
+            # set the result table in result dict
             index = 0
+            result_dict_dict[index] = labeled_df_setup.result_df.to_json(orient='records')
+            index = index + 1
             for trend_type in trend_type_list:
                 result_dict = {}
-                print(type(csv_data))
+
                 if trend_type == 'pearson_corr':
                     # Constructing the data for visualization
                     # Regression
@@ -123,7 +127,6 @@ def main():
 
                     result_dict = {'trend_type' : 'pearson_corr',
                                     'csv_data':csv_data_each,
-                                    'table': labeled_df_setup.result_df.to_json(orient='records'),
                                     'categoricalVars': categoricalVars, 
                                     'continousVars': regression_vars, 
                                     'corrAll': corrAll.to_json(),
@@ -164,7 +167,6 @@ def main():
 
                         result_dict = {'trend_type' : 'rank_trend',
                                     'csv_data':csv_data_each,
-                                    'table': labeled_df_setup.result_df.to_json(orient='records'),
                                     'protectedVars': protectedVars,
                                     'explanaryVars': explanaryVars, 
                                     'targetAttr': targetAttr,

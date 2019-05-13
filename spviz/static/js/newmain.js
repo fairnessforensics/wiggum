@@ -16,11 +16,14 @@ function drawGraph(dataAll) {
 	//selectTypeValue = "Rate"
 
 	for (var key in dataAll){
-		data = dataAll[key];
-		console.log(data);
-		selectTypeValue = data.trend_type;
-		console.log(selectTypeValue);
+		selectTypeValue = '';	
+		if (key != 0) {
+			data = dataAll[key];
 
+			console.log(data);
+			selectTypeValue = data.trend_type;
+			console.log(selectTypeValue);
+		}
 		if (selectTypeValue == "pearson_corr") {
 
 			// Correlation for all
