@@ -25,57 +25,81 @@
             return result;
         }
 
+        var folder = "";
+
+        function getFolder(e) {
+            var files = e.target.files;
+            var path = files[0].webkitRelativePath;
+
+            var path_split = path.split("/");
+            folder = path_split[0];
+        }
+
         $(function() {
             // initialize 
             selectTypeValue = "pearson_corr";
             
             $('#open-file-btn').click(function() {
-                var form_data = new FormData($('#open-file')[0]);
-                var action = $('#open-file-btn').val();
-                form_data.append('action', action);
+                if (folder != "") {
+                    // folder chosen for saved data
+                    alert("folder");
+                    $.ajax({
+                        type: 'POST',
+                        url: '/',
+                        data: {'action':'folder_open', 'folder': folder},                               
+                        success: function(data) {
+                            alert("sssss");
+                        }
+                    })
+                } else {
+                    // When data file chosen
+                    var form_data = new FormData($('#open-file')[0]);
+                    var action = $('#open-file-btn').val();
+                    form_data.append('action', action);
 
-                d3.select('#roleSelection').select("table").remove();
-                var header;
-                var file = document.querySelector('input[type=file]').files[0]; 
-                if (file) {
-                    var reader = new FileReader();
-                    reader.onloadend = function(evt) {
-                        var dataUrl = evt.target.result;
+                    d3.select('#roleSelection').select("table").remove();
+                    var header;
+                    var file = document.querySelector('input[type=file]').files[0]; 
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onloadend = function(evt) {
+                            var dataUrl = evt.target.result;
 
-                        d3.csv( dataUrl, function( rows ) {
-                            header = Object.keys(rows[0]);
+                            d3.csv( dataUrl, function( rows ) {
+                                header = Object.keys(rows[0]);
 
-                            $.ajax({
-                                type: 'POST',
-                                url: '/',
-                                data: form_data,                                
-                                contentType: false,
-                                cache: false,
-                                processData: false,
-                                success: function(data) {
-                                    var var_types = data.var_types;
-                                    var samples = data.samples;
-                                    roleTable(header, var_types, samples);
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/',
+                                    data: form_data,                                
+                                    contentType: false,
+                                    cache: false,
+                                    processData: false,
+                                    success: function(data) {
+                                        var var_types = data.var_types;
+                                        var samples = data.samples;
+                                        roleTable(header, var_types, samples);
 
-                                    // Avoid ctrl-click                                    
-                                    $('option').mousedown(function(e) {
-                                        e.preventDefault();
-                                        var originalScrollTop = $(this).parent().scrollTop();
-                                        $(this).prop('selected', $(this).prop('selected') ? false : true);
-                                        var self = this;
-                                        $(this).parent().focus();
-                                        setTimeout(function() {
-                                            $(self).parent().scrollTop(originalScrollTop);
-                                        }, 0);
-                                        
-                                        return false;
-                                    });                                    
-                                },
-                            });
-                        })
-                    };
-                    reader.readAsDataURL(file);
-                }                
+                                        // Avoid ctrl-click                                    
+                                        $('option').mousedown(function(e) {
+                                            e.preventDefault();
+                                            var originalScrollTop = $(this).parent().scrollTop();
+                                            $(this).prop('selected', $(this).prop('selected') ? false : true);
+                                            var self = this;
+                                            $(this).parent().focus();
+                                            setTimeout(function() {
+                                                $(self).parent().scrollTop(originalScrollTop);
+                                            }, 0);
+                                            
+                                            return false;
+                                        });                                    
+                                    },
+                                });
+                            })
+                        };
+                        reader.readAsDataURL(file);
+                    }  
+                }              
             });
 
             $('#visualize-btn').click(function() {
@@ -149,10 +173,10 @@
         <div id="extra">
             <br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input name="file" type="file" id="myFile" style = "width:170px">
+            <input name="file" type="file" id="myFile" onchange="getFolder(event)" style = "width:170px" webkitdirectory>
             <button id="open-file-btn" type="button" value="open">Open</button>
-            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>
-            <button id="visualize-btn" type="submit" value="visualize">Go Visualization</button>
+            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>        
+            <button id="visualize-btn" type="submit" value="visualize">Visualize</button>
             &nbsp;&nbsp;&nbsp;
 
         </div> 

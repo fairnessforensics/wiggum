@@ -19,8 +19,17 @@ def main():
     if request.method == 'POST':
 
         action = request.form['action']
+        global labeled_df_setup
+        
+        if action == 'folder_open':
+            print("open folder")
+            folder = request.form['folder']
+            print(folder)
+            labeled_df_setup = dsp.labeledDataFrame(folder)
+            print(labeled_df_setup.meta_df)
+            return "ttt"
 
-        # index.html 'Open' button clicked
+        # index.html 'Open' button clicked for data file
         if action == 'open':
             file = request.files.get('file')
             global df
@@ -31,7 +40,6 @@ def main():
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
 
-            global labeled_df_setup
             labeled_df_setup = dsp.labeledDataFrame(df)
 
             labeled_df_setup.infer_var_types()
