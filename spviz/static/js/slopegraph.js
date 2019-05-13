@@ -9,7 +9,8 @@ function DrawSlopeGraph(options) {
     //Title
     d3.select('#slopeLabel').select("text").remove();
 
-    if (false) {
+    // FIX ME
+    if (true) {
         d3.select('#slopeLabel').append("text")
         .attr("x", 20)             
         .attr("y", 90)

@@ -47,8 +47,26 @@
           }
         }
 
-
         $(function() {
+            // initial draw
+            $(document).ready(function(){
+                $.ajax({ 
+                        type: 'POST',
+                        url: "/",
+                        data: {'action':'page_load'},
+                        success: function(data){
+                            // Get data from controller return data
+                            console.log(data);
+                            drawGraph(data);
+
+                            // Display info table
+                            //tableRecords = JSON.parse(data.table)              
+                            //console.log(tableRecords);
+                            //tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend'];
+                            //tabulate(tableRecords, tableColumns);
+                }});
+            });
+
             // regression-based SP
             var totalWeightChart = document.getElementById("totalweightchart");					
             var totalWeightProgress = new CircularProgress(totalWeightChart, 
@@ -315,6 +333,7 @@
    <!--  <form action="/" method="post" role="form">   -->
 
     <div class= "row">
+         <!-- 
         <div id="extra">
             <br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -329,6 +348,7 @@
             </div>
             &nbsp;&nbsp;&nbsp;(Click a title to select a detail plot or a cell to focus a detail plot)       
         </div> 
+        -->
         <div id="typeSelector">
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -737,7 +757,7 @@
             </td></tr>
         </table>    
     </div>    
-    <div style="display:none; float:left" id="container">
+    <div style="display:inline-block; float:left" id="container">
     </div>
 
     <div style="display:none; float:left" id="tree"></div>

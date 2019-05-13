@@ -90,6 +90,7 @@ function ontypechange() {
 		d3.select("#rate_rankingdiv").style("display", "none");				
 //		updateContainer();
 	} else {
+		alert('here');
 		d3.select("#extra_regression").style("display", "none");
 		d3.select("#scatterplot").style("display", "none");
 		d3.select("#slopegraph").style("display", "inline-block");
@@ -156,7 +157,7 @@ function updateContainer() {
 		return;
 	}
 
-	d3.select("#container").selectAll('svg').remove();
+	//d3.select("#container").selectAll('svg').remove();
 
 	for (var i = 0; i < correlationMatrixSubgroup.length; i++){
 		var bivariateMatrix = BivariateMatrix(correlationMatrix, correlationMatrixSubgroup[i]);
@@ -189,7 +190,7 @@ function updateContainer() {
 
 function updateRateSPContainer() {
 
-	d3.select("#container").selectAll('svg').remove();
+	//d3.select("#container").selectAll('svg').remove();
 
 	arraySlopeGraph = [];
 	rateMatrixIndex = 0;

@@ -77,14 +77,14 @@ function interactBivariateMatrix(vars) {
 	updateTabulate(vars);
 };
 
-function roleTable(data, dtypes, samples) {
+function roleTable(data, var_types, samples) {
 
 		var myArray = [];
-		var my_dtype = {};
+		var my_var_types = {};
 		var my_sample = {};
 		data.forEach(function(d,i) {
 			myArray.push({"name": d, "type_dropdown": d, "role_dropdown":d, "isCount_dropdown":d, "sample": d});
-			my_dtype[d] = dtypes[i];
+			my_var_types[d] = var_types[i];
 			my_sample[d] = samples[i];
 		});
 
@@ -98,7 +98,7 @@ function roleTable(data, dtypes, samples) {
 							.style("margin-left", "20px");			
 
 		// append the header row
-		var META_COLUMNS = ['dtype','var_type','role','isCount', 'sample']
+		var META_COLUMNS = ['name','var_type','role','isCount', 'sample']
 		var thead = roleTable.append('thead').append('tr')
 							.selectAll('th')
 							.data(META_COLUMNS).enter()
@@ -138,7 +138,7 @@ function roleTable(data, dtypes, samples) {
 						})
 						.each(function(d,i) {
 							if (i==1) {
-								var dtype = my_dtype[d.value];
+								var var_types = my_var_types[d.value];
 								var optionData = ['binary', 'ordinal', 'categorical', 'continuous'];
 								var select = d3.select(this).append('select');
 								var options = select.selectAll('option')
@@ -146,11 +146,13 @@ function roleTable(data, dtypes, samples) {
 													.append('option')
 													.text(function(d){return d;})
 													.property("selected", 
-													function(d){ return d === dtype; });
+													function(d){ return d === var_types; });
 							}
 							if (i==2) {
 								var optionData = ["groupby", "explanatory", "trend"];
-								var select = d3.select(this).append('select');
+								var select = d3.select(this).append('select')
+															.attr('multiple', 'multiple')
+															.style('height', '44px');
 								var options = select.selectAll('option')
 													.data(optionData).enter()
 													.append('option')
