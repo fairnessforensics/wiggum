@@ -1,12 +1,14 @@
 
 import os
 import pandas as pd
+import itertools
+
 from .detect_sp import RESULTS_DF_HEADER, _trendDetectors
 from .data_augmentation import _augmentedData
 from .ranking_processing import _resultDataFrame
 
 
-META_COLUMNS = ['dtype','var_type','role','isCount', 'count_of']
+META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 
 
 possible_roles = ['groupby','explanatory','trend']
@@ -70,6 +72,25 @@ def simple_type_mapper(df):
             var_type_list.append('unknown')
 
     return var_type_list
+
+def column_rate(df, rate_column):
+    """
+    compute the True rate of a column of a data frame that ha boolean values
+    """
+
+    compute_rate = lambda row: row[True]/(row[False]+row[True])
+
+    df_ct  = df[rate_column].value_counts().unstack().reset_index()
+    df_ct.rename(columns={rate_column:'index'},inplace=True)
+
+
+    df_ct[rate_column + '_rate'] = df_ct.apply(compute_rate,axis=1)
+    #     df_ct.drop([True,False],axis=1,inplace=True)
+    tf_to_counts = {True:rate_column+'_true',False:rate_column+'_false'}
+    df_ct.rename(columns=tf_to_counts,inplace=True)
+
+    return df_ct
+
 
 
 class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
@@ -139,6 +160,22 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         else:
             self.result_df = pd.read_csv(results)
 
+    def count_compress_binary(self,retain_var_list, compress_var_list):
+        """
+        TODO: FIXME
+        """
+        # iterate over compress_var_list instead o naming the vars
+        search_rate = column_rate(self.df.groupby(retain_var_list),'search_conducted')
+        contraband_rate = column_rate(stops_mj.groupby(grouping_list),'contraband_found')
+        hit_rate = column_rate(stops_mj.groupby(grouping_list),'hit')
+        # a.index.rename('index',inplace=True)
+        # a.drop([True,False],axis=1,inplace=True)
+        # TODO: can this be appended or applied direct without merge
+        self.counts_rate_df = pd.merge( pd.merge(search_rate,contraband_rate),hit_rate)
+
+    def set_data_counts_rate(self):
+        self.counts_rate_df = self.df
+
 
     def infer_var_types(self,dtype_var_func = simple_type_mapper):
         '''
@@ -150,7 +187,8 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             a functiont that takes a self.df and returns a list of the lenght of the number
             of columns of values from var_types
         '''
-        self.meta_df['var_type'] = dtype_var_func(self.df)
+        var_type_list = dtype_var_func(self.df)
+        self.meta_df['var_type'] = var_type_list
 
 
     def set_roles(self,role_info):
@@ -175,6 +213,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
     def set_counts(self,count_info=None):
         """
+        set the isCount column of the meta_df
 
         Parameters
         ----------
@@ -189,21 +228,42 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
                 self.meta_df.loc[k,'isCount'] = v
         elif type(count_info) == list or count_info == None:
             # list of true/false
-            if count_info[0] in [True,False]:
-                self.meta_df['role'] = role_info
-            else:
-                # list of true or none
+            if len(count_info)==0:
                 self.meta_df['isCount'] = False
+            elif count_info[0] in [True,False]:
+                self.meta_df['isCount'] = count_info
+            else:
+                # list of true or none:
+                # set all false
+                self.meta_df['isCount'] = False
+                # set specified to True
                 for var in count_info:
                     self.meta_df.loc[var,'isCount'] = True
 
+    def set_weighting_vars(self,weight_vars=None):
+        """
+
+        Parameters
+        ----------
+        count_info: dict, list, or None
+            a dictionary with <data var>: weighting_var mappings, all keys and
+            values must be column names in the dataset at self.df
+        """
+
+        for k,v in weight_vars.items():
+            self.meta_df.loc[k,'weighting_var'] = v
+
+        # TODO: fix this
+        # self.meta_df['isCount'] = count_info
 
     def get_data(self):
         return self.df
-      
+
     def get_data_sample(self):
         """
-        get column data sample
+        return a list of strings that describe the data from each column of the
+    data, can be added as a column to meta_df
+
         Parameters
         -----------
         df : DataFrame
@@ -287,6 +347,15 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         all_vars = self.meta_df.index
 
         return all_vars[target_rows]
+
+    def get_weightcol_per_var(self,var_list):
+        """
+        return the corresponding weight variables given a list of variables
+        """
+        var_weight_list = [self.meta_df['weighting_var'][var] for var in var_list]
+
+        return var_weight_list
+
 
 
 

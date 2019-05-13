@@ -16,9 +16,11 @@ from .detect_sp import detect_simpsons_paradox
 # from .data_augmentation import add_quantile, add_all_dpgmm
 
 
-from .labeled_dataframe import labeledDataFrame, possible_roles, var_types
+from .labeled_dataframe import (labeledDataFrame, possible_roles, var_types,
+                            simple_type_mapper)
 
-from .trends import correlation_trend
+from .trends import (all_pearson, continuous_pearson, spearman_correlation,
+ kendall_correlation, mean_rank_trend,linear_trend)
 
 # __all__ = ['detect_simpsons_paradox','mark_designed_rows', 'compute_angle',
 #             'add_slope_sp','compute_slope_all','add_angle_col','count_sp_views',
@@ -27,4 +29,3 @@ from .trends import correlation_trend
 #             'get_subgroup_trends_2lev','add_quantile','get_correlations',
 #             'add_view_score','get_trend_row','label_SP_rows','get_views',
 #             'get_SP_rows']
-

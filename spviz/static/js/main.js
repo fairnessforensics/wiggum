@@ -36,7 +36,7 @@ var tableColumns = [];
 var updateVars;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
-var selectTypeData = ["Regression", "Rate"];
+var selectTypeData = ["pearson_corr", "rank_trend"];
 
 var selectType = d3.select("#typeSelector")
 					.append('select')
@@ -67,7 +67,7 @@ function onchange() {
 
 	DrawLegend();
 
-	if (selectTypeValue == "Regression") {
+	if (selectTypeValue == "pearson_corr") {
 		updateContainer();
 	} else {
 		updateRateSPContainer();
@@ -82,7 +82,7 @@ function ontypechange() {
 	d3.select("#legend").selectAll('svg').remove();
 	DrawLegend();
 
-	if (selectTypeValue == "Regression") {
+	if (selectTypeValue == "pearson_corr") {
 		d3.select("#extra_regression").style("display", "inline-block");
 		d3.select("#slopegraph").style("display", "none");
 		d3.select("#scatterplot").style("display", "inline-block");
@@ -90,6 +90,7 @@ function ontypechange() {
 		d3.select("#rate_rankingdiv").style("display", "none");				
 //		updateContainer();
 	} else {
+		alert('here');
 		d3.select("#extra_regression").style("display", "none");
 		d3.select("#scatterplot").style("display", "none");
 		d3.select("#slopegraph").style("display", "inline-block");
@@ -112,7 +113,7 @@ function updateTextInput(id, val) {
 }
 
 function updateNumberInput(id, val) {
-	if (selectTypeValue == "Regression") {
+	if (selectTypeValue == "pearson_corr") {
 		document.getElementById(id+'_number').value=val;
 
 		var event = new Event('change');
@@ -485,7 +486,7 @@ function DrawSlider(){
 		d3.select("#legend").selectAll('svg').remove();
 		DrawLegend();	
 
-		if (selectTypeValue == "Regression") {
+		if (selectTypeValue == "pearson_corr") {
 			updateContainer();
 		} else {
 			updateRateSPContainer();
@@ -573,7 +574,7 @@ function DrawLegend() {
 	var xlegendLabelsData;
 	var ylegendLabelsData;
 
-	if (selectTypeValue == "Regression") {
+	if (selectTypeValue == "pearson_corr") {
 		if ((selectValue == 'Sequential 3x3') || (selectValue == 'Diverging 3x3')){
 			xlegendLabelsData = [];
 //			xlegendLabelsData.push("[-1, -0.05)");
@@ -815,7 +816,7 @@ function doubleClickLegend(){
 
 	legendValue = -1;
 
-	if (selectTypeValue == "Regression") {
+	if (selectTypeValue == "pearson_corr") {
 		updateContainer();
 	} else {
 		updateRateSPContainer();
@@ -833,7 +834,7 @@ function updateCorrelationMatrix() {
 	var d = this.datum();
 	legendValue = d.value;
 
-	if (selectTypeValue == "Regression") {
+	if (selectTypeValue == "pearson_corr") {
 		updateContainer();
 	} else {
 		updateRateSPContainer();

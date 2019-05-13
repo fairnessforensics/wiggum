@@ -42,7 +42,7 @@ var yAxis = d3.svg.axis()
 	.orient("left");
 
 var updateScatterplot = function(data, vars) {
-
+	d3.select("#scatterplot").style("display", "inline-block");
 	d3.selectAll('.axis').remove();
 
 	// Zoom out

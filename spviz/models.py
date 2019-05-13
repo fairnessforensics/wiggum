@@ -253,7 +253,7 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
 
     return result_df, ranking_view_df    
 
-def getRatioRateAll(data_df, target_var, grouping_vars):
+def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars):
     """
     Generate an array for the rates of the protected class before further partition
     Parameters
@@ -263,8 +263,10 @@ def getRatioRateAll(data_df, target_var, grouping_vars):
         and continuous attributes.
     target_var : str
         a variable that will have a rate where the ranking flips
-    grouping_vars  : list
-        list of grouping variables which is either protected class or explanatory class
+    protected_vars  : list
+        list of protected variables     
+    groupby_vars  : list
+        list of grouping variables
     Returns
     --------
     result : array
@@ -276,8 +278,8 @@ def getRatioRateAll(data_df, target_var, grouping_vars):
     protectedVars = []
     explanaryVars = []
 
-    for protected_var in grouping_vars:
-        for explanatory_var in grouping_vars:
+    for protected_var in protected_vars:
+        for explanatory_var in groupby_vars:
             if protected_var != explanatory_var:
                 overall_dat = data_df.groupby(protected_var)[target_var].mean()
                 overall_dat_all.append(overall_dat)
@@ -291,7 +293,7 @@ def getRatioRateAll(data_df, target_var, grouping_vars):
                 
     return overall_ratio_all, protectedVars, explanaryVars, overall_dat_all
 
-def getRatioRateSub(data_df, target_var, grouping_vars):
+def getRatioRateSub(data_df, target_var, protected_vars, groupby_vars):
     """
     Generate an array for the rates of the protected class after further partition
     Parameters
@@ -301,8 +303,10 @@ def getRatioRateSub(data_df, target_var, grouping_vars):
         and continuous attributes.
     target_var : str
         a variable that will have a rate where the ranking flips
+    protected_vars  : list
+        list of protected variables
     grouping_vars  : list
-        list of grouping variables which is either protected class or explanatory class
+        list of grouping variables
     Returns
     --------
     result : array
@@ -312,8 +316,8 @@ def getRatioRateSub(data_df, target_var, grouping_vars):
     partition_dat_all = []
     partition_ratio_all = []
 
-    for protected_var in grouping_vars:
-        for explanatory_var in grouping_vars:
+    for protected_var in protected_vars:
+        for explanatory_var in groupby_vars:
             if protected_var != explanatory_var:
                 partition_dat = data_df.groupby([explanatory_var, protected_var])[target_var].mean().unstack()
 

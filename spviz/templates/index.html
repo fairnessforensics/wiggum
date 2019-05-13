@@ -3,17 +3,32 @@
 <head>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Correlation Matrix</title>
+	<title>Fix me Correlation Matrix</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <script>
 
+        function getSelectValues(select) {
+            var result = [];
+            var options = select && select.options;
+            var opt;
+        
+            for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+        
+            if (opt.selected) {
+                result.push(opt.text);
+            }
+            }
+            return result;
+        }
+
         $(function() {
             // initialize 
-            selectTypeValue = "Regression";
-  
+            selectTypeValue = "pearson_corr";
+            
             $('#open-file-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#open-file-btn').val();
@@ -38,29 +53,51 @@
                                 cache: false,
                                 processData: false,
                                 success: function(data) {
-                                    var dtypes = data.dtypes;
+                                    var var_types = data.var_types;
                                     var samples = data.samples;
-                                    roleTable(header, dtypes, samples);
+                                    roleTable(header, var_types, samples);
+
+                                    // Avoid ctrl-click                                    
+                                    $('option').mousedown(function(e) {
+                                        e.preventDefault();
+                                        var originalScrollTop = $(this).parent().scrollTop();
+                                        $(this).prop('selected', $(this).prop('selected') ? false : true);
+                                        var self = this;
+                                        $(this).parent().focus();
+                                        setTimeout(function() {
+                                            $(self).parent().scrollTop(originalScrollTop);
+                                        }, 0);
+                                        
+                                        return false;
+                                    });                                    
                                 },
                             });
                         })
                     };
-
                     reader.readAsDataURL(file);
-
-                }
+                }                
             });
 
             $('#visualize-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#visualize-btn').val();
+
                 form_data.append('action', action);
+
+                var clusteringFlg = false;
+                if($("input:checkbox:checked").prop("checked") == true){
+                    clusteringFlg = true;
+                }
+                else{
+                    clusteringFlg = false;
+                }
+                form_data.append('clustering', clusteringFlg);
 
                 var table, tr, td, i;
                 table = document.getElementById("roleTable");
                 tr = table.getElementsByTagName("tr");
 
-                var roleList = [];
+                var metaList = [];
                 for(i = 1; i < tr.length; i++){
                     // name
                     var name_td = tr[i].getElementsByTagName("td")[0];
@@ -70,23 +107,23 @@
                     var typeValue = type_td.getElementsByTagName("select")[0];
                     // role
                     var role_td = tr[i].getElementsByTagName("td")[2];
-                    var roleValue = role_td.getElementsByTagName("select")[0];
+                    var roleValue = role_td.getElementsByTagName("select")[0];                 
                     // isCount
                     var isCount_td = tr[i].getElementsByTagName("td")[3];
-                    var isCountValue = isCount_td.getElementsByTagName("select")[0];                   
-               
+                    var isCountValue = isCount_td.getElementsByTagName("select")[0];  
+
                     var singleObject =            
                                     {   
                                         name: nameValue,
                                         var_type: typeValue.options[typeValue.selectedIndex].value, 
-                                        role: roleValue.options[roleValue.selectedIndex].value,
+                                        role: getSelectValues(roleValue),
                                         isCount: isCountValue.options[isCountValue.selectedIndex].value                                                                   
                                     };
   
-                    roleList.push(singleObject);    
+                    metaList.push(singleObject);    
                 }
-                roleList = JSON.stringify(roleList);
-                form_data.append('roleList', roleList);
+                metaList = JSON.stringify(metaList);
+                form_data.append('metaList', metaList);
 
                 $.ajax({
                     type: 'POST',
@@ -114,6 +151,7 @@
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input name="file" type="file" id="myFile" style = "width:170px">
             <button id="open-file-btn" type="button" value="open">Open</button>
+            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>
             <button id="visualize-btn" type="submit" value="visualize">Go Visualization</button>
             &nbsp;&nbsp;&nbsp;
 
