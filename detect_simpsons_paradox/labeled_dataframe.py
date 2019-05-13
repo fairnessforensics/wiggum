@@ -253,6 +253,9 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         for k,v in weight_vars.items():
             self.meta_df.loc[k,'weighting_var'] = v
 
+        # TODO: fix this
+        # self.meta_df['isCount'] = count_info
+
     def get_data(self):
         return self.df
 
