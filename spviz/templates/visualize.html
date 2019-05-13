@@ -39,7 +39,7 @@
               div.style.display = "none";
             }
             // Set for scatterplot
-            if((x.id === divId) && (selectTypeValue == "Regression")) {
+            if((x.id === divId) && (selectTypeValue == "pearson_corr")) {
               x.style.display = "inline-block";
             } else {
               x.style.display = "none";
@@ -84,7 +84,7 @@
                                     {fill: "#dd1c77", range:{min:0,max:100}, innerRadius: 15, outerRadius: 20});  
 
             // initialize 
-            selectTypeValue = "Regression";
+            selectTypeValue = "pearson_corr";
 
             var individual_weight_name;
             var view_weight_name;
@@ -257,7 +257,7 @@
                         autoDetectFlag = 1;
                         ranking = {};
 
-                        if (selectTypeValue == "Regression") {
+                        if (selectTypeValue == "pearson_corr") {
                             updateContainer();
 
                             // Display info table
@@ -294,7 +294,7 @@
                 var totalValue = 0;
 
 
-                if (selectTypeValue == "Regression") {
+                if (selectTypeValue == "pearson_corr") {
                     $("[id$='_individual_number']").each(function () { 
                         totalValue = totalValue + Math.round(this.value*100);
                     });
@@ -312,7 +312,7 @@
                 // Total counting for view
                 var totalValueView = 0;
 
-                if (selectTypeValue == "Regression") {
+                if (selectTypeValue == "pearson_corr") {
                     $("[id$='_view_number']").each(function () { 
                         totalValueView =  totalValueView + Math.round(this.value*100);
                     });
