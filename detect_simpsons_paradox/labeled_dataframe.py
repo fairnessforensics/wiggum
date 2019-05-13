@@ -265,11 +265,12 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             values must be column names in the dataset at self.df
         """
 
-        for k,v in weight_vars.items():
-            self.meta_df.loc[k,'weighting_var'] = v
+        if type(weight_vars) == dict:
+            for k,v in weight_vars.items():
+                self.meta_df.loc[k,'weighting_var'] = v
+        elif type(weight_vars) == list:
+            self.meta_df['weighting_var'] = weight_vars
 
-        # TODO: fix this
-        # self.meta_df['isCount'] = count_info
 
     def get_data(self):
         return self.df
