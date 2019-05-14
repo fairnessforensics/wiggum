@@ -21,7 +21,8 @@ class linearRegression():
         """
         slopes = []
 
-        if len(self.regression_vars)>0:
+        # if not empty // empty lists are False
+        if self.regression_vars:
 
             if not(type(data_df) is pd.core.groupby.DataFrameGroupBy):
 
@@ -35,7 +36,12 @@ class linearRegression():
 
             for groupby_lev,df in data_df:
 
-                for a,b in itertools.combinations(data_cols,2):
+                if self.symmetric_vars:
+                    var_pairs = itertools.combinations(data_cols,2)
+                else:
+                    var_pairs = data_cols
+
+                for a,b in var_pairs:
 
                     # compute each slope
                     slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])

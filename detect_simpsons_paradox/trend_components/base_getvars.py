@@ -22,6 +22,7 @@ class ordinalRegression():
     """
     common parts for all continuous variable trends
     """
+    symmetric_vars = True
     def get_trend_vars(self,labeled_df):
         """
         """
@@ -36,6 +37,9 @@ class continuousOrdinalRegression():
     """
     common parts for all continuous variable trends
     """
+
+    symmetric_vars = True
+
     def get_trend_vars(self,labeled_df):
         """
         """
@@ -49,6 +53,9 @@ class continuousRegression():
     """
     common parts for all continuous variable trends
     """
+
+    symmetric_vars = True
+
     def get_trend_vars(self,labeled_df):
         """
         """

@@ -32,6 +32,7 @@ class kendall_correlation(correlationTrend,continuousRegression,trend):
     corrtype = 'kendall'
 
 class linear_trend(linearRegression,continuousRegression,trend):
+    symmetric_vars = True
     name = 'lin_reg'
 
 
