@@ -77,15 +77,29 @@ function interactBivariateMatrix(vars) {
 	updateTabulate(vars);
 };
 
-function roleTable(data, var_types, samples) {
+function roleTable(data, var_types, samples, isCounts, roles) {
 
 		var myArray = [];
 		var my_var_types = {};
 		var my_sample = {};
+		var my_isCounts = {};
+		var my_roles = {};		
 		data.forEach(function(d,i) {
 			myArray.push({"name": d, "type_dropdown": d, "role_dropdown":d, "isCount_dropdown":d, "sample": d});
 			my_var_types[d] = var_types[i];
 			my_sample[d] = samples[i];
+			if (typeof isCounts !== 'undefined') {
+				my_isCounts[d] = isCounts[i];
+			} else {
+				// set default isCount to 'N'
+				my_isCounts[d] = 'N';
+			}
+			if (typeof roles !== 'undefined') {
+				my_roles[d] = roles[i];
+			} else {
+				// set default isCount to 'N'
+				my_roles[d] = '';
+			}			
 		});
 
 		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "sample"];
@@ -138,7 +152,7 @@ function roleTable(data, var_types, samples) {
 						})
 						.each(function(d,i) {
 							if (i==1) {
-								var var_types = my_var_types[d.value];
+								var var_type = my_var_types[d.value];
 								var optionData = ['binary', 'ordinal', 'categorical', 'continuous'];
 								var select = d3.select(this).append('select');
 								var options = select.selectAll('option')
@@ -146,26 +160,32 @@ function roleTable(data, var_types, samples) {
 													.append('option')
 													.text(function(d){return d;})
 													.property("selected", 
-													function(d){ return d === var_types; });
+													function(d){ return d === var_type; });
 							}
 							if (i==2) {
 								var optionData = ["groupby", "explanatory", "trend"];
 								var select = d3.select(this).append('select')
 															.attr('multiple', 'multiple')
 															.style('height', '44px');
+								var roles = my_roles[d.value];;															
 								var options = select.selectAll('option')
 													.data(optionData).enter()
 													.append('option')
 													.text(function(d){return d;})
+													.property("selected", 
+													function(d){ 
+														if (roles.includes(d)) return d;});													
 							}	
 							if (i==3) {
+								var isCount = my_isCounts[d.value];
 								var optionData = ["Y", "N"];
 								var select = d3.select(this).append('select');
 								var options = select.selectAll('option')
 													.data(optionData).enter()
 													.append('option')
 													.text(function(d){return d;})
-													.property("selected", 1);
+													.property("selected", 
+													function(d){ return d === isCount;});
 							}																		
 						})
 											
