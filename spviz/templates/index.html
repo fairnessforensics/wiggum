@@ -78,6 +78,7 @@
                     d3.select('#roleSelection').select("table").remove();
                     var header;
                     var file = document.querySelector('input[type=file]').files[0]; 
+
                     if (file) {
                         var reader = new FileReader();
                         reader.onloadend = function(evt) {
@@ -184,8 +185,10 @@
             $('#save-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#save-btn').val();
+                var projectName = $('#projectName').val();
 
                 form_data.append('action', action);
+                form_data.append('projectName', projectName);
 
                 var clusteringFlg = false;
                 if($("input:checkbox:checked").prop("checked") == true){
@@ -236,7 +239,8 @@
                     cache: false,
                     processData: false,
                     success: function(data) {
-                        
+                        var saved = document.getElementById("save-label");
+                        saved.innerText = data;
                     },
                 });
                 
@@ -251,11 +255,18 @@
     <div class= "row">
         <div id="extra">
             <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Choose one file to load a new dataset or a direcotry with previously saved metadata<br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input name="file" type="file" id="myFile" onchange="getFolder(event)" style = "width:170px" webkitdirectory>
-            <button id="open-file-btn" type="button" value="open">Open</button>
-            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>  
-            <button id="save-btn" type="button" value="save">Save</button>                  
+            <input name="file" type="file" id="myFile" style = "width:170px">
+            <input name="file" type="file" id="myFolder" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory>
+            <button id="open-file-btn" type="button" value="open">Open</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>&nbsp;&nbsp;&nbsp;  
+            <label style="font-size: 14px;">Project Name</label>
+            <input name="file" type="text" id="projectName">   
+            <button id="save-btn" type="button" value="save">Save</button>    
+            <label id="save-label" style="font-size: 14px;"></label>           
             <button id="visualize-btn" type="submit" value="visualize">Visualize</button>
             &nbsp;&nbsp;&nbsp;
 
