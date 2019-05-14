@@ -3,17 +3,19 @@ import os
 import pandas as pd
 import itertools
 
+META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
+possible_roles = ['groupby','explanatory','trend']
+
+var_types = ['binary', 'ordinal', 'categorical', 'continuous']
+
+
+
 from .detect_sp import RESULTS_DF_HEADER, _trendDetectors
 from .data_augmentation import _augmentedData
 from .ranking_processing import _resultDataFrame
 
 
-META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 
-
-possible_roles = ['groupby','explanatory','trend']
-
-var_types = ['binary', 'ordinal', 'categorical', 'continuous']
 
 
 meta_csv = 'meta.csv'
