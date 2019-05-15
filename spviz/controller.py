@@ -81,23 +81,8 @@ def main():
 
         if action == 'save':
             meta = request.form['metaList']
-            meta_list =json.loads(meta)
 
-            meta_df_user = pd.DataFrame(meta_list)
-
-            # set var_type from user input
-            var_types = meta_df_user['var_type'].tolist()
-            # Fix ME if there is a function from labeled_dataframe.py
-            labeled_df_setup.meta_df['var_type'] = var_types
-
-            # set isCount from user input
-            roles = meta_df_user['role'].tolist()
-            labeled_df_setup.set_roles(roles)
-
-            # set roles from user input
-            meta_df_user['isCount'] = meta_df_user['isCount'].replace({'Y': True, 'N': False})
-            counts = meta_df_user['isCount'].tolist()
-            labeled_df_setup.set_counts(counts)
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
             # clusteringFlg = request.form['clustering']
 
@@ -111,23 +96,8 @@ def main():
         if action == 'visualize':
 
             meta = request.form['metaList']
-            meta_list =json.loads(meta)
 
-            meta_df_user = pd.DataFrame(meta_list)
-
-            # set var_type from user input
-            var_types = meta_df_user['var_type'].tolist()
-            # Fix ME if there is a function from labeled_dataframe.py
-            labeled_df_setup.meta_df['var_type'] = var_types
-
-            # set isCount from user input
-            roles = meta_df_user['role'].tolist()
-            labeled_df_setup.set_roles(roles)
-
-            # set roles from user input
-            meta_df_user['isCount'] = meta_df_user['isCount'].replace({'Y': True, 'N': False})
-            counts = meta_df_user['isCount'].tolist()
-            labeled_df_setup.set_counts(counts)
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
             clusteringFlg = request.form['clustering']
 
@@ -147,10 +117,7 @@ def main():
 
             rankobj = dsp.mean_rank_trend()
             linreg_obj = dsp.linear_trend()
-
-            #labeled_df_setup.get_subgroup_trends_1lev([rankobj])
-            #labeled_df_setup.get_subgroup_trends_1lev([corrobj])
-            
+           
             labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
 
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
@@ -193,14 +160,6 @@ def main():
                     result_dict_dict[index] = result_dict
                     index =  index + 1
 
-                    #return jsonify({'trend_type' : 'pearson_corr',
-                    #                'csv_data':csv_data,
-                    #                'table': labeled_df_setup.result_df.to_json(orient='records'),
-                    #                'categoricalVars': categoricalVars, 
-                    #                'continousVars': regression_vars, 
-                    #                'corrAll': corrAll.to_json(),
-                    #                'groupby_info': groupby_info,
-                    #                'corrSubs': [corrSub.to_json() for corrSub in correlationMatrixSubgroups]})
                 elif trend_type == 'rank_trend':
                     targetAttr_list = pd.unique(labeled_df_setup.result_df['feat1'])
                     
@@ -233,16 +192,6 @@ def main():
                                     'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]}
                         result_dict_dict[index] = result_dict
                         index =  index + 1
-                        #return jsonify({'trend_type' : 'rank_trend',
-                        #            'csv_data':csv_data,
-                        #            'table': labeled_df_setup.result_df.to_json(orient='records'),
-                        #            'protectedVars': protectedVars,
-                        #            'explanaryVars': explanaryVars, 
-                        #            'targetAttr': targetAttr,
-                        #            'ratioRateAll':ratioRateAll,
-                        #            'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
-                        #            'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
-                        #            'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
 
             return jsonify(result_dict_dict)
                     

@@ -5,6 +5,7 @@ import sys
 import logging
 from sklearn import mixture
 import numpy as np
+import json
 
 def getContinuousVariableName(data_df):
     """
@@ -410,3 +411,36 @@ def getClustering(data_df, regression_vars):
         data_df['clust_'+ x1+ '_' + x2] = dpgmm.predict(data_df[[x1,x2]])
                 
     return data_df  
+
+def updateMetaData(labeled_df, meta):
+    """
+    Update Meta Data
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        labeledDataFrame
+    meta : DataFrame
+        data organized in a pandas dataframe
+    Returns
+    --------
+    None
+    """
+    meta_list =json.loads(meta)
+
+    meta_df_user = pd.DataFrame(meta_list)
+
+    # set var_type from user input
+    var_types = meta_df_user['var_type'].tolist()
+    # Fix ME if there is a function from labeled_dataframe.py
+    labeled_df.set_var_types(var_types)
+
+    # set isCount from user input
+    roles = meta_df_user['role'].tolist()
+    labeled_df.set_roles(roles)
+
+    # set roles from user input
+    meta_df_user['isCount'] = meta_df_user['isCount'].replace({'Y': True, 'N': False})
+    counts = meta_df_user['isCount'].tolist()
+    labeled_df.set_counts(counts)
+                
+    return labeled_df  
