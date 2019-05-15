@@ -186,6 +186,11 @@
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#save-btn').val();
                 var projectName = $('#projectName').val();
+                
+                if (projectName == '') {
+                    alert("Please input your project name!")
+                    return;
+                }
 
                 form_data.append('action', action);
                 form_data.append('projectName', projectName);
