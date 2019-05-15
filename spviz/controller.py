@@ -25,7 +25,7 @@ def main():
 
             folder = request.form['folder']
 
-            folder = '../data/' + folder
+            folder = 'data/' + folder
             labeled_df_setup = dsp.labeledDataFrame(folder)
 
             # get variable names
@@ -88,7 +88,7 @@ def main():
 
             # store meta data into csv
             project_name = request.form['projectName']
-            directory = '../data/' + project_name
+            directory = 'data/' + project_name
             labeled_df_setup.to_csvs(directory)          
             return 'Saved'
 
