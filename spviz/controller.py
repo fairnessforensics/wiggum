@@ -19,11 +19,44 @@ def main():
     if request.method == 'POST':
 
         action = request.form['action']
+        global labeled_df_setup
 
-        # index.html 'Open' button clicked
+        if action == 'folder_open':
+
+            folder = request.form['folder']
+
+            folder = 'data/' + folder
+            labeled_df_setup = dsp.labeledDataFrame(folder)
+
+            # get variable names
+            var_names = labeled_df_setup.meta_df.index.tolist()
+
+            # get var_types for dropbox
+            var_types = []
+            var_types = labeled_df_setup.meta_df['var_type'].tolist()
+
+            # get isCounts for dropbox
+            isCounts = []
+            isCounts = labeled_df_setup.meta_df['isCount'].replace({True: 'Y', False: 'N'}).tolist()
+
+            # get isCounts for dropbox
+            roles = []
+            roles = labeled_df_setup.meta_df['role'].tolist()
+
+            # get sample for data
+            sample_list = []
+            sample_list = labeled_df_setup.get_data_sample()
+
+            return jsonify({'var_names': var_names,
+                            'var_types': var_types,
+                            'isCounts': isCounts,      
+                            'roles': roles,                      
+                            'samples': sample_list})
+
+        # index.html 'Open' button clicked for data file
         if action == 'open':
             file = request.files.get('file')
-            global df
+            #global df
             df = pd.read_csv(file)
 
             # Construct the csv data fitting d3.csv format
@@ -31,7 +64,6 @@ def main():
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
 
-            global labeled_df_setup
             labeled_df_setup = dsp.labeledDataFrame(df)
 
             labeled_df_setup.infer_var_types()
@@ -47,26 +79,25 @@ def main():
             return jsonify({'var_types': var_types,
                             'samples': sample_list})
 
+        if action == 'save':
+            meta = request.form['metaList']
+
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            # clusteringFlg = request.form['clustering']
+
+            # store meta data into csv
+            project_name = request.form['projectName']
+            directory = 'data/' + project_name
+            labeled_df_setup.to_csvs(directory)          
+            return 'Saved'
+
         # index.html 'Go Visualization' button clicked
         if action == 'visualize':
+
             meta = request.form['metaList']
-            meta_list =json.loads(meta)
 
-            meta_df_user = pd.DataFrame(meta_list)
-
-            # set var_type from user input
-            var_types = meta_df_user['var_type'].tolist()
-            # Fix ME if there is a function from labeled_dataframe.py
-            labeled_df_setup.meta_df['var_type'] = var_types
-
-            # set isCount from user input
-            roles = meta_df_user['role'].tolist()
-            labeled_df_setup.set_roles(roles)
-
-            # set roles from user input
-            meta_df_user['isCount'] = meta_df_user['isCount'].replace({'Y': True, 'N': False})
-            counts = meta_df_user['isCount'].tolist()
-            labeled_df_setup.set_counts(counts)
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
             clusteringFlg = request.form['clustering']
 
@@ -82,19 +113,12 @@ def main():
         # initial for visualize.html page
         if action == 'page_load':
             corrobj = dsp.all_pearson()
-            print(labeled_df_setup.meta_df)
             corrobj.get_trend_vars(labeled_df_setup)
 
             rankobj = dsp.mean_rank_trend()
             linreg_obj = dsp.linear_trend()
-
-            #labeled_df_setup.get_subgroup_trends_1lev([rankobj])
-            #labeled_df_setup.get_subgroup_trends_1lev([corrobj])
-            
+           
             labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
-            print("------------start-----------")
-            print(labeled_df_setup.result_df)
-            print("------------end-----------")     
 
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
 
@@ -114,15 +138,15 @@ def main():
                     categoricalVars = labeled_df_setup.get_vars_per_role('groupby').tolist()
 
                     # get correlation for all continuous variables
-                    corrAll = df[regression_vars].corr()
+                    corrAll = labeled_df_setup.df[regression_vars].corr()
 
                     # subgroup correlation matrix
                     correlationMatrixSubgroups = []
-                    correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(df, regression_vars, categoricalVars)
+                    correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(labeled_df_setup.df, regression_vars, categoricalVars)
 
                     all_attrs = np.append(regression_vars, categoricalVars)
 
-                    csv_data_each = df[all_attrs].to_dict(orient='records')
+                    csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
                     csv_data_each = json.dumps(csv_data_each, indent=2)
 
                     result_dict = {'trend_type' : 'pearson_corr',
@@ -136,14 +160,6 @@ def main():
                     result_dict_dict[index] = result_dict
                     index =  index + 1
 
-                    #return jsonify({'trend_type' : 'pearson_corr',
-                    #                'csv_data':csv_data,
-                    #                'table': labeled_df_setup.result_df.to_json(orient='records'),
-                    #                'categoricalVars': categoricalVars, 
-                    #                'continousVars': regression_vars, 
-                    #                'corrAll': corrAll.to_json(),
-                    #                'groupby_info': groupby_info,
-                    #                'corrSubs': [corrSub.to_json() for corrSub in correlationMatrixSubgroups]})
                 elif trend_type == 'rank_trend':
                     targetAttr_list = pd.unique(labeled_df_setup.result_df['feat1'])
                     
@@ -154,15 +170,15 @@ def main():
                         protectedAttrs = pd.unique(current_df['feat2'])
                         groupbyAttrs = pd.unique(current_df['group_feat'])
                         
-                        ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(df, targetAttr, protectedAttrs, groupbyAttrs)
+                        ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs)
 
-                        ratioRateSub, rateSub = models.getRatioRateSub(df, targetAttr, protectedAttrs, groupbyAttrs)
+                        ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs)
 
                         protected_groupby_attrs = np.append(protectedAttrs, groupbyAttrs)
                         protected_groupby_attrs = pd.unique(protected_groupby_attrs)
                         all_attrs = np.append(protected_groupby_attrs, [targetAttr])
 
-                        csv_data_each = df[all_attrs].to_dict(orient='records')
+                        csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
                         csv_data_each = json.dumps(csv_data_each, indent=2)
 
                         result_dict = {'trend_type' : 'rank_trend',
@@ -176,16 +192,6 @@ def main():
                                     'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]}
                         result_dict_dict[index] = result_dict
                         index =  index + 1
-                        #return jsonify({'trend_type' : 'rank_trend',
-                        #            'csv_data':csv_data,
-                        #            'table': labeled_df_setup.result_df.to_json(orient='records'),
-                        #            'protectedVars': protectedVars,
-                        #            'explanaryVars': explanaryVars, 
-                        #            'targetAttr': targetAttr,
-                        #            'ratioRateAll':ratioRateAll,
-                        #            'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
-                        #            'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
-                        #            'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
 
             return jsonify(result_dict_dict)
                     
@@ -230,22 +236,23 @@ def main():
 
                 clusteringFlg = request.form['clustering']
 
-                if clusteringFlg == 'true':
-                    df = models.getClustering(df, regression_vars)
-                    csv_data = df.to_dict(orient='records')
-                    csv_data = json.dumps(csv_data, indent=2)
+                # FIXME
+                #if clusteringFlg == 'true':
+                #    df = models.getClustering(df, regression_vars)
+                #    csv_data = df.to_dict(orient='records')
+                #    csv_data = json.dumps(csv_data, indent=2)
 
                 categoricalVars = models.getCategoricalVariableName(df)
 
                 # get correlation for all continuous variables
-                corrAll = df[continuousVars].corr()
+                corrAll = labeled_df_setup.df[continuousVars].corr()
 
                 # subgroup correlation matrix
                 correlationMatrixSubgroups = []
-                correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(df, regression_vars, categoricalVars)
+                correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(labeled_df_setup.df, regression_vars, categoricalVars)
 
                 # generate table
-                initial_result_df, rankViewResult = models.getInfoTable(df, std_weights, std_weights_view, view_score_param,
+                initial_result_df, rankViewResult = models.getInfoTable(labeled_df_setup.df, std_weights, std_weights_view, view_score_param,
                                                     individual_weight_name, view_weight_name)
 
                 return jsonify({'csv_data':csv_data,
@@ -257,14 +264,14 @@ def main():
                                 'groupby_info': groupby_info,
                                 'corrSubs': [corrSub.to_json() for corrSub in correlationMatrixSubgroups]})
             elif spType == 'Rate':
-                targetAttr = models.getBinaryVariableName(df)[0]
+                targetAttr = models.getBinaryVariableName(labeled_df_setup.df)[0]
                 
-                groupingAttrs =  models.getCategoricalVariableName(df)
+                groupingAttrs =  models.getCategoricalVariableName(labeled_df_setup.df)
                 groupingAttrs.remove(targetAttr)
                 
-                ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(df, targetAttr, groupingAttrs)
+                ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, targetAttr, groupingAttrs)
 
-                ratioRateSub, rateSub = models.getRatioRateSub(df, targetAttr, groupingAttrs)
+                ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, groupingAttrs)
 
                 return jsonify({'csv_data':csv_data,
                                 'protectedVars': protectedVars,
@@ -280,9 +287,9 @@ def main():
 
                 groupingAttrs =  labeled_df.loc[labeled_df['role'] == 'groupby']['name'].tolist()
 
-                ratioStatAll, protectedVars, explanaryVars, statAll = models.getRatioStatAll(df, targetAttr, groupingAttrs, isCountAttr)
+                ratioStatAll, protectedVars, explanaryVars, statAll = models.getRatioStatAll(labeled_df_setup.df, targetAttr, groupingAttrs, isCountAttr)
 
-                ratioRateSub, rateSub = models.getRatioRateSub(df, targetAttr, groupingAttrs)
+                ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, groupingAttrs)
 
                 return jsonify({'csv_data':csv_data,
                                 'protectedVars': protectedVars,
@@ -297,7 +304,7 @@ def main():
         elif action == 'autodetect':      
             threshold = float(request.form['threshold'])
 
-            initial_result_df, ranking_view_df = models.auto_detect(df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold,
+            initial_result_df, ranking_view_df = models.auto_detect(labeled_df_setup.df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold,
                                                         individual_weight_name, view_weight_name)
 
             return jsonify({'result': initial_result_df.to_json(),

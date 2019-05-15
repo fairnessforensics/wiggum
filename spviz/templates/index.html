@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Fix me Correlation Matrix</title>
+	<title>Data Setup</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -25,57 +25,103 @@
             return result;
         }
 
+        var folder = "";
+
+        function getFolder(e) {
+            var files = e.target.files;
+            var path = files[0].webkitRelativePath;
+
+            var path_split = path.split("/");
+            folder = path_split[0];
+        }
+
         $(function() {
             // initialize 
             selectTypeValue = "pearson_corr";
             
             $('#open-file-btn').click(function() {
-                var form_data = new FormData($('#open-file')[0]);
-                var action = $('#open-file-btn').val();
-                form_data.append('action', action);
 
-                d3.select('#roleSelection').select("table").remove();
-                var header;
-                var file = document.querySelector('input[type=file]').files[0]; 
-                if (file) {
-                    var reader = new FileReader();
-                    reader.onloadend = function(evt) {
-                        var dataUrl = evt.target.result;
+                if (folder != "") {
+                    // folder chosen for saved data
+                    $('#projectName').val(folder);
 
-                        d3.csv( dataUrl, function( rows ) {
-                            header = Object.keys(rows[0]);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/',
+                        data: {'action':'folder_open', 'folder': folder},                               
+                        success: function(data) {
+                            var var_names = data.var_names;
+                            var var_types = data.var_types;
+                            var samples = data.samples;
+                            var isCounts = data.isCounts;
+                            var roles = data.roles;
+                            roleTable(var_names, var_types, samples, isCounts, roles);
 
-                            $.ajax({
-                                type: 'POST',
-                                url: '/',
-                                data: form_data,                                
-                                contentType: false,
-                                cache: false,
-                                processData: false,
-                                success: function(data) {
-                                    var var_types = data.var_types;
-                                    var samples = data.samples;
-                                    roleTable(header, var_types, samples);
+                            // Avoid ctrl-click                                    
+                            $('option').mousedown(function(e) {
+                                e.preventDefault();
+                                var originalScrollTop = $(this).parent().scrollTop();
+                                $(this).prop('selected', $(this).prop('selected') ? false : true);
+                                var self = this;
+                                $(this).parent().focus();
+                                setTimeout(function() {
+                                    $(self).parent().scrollTop(originalScrollTop);
+                                }, 0);
+                                
+                                return false;
+                            });                                    
+                        }
+                    })
+                } else {
+                    // When data file chosen
+                    var form_data = new FormData($('#open-file')[0]);
+                    var action = $('#open-file-btn').val();
+                    form_data.append('action', action);
 
-                                    // Avoid ctrl-click                                    
-                                    $('option').mousedown(function(e) {
-                                        e.preventDefault();
-                                        var originalScrollTop = $(this).parent().scrollTop();
-                                        $(this).prop('selected', $(this).prop('selected') ? false : true);
-                                        var self = this;
-                                        $(this).parent().focus();
-                                        setTimeout(function() {
-                                            $(self).parent().scrollTop(originalScrollTop);
-                                        }, 0);
-                                        
-                                        return false;
-                                    });                                    
-                                },
-                            });
-                        })
-                    };
-                    reader.readAsDataURL(file);
-                }                
+                    d3.select('#roleSelection').select("table").remove();
+                    var header;
+                    var file = document.querySelector('input[type=file]').files[0]; 
+
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onloadend = function(evt) {
+                            var dataUrl = evt.target.result;
+
+                            d3.csv( dataUrl, function( rows ) {
+                                header = Object.keys(rows[0]);
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/',
+                                    data: form_data,                                
+                                    contentType: false,
+                                    cache: false,
+                                    processData: false,
+                                    success: function(data) {
+                                        var var_types = data.var_types;
+                                        var samples = data.samples;
+                                        roleTable(header, var_types, samples);
+
+                                        // Avoid ctrl-click                                    
+                                        $('option').mousedown(function(e) {
+                                            e.preventDefault();
+                                            var originalScrollTop = $(this).parent().scrollTop();
+                                            $(this).prop('selected', $(this).prop('selected') ? false : true);
+                                            var self = this;
+                                            $(this).parent().focus();
+                                            setTimeout(function() {
+                                                $(self).parent().scrollTop(originalScrollTop);
+                                            }, 0);
+                                            
+                                            return false;
+                                        });                                    
+                                    },
+                                });
+                            })
+                        };
+                        reader.readAsDataURL(file);
+                    }  
+                }              
             });
 
             $('#visualize-btn').click(function() {
@@ -138,6 +184,75 @@
                 });
                 
             });
+
+            $('#save-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#save-btn').val();
+                var projectName = $('#projectName').val();
+                
+                if (projectName == '') {
+                    alert("Please input your project name!")
+                    return;
+                }
+
+                form_data.append('action', action);
+                form_data.append('projectName', projectName);
+
+                var clusteringFlg = false;
+                if($("input:checkbox:checked").prop("checked") == true){
+                    clusteringFlg = true;
+                }
+                else{
+                    clusteringFlg = false;
+                }
+                form_data.append('clustering', clusteringFlg);
+
+                var table, tr, td, i;
+                table = document.getElementById("roleTable");
+                tr = table.getElementsByTagName("tr");
+
+                var metaList = [];
+                for(i = 1; i < tr.length; i++){
+                    // name
+                    var name_td = tr[i].getElementsByTagName("td")[0];
+                    var nameValue = name_td.innerText;                    
+                    // type
+                    var type_td = tr[i].getElementsByTagName("td")[1];
+                    var typeValue = type_td.getElementsByTagName("select")[0];
+                    // role
+                    var role_td = tr[i].getElementsByTagName("td")[2];
+                    var roleValue = role_td.getElementsByTagName("select")[0];                 
+                    // isCount
+                    var isCount_td = tr[i].getElementsByTagName("td")[3];
+                    var isCountValue = isCount_td.getElementsByTagName("select")[0];  
+
+                    var singleObject =            
+                                    {   
+                                        name: nameValue,
+                                        var_type: typeValue.options[typeValue.selectedIndex].value, 
+                                        role: getSelectValues(roleValue),
+                                        isCount: isCountValue.options[isCountValue.selectedIndex].value                                                                   
+                                    };
+  
+                    metaList.push(singleObject);    
+                }
+                metaList = JSON.stringify(metaList);
+                form_data.append('metaList', metaList);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data) {
+                        var saved = document.getElementById("save-label");
+                        saved.innerText = data;
+                    },
+                });
+                
+            });            
         });    
     </script>
 </head>
@@ -148,11 +263,19 @@
     <div class= "row">
         <div id="extra">
             <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Choose one file to load a new dataset or a direcotry with previously saved metadata<br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input name="file" type="file" id="myFile" style = "width:170px">
-            <button id="open-file-btn" type="button" value="open">Open</button>
-            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>
-            <button id="visualize-btn" type="submit" value="visualize">Go Visualization</button>
+            <input name="file" type="file" id="myFolder" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
+            <button id="open-file-btn" type="button" value="open">Open</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>&nbsp;&nbsp;&nbsp;  
+            <label style="font-size: 14px;">Project Name</label>
+            <input name="file" type="text" id="projectName">   
+            <button id="save-btn" type="button" value="save">Save</button>    
+            <label id="save-label" style="font-size: 14px;"></label>           
+            <button id="visualize-btn" type="submit" value="visualize">Visualize</button>
             &nbsp;&nbsp;&nbsp;
 
         </div> 
