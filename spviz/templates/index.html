@@ -40,8 +40,11 @@
             selectTypeValue = "pearson_corr";
             
             $('#open-file-btn').click(function() {
+
                 if (folder != "") {
                     // folder chosen for saved data
+                    $('#projectName').val(folder);
+
                     $.ajax({
                         type: 'POST',
                         url: '/',
