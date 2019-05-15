@@ -27,9 +27,6 @@ class rankTrend():
             data_df = [('',data_df)]
 
 
-
-
-
         weight_col_lookup = {t:w for t,w in zip(self.target,self.var_weight_list)}
         rank_res =[]
 
@@ -45,16 +42,18 @@ class rankTrend():
                 # if wcol is NaN, then set wegiths to 1
 
                 # TODO: self.stat
-                if pd.isna(weightfeat):
-                    # if no weighting, take regular mean
-                    mean_df = df.groupby(rankfeat)[meanfeat].mean()
-                else:
-                    # if weighting var is specified use that column to weight
-                    mean_df = df.groupby(rankfeat).apply(w_avg,meanfeat,weightfeat)
+                # if pd.isna(weightfeat):
+                #     # if no weighting, take regular mean
+                #     mean_df = df.groupby(rankfeat)[statfeat].mean()
+                # else:
+                #     # if weighting var is specified use that column to weight
+                #     mean_df = df.groupby(rankfeat).apply(w_avg,statfeat,weightfeat)
+
+                stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat,weightfeat)
 
                 # save detailed precompute
                 trend_name = '_'.join([self.name , corr_name,statfeat,rankfeat])
-                self.trend_precompute[trend_name] = mean_df
+                self.trend_precompute[trend_name] = stat_df
 
                 # extract for result_df
                 ordered_rank_feat = stat_df.sort_values().index.values

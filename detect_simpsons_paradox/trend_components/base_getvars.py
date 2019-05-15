@@ -1,3 +1,4 @@
+import pandas as pd
 
 class trend():
     """
@@ -94,7 +95,7 @@ class weightedMeanRank():
     """
     common parts for all continuous variable trends
     """
-    my_stat = w_avg
+    my_stat = lambda self, d,m,w :w_avg(d,m,w )
 
     def get_trend_vars(self,labeled_df):
         """

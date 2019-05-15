@@ -30,19 +30,20 @@ class linearRegression():
                 data_df = [('',data_df)]
 
 
-            data_cols = self.regression_vars
+
             slopes = []
             quality = []
 
             for groupby_lev,df in data_df:
-
+                # expand into all combinations if symmetric
                 if self.symmetric_vars:
-                    var_pairs = itertools.combinations(data_cols,2)
+                    var_pairs = itertools.combinations(self.regression_vars,2)
                 else:
-                    var_pairs = data_cols
+                    # else assume list of tuples was passed
+                    var_pairs = self.regression_vars
 
+                # var_pairs must be list of tuples or iterator
                 for a,b in var_pairs:
-
                     # compute each slope
                     slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
                     slopes.append([a,b,slope,groupby_lev,r_val])
