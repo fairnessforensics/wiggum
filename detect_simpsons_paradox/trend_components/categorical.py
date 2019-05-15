@@ -5,9 +5,7 @@ import scipy.stats as stats
 
 
 
-def w_avg(df,avcol,wcol):
-    df.dropna(axis=0,subset=[avcol])
-    return np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+
 
 class rankTrend():
 
@@ -40,11 +38,13 @@ class rankTrend():
 
             views = itertools.product(self.target,cur_trendgroup)
 
-            for meanfeat,rankfeat  in views:
+            for statfeat,rankfeat  in views:
 
-                weightfeat = weight_col_lookup[meanfeat]
+                weightfeat = weight_col_lookup[statfeat]
                 # sort values of view[1] by values of view[0]
                 # if wcol is NaN, then set wegiths to 1
+
+                # TODO: self.stat
                 if pd.isna(weightfeat):
                     # if no weighting, take regular mean
                     mean_df = df.groupby(rankfeat)[meanfeat].mean()
@@ -53,13 +53,13 @@ class rankTrend():
                     mean_df = df.groupby(rankfeat).apply(w_avg,meanfeat,weightfeat)
 
                 # save detailed precompute
-                trend_name = '_'.join([self.name , corr_name,meanfeat,rankfeat])
+                trend_name = '_'.join([self.name , corr_name,statfeat,rankfeat])
                 self.trend_precompute[trend_name] = mean_df
 
                 # extract for result_df
-                ordered_rank_feat = mean_df.sort_values().index.values
+                ordered_rank_feat = stat_df.sort_values().index.values
                 # create row
-                rank_res.append([meanfeat,rankfeat,ordered_rank_feat,groupby_lev])
+                rank_res.append([statfeat,rankfeat,ordered_rank_feat,groupby_lev])
 
 
         # if groupby add subgroup indicator columns

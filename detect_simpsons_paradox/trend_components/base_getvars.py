@@ -79,10 +79,23 @@ class binaryMeanRank():
         self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
         return
 
+
+def w_avg(df,avcol,wcol):
+    df.dropna(axis=0,subset=[avcol])
+
+    if pd.isna(wcol):
+        wmean = df[avcol].mean()
+    else:
+        wmean = np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+
+    return wmean
+
 class weightedMeanRank():
     """
     common parts for all continuous variable trends
     """
+    my_stat = w_avg
+
     def get_trend_vars(self,labeled_df):
         """
         """
