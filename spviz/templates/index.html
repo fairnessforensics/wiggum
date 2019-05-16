@@ -55,7 +55,8 @@
                             var samples = data.samples;
                             var isCounts = data.isCounts;
                             var roles = data.roles;
-                            roleTable(var_names, var_types, samples, isCounts, roles);
+                            var possibleRoles = data.possible_roles;
+                            roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, );
 
                             // Avoid ctrl-click                                    
                             $('option').mousedown(function(e) {
@@ -100,7 +101,8 @@
                                     success: function(data) {
                                         var var_types = data.var_types;
                                         var samples = data.samples;
-                                        roleTable(header, var_types, samples);
+                                        var possibleRoles = data.possible_roles;
+                                        roleTable(header, var_types, samples, possibleRoles);
 
                                         // Avoid ctrl-click                                    
                                         $('option').mousedown(function(e) {

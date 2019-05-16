@@ -77,7 +77,7 @@ function interactBivariateMatrix(vars) {
 	updateTabulate(vars);
 };
 
-function roleTable(data, var_types, samples, isCounts, roles) {
+function roleTable(data, var_types, samples, possibleRoles, isCounts, roles) {
 
 		var myArray = [];
 		var my_var_types = {};
@@ -163,7 +163,7 @@ function roleTable(data, var_types, samples, isCounts, roles) {
 													function(d){ return d === var_type; });
 							}
 							if (i==2) {
-								var optionData = ["groupby", "explanatory", "trend"];
+								var optionData = possibleRoles;
 								var select = d3.select(this).append('select')
 															.attr('multiple', 'multiple')
 															.style('height', '44px');

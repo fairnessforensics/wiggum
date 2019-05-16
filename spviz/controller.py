@@ -51,7 +51,8 @@ def main():
                             'var_types': var_types,
                             'isCounts': isCounts,      
                             'roles': roles,                      
-                            'samples': sample_list})
+                            'samples': sample_list,
+                            'possible_roles': dsp.possible_roles})
 
         # index.html 'Open' button clicked for data file
         if action == 'open':
@@ -77,7 +78,8 @@ def main():
             sample_list = labeled_df_setup.get_data_sample()
 
             return jsonify({'var_types': var_types,
-                            'samples': sample_list})
+                            'samples': sample_list,
+                            'possible_roles': dsp.possible_roles})
 
         if action == 'save':
             meta = request.form['metaList']
