@@ -35,6 +35,10 @@ class linear_trend(linearRegression,continuousRegression,trend):
     symmetric_vars = True
     name = 'lin_reg'
 
+class all_linear_trend(linearRegression,continuousOrdinalRegression,trend):
+    symmetric_vars = True
+    name = 'lin_reg'
+
 
 all_trend_types = {'pearson_corr':all_pearson,
                     'rank_trend':mean_rank_trend,
