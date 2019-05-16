@@ -9,7 +9,7 @@ import scipy.stats as stats
 
 class rankTrend():
 
-    def get_trends(self,data_df,corr_name):
+    def get_trends(self,data_df,trend_col_name):
         """
         assuming the data is counts and rates that need to be combined in
         weighted ways
@@ -52,7 +52,7 @@ class rankTrend():
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat,weightfeat)
 
                 # save detailed precompute
-                trend_name = '_'.join([self.name , corr_name,statfeat,rankfeat])
+                trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
                 self.trend_precompute[trend_name] = stat_df
 
                 # extract for result_df
@@ -64,11 +64,11 @@ class rankTrend():
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
-                                                    corr_name,'subgroup'])
+                                                    trend_col_name,'subgroup'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
-            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',corr_name,'empty'])
+            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',trend_col_name,'empty'])
             reg_df.drop('empty',axis=1,inplace=True)
 
 

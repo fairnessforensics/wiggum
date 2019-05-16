@@ -1,4 +1,4 @@
-import pandas as pd
+trend_col_nameimport pandas as pd
 import numpy as np
 import itertools
 import scipy.stats as stats
@@ -10,7 +10,7 @@ class correlationTrend():
     # trend computation functions
     ############################################################################
 
-    def get_trends(self,data_df,corr_name):
+    def get_trends(self,data_df,trend_col_name):
         """
         return a DataFrame of the linear corelations in a DataFrame or pandas
             groupby
@@ -21,7 +21,7 @@ class correlationTrend():
             tidy data
         regression_vars : list of strings
             column names to use for correlation compuations
-        corr_name : string
+        trend_col_name : string
             title for column of data frame tht will be created
         """
 
@@ -53,7 +53,7 @@ class correlationTrend():
                 triu_feat_indices = triu_indices
 
             # compute correlations, only store vlaues from upper right triangle
-            trend_name = '_'.join([self.name , corr_name])
+            trend_name = '_'.join([self.name , trend_col_name])
             corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
             corr_triu = corr_mat.values[triu_indices]
 
@@ -63,10 +63,10 @@ class correlationTrend():
             # create dataframe with rows, att1 label, attr2 label, correlation
             reg_df = pd.DataFrame(data=[[self.regression_vars[x],self.regression_vars[y],val]
                                         for x,y,val in zip(*triu_feat_indices,corr_triu)],
-                        columns = ['feat1','feat2',corr_name])
+                        columns = ['feat1','feat2',trend_col_name])
         else:
             n_triu_values = 0
-            reg_df = pd.DataFrame(columns = ['feat1','feat2',corr_name])
+            reg_df = pd.DataFrame(columns = ['feat1','feat2',trend_col_name])
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:

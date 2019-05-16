@@ -6,7 +6,7 @@ import scipy.stats as stats
 
 class linearRegression():
 
-    def get_trends(self,data_df,corr_name):
+    def get_trends(self,data_df,trend_col_name):
         """
         return a DataFrame of the linear trends in a DataFrame or groupby
 
@@ -16,7 +16,7 @@ class linearRegression():
             tidy data
         regression_vars : list of strings
             column names to use for slope computations
-        corr_name : string
+        trend_col_name : string
             title for column of data frame tht will be created (group or all)
         """
         slopes = []
@@ -51,12 +51,12 @@ class linearRegression():
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
-                                    corr_name,'subgroup',corr_name+'quality'])
+                                    trend_col_name,'subgroup',trend_col_name+'quality'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
-                                        corr_name,'empty',corr_name+'quality'])
+                                        trend_col_name,'empty',trend_col_name+'quality'])
             reg_df.drop('empty',axis=1,inplace=True)
 
         reg_df['trend_type'] = self.name
