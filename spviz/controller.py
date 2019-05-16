@@ -134,8 +134,8 @@ def main():
                 if trend_type == 'pearson_corr':
                     # Constructing the data for visualization
                     # Regression
-                    regression_vars = corrobj.regression_vars.tolist()
-                    categoricalVars = labeled_df_setup.get_vars_per_role('groupby').tolist()
+                    regression_vars = corrobj.regression_vars
+                    categoricalVars = labeled_df_setup.get_vars_per_role('groupby')
 
                     # get correlation for all continuous variables
                     corrAll = labeled_df_setup.df[regression_vars].corr()
