@@ -238,15 +238,45 @@ class _resultDataFrame():
 
 
 
-    def get_trend_row(self,feat1,feat2,group_feat,subgroup):
+    def get_trend_row(self,feat1 = None,feat2 = None,group_feat= None,
+                            subgroup= None):
         """
-        return a row of a data frame from the above
+        return a row of result_df based on the specified values
+
+        Parameters
+        -----------
+        feat1 : str or  None
+            trend variable name or None to include all
+        feat2 : str or  None
+            trend variable name or None to include all
+        group_feat : str or  None
+            groupoby variable name or None to include all
+        subgroup : str or  None
+            value of groupby_feat or or None to include all
         """
-        # get the rows for each
-        f1_rows = self.result_df.feat1 ==feat1
-        f2_rows = self.result_df.feat2== feat2
-        gf_rows = self.result_df.group_feat == group_feat
-        sg_rows = self.result_df.subgroup == subgroup
+        # get the rows for each specified value,
+        #  or set to True to include all values for each None
+        if feat1:
+            f1_rows = self.result_df.feat1 ==feat1
+        else:
+            f1_rows = True
+
+        if feat2:
+            f2_rows = self.result_df.feat2== feat2
+        else:
+            f2_rows = True
+
+        if group_feat:
+            gf_rows = self.result_df.group_feat == group_feat
+        else:
+            gf_rows = True
+
+        if subgroup:
+            sg_rows = self.result_df.subgroup == subgroup
+        else:
+            sg_rows = True
+
+
         # take the intersection
         target_row = f1_rows & f2_rows & gf_rows & sg_rows
         # return that row
