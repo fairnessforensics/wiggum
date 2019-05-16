@@ -331,7 +331,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
         all_vars = self.meta_df.index
 
-        return all_vars[is_target_role]
+        return list(all_vars[is_target_role])
 
     def get_vars_per_type(self, vartype):
         """
@@ -345,7 +345,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
         all_vars = self.meta_df.index
 
-        return all_vars[is_target_type]
+        return list(all_vars[is_target_type])
 
     def get_vars_per_roletype(self,role,vartype):
         """
@@ -364,7 +364,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
         all_vars = self.meta_df.index
 
-        return all_vars[target_rows]
+        return list(all_vars[target_rows])
 
     def get_weightcol_per_var(self,var_list):
         """
