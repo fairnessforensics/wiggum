@@ -1,3 +1,4 @@
+import pandas as pd
 
 class trend():
     """
@@ -22,6 +23,7 @@ class ordinalRegression():
     """
     common parts for all continuous variable trends
     """
+    symmetric_vars = True
     def get_trend_vars(self,labeled_df):
         """
         """
@@ -36,6 +38,9 @@ class continuousOrdinalRegression():
     """
     common parts for all continuous variable trends
     """
+
+    symmetric_vars = True
+
     def get_trend_vars(self,labeled_df):
         """
         """
@@ -49,6 +54,9 @@ class continuousRegression():
     """
     common parts for all continuous variable trends
     """
+
+    symmetric_vars = True
+
     def get_trend_vars(self,labeled_df):
         """
         """
@@ -72,10 +80,23 @@ class binaryMeanRank():
         self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
         return
 
+
+def w_avg(df,avcol,wcol):
+    df.dropna(axis=0,subset=[avcol])
+
+    if pd.isna(wcol):
+        wmean = df[avcol].mean()
+    else:
+        wmean = np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+
+    return wmean
+
 class weightedMeanRank():
     """
     common parts for all continuous variable trends
     """
+    my_stat = lambda self, d,m,w :w_avg(d,m,w )
+
     def get_trend_vars(self,labeled_df):
         """
         """
