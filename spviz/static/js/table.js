@@ -65,20 +65,22 @@ function updateTabulate(vars) {
 
 function interactBivariateMatrix(vars) {
 
+	// update bivariate matrix
+	var allsvg = d3.select(container);
+	allsvg.selectAll(".cell").classed("clicked", false);
+
+	var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
+
+	d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
+
 	if (vars.trend_type == 'pearson_corr') {
 		updateScatterplot(csvData, vars);
 
-		// update bivariate matrix
-		var allsvg = d3.select(container);
-		allsvg.selectAll(".cell").classed("clicked", false);
-	
-		var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
-	
-		d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
 	} else if (vars.trend_type == "rank_trend") {
-		// FIXME TODO
-		updateSlopeGraph(vars);
-		updateGroupedBar(csvData, vars);
+		var evt = new MouseEvent("click");
+  
+		// The way to dispatch it with plain JS
+		document.getElementById(cell_id).dispatchEvent(evt);
 	}
 
 	updateTabulate(vars);

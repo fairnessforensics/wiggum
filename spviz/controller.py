@@ -124,8 +124,8 @@ def main():
             rankobj = dsp.mean_rank_trend()
             linreg_obj = dsp.linear_trend()
            
-            labeled_df_setup.get_subgroup_trends_1lev([rankobj])
-            #labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
+            #labeled_df_setup.get_subgroup_trends_1lev([corrobj])
+            labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
 
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
 

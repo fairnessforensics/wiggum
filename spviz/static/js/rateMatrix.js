@@ -383,7 +383,8 @@ function rateSPMatrix(options) {
 	    .data(function(d) { return d; })
 		.enter()
 		.append("rect")	
-	    .attr("class", "cell")
+		.attr("class", "cell")
+		.attr("id", function(d) {return targetAttr + "_" + d.protectedAttr + "_" + d.keyName + "_" + d.subgroups[d.colVar]})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
 
 	cells.attr("width", x.rangeBand()-1)

@@ -20,9 +20,7 @@ function drawGraph(dataAll) {
 		if (key != 0) {
 			data = dataAll[key];
 
-			console.log(data);
 			selectTypeValue = data.trend_type;
-			console.log(selectTypeValue);
 		}
 		if (selectTypeValue == "pearson_corr") {
 
