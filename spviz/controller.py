@@ -177,7 +177,13 @@ def main():
                         protectedAttrs = pd.unique(current_df['feat2'])
                         groupbyAttrs = pd.unique(current_df['group_feat'])
                         
-                        ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs)
+                        if pd.notna(labeled_df_setup.meta_df['weighting_var'][targetAttr]):
+                            weighting_var = labeled_df_setup.meta_df['weighting_var'][targetAttr]
+                        else:
+                            weighting_var = ''
+
+                        ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, 
+                                                                                targetAttr, protectedAttrs, groupbyAttrs, weighting_var)
 
                         ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs)
 
@@ -186,11 +192,8 @@ def main():
                         all_attrs = np.append(protected_groupby_attrs, [targetAttr])
 
                         # adding weighting_var
-                        if pd.notna(labeled_df_setup.meta_df['weighting_var'][targetAttr]):
-                            weighting_var = labeled_df_setup.meta_df['weighting_var'][targetAttr]
+                        if weighting_var != '':
                             all_attrs = np.append(all_attrs, [weighting_var])
-                        else:
-                            weighting_var = ''
                         
                         csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
                         csv_data_each = json.dumps(csv_data_each, indent=2)

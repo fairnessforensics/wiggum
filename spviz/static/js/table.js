@@ -37,7 +37,7 @@ function tabulate(data, columns) {
 		.attr("row", function(d) { return d.feat1+"_"+d.feat2+"_"+d.group_feat+"_"+d.subgroup; })
 		.attr("class", "tablerow")
 		.on("click", function(d, i) {
-			var vars = {x: d.feat1, y: d.feat2, categoryAttr: d.group_feat, category: d.subgroup};
+			var vars = {x: d.feat1, y: d.feat2, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_type};
 			return interactBivariateMatrix(vars, i); });
 
 	// create a cell in each row for each column
@@ -65,15 +65,22 @@ function updateTabulate(vars) {
 
 function interactBivariateMatrix(vars) {
 
-	updateScatterplot(csvData, vars);
+	if (vars.trend_type == 'pearson_corr') {
+		updateScatterplot(csvData, vars);
 
-	// update bivariate matrix
-	var allsvg = d3.select(container);
-	allsvg.selectAll(".cell").classed("clicked", false);
+		// update bivariate matrix
+		var allsvg = d3.select(container);
+		allsvg.selectAll(".cell").classed("clicked", false);
+	
+		var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
+	
+		d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
+	} else if (vars.trend_type == "rank_trend") {
+		// FIXME TODO
+		updateSlopeGraph(vars);
+		updateGroupedBar(csvData, vars);
+	}
 
-	var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
-
-	d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
 	updateTabulate(vars);
 };
 
@@ -174,7 +181,7 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 								var optionData = possibleRoles;
 								var select = d3.select(this).append('select')
 															.attr('multiple', 'multiple')
-															.style('height', '44px');
+															.style('height', '30px');
 								var roles = my_roles[d.value];;															
 								var options = select.selectAll('option')
 													.data(optionData).enter()

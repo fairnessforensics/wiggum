@@ -254,7 +254,7 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
 
     return result_df, ranking_view_df    
 
-def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars):
+def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars, weighting_var):
     """
     Generate an array for the rates of the protected class before further partition
     Parameters
@@ -268,6 +268,8 @@ def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars):
         list of protected variables     
     groupby_vars  : list
         list of grouping variables
+    weighting_var : str
+        a variable that have weight        
     Returns
     --------
     result : array
@@ -282,7 +284,13 @@ def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars):
     for protected_var in protected_vars:
         for explanatory_var in groupby_vars:
             if protected_var != explanatory_var:
-                overall_dat = data_df.groupby(protected_var)[target_var].mean()
+                if weighting_var == '':
+                    overall_dat = data_df.groupby(protected_var)[target_var].mean()
+                else:
+                    grouped = data_df.groupby(protected_var)
+                    get_wavg = lambda g: np.average(g[target_var], weights=g[weighting_var])
+                    overall_dat = grouped.apply(get_wavg)
+
                 overall_dat_all.append(overall_dat)
 
                 comb = list(combinations(overall_dat, 2))
