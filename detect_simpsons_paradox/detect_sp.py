@@ -193,6 +193,9 @@ class _trendDetectors():
         self.result_df = pd.merge(subgroup_trends,all_trends)
         # ,on=['feat1','feat2'], how='left
 
+        # remove rows where a trend is undefined
+        self.result_df.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+
         return self.result_df
 
     def get_subgroup_trends_2lev(data_df,trend_types,groupby_vars=None):
