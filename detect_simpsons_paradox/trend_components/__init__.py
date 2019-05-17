@@ -1,8 +1,8 @@
-from .base_getvars import (trend, ordinalRegression,
-                    continuousOrdinalRegression,
-                    continuousRegression, binaryMeanRank, weightedMeanRank)
+from .base_getvars import (trend, ordinalRegression,continuousRegression,
+                    continuousOrdinalRegression, binaryMeanRank,
+                     weightedMeanRank, w_avg)
 
-from .categorical import rankTrend
+from .categorical import statRankTrend
 
 from .regression import linearRegression
 
@@ -12,5 +12,15 @@ from .statistical import correlationTrend
 
 __all__ = ['trend','ordinalRegression',
     'continuousOrdinalRegression',
-    'continuousRegression', 'binaryMeanRank', 'weightedMeanRank', 'rankTrend',
+    'continuousRegression', 'binaryMeanRank', 'weightedMeanRank', 'statRankTrend',
+    'linearRegression','correlationTrend']
+
+baseTrendMixin_list = ['trend']
+
+varTypeMixin_list = ['ordinalRegression',
+    'continuousOrdinalRegression',
+    'continuousRegression', 'binaryMeanRank', 'weightedMeanRank']
+
+
+trendCommputeMixin_list = ['statRankTrend',
     'linearRegression','correlationTrend']

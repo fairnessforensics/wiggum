@@ -4,7 +4,7 @@ import pandas as pd
 import itertools
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
-possible_roles = ['groupby','trend']
+possible_roles = ['groupby','trend','ignore']
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
 

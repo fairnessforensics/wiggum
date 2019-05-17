@@ -7,12 +7,47 @@ import scipy.stats as stats
 
 
 
-class rankTrend():
+class statRankTrend():
 
-    def get_trends(self,data_df,corr_name):
+    def get_trends(self,data_df,trend_col_name):
         """
-        assuming the data is counts and rates that need to be combined in
-        weighted ways
+        Compute a trend that is the ranking of categorical variables
+
+
+        Parameters
+        ----------
+        data_df : DataFrame or DataFrameGroupBy
+            data to compute trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by labeledDataFrame get trend functions
+        trend_col_name : {'subgroup_trend','agg_trend'}
+            which type of trend is to be computed
+            TODO: could infer this by type of above?
+
+
+        Required properties
+        --------------------
+        name : string
+            used in the trend_type column of result_df and by viz
+        my_stat : function handle
+            statistic to compute, must be compatible with DataFrame.apply and
+            have the interface (self,df,statfeat,weightfeat)
+        trendgroup : list of strings
+            list of variable names to be ranked (and used for grouping in this
+            method)
+        target : list of strings
+            list of variable names to compute a statistic of in order to rank
+            the above
+        var_weight_list : list of strings or NaNs
+            list of variables to weight each variable in target, must be same
+            length as above or all NaNs
+
+        Returns
+        -------
+        reg_df : DataFrame
+            partial result_df, multiple can be merged together to form
+            a complete result_df
+
+
         """
         # use all
         cur_trendgroup = self.trendgroup
@@ -52,7 +87,7 @@ class rankTrend():
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat,weightfeat)
 
                 # save detailed precompute
-                trend_name = '_'.join([self.name , corr_name,statfeat,rankfeat])
+                trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
                 self.trend_precompute[trend_name] = stat_df
 
                 # extract for result_df
@@ -64,11 +99,11 @@ class rankTrend():
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
-                                                    corr_name,'subgroup'])
+                                                    trend_col_name,'subgroup'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
-            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',corr_name,'empty'])
+            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',trend_col_name,'empty'])
             reg_df.drop('empty',axis=1,inplace=True)
 
 
@@ -77,7 +112,19 @@ class rankTrend():
 
     def get_distance(self,row):
         """
-        kendalltau distance can be used for permuation distance
+        kendalltau distance as a permuation distance
+
+        Parameters
+        ----------
+        row : pd.Series
+            row of a result_df DataFrame. the `agg_trend` and `subgroup_trend`
+            columns must contain lists
+
+        Returns
+        -------
+        tau_dist : float
+            perumation distance between the subgroup_trend and agg_trend
+            compatible with assignment to a cell of a result_df
         """
 
         trend_numeric_map = {val:i for i,val in enumerate(row['agg_trend'])}

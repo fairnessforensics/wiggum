@@ -218,23 +218,19 @@ class _trendDetectors():
             to compute the trend
         """
 
-        # if not specified, detect continous attributes and categorical attributes
-        # from dataset
-        if groupby_vars is None:
-            groupby_data = data_df.select_dtypes(include=['object','int64'])
-            groupby_vars = list(groupby_data)
+        data_df = self.df
+        groupby_vars = self.get_vars_per_role('groupby')
+
 
         if type(trend_types[0]) is str:
-            # create dict
-            trend_dict_list = [{'name':trend,
-                            'vars':get_trend_vars[trend](data_df),
-                            'func':get_trend_funcs[trend]} for trend in trend_types]
+            # instantiate objects
+            self.trend_list = [all_trend_types[trend]() for trend in trend_types]
         else:
             # use provided
-            trend_dict_list = trend_types
+            self.trend_list = trend_types
 
         # prep the result df to add data to later
-        result_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
+        self.result_df = pd.DataFrame(columns=RESULTS_DF_HEADER)
 
         # create empty lists
         all_trends = []
