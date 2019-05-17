@@ -50,7 +50,7 @@ function DrawSlopeGraph(options) {
                 .keyProtectedAttr(protectedAttr)
                 .keyWeightingAttr(weightingAttr)
                 .h(360);
-        console.log(data)
+
         d3.select('#slopegraph')
             .datum(data)
             .call(slopegraph);

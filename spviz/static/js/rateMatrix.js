@@ -301,7 +301,7 @@ function rateBivariateMatrixDiverging5(rateMatrix, rateMatrixSubgroup) {
 	return bivariateMatrix;
 }
 
-var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr, weightingAttr) {
+var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr, weightingAttr, subgroups) {
 //	console.log(vars);
 
 	matrix.forEach(function(row, i) {
@@ -315,7 +315,8 @@ var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixInde
 					keyName: keyName,
 					index: matrixIndex,
 					protectedAttr: protectedAttr,
-					weightingAttr: weightingAttr
+					weightingAttr: weightingAttr,
+					subgroups: subgroups
 				};
 		});
 	});
@@ -500,8 +501,11 @@ function prepareDetail() {
 	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
 				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr};
 
-	//console.log(csvData);
-	//console.log(vars);
+	// find subgroup for vars_tables
+	var subgroups = d.subgroups;
+	var vars_table = { x: targetAttr, y: d.protectedAttr, categoryAttr: d.keyName, category: subgroups[d.colVar]};		
+
+	updateTabulate(vars_table);
 	updateSlopeGraph(vars);
 	updateGroupedBar(csvData, vars);
 }

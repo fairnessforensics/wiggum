@@ -242,7 +242,7 @@ function updateRateSPContainer() {
 		rateSPMatrix({
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
-							rateRowVars[i], explanaryAttrs[i], rateMatrixIndex, protectedAttrs[i], weightingAttr),
+							rateRowVars[i], explanaryAttrs[i], rateMatrixIndex, protectedAttrs[i], weightingAttr, rateColLabels[i]),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel
