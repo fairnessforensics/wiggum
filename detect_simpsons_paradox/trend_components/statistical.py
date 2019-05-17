@@ -12,17 +12,31 @@ class correlationTrend():
 
     def get_trends(self,data_df,trend_col_name):
         """
-        return a DataFrame of the linear corelations in a DataFrame or pandas
-            groupby
+        Compute a trend, its quality and return a partial result_df
 
         Parameters
-        -----------
-        data_df : DataFrame
-            tidy data
+        ----------
+        data_df : DataFrame or DataFrameGroupBy
+            data to compute trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by labeledDataFrame get trend functions
+        trend_col_name : {'subgroup_trend','agg_trend'}
+            which type of trend is to be computed
+
+        Required properties
+        --------------------
+        name : string
+            used in the trend_type column of result_df and by viz
         regression_vars : list of strings
-            column names to use for correlation compuations
-        trend_col_name : string
-            title for column of data frame tht will be created
+            variables to compute correlations of
+        corrtype : string {'pearson','spearman','kendall'}
+            correlation type to be passed to DataFrame.corr(method=corrtype)
+
+
+        Returns
+        -------
+        reg_df : DataFrame
+            partial result_df, multiple can be merged together to form
+            a complete result_df
         """
 
         # get locations of upper right triangle of a correlation matrix for this
@@ -80,6 +94,22 @@ class correlationTrend():
         return reg_df
 
     def get_distance(self,row):
+        """
+        distance between the subgroup and aggregate trends for a row of a
+        result_df (currently undefined)
+        TODO: set to be...?
+
+        Parameters
+        ----------
+        row : pd.Series
+            row of a result_df DataFrame
+
+        Returns
+        -------
+        <>_dist : float
+            distance between the subgroup_trend and agg_trend, compatible with
+            assignment to a cell of a result_df
+        """
 
         # row['distance'] = 'undef'
-        return 'undef'
+        return np.NaN

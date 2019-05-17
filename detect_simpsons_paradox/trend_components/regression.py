@@ -8,16 +8,33 @@ class linearRegression():
 
     def get_trends(self,data_df,trend_col_name):
         """
-        return a DataFrame of the linear trends in a DataFrame or groupby
+        Compute a linear regressions and return a partial result_df
 
         Parameters
-        -----------
-        data_df : DataFrame
-            tidy data
-        regression_vars : list of strings
-            column names to use for slope computations
-        trend_col_name : string
-            title for column of data frame tht will be created (group or all)
+        ----------
+        data_df : DataFrame or DataFrameGroupBy
+            data to compute trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by labeledDataFrame get trend functions
+        trend_col_name : {'subgroup_trend','agg_trend'}
+            which type of trend is to be computed
+
+        Required properties
+        --------------------
+        name : string
+            used in the trend_type column of result_df and by viz
+        regression_vars : list of strings or list of tuples
+            variables to compute correlations of
+        symmetric_vars : Boolean
+            if True, pairs of variables will be computed with
+            itertools.combinations, taking all unique pairs of variables in the
+            regression_vars list of strings, if False, regression_vars must be a
+            list of tuples and only those pairs will be computed
+
+        Returns
+        -------
+        reg_df : DataFrame
+            partial result_df, multiple can be merged together to form
+            a complete result_df
         """
         slopes = []
 
@@ -67,24 +84,26 @@ class linearRegression():
 
     def get_distance(self,row):
         """
-        compute angle between the overall ('all_slope') and subgroup
-        ('subgroup_slope') slopes for a row of a dataframe. This is the angle
+        compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
         closest to the positive x axis and is always positive valued, to be used as
         a distance.
 
         Parameters
         ----------
-        row : row of DataFrame
-            row of result_df
+        row : pd.Series
+            row of a result_df DataFrame
+
+        Returns
+        -------
+        angle : float
+            angle in degrees between the subgroup_trend and agg_trend, compatible with
+            assignment to a cell of a result_df
+
         """
         # take absolute value, because the two will be in opposite directions
         # relative to the angle of interest
         theta_sub = np.arctan(row['subgroup_trend'])
         theta_all = np.arctan(row['agg_trend'])
-        # theta_sub = np.abs(np.arctan(row['subgroup_slope']))
-        # theta_all = np.abs(np.arctan(row['all_slope']))
 
-        # add them and convert to degrees
-        # row['distance'] = np.rad2deg(np.abs(theta_all - theta_sub))
-        # return row['distance']
+        # take difference them and convert to degrees
         return np.rad2deg(np.abs(theta_all - theta_sub))
