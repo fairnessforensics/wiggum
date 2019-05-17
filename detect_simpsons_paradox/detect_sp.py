@@ -198,27 +198,13 @@ class _trendDetectors():
 
         return self.result_df
 
-    def get_subgroup_trends_2lev(data_df,trend_types,groupby_vars=None):
+    def get_subgroup_trends_2lev(self,trend_types):
         """
-        find subgroup and aggregate trends in the dataset, return a DataFrame that
-        contains information necessary to filter for SP and relaxations
-        for 2 levels of groupby (eg rate trends)
+        find subgroup and aggregate trends in the dataset,
 
         Parameters
         -----------
-        data_df : DataFrame
-            data to find SP in, must be tidy
-        trend_types: list of strings or list of dicts
-            info on what trends to compute and the variables to use, dict is of form
-        {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
-        groupby_vars : list of strings or list of list of strings
-            column names to use as grouping variables
-        trend_vars : list of strings
-            column names to use in regresison based trends
-        rate_vars : list of strings
-            column names to use in rate based trends
-        trend_func : function handle
-            to compute the trend
+
         """
 
         data_df = self.df
