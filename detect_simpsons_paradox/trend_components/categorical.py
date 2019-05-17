@@ -85,13 +85,20 @@ class statRankTrend():
                 #     mean_df = df.groupby(rankfeat).apply(w_avg,statfeat,weightfeat)
 
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat,weightfeat)
+                stat_df.sort_values(inplace=True)
 
                 # save detailed precompute
                 trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
                 self.trend_precompute[trend_name] = stat_df
 
+                # compute quality
+                # compute spread
+                # quality is spread relative to diff between stats
+                diffs
+
+
                 # extract for result_df
-                ordered_rank_feat = stat_df.sort_values().index.values
+                ordered_rank_feat = stat_df.index.values
                 # create row
                 rank_res.append([statfeat,rankfeat,ordered_rank_feat,groupby_lev])
 
