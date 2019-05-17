@@ -183,7 +183,7 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 								var optionData = possibleRoles;
 								var select = d3.select(this).append('select')
 															.attr('multiple', 'multiple')
-															.style('height', '30px');
+															.style('height', '44px');
 								var roles = my_roles[d.value];;															
 								var options = select.selectAll('option')
 													.data(optionData).enter()
