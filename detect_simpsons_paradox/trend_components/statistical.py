@@ -1,4 +1,4 @@
-trend_col_nameimport pandas as pd
+import pandas as pd
 import numpy as np
 import itertools
 import scipy.stats as stats
