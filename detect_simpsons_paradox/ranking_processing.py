@@ -10,9 +10,7 @@ class _resultDataFrame():
     this is a mixin class to separate groups of methods across separate files
     """
 
-    def label_SP_rows(self,sp_type='SP',
-                        cols_pair = ['agg_trend','subgroup_trend'],
-                        sp_args = None):
+    def label_SP_rows(self,thresh=0):
         """
         update the result_df with an additional colulmn indicateing rows with SP
         (or SP-like) as defined by sp_type
@@ -33,21 +31,14 @@ class _resultDataFrame():
             additional arguments needed by the SP detector indicated by sp_type
         """
 
-        SP_func = {'SP':lambda a,b: not np.sign(a)==np.sign(b),
-                   'SP_thresh': lambda a,b: not np.sign(a)==np.sign(b) and
-                                    np.abs(a)>sp_args and np.abs(b)>sp_args}
+        if thresh:
+            col_name = 'SP_thresh_' + str(thresh)
+        else:
+            col_name = 'SP'
 
+        is_SP = lambda row: row['distance'] > thresh
 
-        # create column name
-        col_name = '_'.join(cols_pair) + '_' + sp_type
-
-        # split the pairs into separate vars to make below easier to read
-        col_a, col_b = cols_pair
-
-        # labeler lamba function that calls the function based on the type
-        sp_labeler = lambda row: SP_func[sp_type](row[col_a],row[col_b])
-
-        self.result_df[col_name] = self.result_df.apply(sp_labeler,axis=1)
+        self.result_df[col_name] = self.result_df.apply(is_SP,axis=1)
 
         return self.result_df
 
@@ -282,35 +273,34 @@ class _resultDataFrame():
         # return that row
         return self.result_df[target_row]
 
-    def add_angle_col(results_df_slopes):
-        """
-        add a column that  includes the angle between two slope columns, slopes must
-        already have been added to the datafrape in columns named 'subgroup_slope'
-        and 'all_slope'
 
-        Parameters
-        -----------
-        results_df_slopes : DataFrame
-            results dataframe iht slopes added as per
-
-        Returns
-        results_df_slopes : DataFrame
-            DataFrame input with added 'angle' column
-        """
-
-        # compute and add angles
-        results_df_slopes['angle'] = results_df_slopes.apply(compute_angle,axis=1)
-        return results_df_slopes
-
-
-
-    def rank_weighted(df,cols_list,weights):
+    def rank_weighted(self,cols_list,weights,name =None):
         """
         rank by a new column that is the weighted sum of other columns
+
+        Parameters
+        ----------
+        cols_list : list of strings
+            columns of result_df to use for ranking
+        weights : list of floats
+            weights in order of above list to use when combining columns for
+            ranking
+
+        Returns
+        --------
+        result_df : DataFrame
+            with a new column
         """
-        name = '_'.join([str(w) + c for c,w, in zip(cols_list,weights)]) + '_rank'
-        df_with_weighted = add_weighted(df,cols_list,weights)
-        return df_with_weighted.sort_values(name,ascending=False)
+        # create a name for the ranking column
+        if name is None:
+            # create name
+            name = '_'.join([str(w) + c for c,w, in cols_weight_dict.items()])
+
+        # add the weighting column
+        self.result_df = self.add_weighted(cols_list,weights,name)
+        self.result_df.sort_values(name,ascending=False,inplace=True)
+
+        return self.result_df
 
 
 
@@ -461,7 +451,7 @@ class _resultDataFrame():
             # create name
             sum_name = '_'.join([str(w) + c for c,w, in cols_weight_dict.items()])
         else:
-            sum_name =name
+            sum_name = name
 
         # normalize data so that columns add together better
         col_names = list(cols_weight_dict.keys())
