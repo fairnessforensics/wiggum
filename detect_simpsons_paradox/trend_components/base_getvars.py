@@ -21,7 +21,7 @@ class trend():
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
 
-    return self
+            return self
 
 ################################################################################
 #              Components
