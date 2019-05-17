@@ -12,7 +12,7 @@ from .statistical import correlationTrend
 
 __all__ = ['trend','ordinalRegression',
     'continuousOrdinalRegression',
-    'continuousRegression', 'binaryMeanRank', 'weightedMeanRank', 'rankTrend',
+    'continuousRegression', 'binaryMeanRank', 'weightedMeanRank', 'statRankTrend',
     'linearRegression','correlationTrend']
 
 baseTrendMixin_list = ['trend']
