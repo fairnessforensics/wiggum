@@ -2,7 +2,7 @@ from .base_getvars import (trend, ordinalRegression,continuousRegression,
                     continuousOrdinalRegression, binaryMeanRank,
                      weightedMeanRank, w_avg)
 
-from .categorical import rankTrend
+from .categorical import statRankTrend
 
 from .regression import linearRegression
 
