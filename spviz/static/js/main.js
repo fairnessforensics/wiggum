@@ -34,6 +34,7 @@ var tableRecords;
 var ranking = {};
 var tableColumns = [];
 var updateVars;
+var weightingAttr;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["pearson_corr", "rank_trend"];
@@ -241,7 +242,7 @@ function updateRateSPContainer() {
 		rateSPMatrix({
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
-							rateRowVars[i], explanaryAttrs[i], rateMatrixIndex, protectedAttrs[i]),
+							rateRowVars[i], explanaryAttrs[i], rateMatrixIndex, protectedAttrs[i], weightingAttr),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel

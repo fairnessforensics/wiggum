@@ -80,6 +80,7 @@ function drawGraph(dataAll) {
 			protectedAttrs = data.protectedVars;
 			explanaryAttrs = data.explanaryVars;
 			targetAttr = data.targetAttr;
+			weightingAttr = data.weighting_var;
 			
 			var ratioSubs = data.ratioSubs;
 

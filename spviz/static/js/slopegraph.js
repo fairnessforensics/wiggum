@@ -5,12 +5,12 @@ function DrawSlopeGraph(options) {
     var keyEnd = options.keyEnd;
     var keyName = options.keyName;
     var protectedAttr = options.protectedAttr;
+    var weightingAttr = options.weightingAttr;
 
     //Title
     d3.select('#slopeLabel').select("text").remove();
 
-    // FIX ME
-    if (true) {
+    if (weightingAttr == '') {
         d3.select('#slopeLabel').append("text")
         .attr("x", 20)             
         .attr("y", 90)
@@ -48,6 +48,7 @@ function DrawSlopeGraph(options) {
                 .keyValueStart(keyStart)
                 .keyValueEnd(keyEnd)
                 .keyProtectedAttr(protectedAttr)
+                .keyWeightingAttr(weightingAttr)
                 .h(360);
         console.log(data)
         d3.select('#slopegraph')

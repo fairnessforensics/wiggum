@@ -307,6 +307,7 @@
  
                 var xAxis = d3.svg.axis()
                             .scale(x_vb)
+                            .ticks(4)
                             .orient("bottom")
                             .tickFormat(d3.format(".2s"));
  
@@ -330,6 +331,7 @@
 
                 var xAxis_left = d3.svg.axis()
                             .scale(x_vb_left)
+                            .ticks(4)
                             .orient("bottom")
                             .tickFormat(d3.format(".2s"));
 
@@ -874,7 +876,7 @@
                                 .key(function(d) {return d[protectedAttr]})
                                 .rollup(function(v) {
                                     return {
-                                        count: v[0]['Headcount']
+                                        count: v[0][keyWeightingAttr]
                                     };
                                 })
                 .entries(csvData);
@@ -917,7 +919,7 @@
                 var xAxis = d3.svg.axis()
                             .scale(x_vb)
                             .orient("bottom")
-                            .ticks(6)
+                            .ticks(4)
                             .tickFormat(d3.format(".2s"));
  
                 svg.append("g")
@@ -941,7 +943,7 @@
                 var xAxis_left = d3.svg.axis()
                             .scale(x_vb_left)
                             .orient("bottom")
-                            .ticks(6)
+                            .ticks(4)
                             .tickFormat(d3.format(".2s"));
 
                 svg.append("g")
@@ -1169,7 +1171,12 @@
             if (!arguments.length) return keyProtectedAttr;
             keyProtectedAttr = value;
             return this;
-        };        
+        };   
+        exports.keyWeightingAttr = function(value) {
+            if (!arguments.length) return keyWeightingAttr;
+            keyWeightingAttr = value;
+            return this;
+        };              
         exports.format = function(value) {
             if (!arguments.length) return format;
             format = value;

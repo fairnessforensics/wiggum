@@ -43,6 +43,10 @@ def main():
             roles = []
             roles = labeled_df_setup.meta_df['role'].tolist()
 
+            # get weighting_vars for dropbox
+            weighting_vars = []
+            weighting_vars = labeled_df_setup.meta_df['weighting_var'].fillna('N/A').tolist()            
+
             # get sample for data
             sample_list = []
             sample_list = labeled_df_setup.get_data_sample()
@@ -50,7 +54,8 @@ def main():
             return jsonify({'var_names': var_names,
                             'var_types': var_types,
                             'isCounts': isCounts,      
-                            'roles': roles,                      
+                            'roles': roles,                  
+                            'weighting_vars': weighting_vars,                                              
                             'samples': sample_list,
                             'possible_roles': dsp.possible_roles})
 
@@ -98,7 +103,6 @@ def main():
         if action == 'visualize':
 
             meta = request.form['metaList']
-
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
             clusteringFlg = request.form['clustering']
@@ -120,7 +124,8 @@ def main():
             rankobj = dsp.mean_rank_trend()
             linreg_obj = dsp.linear_trend()
            
-            labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
+            labeled_df_setup.get_subgroup_trends_1lev([rankobj])
+            #labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
 
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
 
@@ -164,7 +169,7 @@ def main():
 
                 elif trend_type == 'rank_trend':
                     targetAttr_list = pd.unique(labeled_df_setup.result_df['feat1'])
-                    
+
                     for targetAttr in targetAttr_list:
                         current_df =  labeled_df_setup.result_df
                         current_df = current_df.loc[(current_df['feat1'] == targetAttr) & (current_df['trend_type'] == 'rank_trend')]
@@ -180,6 +185,13 @@ def main():
                         protected_groupby_attrs = pd.unique(protected_groupby_attrs)
                         all_attrs = np.append(protected_groupby_attrs, [targetAttr])
 
+                        # adding weighting_var
+                        if pd.notna(labeled_df_setup.meta_df['weighting_var'][targetAttr]):
+                            weighting_var = labeled_df_setup.meta_df['weighting_var'][targetAttr]
+                            all_attrs = np.append(all_attrs, [weighting_var])
+                        else:
+                            weighting_var = ''
+                        
                         csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
                         csv_data_each = json.dumps(csv_data_each, indent=2)
 
@@ -188,6 +200,7 @@ def main():
                                     'protectedVars': protectedVars,
                                     'explanaryVars': explanaryVars, 
                                     'targetAttr': targetAttr,
+                                    'weighting_var': weighting_var,
                                     'ratioRateAll':ratioRateAll,
                                     'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
                                     'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],

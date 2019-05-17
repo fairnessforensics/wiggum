@@ -431,7 +431,6 @@ def updateMetaData(labeled_df, meta):
 
     # set var_type from user input
     var_types = meta_df_user['var_type'].tolist()
-    # Fix ME if there is a function from labeled_dataframe.py
     labeled_df.set_var_types(var_types)
 
     # set isCount from user input
@@ -442,5 +441,10 @@ def updateMetaData(labeled_df, meta):
     meta_df_user['isCount'] = meta_df_user['isCount'].replace({'Y': True, 'N': False})
     counts = meta_df_user['isCount'].tolist()
     labeled_df.set_counts(counts)
-                
+
+    # set weighting_var from user input
+    meta_df_user['weighting_var'] = meta_df_user['weighting_var'].replace('N/A', np.nan)
+    weighting_vars = meta_df_user['weighting_var'].tolist()
+    labeled_df.set_weighting_vars(weighting_vars)                
+
     return labeled_df  

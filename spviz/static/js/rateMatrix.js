@@ -301,7 +301,7 @@ function rateBivariateMatrixDiverging5(rateMatrix, rateMatrixSubgroup) {
 	return bivariateMatrix;
 }
 
-var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr) {
+var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr, weightingAttr) {
 //	console.log(vars);
 
 	matrix.forEach(function(row, i) {
@@ -314,7 +314,8 @@ var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixInde
 					value: cell,
 					keyName: keyName,
 					index: matrixIndex,
-					protectedAttr: protectedAttr
+					protectedAttr: protectedAttr,
+					weightingAttr: weightingAttr
 				};
 		});
 	});
@@ -497,7 +498,7 @@ function prepareDetail() {
 	var d = this.datum();
 
 	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
-				index: d.index, protectedAttr: d.protectedAttr};
+				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr};
 
 	//console.log(csvData);
 	//console.log(vars);
@@ -514,7 +515,8 @@ var updateSlopeGraph = function(vars) {
 		keyStart		: vars.left,
 		keyEnd			: vars.right,
 		keyName     : vars.keyName,
-		protectedAttr: vars.protectedAttr
+		protectedAttr: vars.protectedAttr,
+		weightingAttr: vars.weightingAttr
 	});
 
 	highlightLine(parseInt(vars.x)+1);

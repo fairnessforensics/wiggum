@@ -77,15 +77,17 @@ function interactBivariateMatrix(vars) {
 	updateTabulate(vars);
 };
 
-function roleTable(data, var_types, samples, possibleRoles, isCounts, roles) {
+function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, weighting_vars) {
 
 		var myArray = [];
 		var my_var_types = {};
 		var my_sample = {};
 		var my_isCounts = {};
 		var my_roles = {};		
+		var my_weighting_var = {};
 		data.forEach(function(d,i) {
-			myArray.push({"name": d, "type_dropdown": d, "role_dropdown":d, "isCount_dropdown":d, "sample": d});
+			myArray.push({"name": d, "type_dropdown": d, "role_dropdown":d, "isCount_dropdown":d, 
+							"weighting_var_dropdown": d, "sample": d});
 			my_var_types[d] = var_types[i];
 			my_sample[d] = samples[i];
 			if (typeof isCounts !== 'undefined') {
@@ -97,12 +99,18 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles) {
 			if (typeof roles !== 'undefined') {
 				my_roles[d] = roles[i];
 			} else {
-				// set default isCount to 'N'
+				// set default role to ''
 				my_roles[d] = '';
+			}	
+			if (typeof weighting_vars !== 'undefined') {
+				my_weighting_var[d] = weighting_vars[i];
+			} else {
+				// set default weighting_var to ''
+				my_weighting_var[d] = '';
 			}			
 		});
 
-		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "sample"];
+		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "weighting_var_dropdown", "sample"];
 		
 		var roleTable = d3.select("#roleSelection")
 							.append("table")
@@ -112,7 +120,7 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles) {
 							.style("margin-left", "20px");			
 
 		// append the header row
-		var META_COLUMNS = ['name','var_type','role','isCount', 'sample']
+		var META_COLUMNS = ['name','var_type','role','isCount', 'weighting_var', 'sample']
 		var thead = roleTable.append('thead').append('tr')
 							.selectAll('th')
 							.data(META_COLUMNS).enter()
@@ -146,7 +154,7 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles) {
 							if(i==0){
 								return d.value;
 							} 
-							if(i==4){
+							if(i==5){
 								return my_sample[d.value];
 							} 
 						})
@@ -186,53 +194,21 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles) {
 													.text(function(d){return d;})
 													.property("selected", 
 													function(d){ return d === isCount;});
-							}																		
+							}	
+							if (i==4) {
+								var weighting_var = my_weighting_var[d.value];
+								var optionData = data.filter(item => item !== d.value)
+								var na = 'N/A';
+								optionData = [na].concat(optionData);
+
+								var select = d3.select(this).append('select');
+								var options = select.selectAll('option')
+													.data(optionData).enter()
+													.append('option')
+													.text(function(d){return d;})
+													.property("selected", 
+													function(d){ return d === weighting_var; });
+							}																								
 						})
 											
-}
-
-function roleTable_bak(data) {
-
-	var myArray = [];
-	data.forEach(function(d,i) {
-		myArray.push({"name": d, "dropdown": d});
-
-	});
-
-	var columns = ["name", "dropdown"];
-	
-	var roleTable = d3.select("#roleSelection")
-										.append("table")
-										.style("border", "none")
-										.style("box-shadow", "none")
-										.style("margin-left", "20px");			
-
-	var rows = roleTable.selectAll("tr")
-											.data(myArray).enter()
-											.append("tr");
-											
-	var cells = rows.selectAll("td")
-									.data(function(d) {
-											return d;
-									})
-									.enter()
-									.append("td")
-									.style("font-size", "12px")			
-									.style("text-align", "left")	
-									.style("border", "none")																		
-									.text(function(d,i) { 
-										if(i!=2){
-											return d;
-										} 
-									})
-									.each(function(d,i) {
-										if (i==2) {
-											d3.select(this).append('select');
-											var options = select.selectAll('option')
-																					.data(optionData).enter()
-																					.append('option')
-																					.text(function(d){return d;})
-										}
-									})
-										
 }

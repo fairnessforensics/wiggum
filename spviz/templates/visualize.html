@@ -56,12 +56,11 @@
                         data: {'action':'page_load'},
                         success: function(data){
                             // Get data from controller return data
-                            console.log(data);
                             drawGraph(data);
 
                             // Display info table
                             tableRecords = JSON.parse(data[0])              
-                            console.log(tableRecords);
+
                             tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend'];
                             tabulate(tableRecords, tableColumns);
                 }});

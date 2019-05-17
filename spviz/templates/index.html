@@ -56,7 +56,8 @@
                             var isCounts = data.isCounts;
                             var roles = data.roles;
                             var possibleRoles = data.possible_roles;
-                            roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, );
+                            var weighting_vars = data.weighting_vars;
+                            roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars);
 
                             // Avoid ctrl-click                                    
                             $('option').mousedown(function(e) {
@@ -159,13 +160,17 @@
                     // isCount
                     var isCount_td = tr[i].getElementsByTagName("td")[3];
                     var isCountValue = isCount_td.getElementsByTagName("select")[0];  
+                    // weighting_var
+                    var weighting_var_td = tr[i].getElementsByTagName("td")[4];
+                    var weighting_varValue = weighting_var_td.getElementsByTagName("select")[0];  
 
                     var singleObject =            
                                     {   
                                         name: nameValue,
                                         var_type: typeValue.options[typeValue.selectedIndex].value, 
                                         role: getSelectValues(roleValue),
-                                        isCount: isCountValue.options[isCountValue.selectedIndex].value                                                                   
+                                        isCount: isCountValue.options[isCountValue.selectedIndex].value,
+                                        weighting_var: weighting_varValue.options[weighting_varValue.selectedIndex].value                                                              
                                     };
   
                     metaList.push(singleObject);    
@@ -227,13 +232,17 @@
                     // isCount
                     var isCount_td = tr[i].getElementsByTagName("td")[3];
                     var isCountValue = isCount_td.getElementsByTagName("select")[0];  
+                    // weighting_var
+                    var weighting_var_td = tr[i].getElementsByTagName("td")[4];
+                    var weighting_varValue = weighting_var_td.getElementsByTagName("select")[0];  
 
                     var singleObject =            
                                     {   
                                         name: nameValue,
                                         var_type: typeValue.options[typeValue.selectedIndex].value, 
                                         role: getSelectValues(roleValue),
-                                        isCount: isCountValue.options[isCountValue.selectedIndex].value                                                                   
+                                        isCount: isCountValue.options[isCountValue.selectedIndex].value,
+                                        weighting_var: weighting_varValue.options[weighting_varValue.selectedIndex].value                                                               
                                     };
   
                     metaList.push(singleObject);    
@@ -265,7 +274,8 @@
     <div class= "row">
         <div id="extra">
             <br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Choose one file to load a new dataset or a direcotry with previously saved metadata<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label style="font-size: 14px;">Choose one file to load a new dataset or a direcotry with previously saved metadata</label><br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input name="file" type="file" id="myFile" style = "width:170px">
             <input name="file" type="file" id="myFolder" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
