@@ -29,7 +29,7 @@ class _augmentedData():
         new_vars_df['isCount'] = False
 
         # append new rows
-        self.meta_df.append(new_vars_df)
+        self.meta_df = self.meta_df.append(new_vars_df)
         return self.meta_df
 
 
