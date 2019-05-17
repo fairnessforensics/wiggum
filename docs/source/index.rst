@@ -11,6 +11,12 @@ Detecting Simpson's Paradox's documentation!
    :caption: Contents:
 
    API
+   app_structure
+   trend_objects
+
+ .. toctree::
+    :maxdepth: 1
+    :caption: Original Paper:
    /notebooks/simple_simpsons_paradox_intro.ipynb
    /notebooks/exp_autompg
    notebooks/exp_time

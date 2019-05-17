@@ -11,7 +11,7 @@ from .trend_components import *
 ## set all list at bottom
 
 
-class mean_rank_trend(rankTrend,weightedMeanRank,trend):
+class mean_rank_trend(statRankTrend,weightedMeanRank,trend):
     name = 'rank_trend'
 
 class continuous_pearson(correlationTrend,continuousRegression,trend):
