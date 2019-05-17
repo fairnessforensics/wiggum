@@ -7,7 +7,7 @@ import scipy.stats as stats
 
 
 
-class rankTrend():
+class statRankTrend():
 
     def get_trends(self,data_df,trend_col_name):
         """

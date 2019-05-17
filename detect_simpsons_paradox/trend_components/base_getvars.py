@@ -109,6 +109,6 @@ class weightedMeanRank():
         # maybe not counts
 
         self.target = labeled_df.get_vars_per_roletype('trend',['binary','continuous'])
-        self.trendgroup = labeled_df.get_vars_per_roletype(['trend','groupby'],'categorical')
+        self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.target)
         return self.target, self.trendgroup
