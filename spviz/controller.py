@@ -168,7 +168,8 @@ def main():
                     index =  index + 1
 
                 elif trend_type == 'rank_trend':
-                    targetAttr_list = pd.unique(labeled_df_setup.result_df['feat1'])
+                    rank_trend_df = labeled_df_setup.result_df.loc[labeled_df_setup.result_df['trend_type'] == 'rank_trend']
+                    targetAttr_list = pd.unique(rank_trend_df['feat1'])
 
                     for targetAttr in targetAttr_list:
                         current_df =  labeled_df_setup.result_df
