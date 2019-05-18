@@ -6,12 +6,17 @@ import scipy.stats as stats
 
 
 
-
 class statRankTrend():
+    """
+    Compute a trend that is the ascending ranking of categorical variables,
+    quality based on the trend vs actual kendall tau distance and the distance
+    in subgroup vs aggregtae is 1-tau
+
+    """
 
     def get_trends(self,data_df,trend_col_name):
         """
-        Compute a trend that is the ranking of categorical variables
+        Compute a trend that is the ascending ranking of categorical variables
 
 
         Parameters
@@ -73,16 +78,6 @@ class statRankTrend():
             for statfeat,rankfeat  in views:
 
                 weightfeat = weight_col_lookup[statfeat]
-                # sort values of view[1] by values of view[0]
-                # if wcol is NaN, then set wegiths to 1
-
-                # TODO: self.stat
-                # if pd.isna(weightfeat):
-                #     # if no weighting, take regular mean
-                #     mean_df = df.groupby(rankfeat)[statfeat].mean()
-                # else:
-                #     # if weighting var is specified use that column to weight
-                #     mean_df = df.groupby(rankfeat).apply(w_avg,statfeat,weightfeat)
 
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat,weightfeat)
                 stat_df.sort_values(inplace=True)
@@ -91,26 +86,85 @@ class statRankTrend():
                 trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
                 self.trend_precompute[trend_name] = stat_df
 
-                # compute quality
-                # compute spread
-                # quality is spread relative to diff between stats
-                diffs
-
-
                 # extract for result_df
                 ordered_rank_feat = stat_df.index.values
+
+                # quality is kendall tau distance between the data and a list
+                # of that length sorted accordingn to the trend
+                # this calculation is VERY slow for large weights, need to fix
+
+                # sort the whole data by statfeat, extract rankfeat
+                actual_order = df.sort_values(statfeat)[rankfeat]
+
+                # get counts/weight total statfeat per rankfeat level
+                # print(statfeat,rankfeat,weightfeat)
+                if pd.isna(weightfeat):
+                    # TODO: make this case faster for large datasets later
+                    counts = df.groupby([rankfeat])[statfeat].count()
+                else:
+                    counts = df.groupby([rankfeat])[weightfeat].sum()
+                    act_reps = [int(w) for w in df[weightfeat]]
+
+                    # TODO: fix if num samples is above 10k
+                    if np.sum(counts)> 10000:
+                        tot = np.sum(counts)
+                        n_min = len(actual_order)
+                        # cut down to speed up
+                        # TODO: try a different scaling and scale act as well
+                        scaled =  [np.int(np.round(w/tot*n_min)) for w in counts]
+
+                        # check if rounding error and increase last if nonzero
+                        round_error_n = n_min-sum(scaled)
+
+                        if round_error_n > 0:
+                            scaled[-1] = scaled[-1] + round_error_n
+                        elif round_error_n < 0 :
+                            # cannot make scaled <0
+                            i = -1
+                            while round_error_n < 0:
+                                cur_adjust = min(np.abs(round_error_n),scaled[i])
+                                scaled[i] = scaled[i] - cur_adjust
+                                round_error_n += cur_adjust
+                                i -=1
+
+                        # make series for compatibility
+                        counts = pd.Series(scaled,index = counts.index)
+                        act_reps = [1]*n_min
+
+                    # also rep the actual_order
+                    actual_order = np.repeat(actual_order,act_reps)
+
+                # TODO: make weights not required to be integers
+                #repeat the trend sorted rankfeats by the number that were used
+                # in the stat
+                rep_counts = [int(counts[ov]) for ov in ordered_rank_feat]
+                trend_order = np.repeat(ordered_rank_feat,rep_counts)
+
+                # map the possibly string order lists into numbers
+                numeric_map = {a:i for i,a in enumerate(actual_order)}
+                num_acutal = [numeric_map[a] for a in actual_order]
+                num_trend = [numeric_map[b] for b in trend_order]
+                # compute and round
+                tau,p = stats.kendalltau(num_trend,num_acutal)
+                tau_qual = np.abs(np.round(tau,4))
                 # create row
-                rank_res.append([statfeat,rankfeat,ordered_rank_feat,groupby_lev])
+                rank_res.append([statfeat,rankfeat,ordered_rank_feat,tau_qual,
+                                        groupby_lev])
 
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
-                                                    trend_col_name,'subgroup'])
+                                                    trend_col_name,
+                                                    trend_col_name +'_quality',
+                                                    'subgroup'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
-            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',trend_col_name,'empty'])
+            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
+                                                    trend_col_name,
+                                                    trend_col_name +'_quality',
+                                                    'empty'])
             reg_df.drop('empty',axis=1,inplace=True)
 
 
