@@ -19,8 +19,9 @@ def main():
     if request.method == 'POST':
 
         action = request.form['action']
-        global labeled_df_setup
 
+        global labeled_df_setup
+        
         if action == 'folder_open':
 
             folder = request.form['folder']
@@ -99,25 +100,22 @@ def main():
             labeled_df_setup.to_csvs(directory)          
             return 'Saved'
 
-        # index.html 'Go Visualization' button clicked
+        # index.html 'Visualize' button clicked
         if action == 'visualize':
 
             meta = request.form['metaList']
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
+            global clusteringFlg
             clusteringFlg = request.form['clustering']
-
-            #if clusteringFlg == 'true':
-                # FIX ME
-                # df = labeled_df_setup.df
-                # df = models.getClustering(df, regression_vars)
-                # csv_data = df.to_dict(orient='records')
-                # csv_data = json.dumps(csv_data, indent=2)
 
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
         if action == 'page_load':
+            if clusteringFlg == 'true':
+                labeled_df_setup.add_all_dpgmm()
+
             corrobj = dsp.all_pearson()
             corrobj.get_trend_vars(labeled_df_setup)
 
