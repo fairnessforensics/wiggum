@@ -112,7 +112,7 @@ class correlationTrend():
             distance between the subgroup_trend and agg_trend, compatible with
             assignment to a cell of a result_df
         """
-        sg_trend = row['subgroup_trend'])
+        sg_trend = row['subgroup_trend']
         ag_trend = row['agg_trend']
 
         # if they're the same set to False
