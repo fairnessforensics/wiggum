@@ -23,10 +23,9 @@ function drawGraph(dataAll) {
 			selectTypeValue = data.trend_type;
 		}
 		if (selectTypeValue == "pearson_corr") {
-
 			// Correlation for all
 			correlationMatrix = jsonto2darray(JSON.parse(data.corrAll));
-			csvData = JSON.parse(data.csv_data);
+			csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
 			console.log(csvData)
 			catAttrs = data.categoricalVars;
 			conAttrs = data.continousVars;
@@ -49,7 +48,7 @@ function drawGraph(dataAll) {
 			createScatterplot(csvData, labels);
 
 		} else if (selectTypeValue == "rank_trend") {
-			csvData = JSON.parse(data.csv_data);
+			csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
 			rateTrendMatrixAll = data.ratioRateAll;
 
 			// Construct Slope Graph array for ALL--------->
