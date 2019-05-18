@@ -73,15 +73,10 @@ function interactBivariateMatrix(vars) {
 
 	d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
 
-	if (vars.trend_type == 'pearson_corr') {
-		updateScatterplot(csvData, vars);
-
-	} else if (vars.trend_type == "rank_trend") {
-		var evt = new MouseEvent("click");
+	var evt = new MouseEvent("click");
   
-		// The way to dispatch it with plain JS
-		document.getElementById(cell_id).dispatchEvent(evt);
-	}
+	// The way to dispatch it with plain JS
+	document.getElementById(cell_id).dispatchEvent(evt);
 
 	updateTabulate(vars);
 };
