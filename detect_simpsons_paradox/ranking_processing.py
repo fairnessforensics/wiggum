@@ -132,17 +132,19 @@ class _resultDataFrame():
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
                             subgroup= None):
         """
-        return a row of result_df based on the specified values
+        return a row of result_df based on the specified values. returned rows
+        meet provided criteria for all columns (and operator) and any one of the listed
+        values for each column (or operator)
 
         Parameters
         -----------
-        feat1 : str or  None
+        feat1 : str, list, or  None
             trend variable name or None to include all
-        feat2 : str or  None
+        feat2 : str, list, or  None
             trend variable name or None to include all
-        group_feat : str or  None
+        group_feat : str, list, or  None
             groupoby variable name or None to include all
-        subgroup : str or  None
+        subgroup : str, list, or  None
             value of groupby_feat or or None to include all
         """
         # get the rows for each specified value,
@@ -172,6 +174,7 @@ class _resultDataFrame():
 
         # take the intersection
         target_row = f1_rows & f2_rows & gf_rows & sg_rows
+        target_row.index = self.result_df.index
         # return that row
         return self.result_df[target_row]
 
