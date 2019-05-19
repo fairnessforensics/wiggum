@@ -34,6 +34,7 @@ var tableRecords;
 var ranking = {};
 var tableColumns = [];
 var updateVars;
+var weightingAttr;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["pearson_corr", "rank_trend"];
@@ -190,11 +191,15 @@ function updateContainer() {
 
 function updateRateSPContainer() {
 
-	d3.select("#container").selectAll('svg').remove();
+	//d3.select("#container").selectAll('svg').remove();
 
 	arraySlopeGraph = [];
 	rateMatrixIndex = 0;
 
+	var temp = rateTrendMatrixSub.length/rateAllSlopeGraph.length;
+	var index = 0;
+	var index_explanary = 0;
+	var protectedAttr_current, explanaryAttrs_current;
 	for (var i = 0; i < rateTrendMatrixSub.length; i++){
 		// Prepare for Slope Graph
 		arraySlopeGraph[rateMatrixIndex] = [];
@@ -202,15 +207,21 @@ function updateRateSPContainer() {
 		arraySlopeGraph[rateMatrixIndex] = [];
 		var singleObj = {};
 
-		for (var j = 0; j < rateAllSlopeGraph[i].length; j++){
-			singleObj[rateAllKeySlopeGraph[i][j]] = precisionRound(rateAllSlopeGraph[i][j], 3);
+		index = Math.floor(i/temp);
+
+		protectedAttr_current = protectedAttrs[index];
+		explanaryAttrs_current = explanaryAttrs.filter(item => item !== protectedAttr_current)
+		for (var j = 0; j < rateAllSlopeGraph[index].length; j++){
+			singleObj[rateAllKeySlopeGraph[index][j]] = precisionRound(rateAllSlopeGraph[index][j], 3);
 		}
-		singleObj[explanaryAttrs[i]] = 'ALL';
+		index_explanary = i%temp;
+		singleObj[explanaryAttrs_current[index_explanary]] = 'ALL';
 		arraySlopeGraph[rateMatrixIndex].push(singleObj);
 		// <-------------------------------------
 
 		// Construct Slope Graph array for subgroups--------->
 		rateColKeys = [];
+
 		for (var j = 0; j < rateColLabels[i].length; j++){
 			var singleObj = {};
 			var keyObj = rateColLabels[i][j]
@@ -219,7 +230,7 @@ function updateRateSPContainer() {
 				singleObj[rateSubKeySlopeGraph[i][k]] = precisionRound(rateSubSlopeGraph[i][k][keyObj], 3);
 		  	}
   
-		  	singleObj[explanaryAttrs[i]] = rateColLabels[i][j];
+		  	singleObj[explanaryAttrs_current[index_explanary]] = rateColLabels[i][j];
 			arraySlopeGraph[rateMatrixIndex].push(singleObj);
 			  
 			rateColKeys.push(j);
@@ -234,14 +245,15 @@ function updateRateSPContainer() {
 		//var rateMatrixGroups = getRateMatrixSub(csvData, groupingAttrs[i], groupingAttrs[j]);
 		//var rateTrendMatrixSub = getRateTrendMatrixSub(rateMatrixGroups);
 
-		var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll[i], rateTrendMatrixSub[i]);
+		var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll[index], rateTrendMatrixSub[i]);
 
-		var subgroupLabel = protectedAttrs[i] + ' - ' + explanaryAttrs[i];
+		var subgroupLabel = protectedAttr_current + ' - ' + explanaryAttrs_current[index_explanary];
 
 		rateSPMatrix({
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
-							rateRowVars[i], explanaryAttrs[i], rateMatrixIndex, protectedAttrs[i]),
+							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex, 
+							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i]),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel
@@ -252,11 +264,11 @@ function updateRateSPContainer() {
 	}
 
 	// Cell Click Event
-	d3.select(container).selectAll(".cell")
+	d3.select(container).selectAll(".ratecell")
 		.on("click", clickRateMatrixCell);	
 
 	// Double click event: Reset
-	d3.select(container).selectAll(".cell")
+	d3.select(container).selectAll(".ratecell")
 		.on("dblclick", doubleClickRateMatrixCell);		
 }
 

@@ -43,6 +43,9 @@ var yAxis = d3.svg.axis()
 
 var updateScatterplot = function(data, vars) {
 	d3.select("#scatterplot").style("display", "inline-block");
+	d3.select("#slopegraph").selectAll('svg').remove();
+    d3.select('#slopeLabel').select("text").remove();
+
 	d3.selectAll('.axis').remove();
 
 	// Zoom out
@@ -520,7 +523,10 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 
 var clickMatrixCell = function() {
 	var allsvg = d3.select(container);
+
 	allsvg.selectAll(".cell").classed("clicked", false);
+	allsvg.selectAll(".ratecell").classed("clicked", false);
+
 	var clickFlg = d3.select(this).classed("clicked", true);
 	if (clickFlg) { clickFlg.call(updateScatter); }
 };

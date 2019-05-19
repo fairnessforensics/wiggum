@@ -56,15 +56,16 @@
                         data: {'action':'page_load'},
                         success: function(data){
                             // Get data from controller return data
-                            console.log(data);
                             drawGraph(data);
 
                             // Display info table
                             tableRecords = JSON.parse(data[0])              
-                            console.log(tableRecords);
+
                             tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend'];
                             tabulate(tableRecords, tableColumns);
-                }});
+                    },
+                    error: function(ts) { console.log(ts.responseText) }
+                });
             });
 
             // regression-based SP
@@ -359,9 +360,9 @@
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
-        <div id="clustering">
+                 <!-- <div id="clustering">
             <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label><br/>   
-        </div>
+        </div>        -->
         <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <button id="upload-file-btn" type="button" value="upload">Visualize</button> 
         <div id ="slider" class="slider"></div>

@@ -156,7 +156,7 @@
                         x: margin.left + w/2,
                         y: margin.top/2
                     })
-                    .text(targetAttr + " mean")
+                    .text(keyTargetAttr + " mean")
                     .style('text-anchor','middle')
                     .style("font-size", "13px")                      
                     .attr("transform", "translate(" + width_vb + ",0)");
@@ -228,7 +228,7 @@
 
                 // Target Data
                 var targetPreData = csvData.filter(function(d) {
-                    return d.decision == 1;
+                    return d[keyTargetAttr] == 1;
                 });
 
                 var targetResultArray = d3.nest()
@@ -259,7 +259,7 @@
                 }
 
                 var targetPreDataZero = csvData.filter(function(d) {
-                    return d.decision == 0;
+                    return d[keyTargetAttr] == 0;
                 });
 
                 var targetZeroResultArray = d3.nest()
@@ -307,6 +307,7 @@
  
                 var xAxis = d3.svg.axis()
                             .scale(x_vb)
+                            .ticks(4)
                             .orient("bottom")
                             .tickFormat(d3.format(".2s"));
  
@@ -330,6 +331,7 @@
 
                 var xAxis_left = d3.svg.axis()
                             .scale(x_vb_left)
+                            .ticks(4)
                             .orient("bottom")
                             .tickFormat(d3.format(".2s"));
 
@@ -688,6 +690,11 @@
             keyProtectedAttr = value;
             return this;
         };        
+        exports.keyTargetAttr = function(value) {
+            if (!arguments.length) return keyTargetAttr;
+            keyTargetAttr = value;
+            return this;
+        };           
         exports.format = function(value) {
             if (!arguments.length) return format;
             format = value;
@@ -766,7 +773,7 @@
 
                 var lines = svg.selectAll('line')
                     .data(data);
- 
+
                 lines.enter().append('line')
                     .attr({
                         x1: margin.left,
@@ -851,7 +858,7 @@
                         x: margin.left + w/2,
                         y: margin.top/2
                     })
-                    .text(targetAttr)
+                    .text(keyTargetAttr)
                     .style('text-anchor','middle')
                     .style("font-size", "13px")                      
                     .attr("transform", "translate(" + width_vb + ",0)");       
@@ -874,7 +881,7 @@
                                 .key(function(d) {return d[protectedAttr]})
                                 .rollup(function(v) {
                                     return {
-                                        count: v[0]['Headcount']
+                                        count: v[0][keyWeightingAttr]
                                     };
                                 })
                 .entries(csvData);
@@ -917,7 +924,7 @@
                 var xAxis = d3.svg.axis()
                             .scale(x_vb)
                             .orient("bottom")
-                            .ticks(6)
+                            .ticks(4)
                             .tickFormat(d3.format(".2s"));
  
                 svg.append("g")
@@ -941,7 +948,7 @@
                 var xAxis_left = d3.svg.axis()
                             .scale(x_vb_left)
                             .orient("bottom")
-                            .ticks(6)
+                            .ticks(4)
                             .tickFormat(d3.format(".2s"));
 
                 svg.append("g")
@@ -1051,7 +1058,7 @@
                         .style("opacity", .9);		
                     div.html(protectedAttr+":&nbsp"+keyValueStart+"<br/>"
                                 + explanatoryAttr+":&nbspALL<br/>"
-                                + targetAttr + ":&nbsp"+d[keyValueStart]+"<br/>"
+                                + keyTargetAttr + ":&nbsp"+d[keyValueStart]+"<br/>"
                                 + "count:&nbsp" 
                                 + totalTarget)	
                         .style("left", (event.pageX+30) + "px")		
@@ -1073,7 +1080,7 @@
                         .style("opacity", .9);		
                     div.html(protectedAttr+":&nbsp"+keyValueEnd+"<br/>"
                                 + explanatoryAttr+":&nbspALL<br/>"
-                                + targetAttr + ":&nbsp"+d[keyValueEnd]+"<br/>"
+                                + keyTargetAttr + ":&nbsp"+d[keyValueEnd]+"<br/>"
                                 + "count:&nbsp" 
                                 + totalTarget)	
                         .style("left", (event.pageX+30) + "px")		
@@ -1104,7 +1111,7 @@
                         // left side
                         div.html(protectedAttr+":&nbsp"+keyValueStart+"<br/>"
                                     + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
-                                    + targetAttr + ":&nbsp"+rateObject[0][keyValueStart]+"<br/>"
+                                    + keyTargetAttr + ":&nbsp"+rateObject[0][keyValueStart]+"<br/>"
                                     + "Count:&nbsp" 
                                     + targetObject[0][keyValueStart])	
                             .style("left", (event.pageX-130) + "px")		
@@ -1113,7 +1120,7 @@
                         // right side
                         div.html(protectedAttr+":&nbsp"+keyValueEnd+"<br/>"
                                     + explanatoryAttr+":&nbsp"+explanatory_Value+"<br/>"
-                                    + targetAttr + ":&nbsp"+rateObject[0][keyValueEnd]+"<br/>"
+                                    + keyTargetAttr + ":&nbsp"+rateObject[0][keyValueEnd]+"<br/>"
                                     + "Count:&nbsp" 
                                     + targetObject[0][keyValueEnd])	
                             .style("left", (event.pageX+30) + "px")		
@@ -1169,7 +1176,17 @@
             if (!arguments.length) return keyProtectedAttr;
             keyProtectedAttr = value;
             return this;
-        };        
+        };   
+        exports.keyWeightingAttr = function(value) {
+            if (!arguments.length) return keyWeightingAttr;
+            keyWeightingAttr = value;
+            return this;
+        };     
+        exports.keyTargetAttr = function(value) {
+            if (!arguments.length) return keyTargetAttr;
+            keyTargetAttr = value;
+            return this;
+        };                   
         exports.format = function(value) {
             if (!arguments.length) return format;
             format = value;

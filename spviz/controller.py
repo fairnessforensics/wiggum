@@ -19,8 +19,9 @@ def main():
     if request.method == 'POST':
 
         action = request.form['action']
-        global labeled_df_setup
 
+        global labeled_df_setup
+        
         if action == 'folder_open':
 
             folder = request.form['folder']
@@ -43,6 +44,10 @@ def main():
             roles = []
             roles = labeled_df_setup.meta_df['role'].tolist()
 
+            # get weighting_vars for dropbox
+            weighting_vars = []
+            weighting_vars = labeled_df_setup.meta_df['weighting_var'].fillna('N/A').tolist()            
+
             # get sample for data
             sample_list = []
             sample_list = labeled_df_setup.get_data_sample()
@@ -50,8 +55,10 @@ def main():
             return jsonify({'var_names': var_names,
                             'var_types': var_types,
                             'isCounts': isCounts,      
-                            'roles': roles,                      
-                            'samples': sample_list})
+                            'roles': roles,                  
+                            'weighting_vars': weighting_vars,                                              
+                            'samples': sample_list,
+                            'possible_roles': dsp.possible_roles})
 
         # index.html 'Open' button clicked for data file
         if action == 'open':
@@ -77,7 +84,8 @@ def main():
             sample_list = labeled_df_setup.get_data_sample()
 
             return jsonify({'var_types': var_types,
-                            'samples': sample_list})
+                            'samples': sample_list,
+                            'possible_roles': dsp.possible_roles})
 
         if action == 'save':
             meta = request.form['metaList']
@@ -92,32 +100,29 @@ def main():
             labeled_df_setup.to_csvs(directory)          
             return 'Saved'
 
-        # index.html 'Go Visualization' button clicked
+        # index.html 'Visualize' button clicked
         if action == 'visualize':
 
             meta = request.form['metaList']
-
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
+            global clusteringFlg
             clusteringFlg = request.form['clustering']
-
-            #if clusteringFlg == 'true':
-                # FIX ME
-                # df = labeled_df_setup.df
-                # df = models.getClustering(df, regression_vars)
-                # csv_data = df.to_dict(orient='records')
-                # csv_data = json.dumps(csv_data, indent=2)
 
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
         if action == 'page_load':
+            if clusteringFlg == 'true':
+                labeled_df_setup.add_all_dpgmm()
+
             corrobj = dsp.all_pearson()
             corrobj.get_trend_vars(labeled_df_setup)
 
             rankobj = dsp.mean_rank_trend()
             linreg_obj = dsp.linear_trend()
            
+            #labeled_df_setup.get_subgroup_trends_1lev([rankobj])
             labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
 
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
@@ -127,6 +132,12 @@ def main():
             # set the result table in result dict
             index = 0
             result_dict_dict[index] = labeled_df_setup.result_df.to_json(orient='records')
+
+            # set the csv
+            index = 1
+            csv_data_out = labeled_df_setup.df.to_dict(orient='records')
+            csv_data_out = json.dumps(csv_data_out, indent=2)
+            result_dict_dict[index] = csv_data_out            
             index = index + 1
             for trend_type in trend_type_list:
                 result_dict = {}
@@ -146,11 +157,11 @@ def main():
 
                     all_attrs = np.append(regression_vars, categoricalVars)
 
-                    csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
-                    csv_data_each = json.dumps(csv_data_each, indent=2)
+                    #csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
+                    #csv_data_each = json.dumps(csv_data_each, indent=2)
 
                     result_dict = {'trend_type' : 'pearson_corr',
-                                    'csv_data':csv_data_each,
+                                    #'csv_data':csv_data_each,
                                     'categoricalVars': categoricalVars, 
                                     'continousVars': regression_vars, 
                                     'corrAll': corrAll.to_json(),
@@ -161,8 +172,9 @@ def main():
                     index =  index + 1
 
                 elif trend_type == 'rank_trend':
-                    targetAttr_list = pd.unique(labeled_df_setup.result_df['feat1'])
-                    
+                    rank_trend_df = labeled_df_setup.result_df.loc[labeled_df_setup.result_df['trend_type'] == 'rank_trend']
+                    targetAttr_list = pd.unique(rank_trend_df['feat1'])
+
                     for targetAttr in targetAttr_list:
                         current_df =  labeled_df_setup.result_df
                         current_df = current_df.loc[(current_df['feat1'] == targetAttr) & (current_df['trend_type'] == 'rank_trend')]
@@ -170,26 +182,38 @@ def main():
                         protectedAttrs = pd.unique(current_df['feat2'])
                         groupbyAttrs = pd.unique(current_df['group_feat'])
                         
-                        ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs)
+                        if pd.notna(labeled_df_setup.meta_df['weighting_var'][targetAttr]):
+                            weighting_var = labeled_df_setup.meta_df['weighting_var'][targetAttr]
+                        else:
+                            weighting_var = ''
 
-                        ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs)
+                        ratioRateAll, protectedVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, 
+                                                                                targetAttr, protectedAttrs, weighting_var)
+
+                        ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs, weighting_var)
 
                         protected_groupby_attrs = np.append(protectedAttrs, groupbyAttrs)
                         protected_groupby_attrs = pd.unique(protected_groupby_attrs)
                         all_attrs = np.append(protected_groupby_attrs, [targetAttr])
 
-                        csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
-                        csv_data_each = json.dumps(csv_data_each, indent=2)
+                        # adding weighting_var
+                        if weighting_var != '':
+                            all_attrs = np.append(all_attrs, [weighting_var])
+                        
+                        #csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
+                        #csv_data_each = json.dumps(csv_data_each, indent=2)
 
                         result_dict = {'trend_type' : 'rank_trend',
-                                    'csv_data':csv_data_each,
+                                    #'csv_data':csv_data_each,
                                     'protectedVars': protectedVars,
-                                    'explanaryVars': explanaryVars, 
+                                    'explanaryVars': groupbyAttrs.tolist(), 
                                     'targetAttr': targetAttr,
-                                    'ratioRateAll':ratioRateAll,
+                                    'weighting_var': weighting_var,
+                                    'ratioRateAll': ratioRateAll,
                                     'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
                                     'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
                                     'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]}
+
                         result_dict_dict[index] = result_dict
                         index =  index + 1
 
