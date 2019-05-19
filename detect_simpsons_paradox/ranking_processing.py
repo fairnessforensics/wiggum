@@ -129,7 +129,7 @@ class _resultDataFrame():
 
         return self.result_df
 
-    def get_trend_row(self,feat1 = None,feat2 = None,group_feat= None,
+    def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
                             subgroup= None):
         """
         return a row of result_df based on the specified values
