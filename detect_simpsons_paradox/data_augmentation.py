@@ -118,7 +118,7 @@ class _augmentedData():
         return self.df
 
 
-    def add_quantile(self,vars_in,q,q_names=None):
+    def add_interval(self,vars_in,q,q_names=None):
         """
         add a column to a DataFrame generated from quantiles specified by `q` of
         variable `var`
@@ -159,7 +159,7 @@ class _augmentedData():
         # transform to labels for merging
         q_l = q.copy()
         q_u = q.copy()
-        q_l.insert(0,0)
+        q_l.insert(0,0) #prepend a 0
         q_u.append(1)
 
         # create names
@@ -194,9 +194,58 @@ class _augmentedData():
                                     'end': var + '_max',
                                     'label': 'quantile_name',
                                     'source':var}
-            data_df = interval_merge(data_df,q_intervals,interval_column_key)
+            self.df = interval_merge(data_df,q_intervals,interval_column_key)
 
         return self.df
+
+    def add_quantile(self,var_list, quantiles=None,quantile_name='quantiles'):
+        """
+
+        Parameters
+        -----------
+        var_list : list
+            variable(s) to compute for
+        q : dict
+            name:upper_limit, pairs to name the quantiles.  1 must be one of the
+            values
+        """
+
+        if quantiles ==None:
+            quantiles = {'low':.25,'mid':.75,'high':1}
+
+        if type(var_list) is str:
+            var_list = [var_list]
+
+        N = len(self.df)
+
+        cutoffs,label_list = zip(*[(int(np.round(N*q_val)),label) for
+                                            label,q_val in quantiles.items()])
+        # make a list
+        cutoffs = list(cutoffs)
+        # prepend a 0
+        cutoffs.insert(0,0)
+        # diffs are now the lenths of the intervals can be used with repeat
+        label_reps = np.diff(cutoffs)
+
+        # create list of labels of the size fo the df with the quantile labels,
+        # assuming a sorted list
+        q_labels = np.repeat(label_list,label_reps)
+
+        for var in var_list:
+            # sort and append a column of the labels
+            self.df.sort_values(var,inplace = True)
+            colname = var + quantile_name
+            self.df[colname] = q_labels
+
+        # return to oringnal order
+        self.df.sort_index(inplace=True)
+
+        # update meta infor
+        self.update_meta_df_cluster()
+
+        return self.df
+
+
 
 
 
