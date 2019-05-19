@@ -132,44 +132,49 @@ class _resultDataFrame():
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
                             subgroup= None):
         """
-        return a row of result_df based on the specified values
+        return a row of result_df based on the specified values. returned rows
+        meet provided criteria for all columns (and operator) and any one of the listed
+        values for each column (or operator)
 
         Parameters
         -----------
-        feat1 : str or  None
+        feat1 : str, list, or  None
             trend variable name or None to include all
-        feat2 : str or  None
+        feat2 : str, list, or  None
             trend variable name or None to include all
-        group_feat : str or  None
+        group_feat : str, list, or  None
             groupoby variable name or None to include all
-        subgroup : str or  None
+        subgroup : str, list, or  None
             value of groupby_feat or or None to include all
         """
         # get the rows for each specified value,
         #  or set to True to include all values for each None
+
         if feat1:
-            f1_rows = self.result_df.feat1 ==feat1
+            f1_rows = pd.Series([f1 in feat1 for f1 in self.result_df.feat1])
+            # self.result_df.feat1 ==feat1
         else:
             f1_rows = True
 
         if feat2:
-            f2_rows = self.result_df.feat2== feat2
+            f2_rows = pd.Series([f2 in feat2 for f2 in self.result_df.feat2])
         else:
             f2_rows = True
 
         if group_feat:
-            gf_rows = self.result_df.group_feat == group_feat
+            gf_rows = pd.Series([gf in group_feat for gf in self.result_df.group_feat])
         else:
             gf_rows = True
 
         if subgroup:
-            sg_rows = self.result_df.subgroup == subgroup
+            sg_rows = pd.Series([sg in subgroup for sg in self.result_df.subgroup])
         else:
             sg_rows = True
 
 
         # take the intersection
         target_row = f1_rows & f2_rows & gf_rows & sg_rows
+        target_row.index = self.result_df.index
         # return that row
         return self.result_df[target_row]
 
