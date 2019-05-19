@@ -147,23 +147,25 @@ class _resultDataFrame():
         """
         # get the rows for each specified value,
         #  or set to True to include all values for each None
+
         if feat1:
-            f1_rows = self.result_df.feat1 ==feat1
+            f1_rows = pd.Series([f1 in feat1 for f1 in self.result_df.feat1])
+            # self.result_df.feat1 ==feat1
         else:
             f1_rows = True
 
         if feat2:
-            f2_rows = self.result_df.feat2== feat2
+            f2_rows = pd.Series([f2 in feat2 for f2 in self.result_df.feat2])
         else:
             f2_rows = True
 
         if group_feat:
-            gf_rows = self.result_df.group_feat == group_feat
+            gf_rows = pd.Series([gf in group_feat for gf in self.result_df.group_feat])
         else:
             gf_rows = True
 
         if subgroup:
-            sg_rows = self.result_df.subgroup == subgroup
+            sg_rows = pd.Series([sg in subgroup for sg in self.result_df.subgroup])
         else:
             sg_rows = True
 
