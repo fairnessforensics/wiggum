@@ -411,7 +411,7 @@ function rateSPMatrix(options) {
 	.attr("y", -60)
 	.attr("text-anchor", "middle")  
 	.style("font-size", "15px") 
-	.text("subgroup");	
+	.text(targetAttr);	
 
 	corrPlot.append("text")
 	.attr("x", -(width/2))             
