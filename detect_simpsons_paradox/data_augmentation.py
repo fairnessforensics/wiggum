@@ -200,14 +200,22 @@ class _augmentedData():
 
     def add_quantile(self,var_list, quantiles=None,quantile_name='quantiles'):
         """
+        add quantiles labeled according to quantiles dictionary provided to
+        self.df with column(s) named var+quantile_name . also updates meta_df to
+        make the quantiles used only as groupby
 
         Parameters
         -----------
         var_list : list
             variable(s) to compute for
         q : dict
-            name:upper_limit, pairs to name the quantiles.  1 must be one of the
+            {'name':upper_limit}, pairs to name the quantiles.  1 must be one of the
             values
+
+        Returns
+        --------
+        self.df : DataFrame
+            with new added colmns
         """
 
         if quantiles ==None:
@@ -244,8 +252,6 @@ class _augmentedData():
         self.update_meta_df_cluster()
 
         return self.df
-
-
 
 
 
