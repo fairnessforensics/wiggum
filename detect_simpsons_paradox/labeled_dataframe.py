@@ -10,7 +10,7 @@ var_types = ['binary', 'ordinal', 'categorical', 'continuous']
 
 
 
-from .detect_sp import RESULTS_DF_HEADER, _trendDetectors
+from .detect_sp import RESULT_DF_HEADER, _trendDetectors
 from .data_augmentation import _augmentedData
 from .ranking_processing import _resultDataFrame
 
@@ -153,10 +153,10 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
             self.meta_df['role'] = [var.replace("'",'').replace("[",'').replace("]",'').replace(",",'').split()
                       for var in self.meta_df['role']]
 
-        # initialize results_df
+        # initialize result_df
         if results == None:
             # call function
-            self.result_df = pd.DataFrame(columns= RESULTS_DF_HEADER)
+            self.result_df = pd.DataFrame(columns= RESULT_DF_HEADER)
         elif callable(results):
             self.result_df = results(self)
         else:
@@ -387,8 +387,8 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         meta_file = os.path.join(dirname,meta_csv)
         self.meta_df.to_csv(meta_file)
 
-        results_file = os.path.join(dirname,result_csv)
-        self.result_df.to_csv(results_file,index=False)
+        result_file = os.path.join(dirname,result_csv)
+        self.result_df.to_csv(result_file,index=False)
 
         data_file = os.path.join(dirname,data_csv)
         self.df.to_csv(data_file,index=False)

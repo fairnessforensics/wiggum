@@ -49,7 +49,6 @@ class linearRegression():
 
 
             slopes = []
-            quality = []
 
             for groupby_lev,df in data_df:
                 # expand into all combinations if symmetric
@@ -63,17 +62,20 @@ class linearRegression():
                 for a,b in var_pairs:
                     # compute each slope
                     slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
-                    slopes.append([a,b,slope,groupby_lev,r_val])
+                    # quality is absolute value of r_val (corelation coefficient)
+                    slopes.append([a,b,slope,groupby_lev,np.abs(r_val)])
 
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
-                                    trend_col_name,'subgroup',trend_col_name+'quality'])
+                                                trend_col_name,'subgroup',
+                                                trend_col_name+'_quality'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
-                                        trend_col_name,'empty',trend_col_name+'quality'])
+                                                    trend_col_name,'empty',
+                                                    trend_col_name+'_quality'])
             reg_df.drop('empty',axis=1,inplace=True)
 
         reg_df['trend_type'] = self.name

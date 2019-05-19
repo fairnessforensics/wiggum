@@ -78,6 +78,9 @@ class correlationTrend():
             reg_df = pd.DataFrame(data=[[self.regression_vars[x],self.regression_vars[y],val]
                                         for x,y,val in zip(*triu_feat_indices,corr_triu)],
                         columns = ['feat1','feat2',trend_col_name])
+
+            # quality here is the same as the trend value
+            reg_df[trend_col_name+'_quality'] = reg_df[trend_col_name]
         else:
             n_triu_values = 0
             reg_df = pd.DataFrame(columns = ['feat1','feat2',trend_col_name])
@@ -96,8 +99,7 @@ class correlationTrend():
     def get_distance(self,row):
         """
         distance between the subgroup and aggregate trends for a row of a
-        result_df (currently undefined)
-        TODO: set to be...?
+        result_df  binary 0 for same sign, 1 for opposite sign
 
         Parameters
         ----------
@@ -110,6 +112,9 @@ class correlationTrend():
             distance between the subgroup_trend and agg_trend, compatible with
             assignment to a cell of a result_df
         """
+        sg_trend = row['subgroup_trend']
+        ag_trend = row['agg_trend']
 
-        # row['distance'] = 'undef'
-        return np.NaN
+        # if they're the same set to False
+        binary_distance  = int(not(np.sign(sg_trend) == np.sign(ag_trend)))
+        return binary_distance
