@@ -15,9 +15,11 @@ function drawGraph(dataAll) {
 	legendValue = -1;
 	//selectTypeValue = "Rate"
 
+	csvData = JSON.parse(dataAll[1].replace(/\bNaN\b/g, "null"))    
+
 	for (var key in dataAll){
 		selectTypeValue = '';	
-		if (key != 0) {
+		if (key > 1) {
 			data = dataAll[key];
 
 			selectTypeValue = data.trend_type;
@@ -25,8 +27,8 @@ function drawGraph(dataAll) {
 		if (selectTypeValue == "pearson_corr") {
 			// Correlation for all
 			correlationMatrix = jsonto2darray(JSON.parse(data.corrAll));
-			csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
-			console.log(csvData)
+			//csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
+
 			catAttrs = data.categoricalVars;
 			conAttrs = data.continousVars;
 
@@ -48,11 +50,20 @@ function drawGraph(dataAll) {
 			createScatterplot(csvData, labels);
 
 		} else if (selectTypeValue == "rank_trend") {
-			csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
+			// initial
+			rateTrendMatrixSub = [];
+			rateAllSlopeGraph = [];
+			rateAllKeySlopeGraph = [];
+			rateSubSlopeGraph = [];
+			rateSubKeySlopeGraph = [];
+
+			//csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
+
 			rateTrendMatrixAll = data.ratioRateAll;
 
 			// Construct Slope Graph array for ALL--------->
 			var rateAll = data.rateAll;
+
 			for (var i = 0; i < rateAll.length; i++){
 				values = Object.values(JSON.parse(rateAll[i]))
 				rateAllSlopeGraph.push(values);
@@ -78,9 +89,8 @@ function drawGraph(dataAll) {
 			explanaryAttrs = data.explanaryVars;
 			targetAttr = data.targetAttr;
 			weightingAttr = data.weighting_var;
-			
-			var ratioSubs = data.ratioSubs;
 
+			var ratioSubs = data.ratioSubs;
 
 			for (var i = 0; i < ratioSubs.length; i++){
 				rateTrendMatrixSub.push(jsonto2darray(JSON.parse(ratioSubs[i])))

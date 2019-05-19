@@ -142,14 +142,6 @@ function getRateMatrixSub(data, groupAttr1, groupAttr2) {
 	  
 	  rateColLabels = expalanatoryValues;
 
-  //console.log(resultArray);
-//	  for (var i = 0; i < resultArray.length; i++){
-//		  result[i] = [];
-//		  for (var j = 0; j < resultArray[i].values.length; j++){
-//			  result[i][j] = resultArray[i].values[j].values.mean;
-//		  }
-//	  }	    
-//console.log(result);
 	  return result;
   }
 
@@ -301,8 +293,7 @@ function rateBivariateMatrixDiverging5(rateMatrix, rateMatrixSubgroup) {
 	return bivariateMatrix;
 }
 
-var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr, weightingAttr, subgroups) {
-//	console.log(vars);
+var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr, weightingAttr, targetAttr, subgroups) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
@@ -316,6 +307,7 @@ var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixInde
 					index: matrixIndex,
 					protectedAttr: protectedAttr,
 					weightingAttr: weightingAttr,
+					targetAttr: targetAttr,					
 					subgroups: subgroups
 				};
 		});
@@ -379,11 +371,11 @@ function rateSPMatrix(options) {
 	    .attr("class", "row")
 	    .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; });
 
-	var cells = row.selectAll(".cell")
+	var cells = row.selectAll(".ratecell")
 	    .data(function(d) { return d; })
 		.enter()
 		.append("rect")	
-		.attr("class", "cell")
+		.attr("class", "ratecell")
 		.attr("id", function(d) {return targetAttr + "_" + d.protectedAttr + "_" + d.keyName + "_" + d.subgroups[d.colVar]})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
 
@@ -481,7 +473,10 @@ function rateSPMatrix(options) {
 
 var clickRateMatrixCell = function() {
 	var allsvg = d3.select(container);
+
 	allsvg.selectAll(".cell").classed("clicked", false);
+	allsvg.selectAll(".ratecell").classed("clicked", false);
+
 	var clickFlg = d3.select(this).classed("clicked", true);
 	if (clickFlg) { clickFlg.call(prepareDetail); }
 };
@@ -489,7 +484,7 @@ var clickRateMatrixCell = function() {
 // Reset when double click
 var doubleClickRateMatrixCell = function() {
 
-	d3.select("#container").selectAll('.cell').classed("clicked", false);
+	d3.select("#container").selectAll('.ratecell').classed("clicked", false);
 
 	d3.selectAll('.elm').transition().style('opacity', 1);
 	d3.selectAll('.gbc').transition().style('opacity', 1);
@@ -500,7 +495,7 @@ function prepareDetail() {
 	var d = this.datum();
 
 	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
-				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr};
+				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr, targetAttr: d.targetAttr};
 
 	// find subgroup for vars_tables
 	var subgroups = d.subgroups;
@@ -513,6 +508,7 @@ function prepareDetail() {
 
 var updateSlopeGraph = function(vars) {
 	d3.select("#slopegraph").selectAll('svg').remove();
+	d3.select("#scatterplot").style("display", "none");
 
 	DrawSlopeGraph(
 	{
@@ -521,7 +517,8 @@ var updateSlopeGraph = function(vars) {
 		keyEnd			: vars.right,
 		keyName     : vars.keyName,
 		protectedAttr: vars.protectedAttr,
-		weightingAttr: vars.weightingAttr
+		weightingAttr: vars.weightingAttr,
+		targetAttr: vars.targetAttr
 	});
 
 	highlightLine(parseInt(vars.x)+1);

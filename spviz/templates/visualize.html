@@ -63,7 +63,9 @@
 
                             tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend'];
                             tabulate(tableRecords, tableColumns);
-                }});
+                    },
+                    error: function(ts) { console.log(ts.responseText) }
+                });
             });
 
             // regression-based SP

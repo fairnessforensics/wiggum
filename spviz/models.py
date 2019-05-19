@@ -254,7 +254,7 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
 
     return result_df, ranking_view_df    
 
-def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars, weighting_var):
+def getRatioRateAll(data_df, target_var, protected_vars, weighting_var):
     """
     Generate an array for the rates of the protected class before further partition
     Parameters
@@ -266,8 +266,6 @@ def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars, weighting
         a variable that will have a rate where the ranking flips
     protected_vars  : list
         list of protected variables     
-    groupby_vars  : list
-        list of grouping variables
     weighting_var : str
         a variable that have weight        
     Returns
@@ -279,30 +277,27 @@ def getRatioRateAll(data_df, target_var, protected_vars, groupby_vars, weighting
     overall_dat_all = []
     overall_ratio_all = []
     protectedVars = []
-    explanaryVars = []
 
     for protected_var in protected_vars:
-        for explanatory_var in groupby_vars:
-            if protected_var != explanatory_var:
-                if weighting_var == '':
-                    overall_dat = data_df.groupby(protected_var)[target_var].mean()
-                else:
-                    grouped = data_df.groupby(protected_var)
-                    get_wavg = lambda g: np.average(g[target_var], weights=g[weighting_var])
-                    overall_dat = grouped.apply(get_wavg)
+        data_df = data_df.dropna(axis=0,subset=[target_var])
+        if weighting_var == '':
+            overall_dat = data_df.groupby(protected_var)[target_var].mean()
+        else:
+            grouped = data_df.groupby(protected_var)
+            get_wavg = lambda g: np.average(g[target_var], weights=g[weighting_var])
+            overall_dat = grouped.apply(get_wavg)
+              
+        overall_dat_all.append(overall_dat)
 
-                overall_dat_all.append(overall_dat)
+        comb = list(combinations(overall_dat, 2))
+        overall_ratio = [element[0]/element[1] for element in comb]
 
-                comb = list(combinations(overall_dat, 2))
-                overall_ratio = [element[0]/element[1] for element in comb]
-
-                overall_ratio_all.append(overall_ratio)
-                protectedVars.append(protected_var)               
-                explanaryVars.append(explanatory_var)
+        overall_ratio_all.append(overall_ratio)
+        protectedVars.append(protected_var)               
                 
-    return overall_ratio_all, protectedVars, explanaryVars, overall_dat_all
+    return overall_ratio_all, protectedVars, overall_dat_all
 
-def getRatioRateSub(data_df, target_var, protected_vars, groupby_vars):
+def getRatioRateSub(data_df, target_var, protected_vars, groupby_vars, weighting_var):
     """
     Generate an array for the rates of the protected class after further partition
     Parameters
@@ -316,6 +311,8 @@ def getRatioRateSub(data_df, target_var, protected_vars, groupby_vars):
         list of protected variables
     grouping_vars  : list
         list of grouping variables
+    weighting_var : str
+        a variable that have weight            
     Returns
     --------
     result : array
@@ -328,8 +325,16 @@ def getRatioRateSub(data_df, target_var, protected_vars, groupby_vars):
     for protected_var in protected_vars:
         for explanatory_var in groupby_vars:
             if protected_var != explanatory_var:
-                partition_dat = data_df.groupby([explanatory_var, protected_var])[target_var].mean().unstack()
-
+                data_df = data_df.dropna(axis=0,subset=[target_var])
+                if weighting_var == '':
+                    #overall_dat = data_df.groupby(protected_var)[target_var].mean()
+                    partition_dat = data_df.groupby([explanatory_var, protected_var])[target_var].mean().unstack()
+                else:
+                    grouped = data_df.groupby([explanatory_var, protected_var])
+                    get_wavg = lambda g: np.average(g[target_var], weights=g[weighting_var])
+                    partition_dat = grouped.apply(get_wavg)
+                    partition_dat = partition_dat.unstack()
+        
                 partition_dat_all.append(partition_dat)
 
                 comb = list(combinations(partition_dat, 2))

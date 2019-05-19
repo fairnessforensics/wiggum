@@ -122,7 +122,7 @@ def main():
             rankobj = dsp.mean_rank_trend()
             linreg_obj = dsp.linear_trend()
            
-            #labeled_df_setup.get_subgroup_trends_1lev([corrobj])
+            #labeled_df_setup.get_subgroup_trends_1lev([rankobj])
             labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
 
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
@@ -132,6 +132,12 @@ def main():
             # set the result table in result dict
             index = 0
             result_dict_dict[index] = labeled_df_setup.result_df.to_json(orient='records')
+
+            # set the csv
+            index = 1
+            csv_data_out = labeled_df_setup.df.to_dict(orient='records')
+            csv_data_out = json.dumps(csv_data_out, indent=2)
+            result_dict_dict[index] = csv_data_out            
             index = index + 1
             for trend_type in trend_type_list:
                 result_dict = {}
@@ -151,11 +157,11 @@ def main():
 
                     all_attrs = np.append(regression_vars, categoricalVars)
 
-                    csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
-                    csv_data_each = json.dumps(csv_data_each, indent=2)
+                    #csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
+                    #csv_data_each = json.dumps(csv_data_each, indent=2)
 
                     result_dict = {'trend_type' : 'pearson_corr',
-                                    'csv_data':csv_data_each,
+                                    #'csv_data':csv_data_each,
                                     'categoricalVars': categoricalVars, 
                                     'continousVars': regression_vars, 
                                     'corrAll': corrAll.to_json(),
@@ -181,10 +187,10 @@ def main():
                         else:
                             weighting_var = ''
 
-                        ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, 
-                                                                                targetAttr, protectedAttrs, groupbyAttrs, weighting_var)
+                        ratioRateAll, protectedVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, 
+                                                                                targetAttr, protectedAttrs, weighting_var)
 
-                        ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs)
+                        ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs, weighting_var)
 
                         protected_groupby_attrs = np.append(protectedAttrs, groupbyAttrs)
                         protected_groupby_attrs = pd.unique(protected_groupby_attrs)
@@ -194,19 +200,20 @@ def main():
                         if weighting_var != '':
                             all_attrs = np.append(all_attrs, [weighting_var])
                         
-                        csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
-                        csv_data_each = json.dumps(csv_data_each, indent=2)
+                        #csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
+                        #csv_data_each = json.dumps(csv_data_each, indent=2)
 
                         result_dict = {'trend_type' : 'rank_trend',
-                                    'csv_data':csv_data_each,
+                                    #'csv_data':csv_data_each,
                                     'protectedVars': protectedVars,
-                                    'explanaryVars': explanaryVars, 
+                                    'explanaryVars': groupbyAttrs.tolist(), 
                                     'targetAttr': targetAttr,
                                     'weighting_var': weighting_var,
-                                    'ratioRateAll':ratioRateAll,
+                                    'ratioRateAll': ratioRateAll,
                                     'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
                                     'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
                                     'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]}
+
                         result_dict_dict[index] = result_dict
                         index =  index + 1
 
