@@ -19,8 +19,13 @@ from .detect_sp import detect_simpsons_paradox
 from .labeled_dataframe import (labeledDataFrame, possible_roles, var_types,
                             simple_type_mapper)
 
+# trend types
 from .trends import (all_pearson, continuous_pearson, spearman_correlation,
- kendall_correlation, mean_rank_trend,linear_trend,all_linear_trend)
+                    kendall_correlation, mean_rank_trend,linear_trend,
+                    all_linear_trend,binary_pearson_trend,binary_mean_rank_trend)
+
+#tren lists
+from .trends import (all_trend_types,default_binary_trends,default_distance_trends)
 
 # __all__ = ['detect_simpsons_paradox','mark_designed_rows', 'compute_angle',
 #             'add_slope_sp','compute_slope_all','add_angle_col','count_sp_views',
