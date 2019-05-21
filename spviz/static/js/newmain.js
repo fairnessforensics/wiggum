@@ -150,3 +150,27 @@ function isEmpty(obj) {
     }
     return true;
 }
+
+function drawGraphTable(data) {
+	// Get data from controller return data
+	drawGraph(data);
+
+	// Display info table
+	tableRecords = JSON.parse(data[0])              
+	tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend'];
+	tabulate(tableRecords, tableColumns);
+
+	// Avoid ctrl-click                                    
+	$('option').mousedown(function(e) {
+		e.preventDefault();
+		var originalScrollTop = $(this).parent().scrollTop();
+		$(this).prop('selected', $(this).prop('selected') ? false : true);
+		var self = this;
+		$(this).parent().focus();
+		setTimeout(function() {
+			$(self).parent().scrollTop(originalScrollTop);
+		}, 0);
+		
+		return false;
+	});                             
+}

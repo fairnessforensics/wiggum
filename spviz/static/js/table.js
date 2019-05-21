@@ -3,6 +3,7 @@ function tabulate(data, columns) {
 	// remove existing table
 	d3.select("#table").selectAll('table').remove();
 	d3.select("#table").style("display", "inline-block");
+
 	var table = d3.select("div#table").append('table');
 	var thead = table.append('thead');
 	var sortAscending = true;
@@ -14,6 +15,7 @@ function tabulate(data, columns) {
 	  .append('th')
 	  .style("font-size", "9px")
 		.text(function (column) { return column; })
+
 		.on('click', function (d) {
 			thead.attr('class', 'th');
 			if (sortAscending) {
@@ -27,6 +29,88 @@ function tabulate(data, columns) {
 				this.className = 'des';
 				}
 	});
+
+	// append the header row for filtering
+	var thead = table.append('thead').append('tr')
+	  .selectAll('th')
+	  .data(columns).enter()
+	  .append('th')
+	  .attr("class", "filterrow")
+  	  .each(function(d,i) {
+			// feat1
+			if (i==0) {
+				var optionData = d3.map(data, function(d){return d.feat1;}).keys();
+				var select = d3.select(this).append('select')
+											.attr('id','feat1_selector')					
+											.attr('multiple', 'multiple')
+											.style('height', '44px');
+														
+				var options = select.selectAll('option')
+									.data(optionData).enter()
+									.append('option')
+									.attr("value", function(d) { return d; })
+									.text(function(d){return d;});
+			}	
+			// feat2
+			if (i==1) {
+				var optionData = d3.map(data, function(d){return d.feat2;}).keys();
+				var select = d3.select(this).append('select')
+											.attr('id','feat2_selector')					
+											.attr('multiple', 'multiple')
+											.style('height', '44px');
+														
+				var options = select.selectAll('option')
+									.data(optionData).enter()
+									.append('option')
+									.attr("value", function(d) { return d; })
+									.text(function(d){return d;});
+			}	
+			// group_feat
+			if (i==3) {
+				var optionData = d3.map(data, function(d){return d.group_feat;}).keys();
+				var select = d3.select(this).append('select')
+											.attr('id','group_feat_selector')				
+											.attr('multiple', 'multiple')
+											.style('height', '44px');
+														
+				var options = select.selectAll('option')
+									.data(optionData).enter()
+									.append('option')
+									.attr("value", function(d) { return d; })
+									.text(function(d){return d;});
+			}	
+			// subgroup
+			if (i==4) {
+				var optionData = d3.map(data, function(d){return d.subgroup;}).keys();
+				var select = d3.select(this).append('select')
+											.attr('id','subgroup_selector')
+											.attr('multiple', 'multiple')
+											.style('height', '44px');
+														
+				var options = select.selectAll('option')
+									.data(optionData).enter()
+									.append('option')
+									.attr("value", function(d) { return d; })
+									.text(function(d){return d;});
+			}		
+			// fiter and reset button
+			if (i == 6) {
+				d3.select(this).append("button")
+								.attr("id", "filter-btn")
+								.attr("type", "button")
+								.attr("value", "filter")
+								.text("Filter")
+								.attr("onclick", "filter_button()"); 												
+				d3.select(this).append('br');
+				d3.select(this).append("button")
+								.attr("id", "reset-btn")
+								.attr("type", "button")
+								.attr("value", "reset")
+								.text("Reset")
+								.attr("onclick", "reset_button()");				
+			}							
+	})
+	;
 
 	var	tbody = table.append('tbody');
 	// create a row for each object in the data
