@@ -47,6 +47,45 @@
           }
         }
 
+        function filter_button() {
+            var feat1_selector = document.getElementById("feat1_selector");
+            var feat2_selector = document.getElementById("feat2_selector");
+            var group_feat_selector = document.getElementById("group_feat_selector");
+            var subgroup_selector = document.getElementById("subgroup_selector");                                  
+
+            var filter_object =            
+                                    {   
+                                        feat1: getSelectValues(feat1_selector),
+                                        feat2: getSelectValues(feat2_selector), 
+                                        group_feat: getSelectValues(group_feat_selector),
+                                        subgroup: getSelectValues(subgroup_selector)                                                               
+                                    };
+            filter_object = JSON.stringify(filter_object);
+
+            $.ajax({
+                        type: 'POST',
+                        url: '/',
+                        data: {'action':'filter', 'filter_object': filter_object},                               
+                        success: function(data) {
+                            d3.select("#container").selectAll('svg').remove();
+                            d3.select("#scatterplot").selectAll('svg').remove();                            
+                            drawGraphTable(data);
+                        }
+                    })
+        }
+
+        function reset_button() {
+            $.ajax({
+                        type: 'POST',
+                        url: '/',
+                        data: {'action':'reset'},                               
+                        success: function(data) {
+                            d3.select("#container").selectAll('svg').remove();
+                            drawGraphTable(data);
+                        }
+                    })
+        }        
+
         $(function() {
             // initial draw
             $(document).ready(function(){
@@ -63,6 +102,20 @@
 
                             tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend'];
                             tabulate(tableRecords, tableColumns);
+
+                            // Avoid ctrl-click                                    
+                            $('option').mousedown(function(e) {
+                                e.preventDefault();
+                                var originalScrollTop = $(this).parent().scrollTop();
+                                $(this).prop('selected', $(this).prop('selected') ? false : true);
+                                var self = this;
+                                $(this).parent().focus();
+                                setTimeout(function() {
+                                    $(self).parent().scrollTop(originalScrollTop);
+                                }, 0);
+                                
+                                return false;
+                            });  
                     },
                     error: function(ts) { console.log(ts.responseText) }
                 });
@@ -761,8 +814,10 @@
     <div style="display:inline-block; float:left" id="container">
     </div>
 
-    <div style="display:none; float:left" id="tree"></div>
-    <div style="display:none; float:left" id="table"></div>
+    <div style="display:none; float:left" id="tree"></div>  
+    <div style="display:none; float:left" id="table">  
+    </div>
+
                <!--<div class="vl"></div>  -->
     <div id="slopeLabel"></div>
     <div style="display:none; float:left" id="scatterplot"></div>

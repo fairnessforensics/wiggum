@@ -168,15 +168,16 @@ line.slope-line4all{
 }
 
 #table {
-    width: 680px;
+    width: 1020px;
     display: block;
     background: white;
-    margin-left: 260px;
+    margin-left: 100px;
     margin-top: 3px;
-    height: 126px;
-    max-height: 126px;    
+    height: 186px;
+    max-height: 186px;    
     overflow-y: scroll;    
 }
+
 table {
     font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
     box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
@@ -209,6 +210,12 @@ table {
   .tablerow.highlighted {
     background-color:#D8D8D8;
 }
+
+.filterrow {
+    border: none;
+    background-color: rgb(255,255,255);
+}
+
 
 .rankingparam {
     border: none;

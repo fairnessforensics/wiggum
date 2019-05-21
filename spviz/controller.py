@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import detect_simpsons_paradox as dsp
 import numpy as np
+from .models import Decoder
 
 @app.route("/")
 def index():
@@ -122,103 +123,32 @@ def main():
             rankobj = dsp.mean_rank_trend()
             linreg_obj = dsp.linear_trend()
            
-            #labeled_df_setup.get_subgroup_trends_1lev([rankobj])
             labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
 
-            trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
-
             result_dict_dict = {}
-                     
-            # set the result table in result dict
-            index = 0
-            result_dict_dict[index] = labeled_df_setup.result_df.to_json(orient='records')
-
-            # set the csv
-            index = 1
-            csv_data_out = labeled_df_setup.df.to_dict(orient='records')
-            csv_data_out = json.dumps(csv_data_out, indent=2)
-            result_dict_dict[index] = csv_data_out            
-            index = index + 1
-            for trend_type in trend_type_list:
-                result_dict = {}
-
-                if trend_type == 'pearson_corr':
-                    # Constructing the data for visualization
-                    # Regression
-                    regression_vars = corrobj.regression_vars
-                    categoricalVars = labeled_df_setup.get_vars_per_role('groupby')
-
-                    # get correlation for all continuous variables
-                    corrAll = labeled_df_setup.df[regression_vars].corr()
-
-                    # subgroup correlation matrix
-                    correlationMatrixSubgroups = []
-                    correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(labeled_df_setup.df, regression_vars, categoricalVars)
-
-                    all_attrs = np.append(regression_vars, categoricalVars)
-
-                    #csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
-                    #csv_data_each = json.dumps(csv_data_each, indent=2)
-
-                    result_dict = {'trend_type' : 'pearson_corr',
-                                    #'csv_data':csv_data_each,
-                                    'categoricalVars': categoricalVars, 
-                                    'continousVars': regression_vars, 
-                                    'corrAll': corrAll.to_json(),
-                                    'groupby_info': groupby_info,
-                                    'corrSubs': [corrSub.to_json() for corrSub in correlationMatrixSubgroups]}
-
-                    result_dict_dict[index] = result_dict
-                    index =  index + 1
-
-                elif trend_type == 'rank_trend':
-                    rank_trend_df = labeled_df_setup.result_df.loc[labeled_df_setup.result_df['trend_type'] == 'rank_trend']
-                    targetAttr_list = pd.unique(rank_trend_df['feat1'])
-
-                    for targetAttr in targetAttr_list:
-                        current_df =  labeled_df_setup.result_df
-                        current_df = current_df.loc[(current_df['feat1'] == targetAttr) & (current_df['trend_type'] == 'rank_trend')]
-
-                        protectedAttrs = pd.unique(current_df['feat2'])
-                        groupbyAttrs = pd.unique(current_df['group_feat'])
-                        
-                        if pd.notna(labeled_df_setup.meta_df['weighting_var'][targetAttr]):
-                            weighting_var = labeled_df_setup.meta_df['weighting_var'][targetAttr]
-                        else:
-                            weighting_var = ''
-
-                        ratioRateAll, protectedVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, 
-                                                                                targetAttr, protectedAttrs, weighting_var)
-
-                        ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, protectedAttrs, groupbyAttrs, weighting_var)
-
-                        protected_groupby_attrs = np.append(protectedAttrs, groupbyAttrs)
-                        protected_groupby_attrs = pd.unique(protected_groupby_attrs)
-                        all_attrs = np.append(protected_groupby_attrs, [targetAttr])
-
-                        # adding weighting_var
-                        if weighting_var != '':
-                            all_attrs = np.append(all_attrs, [weighting_var])
-                        
-                        #csv_data_each = labeled_df_setup.df[all_attrs].to_dict(orient='records')
-                        #csv_data_each = json.dumps(csv_data_each, indent=2)
-
-                        result_dict = {'trend_type' : 'rank_trend',
-                                    #'csv_data':csv_data_each,
-                                    'protectedVars': protectedVars,
-                                    'explanaryVars': groupbyAttrs.tolist(), 
-                                    'targetAttr': targetAttr,
-                                    'weighting_var': weighting_var,
-                                    'ratioRateAll': ratioRateAll,
-                                    'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
-                                    'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
-                                    'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]}
-
-                        result_dict_dict[index] = result_dict
-                        index =  index + 1
+            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
 
             return jsonify(result_dict_dict)
-                    
+
+        # visualize.html 'Filter' button clicked 
+        if action == 'filter':
+            filter_object = request.form['filter_object']
+            filter_object = json.loads(filter_object, cls=Decoder)
+
+            filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+                                group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'])
+
+            result_dict_dict = {}
+            result_dict_dict = models.getResultDict(labeled_df_setup, filter_result, filter_object['subgroup'])
+
+            return jsonify(result_dict_dict)
+
+        # visualize.html 'Reset' button clicked 
+        if action == 'reset':
+            result_dict_dict = {}
+            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+
+            return jsonify(result_dict_dict)
 
         spType = request.form['sptype']
 
