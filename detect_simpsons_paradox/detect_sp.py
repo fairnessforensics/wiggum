@@ -84,7 +84,7 @@ class _trendDetectors():
         """
 
         # filter
-        sp_df = self.get_SP_rows(sp_type,cols_pair, colored)
+        sp_df = self.get_SP_rows(thresh)
 
 
         return get_views(sp_df,colored)
