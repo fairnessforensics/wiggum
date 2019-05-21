@@ -23,6 +23,13 @@ class trend():
 
             return self
 
+    def is_SP(self,row,thresh):
+        """
+        default is if it's above a threshold
+        
+        """
+        return row['distance'] > thresh
+
 ################################################################################
 #              Components
 ################################################################################

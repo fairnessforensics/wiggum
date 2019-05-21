@@ -37,6 +37,9 @@ class _resultDataFrame():
             col_name = 'SP'
 
         is_SP = lambda row: row['distance'] > thresh
+        # trend_SP = {t.name:t.is_SP for t in self.trend_list}
+        #
+        # is_SP = lambda row: self.trend_list[row['trend_type']](row)
 
         self.result_df[col_name] = self.result_df.apply(is_SP,axis=1)
 

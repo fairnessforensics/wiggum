@@ -141,6 +141,8 @@ class statBinRankTrend():
         # if they're not, int(False) = 0 bust dist =1
         return 1- int(row['agg_trend'] == row['subgroup_trend'])
 
+    def is_SP(self,row,thresh=0):
+        return not(row['agg_trend'] == row['subgroup_trend'])
 
 
 class statRankTrend():
@@ -339,3 +341,5 @@ class statRankTrend():
         tau,p = stats.kendalltau(numeric_agg,numeric_subgroup)
         tau_dist = np.round(1- tau,2)
         return tau_dist
+
+    
