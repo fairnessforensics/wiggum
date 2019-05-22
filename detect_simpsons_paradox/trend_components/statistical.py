@@ -81,7 +81,7 @@ class correlationSignTrend():
 
             # create dataframe with rows, att1 label, attr2 label, correlation
             reg_df = pd.DataFrame(data=[[self.regression_vars[x],
-                                        self.regression_vars[y],sign,val]
+                                        self.regression_vars[y],sign,np.abs(val)]
                                         for x,y,sign,val in zip(*triu_feat_indices,
                                                     sign_labels,corr_triu)],
                         columns = ['feat1','feat2',trend_col_name,
@@ -201,12 +201,13 @@ class correlationTrend():
 
 
             # create dataframe with rows, att1 label, attr2 label, correlation
-            reg_df = pd.DataFrame(data=[[self.regression_vars[x],self.regression_vars[y],val]
+            reg_df = pd.DataFrame(data=[[self.regression_vars[x],
+                                    self.regression_vars[y],val,np.abs(val)]
                                         for x,y,val in zip(*triu_feat_indices,corr_triu)],
-                        columns = ['feat1','feat2',trend_col_name])
+                        columns = ['feat1','feat2',trend_col_name,trend_col_name+'_quality'])
 
-            # quality here is the same as the trend value
-            reg_df[trend_col_name+'_quality'] = reg_df[trend_col_name]
+            # quality here is the absolute value of the trend value
+
         else:
             n_triu_values = 0
             reg_df = pd.DataFrame(columns = ['feat1','feat2',trend_col_name])

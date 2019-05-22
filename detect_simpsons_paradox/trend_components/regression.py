@@ -106,8 +106,11 @@ class linearRegression():
         # relative to the angle of interest
         abs_angle = self.get_distance_unnormalized(row)
 
-        # take difference them and convert to degrees
-        return abs_angle/180.0
+
+        # normalize so that right angle is 1 and parallel is 0
+        # TODO: fix error if angle is exactly np.pi/2
+        right_angle = np.pi/2
+        return (abs_angle%right_angle)/right_angle
 
     def get_distance_unnormalized(self,row):
         """
@@ -133,4 +136,4 @@ class linearRegression():
         theta_all = np.arctan(row['agg_trend'])
 
         # take difference them and convert to degrees
-        return np.rad2deg(np.abs(theta_all - theta_sub))
+        return np.abs(theta_all - theta_sub)
