@@ -11,6 +11,8 @@ RESULT_DF_HEADER = ['feat1','feat2','trend_type','agg_trend','group_feat',
                     'subgroup','subgroup_trend']
 
 
+
+
 from .trends import all_trend_types
 
 
@@ -84,12 +86,12 @@ class _trendDetectors():
         """
 
         # filter
-        sp_df = self.get_SP_rows(sp_type,cols_pair, colored)
+        sp_df = self.get_SP_rows(thresh)
 
 
         return get_views(sp_df,colored)
 
-    def get_SP_rows(self,thresh=0,inplace=False):
+    def get_SP_rows(self,thresh=None,inplace=False,replace=False):
         """
         return a list of tuples of the rows of the dataset that have at least one
         occurence of SP.
@@ -114,22 +116,34 @@ class _trendDetectors():
         """
         # col_name
         if thresh:
-            col_name = 'SP_thresh_' + str(thresh)
+
+            if type(thresh) == dict:
+                col_name = thresh['name']
+            elif type(thresh) == str:
+                col_name = thresh
+            else:
+                # for compatibility with old passing a distance threshold
+                col_name = 'SP_thresh' +str(thresh)
+                thresh = {'distance':thresh,'name':col_name}
+
         else:
+            thresh = 'SP'
             col_name = 'SP'
 
-        # add dist if not
-        if not(col_name in self.result_df.columns ):
+        # label if not
+        if not(col_name in self.result_df.columns ) or replace:
+            # add dist if not
             if not('distance' in self.result_df.columns):
                 self.add_distance()
 
-            self.label_SP_rows(thresh)
+            col_name = self.label_SP_rows(thresh)
 
 
 
-        # filter
+        # always filter result and return
         sp_df = self.result_df[self.result_df[col_name]]
 
+        # overwrite if inplace
         if inplace:
             self.result_df = sp_df
 

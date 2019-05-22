@@ -23,6 +23,13 @@ class trend():
 
             return self
 
+    def is_SP(self,row,thresh):
+        """
+        default is if it's above a threshold
+        
+        """
+        return row['distance'] > thresh
+
 ################################################################################
 #              Components
 ################################################################################
@@ -142,12 +149,12 @@ def w_avg(df,avcol,wcol):
 
     return wmean
 
-class binaryMeanRank():
+class binaryWeightedRank():
     """
     statRank compatible varTypeMixin, for computing means of only binary valued
     variables sets stat to dsp.trend_components.w_avg
     """
-    my_stat = lambda self, d,m,w :w_avg(d,m,w )
+
 
     def get_trend_vars(self,labeled_df):
         """
@@ -165,15 +172,18 @@ class binaryMeanRank():
             continuous
         """
 
-        self.target = labeled_df.get_vars_per_roletype('trend','binary')
-        self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
-        self.var_weight_list = np.NaN
-        return
+        self.target = labeled_df.get_vars_per_roletype('trend',['binary','continuous'])
+        all_cat = labeled_df.get_vars_per_roletype('trend','categorical')
+
+        self.trendgroup = [var for var in all_cat if
+                                len(pd.unique(labeled_df.df[var])) == 2]
+        self.var_weight_list = labeled_df.get_weightcol_per_var(self.target)
+        return (self.target,self.trendgroup)
 
 
 
 
-class weightedMeanRank():
+class weightedRank():
     """
     common parts for all continuous variable trends
     """

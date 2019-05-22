@@ -1,6 +1,10 @@
 
 import os
+import seaborn as sns
 import pandas as pd
+import numpy as np
+import matplotlib.markers as mk
+import matplotlib.pylab as plt
 import itertools
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
@@ -403,3 +407,47 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         print(self.result_df.head())
 
         return True
+
+    def sp_plot(self, x_col, y_col, color_col,ci = None,
+                                domain_range=[0, 20, 0 , 20],ax=None,
+                                 bold_color_val= None):
+        """
+        create SP vizualization plot from 2 columns of a df
+        """
+
+        # # create axes if not passed
+        # if ax is None:
+        #     fig = plt.figure()
+        #     ax = fig.add_subplot(111)
+
+        all_markers = list(mk.MarkerStyle.markers.keys())
+
+
+
+        n_markers = self.df[color_col].unique().shape[0] # number unique
+        cur_markers = all_markers[:n_markers]
+
+
+
+        if bold_color_val:
+            # highlight one level of color_col
+            color_vals = list(pd.unique(self.df[color_col]))
+            num_colors = len(color_vals)
+            bright_palette = sns.hls_palette(num_colors, l=.5)
+            dark_pallette = sns.hls_palette(num_colors, l=.7, s=.2)
+            highlight_pallete = dark_pallette
+            highlight_idx = color_vals.index(bold_color_val)
+
+            highlight_pallete[highlight_idx] = bright_palette[highlight_idx]
+
+            sns.lmplot(x_col, y_col, data=self.df, hue=color_col, ci=ci,
+                           markers =cur_markers, palette=highlight_pallete)
+        else:
+            # plot all with equal alpha
+            sns.lmplot(x_col, y_col, data=self.df, hue=color_col, ci=ci,
+                           markers =cur_markers, palette="hls")
+
+        # adda whole data regression line, but don't cover the scatter data
+        sns.regplot(x_col, y_col, data=self.df, color='black', scatter=False, ci=ci)
+
+        plt.axis(domain_range)

@@ -104,8 +104,36 @@ class linearRegression():
         """
         # take absolute value, because the two will be in opposite directions
         # relative to the angle of interest
+        abs_angle = self.get_distance_unnormalized(row)
+
+
+        # normalize so that right angle is 1 and parallel is 0
+        # TODO: fix error if angle is exactly np.pi/2
+        right_angle = np.pi/2
+        return (abs_angle%right_angle)/right_angle
+
+    def get_distance_unnormalized(self,row):
+        """
+        compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
+        closest to the positive x axis and is always positive valued, to be used as
+        a distance.
+
+        Parameters
+        ----------
+        row : pd.Series
+            row of a result_df DataFrame
+
+        Returns
+        -------
+        angle : float
+            angle in degrees between the subgroup_trend and agg_trend, compatible with
+            assignment to a cell of a result_df
+
+        """
+        # take absolute value, because the two will be in opposite directions
+        # relative to the angle of interest
         theta_sub = np.arctan(row['subgroup_trend'])
         theta_all = np.arctan(row['agg_trend'])
 
         # take difference them and convert to degrees
-        return np.rad2deg(np.abs(theta_all - theta_sub))
+        return np.abs(theta_all - theta_sub)
