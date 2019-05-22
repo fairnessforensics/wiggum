@@ -35,6 +35,9 @@ var ranking = {};
 var tableColumns = [];
 var updateVars;
 var weightingAttr;
+var threshold;
+var agg_type;
+var server_data;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["pearson_corr", "rank_trend"];
@@ -59,6 +62,29 @@ var options = select.selectAll('option')
 					.append('option')
 					.text(function (d) { return d; });	
 
+
+					
+d3.select("#controlbuttons").append("button")
+							.attr("id", "filter-btn")
+							.attr("type", "button")
+							.attr("value", "filter")
+							.text("Filter")
+							.attr("onclick", "filter_button()"); 	
+d3.select("#controlbuttons").append("button")
+							.attr("id", "detect-btn")
+							.attr("type", "button")
+							.attr("value", "detect")
+							.text("Detect")
+							.attr("onclick", "detect_button()"); 																		
+//d3.select("#controlbuttons").append('br');
+d3.select("#controlbuttons").append("button")
+							.attr("id", "reset-btn")
+							.attr("type", "button")
+							.attr("value", "reset")
+							.text("Reset")
+							.attr("onclick", "reset_button()");		
+
+
 function onchange() {
 
 	selectValue = d3.select(this).property('value');
@@ -68,11 +94,12 @@ function onchange() {
 
 	DrawLegend();
 
-	if (selectTypeValue == "pearson_corr") {
-		updateContainer();
-	} else {
-		updateRateSPContainer();
-	}
+	drawGraph(server_data);
+	//if (selectTypeValue == "pearson_corr") {
+	//	updateContainer();
+	//} else {
+	//	updateRateSPContainer();
+	//}
 	
 };
 
@@ -181,7 +208,7 @@ function updateContainer() {
 
 		Matrix({
 			container : '#container',
-			data      : UpdateMatrixFormat(bivariateMatrix, labels, categoryValuesList[i]),
+			data      : UpdateMatrixFormat(bivariateMatrix, labels, categoryValuesList[i], 'pearson_corr'),
 			labels    : labels,
 			subLabel  : subgroupLabel
 		});
@@ -268,7 +295,7 @@ function updateRateSPContainer() {
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
 							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex, 
-							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i]),
+							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i], "rank_trend"),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel
@@ -513,11 +540,13 @@ function DrawSlider(){
 		d3.select("#legend").selectAll('svg').remove();
 		DrawLegend();	
 
-		if (selectTypeValue == "pearson_corr") {
-			updateContainer();
-		} else {
-			updateRateSPContainer();
-		}
+		drawGraph(server_data);
+		
+		//if (selectTypeValue == "pearson_corr") {
+		//	updateContainer();
+		//} else {
+		//	updateRateSPContainer();
+		//}
 	});
 }
 
@@ -843,11 +872,13 @@ function doubleClickLegend(){
 
 	legendValue = -1;
 
-	if (selectTypeValue == "pearson_corr") {
-		updateContainer();
-	} else {
-		updateRateSPContainer();
-	}
+	drawGraph(server_data);
+
+	//if (selectTypeValue == "pearson_corr") {
+	//	updateContainer();
+	//} else {
+	//	updateRateSPContainer();
+	//}
 };
 
 function clickLegendCell(){	
@@ -861,11 +892,12 @@ function updateCorrelationMatrix() {
 	var d = this.datum();
 	legendValue = d.value;
 
-	if (selectTypeValue == "pearson_corr") {
-		updateContainer();
-	} else {
-		updateRateSPContainer();
-	}
+	drawGraph(server_data);
+	//if (selectTypeValue == "pearson_corr") {
+	//	updateContainer();
+	//} else {
+	//	updateRateSPContainer();
+	//}
 }
 
 function BivariateMatrix(correlationMatrix, correlationMatrixSubgroup) {

@@ -251,6 +251,8 @@ function getCategoricalAttrs(data){
 
 function createScatterplot(data) {
 
+	d3.select("#scatterplot").selectAll('svg').remove();
+
 	scatterplot = d3.select("div#scatterplot")
 					.append("svg")
 					.attr("width", width + margin.left + margin.right)
@@ -465,7 +467,7 @@ function calcLinear(data, x, y, minX, maxX){
 	}
 }
 
-var UpdateMatrixFormat = function(matrix, vars, category) {
+var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 
 
 	if (autoDetectFlag == 0 || autoDetectResult == null) {
@@ -478,7 +480,8 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 						value: cell,
 						categoryAttr: category.groupby,
 						category: category.value,
-						autoDetectFlg: 0 
+						autoDetectFlg: 0,
+						trend_type: trend_type
 					};
 			});
 		});
@@ -493,7 +496,7 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 					categoryAttr: category.groupby,
 
 					category: category.value,
-					autoDetectFlg: 0 
+					autoDetectFlg: 0
 				};
 
 				if (!isEmpty(autoDetectResult)) {
@@ -534,7 +537,7 @@ var clickMatrixCell = function() {
 function updateScatter() {
 	var d = this.datum();
 	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
-		categoryAttr: d.categoryAttr, category: d.category};
+		categoryAttr: d.categoryAttr, category: d.category, trend_type: d.trend_type};
 
 	// updateVars used for same axis range
 	updateVars = vars;	

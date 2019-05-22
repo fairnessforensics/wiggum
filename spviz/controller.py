@@ -125,6 +125,9 @@ def main():
            
             labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
 
+            # add distances
+            labeled_df_setup.add_distance()
+
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
 
@@ -149,6 +152,35 @@ def main():
             result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
 
             return jsonify(result_dict_dict)
+
+        # visualize.html 'Detect' button clicked 
+        if action == 'detect':
+            threshold = float(request.form['threshold'])
+            detect_result = labeled_df_setup.get_SP_rows(thresh=threshold)
+
+            result_dict_dict = {}
+            result_dict_dict = models.getResultDict(labeled_df_setup, detect_result)
+
+            return jsonify(result_dict_dict)      
+
+        # visualize.html 'Detect' button clicked 
+        if action == 'rank':
+            threshold_str = request.form['threshold']
+            threshold = float(threshold_str)
+
+            agg_type = request.form['agg_type']
+            labeled_df_setup.get_SP_rows(thresh=threshold)
+
+            threshold_param = 'SP_thresh_' + threshold_str
+            labeled_df_setup.add_view_score(threshold_param,agg_type=agg_type,colored=False)
+
+            rank_param = agg_type + '_view_' + threshold_param
+            rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,threshold_param)
+
+            result_dict_dict = {}
+            result_dict_dict = models.getResultDict(labeled_df_setup, rank_result)
+
+            return jsonify(result_dict_dict)                  
 
         spType = request.form['sptype']
 

@@ -15,19 +15,35 @@ function tabulate(data, columns) {
 	  .append('th')
 	  .style("font-size", "9px")
 		.text(function (column) { return column; })
-
-		.on('click', function (d) {
-			thead.attr('class', 'th');
-			if (sortAscending) {
-				rows.sort(function(a, b) {return d3.ascending(b[d], a[d]);  });
-				sortAscending = false;
-				this.className = 'aes';
-				} 
-		else {
-				rows.sort(function(a, b) { return d3.descending(b[d], a[d]); });
-				sortAscending = true;
-				this.className = 'des';
-				}
+  	  .each(function(d,i) {
+			// view distance score
+			if (i==8){
+				var optionData = ['mean', 'min', 'max', 'sum'];
+				var select = d3.select(this).append('select')
+											.attr('id','agg_type_selector');
+				var options = select.selectAll('option')
+									.data(optionData).enter()
+									.append('option')
+									.text(function(d){return d;})
+									.property("selected", 
+									function(d){ return d === agg_type; });
+			}
+		})
+		.on('click', function (d, i) {
+			// Remove sorting for 'view distance score'
+			if (i!=8) {
+				thead.attr('class', 'th');
+				if (sortAscending) {
+					rows.sort(function(a, b) {return d3.ascending(b[d], a[d]);  });
+					sortAscending = false;
+					this.className = 'aes';
+					} 
+			else {
+					rows.sort(function(a, b) { return d3.descending(b[d], a[d]); });
+					sortAscending = true;
+					this.className = 'des';
+					}
+			}
 	});
 
 	// append the header row for filtering
@@ -94,6 +110,7 @@ function tabulate(data, columns) {
 									.text(function(d){return d;});
 			}		
 			// fiter and reset button
+			/*
 			if (i == 6) {
 				d3.select(this).append("button")
 								.attr("id", "filter-btn")
@@ -108,7 +125,16 @@ function tabulate(data, columns) {
 								.attr("value", "reset")
 								.text("Reset")
 								.attr("onclick", "reset_button()");				
-			}							
+			}	*/
+			// rank button
+			if (i == 8) {
+				d3.select(this).append("button")
+								.attr("id", "rank-btn")
+								.attr("type", "button")
+								.attr("value", "rank")
+								.text("Rank")
+								.attr("onclick", "rank_button()"); 														
+			}										
 	})
 	;
 
@@ -118,13 +144,15 @@ function tabulate(data, columns) {
 	  .data(data)
 	  .enter()
 		.append('tr')
-		.attr("row", function(d) { return d.feat1+"_"+d.feat2+"_"+d.group_feat+"_"+d.subgroup; })
+		.attr("row", function(d) { return d.trend_type + "_"+ d.feat1+"_"+d.feat2+"_"+d.group_feat+"_"+d.subgroup; })
 		.attr("class", "tablerow")
 		.on("click", function(d, i) {
 			var vars = {x: d.feat1, y: d.feat2, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_type};
 			return interactBivariateMatrix(vars, i); });
 
 	// create a cell in each row for each column
+	// set column name for 'view distance score'
+	columns[8] = agg_type + "_view_SP_thresh_" + threshold;
 	var cells = rows.selectAll('td')
 	  .data(function (row) {
 		return columns.map(function (column) {
@@ -142,9 +170,8 @@ function tabulate(data, columns) {
 function updateTabulate(vars) {	
 
 	d3.selectAll(".tablerow").classed("highlighted", false);
-	var cell_id = vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
+	var cell_id = vars.trend_type + "_" + vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
 	d3.select("tr[row='" + cell_id + "']").classed("highlighted", true);
-	
 }
 
 function interactBivariateMatrix(vars) {
