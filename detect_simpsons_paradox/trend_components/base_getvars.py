@@ -140,15 +140,17 @@ def w_avg(df,avcol,wcol):
     wmean : float
         mean of df[avcol] weighted row wise by df[wcol]
     """
-    df.dropna(axis=0,subset=[avcol])
+    df.dropna(axis=0,subset=[avcol],inplace=True)
 
     if pd.isna(wcol):
         wmean = df[avcol].mean()
     else:
         wmean = np.average(df[avcol],weights =df[wcol])
         # np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+        var =  np.average((df[avcol]-wmean)**2, weights=df[wcol])
+        std = np.sqrt(var)
 
-    return wmean
+    return pd.Series([wmean ,var],index=['stat','spread'])
 
 class binaryWeightedRank():
     """
