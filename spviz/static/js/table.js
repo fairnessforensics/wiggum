@@ -1,4 +1,4 @@
-function tabulate(data, columns) {	
+function tabulate(data, columns, initialRankFlg) {	
 	
 	// remove existing table
 	d3.select("#table").selectAll('table').remove();
@@ -151,8 +151,14 @@ function tabulate(data, columns) {
 			return interactBivariateMatrix(vars, i); });
 
 	// create a cell in each row for each column
-	// set column name for 'view distance score'
-	columns[8] = agg_type + "_view_SP_thresh_" + threshold;
+	// set db column name for 'view distance score'
+	if (typeof initialRankFlg !== 'undefined') {
+		// intial ranking
+		columns[8] = "mean_view_distance";
+	} else {
+		columns[8] = agg_type + "_view_SP_thresh_" + threshold;
+	}	
+	
 	var cells = rows.selectAll('td')
 	  .data(function (row) {
 		return columns.map(function (column) {

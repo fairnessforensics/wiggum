@@ -149,7 +149,8 @@
 
                             tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 
                                             'trend_type','agg_trend', 'distance', 'view distance score'];
-                            tabulate(tableRecords, tableColumns);
+
+                            tabulate(tableRecords, tableColumns, true);
 
                             // Avoid ctrl-click                                    
                             $('option').mousedown(function(e) {
@@ -273,6 +274,7 @@
                         tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
                                 'subgroup', 'subgroup_slope', 'subgroup_trend',
                                 angle_key, subgroup_slope_key, subgroup_trend_key, individual_weight_name, view_weight_name];
+
                         tabulate(tableRecords, tableColumns);
 
                         // Ranking
