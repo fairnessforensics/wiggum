@@ -26,7 +26,7 @@ class trend():
     def is_SP(self,row,thresh):
         """
         default is if it's above a threshold
-        
+
         """
         return row['distance'] > thresh
 
@@ -145,7 +145,8 @@ def w_avg(df,avcol,wcol):
     if pd.isna(wcol):
         wmean = df[avcol].mean()
     else:
-        wmean = np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+        wmean = np.average(df[avcol],weights =df[wcol])
+        # np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
 
     return wmean
 
