@@ -293,7 +293,7 @@ function rateBivariateMatrixDiverging5(rateMatrix, rateMatrixSubgroup) {
 	return bivariateMatrix;
 }
 
-var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr, weightingAttr, targetAttr, subgroups) {
+var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, protectedAttr, weightingAttr, targetAttr, subgroups, trend_type) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
@@ -308,7 +308,8 @@ var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixInde
 					protectedAttr: protectedAttr,
 					weightingAttr: weightingAttr,
 					targetAttr: targetAttr,					
-					subgroups: subgroups
+					subgroups: subgroups,
+					trend_type: trend_type
 				};
 		});
 	});
@@ -499,7 +500,7 @@ function prepareDetail() {
 
 	// find subgroup for vars_tables
 	var subgroups = d.subgroups;
-	var vars_table = { x: targetAttr, y: d.protectedAttr, categoryAttr: d.keyName, category: subgroups[d.colVar]};		
+	var vars_table = { x: targetAttr, y: d.protectedAttr, categoryAttr: d.keyName, category: subgroups[d.colVar], trend_type:d.trend_type };		
 
 	updateTabulate(vars_table);
 	updateSlopeGraph(vars);

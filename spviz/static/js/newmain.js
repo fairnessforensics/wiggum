@@ -4,17 +4,6 @@ function drawGraph(dataAll) {
 	selectValue = d3.select("#selectors").select('select').property('value');
 	selectTypeValue = d3.select("#typeSelector").select('select').property('value');
 
-	// Draw Slider
-	DrawSlider();
-
-	// Draw Legend
-	d3.select("#legend").selectAll('svg').remove();
-	DrawLegend();
-
-	// Initial legend click value
-	legendValue = -1;
-	//selectTypeValue = "Rate"
-
 	csvData = JSON.parse(dataAll[1].replace(/\bNaN\b/g, "null"))    
 
 	for (var key in dataAll){
@@ -157,7 +146,7 @@ function drawGraphTable(data) {
 
 	// Display info table
 	tableRecords = JSON.parse(data[0])              
-	tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend'];
+	tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend', 'distance', 'view distance score'];
 	tabulate(tableRecords, tableColumns);
 
 	// Avoid ctrl-click                                    
