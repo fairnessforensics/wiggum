@@ -128,6 +128,8 @@ def main():
             # add distances
             labeled_df_setup.add_distance()
 
+            labeled_df_setup.rank_occurences_by_view(ascending=False)
+
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
 
