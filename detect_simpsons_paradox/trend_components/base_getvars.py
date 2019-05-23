@@ -26,7 +26,7 @@ class trend():
     def is_SP(self,row,thresh):
         """
         default is if it's above a threshold
-        
+
         """
         return row['distance'] > thresh
 
@@ -140,14 +140,21 @@ def w_avg(df,avcol,wcol):
     wmean : float
         mean of df[avcol] weighted row wise by df[wcol]
     """
-    df.dropna(axis=0,subset=[avcol])
-
-    if pd.isna(wcol):
-        wmean = df[avcol].mean()
+    n_df = df.dropna(axis=0,subset=[avcol])
+    if len(n_df):
+        if pd.isna(wcol):
+            wmean = n_df[avcol].mean()
+            std = n_df[avcol].std()
+        else:
+            wmean = np.average(n_df[avcol],weights =n_df[wcol])
+            # np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+            var =  np.average((n_df[avcol]-wmean)**2, weights=n_df[wcol])
+            std = np.sqrt(var)
     else:
-        wmean = np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
+        wmean =0.0
+        std = 0.0
 
-    return wmean
+    return pd.Series([wmean ,wmean+std,wmean-std],index=['stat','max','min'])
 
 class binaryWeightedRank():
     """
