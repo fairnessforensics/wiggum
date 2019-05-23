@@ -49,7 +49,7 @@ class linearRegression():
 
 
             slopes = []
-            w_reg_vars = zip(regression_vars,var_weight_list)
+            w_reg_vars = zip(self.regression_vars,self.var_weight_list)
 
             for groupby_lev,df in data_df:
                 # expand into all combinations if symmetric
