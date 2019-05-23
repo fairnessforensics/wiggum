@@ -128,8 +128,6 @@ def main():
             # add distances
             labeled_df_setup.add_distance()
 
-            labeled_df_setup.rank_occurences_by_view(ascending=False)
-
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
 
@@ -141,7 +139,8 @@ def main():
             filter_object = json.loads(filter_object, cls=Decoder)
 
             filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
-                                group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'])
+                                group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'], 
+                                trend_type =filter_object['trend_type'])
 
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, filter_result, filter_object['subgroup'])
@@ -158,7 +157,17 @@ def main():
         # visualize.html 'Detect' button clicked 
         if action == 'detect':
             threshold = float(request.form['threshold'])
-            detect_result = labeled_df_setup.get_SP_rows(thresh=threshold)
+            sg_qual_threshold = float(request.form['sg_qual_threshold'])
+            agg_qual_threshold = float(request.form['agg_qual_threshold'])
+
+            filter_object = request.form['filter_object']
+            filter_object = json.loads(filter_object, cls=Decoder)
+            trend_filter = filter_object['trend_type']
+
+            sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_quality':agg_qual_threshold,
+                'subgroup_trend_quality':sg_qual_threshold,'trend_type':trend_filter}
+
+            detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)
 
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, detect_result)

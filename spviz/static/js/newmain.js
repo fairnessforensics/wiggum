@@ -145,9 +145,9 @@ function drawGraphTable(data) {
 	drawGraph(data);
 
 	// Display info table
-	tableRecords = JSON.parse(data[0])              
-	tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 'trend_type','agg_trend', 'distance', 'view distance score'];
-	tabulate(tableRecords, tableColumns);
+	tableRecords = JSON.parse(data[0])    
+
+	tabulate(tableRecords);
 
 	// Avoid ctrl-click                                    
 	$('option').mousedown(function(e) {

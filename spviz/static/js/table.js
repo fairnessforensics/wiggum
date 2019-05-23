@@ -1,4 +1,4 @@
-function tabulate(data, columns, initialRankFlg) {	
+function tabulate(data) {	
 	
 	// remove existing table
 	d3.select("#table").selectAll('table').remove();
@@ -8,6 +8,37 @@ function tabulate(data, columns, initialRankFlg) {
 	var thead = table.append('thead');
 	var sortAscending = true;
 
+	var columns = Object.keys(data[0]);
+
+	// add rank option
+	var optionData = ['mean', 'min', 'max', 'sum'];
+	var select = d3.select("#ranking").append('select')
+								.attr('id','agg_type_selector');
+	var options = select.selectAll('option')
+						.data(optionData).enter()
+						.append('option')
+						.text(function(d){return d;})
+						.property("selected", 
+						function(d){ return d === agg_type; });
+	// view option
+	var optionData = ['mean', 'min', 'max', 'sum'];
+	var select = d3.select("#ranking").append('select')
+								.attr('id','agg_type_selector');
+	var options = select.selectAll('option')
+						.data(optionData).enter()
+						.append('option')
+						.text(function(d){return d;})
+						.property("selected", 
+						function(d){ return d === agg_type; });
+
+	// rank button
+	d3.select("#ranking").append("button")
+						.attr("id", "rank-btn")
+						.attr("type", "button")
+						.attr("value", "rank")
+						.text("Rank")
+						.attr("onclick", "rank_button()"); 	
+
 	// append the header row
 	var thead = table.append('thead').append('tr')
 	  .selectAll('th')
@@ -15,23 +46,8 @@ function tabulate(data, columns, initialRankFlg) {
 	  .append('th')
 	  .style("font-size", "9px")
 		.text(function (column) { return column; })
-  	  .each(function(d,i) {
-			// view distance score
-			if (i==8){
-				var optionData = ['mean', 'min', 'max', 'sum'];
-				var select = d3.select(this).append('select')
-											.attr('id','agg_type_selector');
-				var options = select.selectAll('option')
-									.data(optionData).enter()
-									.append('option')
-									.text(function(d){return d;})
-									.property("selected", 
-									function(d){ return d === agg_type; });
-			}
-		})
 		.on('click', function (d, i) {
 			// Remove sorting for 'view distance score'
-			if (i!=8) {
 				thead.attr('class', 'th');
 				if (sortAscending) {
 					rows.sort(function(a, b) {return d3.ascending(b[d], a[d]);  });
@@ -43,7 +59,6 @@ function tabulate(data, columns, initialRankFlg) {
 					sortAscending = true;
 					this.className = 'des';
 					}
-			}
 	});
 
 	// append the header row for filtering
@@ -82,7 +97,7 @@ function tabulate(data, columns, initialRankFlg) {
 									.text(function(d){return d;});
 			}	
 			// group_feat
-			if (i==3) {
+			if (i==2) {
 				var optionData = d3.map(data, function(d){return d.group_feat;}).keys();
 				var select = d3.select(this).append('select')
 											.attr('id','group_feat_selector')				
@@ -96,7 +111,7 @@ function tabulate(data, columns, initialRankFlg) {
 									.text(function(d){return d;});
 			}	
 			// subgroup
-			if (i==4) {
+			if (i==3) {
 				var optionData = d3.map(data, function(d){return d.subgroup;}).keys();
 				var select = d3.select(this).append('select')
 											.attr('id','subgroup_selector')
@@ -108,33 +123,61 @@ function tabulate(data, columns, initialRankFlg) {
 									.append('option')
 									.attr("value", function(d) { return d; })
 									.text(function(d){return d;});
-			}		
-			// fiter and reset button
-			/*
-			if (i == 6) {
-				d3.select(this).append("button")
-								.attr("id", "filter-btn")
-								.attr("type", "button")
-								.attr("value", "filter")
-								.text("Filter")
-								.attr("onclick", "filter_button()"); 												
+			}	
+			// subgroup_trend_quality
+			if (i==5) {
+				d3.select(this).append("text")
+					.attr('id', 'subgroup_trend_quality_label')
+					.style("font-size", "10px")
+					.style("color", "black")
+					.text("0");
 				d3.select(this).append('br');
-				d3.select(this).append("button")
-								.attr("id", "reset-btn")
-								.attr("type", "button")
-								.attr("value", "reset")
-								.text("Reset")
-								.attr("onclick", "reset_button()");				
-			}	*/
-			// rank button
-			if (i == 8) {
-				d3.select(this).append("button")
-								.attr("id", "rank-btn")
-								.attr("type", "button")
-								.attr("value", "rank")
-								.text("Rank")
-								.attr("onclick", "rank_button()"); 														
-			}										
+				d3.select(this).append('input')
+								.attr('type', 'range')
+								.attr('id', 'subgroup_trend_quality_slider')
+								.style('width', '100px')
+								.attr('min', '0')
+								.attr('max', '1')
+								.attr('step', '0.01')
+								.attr('value', 0)
+								.on("input", function() {
+									updateLabel(this.value, '#subgroup_trend_quality_label');
+								});
+			}	
+			// trend_type
+			if (i==6) {
+				var optionData = d3.map(data, function(d){return d.trend_type;}).keys();
+				var select = d3.select(this).append('select')
+											.attr('id','trend_type_selector')
+											.attr('multiple', 'multiple')
+											.style('height', '44px');
+														
+				var options = select.selectAll('option')
+									.data(optionData).enter()
+									.append('option')
+									.attr("value", function(d) { return d; })
+									.text(function(d){return d;});
+			}	
+			// agg_trend_quality
+			if (i==8) {
+				d3.select(this).append("text")
+					.attr('id', 'agg_trend_quality_label')
+					.style("font-size", "10px")
+					.style("color", "black")
+					.text("0");
+				d3.select(this).append('br');
+				d3.select(this).append('input')
+								.attr('type', 'range')
+								.attr('id', 'agg_trend_quality_slider')
+								.style('width', '100px')
+								.attr('min', '0')
+								.attr('max', '1')
+								.attr('step', '0.01')
+								.attr('value', 0)
+								.on("input", function() {
+									updateLabel(this.value, '#agg_trend_quality_label');
+								});
+			}												
 	})
 	;
 
@@ -151,14 +194,6 @@ function tabulate(data, columns, initialRankFlg) {
 			return interactBivariateMatrix(vars, i); });
 
 	// create a cell in each row for each column
-	// set db column name for 'view distance score'
-	if (typeof initialRankFlg !== 'undefined') {
-		// intial ranking
-		columns[8] = "mean_view_distance";
-	} else {
-		columns[8] = agg_type + "_view_SP_thresh_" + threshold;
-	}	
-	
 	var cells = rows.selectAll('td')
 	  .data(function (row) {
 		return columns.map(function (column) {
@@ -171,6 +206,10 @@ function tabulate(data, columns, initialRankFlg) {
 		.text(function (d) { return d.value; });
 
   return table;
+}
+
+function updateLabel(value, id) {
+	d3.select(id).text(value);
 }
 
 function updateTabulate(vars) {	

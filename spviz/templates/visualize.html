@@ -51,14 +51,16 @@
             var feat1_selector = document.getElementById("feat1_selector");
             var feat2_selector = document.getElementById("feat2_selector");
             var group_feat_selector = document.getElementById("group_feat_selector");
-            var subgroup_selector = document.getElementById("subgroup_selector");                                  
+            var subgroup_selector = document.getElementById("subgroup_selector");    
+            var trend_type_selector = document.getElementById("trend_type_selector");                                            
 
             var filter_object =            
                                     {   
                                         feat1: getSelectValues(feat1_selector),
                                         feat2: getSelectValues(feat2_selector), 
                                         group_feat: getSelectValues(group_feat_selector),
-                                        subgroup: getSelectValues(subgroup_selector)                                                               
+                                        subgroup: getSelectValues(subgroup_selector),
+                                        trend_type: getSelectValues(trend_type_selector)                                                             
                                     };
             filter_object = JSON.stringify(filter_object);
 
@@ -90,11 +92,32 @@
         }     
         
         function detect_button() {
+            var feat1_selector = document.getElementById("feat1_selector");
+            var feat2_selector = document.getElementById("feat2_selector");
+            var group_feat_selector = document.getElementById("group_feat_selector");
+            var subgroup_selector = document.getElementById("subgroup_selector");    
+            var trend_type_selector = document.getElementById("trend_type_selector");                                            
+            console.log(getSelectValues(trend_type_selector));
+            var filter_object =            
+                                    {   
+                                        feat1: getSelectValues(feat1_selector),
+                                        feat2: getSelectValues(feat2_selector), 
+                                        group_feat: getSelectValues(group_feat_selector),
+                                        subgroup: getSelectValues(subgroup_selector),
+                                        trend_type: getSelectValues(trend_type_selector)                                                             
+                                    };
+            filter_object = JSON.stringify(filter_object);
+
             var threshold = legendAdjustValue;
+
+            var agg_qual_threshold = document.getElementById("agg_trend_quality_slider").value;
+            var sg_qual_threshold = document.getElementById("subgroup_trend_quality_slider").value;
+
             $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'detect', 'threshold': threshold},                               
+                        data: {'action':'detect', 'filter_object': filter_object, 'threshold': threshold, 
+                                'agg_qual_threshold': agg_qual_threshold, 'sg_qual_threshold': sg_qual_threshold},                               
                         success: function(data) {
                             server_data = data;
                             d3.select("#container").selectAll('svg').remove();
@@ -141,30 +164,7 @@
                             // Initial legend click value
 	                        legendValue = -1;
                             
-                            // Get data from controller return data
-                            drawGraph(data);
-
-                            // Display info table
-                            tableRecords = JSON.parse(data[0])              
-
-                            tableColumns = ['feat1', 'feat2', 'subgroup_trend', 'group_feat','subgroup' , 
-                                            'trend_type','agg_trend', 'distance', 'view distance score'];
-
-                            tabulate(tableRecords, tableColumns, true);
-
-                            // Avoid ctrl-click                                    
-                            $('option').mousedown(function(e) {
-                                e.preventDefault();
-                                var originalScrollTop = $(this).parent().scrollTop();
-                                $(this).prop('selected', $(this).prop('selected') ? false : true);
-                                var self = this;
-                                $(this).parent().focus();
-                                setTimeout(function() {
-                                    $(self).parent().scrollTop(originalScrollTop);
-                                }, 0);
-                                
-                                return false;
-                            });  
+                            drawGraphTable(data);
                     },
                     error: function(ts) { console.log(ts.responseText) }
                 });
@@ -470,7 +470,8 @@
         <div id ="slider" class="slider"></div>
         <br/><br/>
         <div id="legend"></div>
-        <div id ="controlbuttons"></div>        
+        <div id ="controlbuttons"></div>       
+        <div id ="ranking"></div>           
     </div>
 
     <div id="rankingdiv" style="display:none; float:left">

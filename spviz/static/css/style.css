@@ -60,6 +60,12 @@
     margin-top: 360px;   
 }
 
+#ranking {
+    position: absolute;
+    margin-left: 40px;    
+    margin-top: 390px;   
+}
+
 #scatterplot {
     display: block;
     background: white;
