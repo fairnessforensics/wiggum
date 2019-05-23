@@ -151,7 +151,7 @@ class _trendDetectors():
 
 
 
-    def get_subgroup_trends_1lev(self,trend_types):
+    def get_subgroup_trends_1lev(self,trend_types, replace=False):
         """
         find subgroup and aggregate trends in the dataset, return a DataFrame that
         contains information necessary to filter for SP and relaxations
@@ -172,10 +172,11 @@ class _trendDetectors():
 
         if type(trend_types[0]) is str:
             # instantiate objects
-            self.trend_list = [all_trend_types[trend]() for trend in trend_types]
+            self.trend_list.extend([all_trend_types[trend]()
+                                                    for trend in trend_types])
         else:
-            # use provided
-            self.trend_list = trend_types
+            # use provided, must be instantiated
+            self.trend_list.extend(trend_types)
 
         # prep the result df to add data to later
         self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
@@ -210,7 +211,11 @@ class _trendDetectors():
         # condense and merge all trends with subgroup trends
         all_trends = pd.concat(all_trends)
         subgroup_trends = pd.concat(subgroup_trends)
-        self.result_df = pd.merge(subgroup_trends,all_trends)
+        if self.result_df.empty or replace:
+            self.result_df = pd.merge(subgroup_trends,all_trends)
+        else:
+            new_res = pd.merge(subgroup_trends,all_trends)
+            self.result_df = pd.concat([self.result_df,new_res])
         # ,on=['feat1','feat2'], how='left
 
         # remove rows where a trend is undefined
