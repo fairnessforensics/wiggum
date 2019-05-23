@@ -10,12 +10,7 @@ trend_quality_sp = {'distance':.2, 'agg_trend_quality':.15,
                 'subgroup_trend_quality':.15,'name':'default_qual_sp'}
 
 
-def thresh_or_equal(val,target):
-    """
-    check if val > target for float targets or == target for stings
-    """
-    test = {float: lambda val,target: val>target,
-            str: lambda val, target: val ==target}
+
 
 
 class _resultDataFrame():
@@ -54,7 +49,8 @@ class _resultDataFrame():
             col_name = filter_thresh.pop('name')
 
         sp_test = {float: lambda val,target: val>target,
-                str: lambda val, target: val ==target}
+                str: lambda val, target: val ==target,
+                list: lambda val, target: val in target}
 
         is_SP = lambda row: bool(np.prod([sp_test[type(th)](row[col],th) for
                                 col,th in filter_thresh.items()]))
