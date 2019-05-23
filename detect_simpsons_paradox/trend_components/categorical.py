@@ -3,6 +3,9 @@ import numpy as np
 import itertools
 import scipy.stats as stats
 
+interval = lambda row: pd.Series([row['stat'] - row['spread'],
+                                row['stat'] + row['spread']],
+                 index=['min','max'])
 
 class statBinRankTrend():
     """
@@ -32,8 +35,10 @@ class statBinRankTrend():
         name : string
             used in the trend_type column of result_df and by viz
         my_stat : function handle
-            statistic to compute, must be compatible with DataFrame.apply and
-            have the interface (self,df,statfeat,weightfeat)
+            statistic to compute, must be compatible with DataFrame.apply,
+            have the interface (self,df,statfeat,weightfeat) and return a Series
+            with 'stat', 'max', 'min' values defining the statistic and a
+            confidence interval
         trendgroup : list of strings
             list of variable names to be ranked (and used for grouping in this
             method)
@@ -78,7 +83,7 @@ class statBinRankTrend():
                 weightfeat = weight_col_lookup[statfeat]
 
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat,weightfeat)
-                stat_df.sort_values(inplace=True)
+                stat_df.sort_values('stat',inplace=True)
 
                 # stat_order = stat_df.index.values
                 alpha1 = stat_df.sort_index().index.values[0]
@@ -94,10 +99,13 @@ class statBinRankTrend():
 
 
 
-                # quality is ratio
-                ratio_qual = stat_df[0]/stat_df[1]
+                # quality is amount of overlap of CI
+
+                overlap = max(stat_df.iloc[0]['max']-stat_df.iloc[1]['min'],0)
+                totrange = stat_df.iloc[1]['max']-stat_df.iloc[0]['min']
+                interval_overlap_qual = overlap/totrange
                 # create row
-                rank_res.append([statfeat,rankfeat,comparison_sign,ratio_qual,
+                rank_res.append([statfeat,rankfeat,comparison_sign,interval_overlap_qual,
                                         groupby_lev])
 
 
@@ -174,7 +182,9 @@ class statRankTrend():
             used in the trend_type column of result_df and by viz
         my_stat : function handle
             statistic to compute, must be compatible with DataFrame.apply and
-            have the interface (self,df,statfeat,weightfeat)
+            have the interface (self,df,statfeat,weightfeat) and return a Series
+            with 'stat', 'max', 'min' values defining the statistic and a
+            confidence interval
         trendgroup : list of strings
             list of variable names to be ranked (and used for grouping in this
             method)
@@ -219,7 +229,7 @@ class statRankTrend():
                 weightfeat = weight_col_lookup[statfeat]
 
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat,weightfeat)
-                stat_df.sort_values(inplace=True)
+                stat_df.sort_values('stat',inplace=True)
 
                 # save detailed precompute
                 trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
@@ -286,6 +296,7 @@ class statRankTrend():
                 # compute and round
                 tau,p = stats.kendalltau(num_trend,num_acutal)
                 tau_qual = np.abs(np.round(tau,4))
+
                 # create row
                 rank_res.append([statfeat,rankfeat,ordered_rank_feat,tau_qual,
                                         groupby_lev])
@@ -339,7 +350,6 @@ class statRankTrend():
             numeric_subgroup.extend(append_nums)
 
         tau,p = stats.kendalltau(numeric_agg,numeric_subgroup)
-        tau_dist = np.round(1- tau,2)
+        # scale, flip and round
+        tau_dist = np.round(1- (tau+1/2),4)
         return tau_dist
-
-    
