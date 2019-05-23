@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import itertools
 import scipy.stats as stats
-
+from .base_getvars import  w_avg
 
 class linearRegression():
 
@@ -49,17 +49,18 @@ class linearRegression():
 
 
             slopes = []
+            w_reg_vars = zip(regression_vars,var_weight_list)
 
             for groupby_lev,df in data_df:
                 # expand into all combinations if symmetric
                 if self.symmetric_vars:
-                    var_pairs = itertools.combinations(self.regression_vars,2)
+                    view_pairs = itertools.combinations(w_reg_vars,2)
                 else:
                     # else assume list of tuples was passed
-                    var_pairs = self.regression_vars
+                    var_pairs = w_reg_vars
 
                 # var_pairs must be list of tuples or iterator
-                for a,b in var_pairs:
+                for (a,aw),(b,bw) in var_pairs:
                     # compute each slope
                     slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
                     # quality is absolute value of r_val (corelation coefficient)
