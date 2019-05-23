@@ -1,6 +1,8 @@
 from .base_getvars import (trend, ordinalRegression,continuousRegression,
                     continuousOrdinalRegression, binaryWeightedRank,
-                     weightedRank, w_avg)
+                     weightedRank)
+
+from .base_getvars import (w_median, w_avg)
 
 from .categorical import statRankTrend,statBinRankTrend
 
