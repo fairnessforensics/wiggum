@@ -3,10 +3,6 @@ import numpy as np
 import itertools
 import scipy.stats as stats
 
-interval = lambda row: pd.Series([row['stat'] - row['spread'],
-                                row['stat'] + row['spread']],
-                 index=['min','max'])
-
 class statBinRankTrend():
     """
     Compute a trend that determines between alphabetically ordered values of a
