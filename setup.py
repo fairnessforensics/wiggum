@@ -10,8 +10,7 @@ setup(name='detect_simpsons_paradox',
       packages=['detect_simpsons_paradox', 'spviz','detect_simpsons_paradox.trend_components'],
       zip_safe=False,
       include_package_data = True,
-      install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas',
-      'mlsim @ https://github.com/brownsarahm/ml-sim/archive/master.zip','flask'],
+      install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas','flask'],
       entry_points = {
         'console_scripts': ['spviz-app=spviz.command_line:main'],
     })

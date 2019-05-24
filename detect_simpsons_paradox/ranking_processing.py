@@ -110,7 +110,7 @@ class _resultDataFrame():
         # merge with result and return
 
         self.result_df = pd.merge(self.result_df,view_df, left_on = view_vars,
-                                                            right_on=view_vars)
+                                                          right_on = view_vars)
         # ,suffixes=['', suffix])
 
         return self.result_df

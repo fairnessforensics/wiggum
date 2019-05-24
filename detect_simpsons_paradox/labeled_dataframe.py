@@ -166,6 +166,9 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
         else:
             self.result_df = pd.read_csv(results)
 
+        self.trend_list = []
+
+
     def count_compress_binary(self,retain_var_list, compress_var_list):
         """
         TODO: FIXME

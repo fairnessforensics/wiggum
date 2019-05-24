@@ -60,6 +60,7 @@ class ordinalRegression():
 
         self.regression_vars = labeled_df.get_vars_per_roletype('trend',
                                     'ordinal')
+        self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
         return self.regression_vars
 
 
@@ -89,6 +90,7 @@ class continuousOrdinalRegression():
 
         self.regression_vars = labeled_df.get_vars_per_roletype('trend',
                                     ['continuous','ordinal'])
+        self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
         return self.regression_vars
 
 class continuousRegression():

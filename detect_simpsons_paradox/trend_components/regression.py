@@ -49,15 +49,16 @@ class linearRegression():
 
 
             slopes = []
-            w_reg_vars = zip(regression_vars,var_weight_list)
+            w_reg_vars = zip(self.regression_vars,self.var_weight_list)
 
             for groupby_lev,df in data_df:
                 # expand into all combinations if symmetric
                 if self.symmetric_vars:
-                    view_pairs = itertools.combinations(w_reg_vars,2)
+                    var_pairs = itertools.combinations(zip(self.regression_vars,
+                                            self.var_weight_list),2)
                 else:
                     # else assume list of tuples was passed
-                    var_pairs = w_reg_vars
+                    var_pairs =  zip(self.regression_vars,self.var_weight_list)
 
                 # var_pairs must be list of tuples or iterator
                 for (a,aw),(b,bw) in var_pairs:
