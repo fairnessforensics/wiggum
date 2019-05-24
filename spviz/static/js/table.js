@@ -1,4 +1,4 @@
-function tabulate(data) {	
+function tabulate(data, action) {	
 	
 	// remove existing table
 	d3.select("#table").selectAll('table').remove();
@@ -70,59 +70,79 @@ function tabulate(data) {
   	  .each(function(d,i) {
 			// feat1
 			if (i==0) {
-				var optionData = d3.map(data, function(d){return d.feat1;}).keys();
+				if (action == 'page_load') {
+					feat1_options = d3.map(data, function(d){return d.feat1;}).keys();
+				} 
+	
 				var select = d3.select(this).append('select')
 											.attr('id','feat1_selector')					
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(optionData).enter()
+									.data(feat1_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
-									.text(function(d){return d;});
+									.text(function(d){return d;})
+									.property("selected", 
+									function(d){ return feat1_selected.includes(d); });
 			}	
 			// feat2
 			if (i==1) {
-				var optionData = d3.map(data, function(d){return d.feat2;}).keys();
+				if (action == 'page_load') {
+					feat2_options = d3.map(data, function(d){return d.feat2;}).keys();
+				} 			
+
 				var select = d3.select(this).append('select')
 											.attr('id','feat2_selector')					
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(optionData).enter()
+									.data(feat2_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
-									.text(function(d){return d;});
+									.text(function(d){return d;})
+									.property("selected", 
+									function(d){ return feat2_selected.includes(d); });
 			}	
 			// group_feat
 			if (i==2) {
-				var optionData = d3.map(data, function(d){return d.group_feat;}).keys();
+				if (action == 'page_load') {
+					group_feat_options = d3.map(data, function(d){return d.group_feat;}).keys();
+				} 
+
 				var select = d3.select(this).append('select')
 											.attr('id','group_feat_selector')				
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(optionData).enter()
+									.data(group_feat_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
-									.text(function(d){return d;});
+									.text(function(d){return d;})
+									.property("selected", 
+									function(d){ return group_feat_selected.includes(d); });
 			}	
 			// subgroup
 			if (i==3) {
-				var optionData = d3.map(data, function(d){return d.subgroup;}).keys();
+				if (action == 'page_load') {
+					subgroup_options = d3.map(data, function(d){return d.subgroup;}).keys();
+				} 				
+
 				var select = d3.select(this).append('select')
 											.attr('id','subgroup_selector')
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(optionData).enter()
+									.data(subgroup_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
-									.text(function(d){return d;});
+									.text(function(d){return d;})
+									.property("selected", 
+									function(d){ return subgroup_selected.includes(d); });
 			}	
 			// subgroup_trend_quality
 			if (i==5) {
@@ -146,17 +166,22 @@ function tabulate(data) {
 			}	
 			// trend_type
 			if (i==6) {
-				var optionData = d3.map(data, function(d){return d.trend_type;}).keys();
+				if (action == 'page_load') {
+					trend_type_options = d3.map(data, function(d){return d.trend_type;}).keys();
+				} 					
+
 				var select = d3.select(this).append('select')
 											.attr('id','trend_type_selector')
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(optionData).enter()
+									.data(trend_type_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
-									.text(function(d){return d;});
+									.text(function(d){return d;})
+									.property("selected", 
+									function(d){ return trend_type_selected.includes(d); });
 			}	
 			// agg_trend_quality
 			if (i==8) {

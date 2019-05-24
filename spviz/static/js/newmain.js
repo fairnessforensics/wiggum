@@ -140,14 +140,14 @@ function isEmpty(obj) {
     return true;
 }
 
-function drawGraphTable(data) {
+function drawGraphTable(data, action) {
 	// Get data from controller return data
 	drawGraph(data);
 
 	// Display info table
 	tableRecords = JSON.parse(data[0])    
 
-	tabulate(tableRecords);
+	tabulate(tableRecords, action);
 
 	// Avoid ctrl-click                                    
 	$('option').mousedown(function(e) {

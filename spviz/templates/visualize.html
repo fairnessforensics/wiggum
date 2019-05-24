@@ -48,19 +48,14 @@
         }
 
         function filter_button() {
-            var feat1_selector = document.getElementById("feat1_selector");
-            var feat2_selector = document.getElementById("feat2_selector");
-            var group_feat_selector = document.getElementById("group_feat_selector");
-            var subgroup_selector = document.getElementById("subgroup_selector");    
-            var trend_type_selector = document.getElementById("trend_type_selector");                                            
-
-            var filter_object =            
-                                    {   
-                                        feat1: getSelectValues(feat1_selector),
-                                        feat2: getSelectValues(feat2_selector), 
-                                        group_feat: getSelectValues(group_feat_selector),
-                                        subgroup: getSelectValues(subgroup_selector),
-                                        trend_type: getSelectValues(trend_type_selector)                                                             
+                                         
+            setSelectedOptions();
+            var filter_object =     {   
+                                        feat1: feat1_selected,
+                                        feat2: feat2_selected, 
+                                        group_feat: group_feat_selected,
+                                        subgroup: subgroup_selected,
+                                        trend_type: trend_type_selected                                                            
                                     };
             filter_object = JSON.stringify(filter_object);
 
@@ -92,20 +87,15 @@
         }     
         
         function detect_button() {
-            var feat1_selector = document.getElementById("feat1_selector");
-            var feat2_selector = document.getElementById("feat2_selector");
-            var group_feat_selector = document.getElementById("group_feat_selector");
-            var subgroup_selector = document.getElementById("subgroup_selector");    
-            var trend_type_selector = document.getElementById("trend_type_selector");                                            
-            console.log(getSelectValues(trend_type_selector));
-            var filter_object =            
-                                    {   
-                                        feat1: getSelectValues(feat1_selector),
-                                        feat2: getSelectValues(feat2_selector), 
-                                        group_feat: getSelectValues(group_feat_selector),
-                                        subgroup: getSelectValues(subgroup_selector),
-                                        trend_type: getSelectValues(trend_type_selector)                                                             
+            setSelectedOptions();
+            var filter_object =     {   
+                                        feat1: feat1_selected,
+                                        feat2: feat2_selected, 
+                                        group_feat: group_feat_selected,
+                                        subgroup: subgroup_selected,
+                                        trend_type: trend_type_selected                                                            
                                     };
+
             filter_object = JSON.stringify(filter_object);
 
             var threshold = legendAdjustValue;
@@ -164,7 +154,7 @@
                             // Initial legend click value
 	                        legendValue = -1;
                             
-                            drawGraphTable(data);
+                            drawGraphTable(data, 'page_load');
                     },
                     error: function(ts) { console.log(ts.responseText) }
                 });

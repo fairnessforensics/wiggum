@@ -39,6 +39,20 @@ var threshold;
 var agg_type;
 var server_data;
 
+// For table components
+var feat1_options = [];
+var feat2_options = [];
+var group_feat_options = [];
+var subgroup_options = [];
+var trend_type_options = [];
+var feat1_selected = [];
+var feat2_selected = [];
+var group_feat_selected = [];
+var subgroup_selected = [];
+var trend_type_selected = [];
+var subgrou_trend_quality;
+var agg_trend_quality = [];
+
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["pearson_corr", "rank_trend"];
 
@@ -84,6 +98,19 @@ d3.select("#controlbuttons").append("button")
 							.text("Reset")
 							.attr("onclick", "reset_button()");		
 
+function setSelectedOptions() {
+	var feat1_selector = document.getElementById("feat1_selector");
+	var feat2_selector = document.getElementById("feat2_selector");
+	var group_feat_selector = document.getElementById("group_feat_selector");
+	var subgroup_selector = document.getElementById("subgroup_selector");    
+	var trend_type_selector = document.getElementById("trend_type_selector");   
+
+	feat1_selected = getSelectValues(feat1_selector);
+	feat2_selected = getSelectValues(feat2_selector);
+	group_feat_selected = getSelectValues(group_feat_selector);
+	subgroup_selected = getSelectValues(subgroup_selector);
+	trend_type_selected = getSelectValues(trend_type_selector);    
+}
 
 function onchange() {
 
