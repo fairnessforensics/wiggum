@@ -23,8 +23,6 @@ function tabulate(data, action) {
 
 		d3.select("#view_score_selector").remove();			
 		// view option
-		// Fix me if detected columns not replaced
-		//var optionData = columns.slice(9, 10 + counter_detect);
 		var optionData = ['distance', 'SP'];
 		var select = d3.select("#ranking").append('select')
 									.attr('id','view_score_selector');
