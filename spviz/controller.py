@@ -176,17 +176,17 @@ def main():
 
         # visualize.html 'Detect' button clicked 
         if action == 'rank':
-            threshold_str = request.form['threshold']
-            threshold = float(threshold_str)
 
             agg_type = request.form['agg_type']
-            labeled_df_setup.get_SP_rows(thresh=threshold)
+            view_score = request.form['view_score']
 
-            threshold_param = 'SP_thresh_' + threshold_str
-            labeled_df_setup.add_view_score(threshold_param,agg_type=agg_type,colored=False)
+            if view_score == 'distance':
+                rank_result = labeled_df_setup.rank_occurences_by_view(ascending=False)
+            else:
+                labeled_df_setup.add_view_score(view_score,agg_type=agg_type,colored=False)
 
-            rank_param = agg_type + '_view_' + threshold_param
-            rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,threshold_param)
+                rank_param = agg_type + '_view_' + view_score
+                rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
 
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, rank_result)

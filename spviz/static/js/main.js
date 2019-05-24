@@ -53,6 +53,9 @@ var trend_type_selected = [];
 var subgrou_trend_quality = 0;
 var agg_trend_quality = 0;
 
+// Counter for detecting
+var counter_detect = 0;
+
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["pearson_corr", "rank_trend"];
 

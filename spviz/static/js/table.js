@@ -23,7 +23,7 @@ function tabulate(data, action) {
 
 	d3.select("#view_score_selector").remove();			
 	// view option
-	var optionData = ['distance'];
+	var optionData = columns.slice(9, 10 + counter_detect);
 	var select = d3.select("#ranking").append('select')
 								.attr('id','view_score_selector');
 	var options = select.selectAll('option')
@@ -31,15 +31,14 @@ function tabulate(data, action) {
 						.append('option')
 						.text(function(d){return d;});
 
-	if (action == 'page_load') {	
-		// rank button
-		d3.select("#ranking").append("button")
-							.attr("id", "rank-btn")
-							.attr("type", "button")
-							.attr("value", "rank")
-							.text("Rank")
-							.attr("onclick", "rank_button()"); 	
-	}
+	d3.select("#rank-btn").remove();	
+	// rank button
+	d3.select("#ranking").append("button")
+						.attr("id", "rank-btn")
+						.attr("type", "button")
+						.attr("value", "rank")
+						.text("Rank")
+						.attr("onclick", "rank_button()"); 	
 
 	// append the header row
 	var thead = table.append('thead').append('tr')

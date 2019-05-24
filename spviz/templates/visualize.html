@@ -111,20 +111,23 @@
                         success: function(data) {
                             server_data = data;
                             d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();          
+                            d3.select("#scatterplot").selectAll('svg').remove();       
+                            counter_detect = counter_detect + 1;   
                             drawGraphTable(data);
                         }
                     })
         }   
         
         function rank_button() {
-            threshold = legendAdjustValue;
             var agg_type_selector = document.getElementById("agg_type_selector");
             agg_type = agg_type_selector.options[agg_type_selector.selectedIndex].value;
+            var view_score_selector = document.getElementById("view_score_selector");
+            view_score = view_score_selector.options[view_score_selector.selectedIndex].value;   
+
             $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'rank', 'threshold': threshold, 'agg_type': agg_type},                               
+                        data: {'action':'rank', 'agg_type': agg_type, 'view_score': view_score},                               
                         success: function(data) {
                             server_data = data;
                             d3.select("#container").selectAll('svg').remove();
