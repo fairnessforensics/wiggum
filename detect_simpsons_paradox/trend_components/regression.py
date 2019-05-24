@@ -3,6 +3,7 @@ import numpy as np
 import itertools
 import scipy.stats as stats
 from .base_getvars import  w_avg
+import warnings
 
 class linearRegression():
 
@@ -47,21 +48,24 @@ class linearRegression():
                 data_df = [('',data_df)]
 
 
+            # zip vars and weights together
+            w_reg_vars = list( zip(self.regression_vars,  self.var_weight_list))
 
-            slopes = []
-            w_reg_vars = zip(self.regression_vars,self.var_weight_list)
+            # sort so that vars with no weight are first then after combinations
+            #  all with aw not nan will be the ones with two weights
+            nasort = {True: lambda v:'000000000',False: lambda v: str(v)}
+            w_reg_vars.sort(key=lambda x: nasort[pd.isna(x[1])](x[1]))
 
             for groupby_lev,df in data_df:
                 # expand into all combinations if symmetric
                 if self.symmetric_vars:
-                    var_pairs = itertools.combinations(zip(self.regression_vars,
-                                            self.var_weight_list),2)
+                    var_pairs = itertools.combinations(w_reg_vars,2)
                 else:
                     # else assume list of tuples was passed
-                    var_pairs =  zip(self.regression_vars,self.var_weight_list)
+                    var_pairs = w_reg_vars
 
                 # var_pairs must be list of tuples or iterator
-                for (a,aw),(b,aw) in var_pairs:
+                for (a,aw),(b,bw) in var_pairs:
                     # compute each slope
 
                     if np.sum(pd.isna([aw,bw])) == 2:
@@ -78,8 +82,8 @@ class linearRegression():
                     elif np.sum(pd.isna([aw,bw])) == 0:
                         # don't know what to do i this case
                         # both have weights, throw error
-                        slopes = 0
-                        r_val = 0
+                        slope = np.NaN
+                        r_val = np.NaN
                         warnings.warn('cannot compute with two different weights')
 
                     # quality is absolute value of r_val (corelation coefficient)
