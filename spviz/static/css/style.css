@@ -27,12 +27,25 @@
     width: 630px;
     display: block;
     background: white;
+    margin-left: 300px;
+    margin-top: -150px;
+    height: 660px;
+    max-height: 660px;    
+    overflow-y: scroll;
+}
+
+/* with user input parameter for ranking
+#container {
+    width: 630px;
+    display: block;
+    background: white;
     margin-left: 260px;
     margin-top: 60px;
     height: 560px;
     max-height: 560px;    
     overflow-y: scroll;
 }
+*/
 
 #legend {
     width: 230px;
@@ -41,12 +54,24 @@
     position: absolute;
 }
 
+#controlbuttons {
+    position: absolute;
+    margin-left: 40px;    
+    margin-top: 360px;   
+}
+
+#ranking {
+    position: absolute;
+    margin-left: 40px;    
+    margin-top: 390px;   
+}
+
 #scatterplot {
     display: block;
     background: white;
     position: absolute;
-    margin-left: 60px;    
-    margin-top: 120px;      
+    margin-left: 90px;    
+    margin-top: 10px;      
 }
 
 #tree {
@@ -74,18 +99,18 @@ path.link {
     display: block;
     position: absolute;
     background: white;
-    right: 100px;
+    right: 120px;
     border-style: solid;
     border-width: 2px;
     border-color: white;
-    top: 320px;
+    top: 220px;
 }
 
 #slopeLabel {
     display: block;
     position: absolute;
-    right: 220px;
-    top: 300px;
+    right: 240px;
+    top: 200px;
 }
 
 #groupedbarchart {
@@ -168,15 +193,16 @@ line.slope-line4all{
 }
 
 #table {
-    width: 680px;
+    width: 1200px;
     display: block;
     background: white;
-    margin-left: 260px;
-    margin-top: 3px;
-    height: 126px;
-    max-height: 126px;    
+    margin-left: 100px;
+    margin-top: 20px;
+    height: 272px;
+    max-height: 272px;    
     overflow-y: scroll;    
 }
+
 table {
     font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
     box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
@@ -209,6 +235,12 @@ table {
   .tablerow.highlighted {
     background-color:#D8D8D8;
 }
+
+.filterrow {
+    border: none;
+    background-color: rgb(255,255,255);
+}
+
 
 .rankingparam {
     border: none;

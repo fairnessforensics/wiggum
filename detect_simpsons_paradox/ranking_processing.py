@@ -4,10 +4,12 @@ import scipy.stats as stats
 import itertools as itert
 from sklearn import preprocessing
 
-DEFAULT_SP_DEF = {'distance':0,'name':'SP'}
+DEFAULT_SP_DEF = {'distance':0.0,'name':'SP'}
 
 trend_quality_sp = {'distance':.2, 'agg_trend_quality':.15,
                 'subgroup_trend_quality':.15,'name':'default_qual_sp'}
+
+
 
 
 
@@ -33,7 +35,7 @@ class _resultDataFrame():
         """
 
         thresh_lookup = {'SP':DEFAULT_SP_DEF,
-                        'quality':trend_quality_sp}
+                        'default_qual_sp':trend_quality_sp}
 
         if filter_thresh:
             if type(filter_thresh) == str:
@@ -46,8 +48,12 @@ class _resultDataFrame():
         if 'name' in filter_thresh.keys():
             col_name = filter_thresh.pop('name')
 
-        is_SP = lambda row: bool(np.prod([row[k]>v for
-                                k,v in filter_thresh.items()]))
+        sp_test = {float: lambda val,target: val>target,
+                str: lambda val, target: val ==target,
+                list: lambda val, target: val in target}
+
+        is_SP = lambda row: bool(np.prod([sp_test[type(th)](row[col],th) for
+                                col,th in filter_thresh.items()]))
 
         # trend_SP = {t.name:t.is_SP for t in self.trend_list}
         #
@@ -142,7 +148,7 @@ class _resultDataFrame():
         return self.result_df
 
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
-                            subgroup= None):
+                            subgroup= None,trend_type=None):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -161,6 +167,8 @@ class _resultDataFrame():
         """
         # get the rows for each specified value,
         #  or set to True to include all values for each None
+        # must be series for &ing and index to work
+        # TODO: is there a faster way that does not depend on pd.Series?
 
         if feat1:
             f1_rows = pd.Series([f1 in feat1 for f1 in self.result_df.feat1])
@@ -183,11 +191,17 @@ class _resultDataFrame():
         else:
             sg_rows = True
 
+        if trend_type:
+            tt_rows = pd.Series([tt in trend_type for tt in self.result_df.trend_type])
+        else:
+            tt_rows = True
 
         # take the intersection
-        target_row = f1_rows & f2_rows & gf_rows & sg_rows
+        target_row = f1_rows & f2_rows & gf_rows & sg_rows & tt_rows
+        # to index by a series, it must have the same index as the datafram
         target_row.index = self.result_df.index
         # return that row
+        print(sum(target_row), ' total rows meet the criteria')
         return self.result_df[target_row]
 
 

@@ -65,7 +65,7 @@ def getBinaryVariableName(data_df):
     binaryAttrs_labels = list(binaryAttrs)    
     return binaryAttrs_labels
 
-def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
+def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars, filter_subgroup= None):
     """
     Generate an array for subgroups' correlational matrix
     Parameters
@@ -79,6 +79,8 @@ def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
     groupby_vars  : list
         list of group by attributes by name in dataframe, if None will be
         detected by all object and int64 type columns in dataframe
+    filter_subgroup : list, or  None
+            value of groupby_feat or or None to include all           
     Returns
     --------
     correlationMatrixSubgroup : array
@@ -90,6 +92,9 @@ def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars):
     for groupbyAttr in groupby_vars:
         grouped_df_corr = data_df.groupby(groupbyAttr)[regression_vars].corr()
         groupby_value = grouped_df_corr.index.get_level_values(groupbyAttr).unique()
+
+        if filter_subgroup:
+            groupby_value = [value for value in filter_subgroup if (value in groupby_value)]
 
         for subgroup in groupby_value:
             subgroup_corr = grouped_df_corr.loc[subgroup]
@@ -461,3 +466,126 @@ def updateMetaData(labeled_df, meta):
     labeled_df.set_weighting_vars(weighting_vars)                
 
     return labeled_df  
+
+def getResultDict(labeled_df, result_df, filter_subgroup= None):
+    """
+    Get Result Dictitonary
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        labeledDataFrame    
+    result_df : DataFrame
+        result_df from labeledDataFrame
+    filter_subgroup : list, or  None
+            value of groupby_feat or or None to include all        
+    Returns
+    --------
+    result_dict_dict
+    """
+    trend_type_list = pd.unique(result_df['trend_type'])
+
+    result_dict_dict = {}
+    # set the result table in result dict
+    index = 0
+    result_dict_dict[index] = result_df.to_json(orient='records')
+
+    # set the csv
+    index = 1
+    csv_data_out = labeled_df.df.to_dict(orient='records')
+    csv_data_out = json.dumps(csv_data_out, indent=2)
+    result_dict_dict[index] = csv_data_out            
+    index = index + 1
+    for trend_type in trend_type_list:
+        result_dict = {}
+
+        if trend_type == 'pearson_corr':
+            # Constructing the data for visualization
+            # Regression
+            pearson_corr_df = result_df.loc[result_df['trend_type'] == 'pearson_corr']
+            feat1_vars = list(pd.unique(pearson_corr_df['feat1']))
+            feat2_vars = list(pd.unique(pearson_corr_df['feat2']))         
+            regression_vars = feat1_vars + feat2_vars
+
+            regression_vars = list(dict.fromkeys(regression_vars))
+            categoricalVars = list(pd.unique(pearson_corr_df['group_feat']))
+
+            # get correlation for all continuous variables
+            corrAll = labeled_df.df[regression_vars].corr()
+
+            # subgroup correlation matrix
+            correlationMatrixSubgroups = []
+            correlationMatrixSubgroups, groupby_info = getSubCorrelationMatrix(labeled_df.df, regression_vars, categoricalVars, filter_subgroup)
+
+            all_attrs = np.append(regression_vars, categoricalVars)
+
+            result_dict = {'trend_type' : 'pearson_corr',
+                            'categoricalVars': categoricalVars, 
+                            'continousVars': regression_vars, 
+                            'corrAll': corrAll.to_json(),
+                            'groupby_info': groupby_info,
+                            'corrSubs': [corrSub.to_json() for corrSub in correlationMatrixSubgroups]}
+
+            result_dict_dict[index] = result_dict
+            index =  index + 1
+
+        elif trend_type == 'rank_trend':
+            rank_trend_df = result_df.loc[result_df['trend_type'] == 'rank_trend']
+            targetAttr_list = pd.unique(rank_trend_df['feat1'])
+
+            for targetAttr in targetAttr_list:
+                current_df =  result_df
+                current_df = current_df.loc[(current_df['feat1'] == targetAttr) & (current_df['trend_type'] == 'rank_trend')]
+
+                protectedAttrs = pd.unique(current_df['feat2'])
+                groupbyAttrs = pd.unique(current_df['group_feat'])
+                
+                if pd.notna(labeled_df.meta_df['weighting_var'][targetAttr]):
+                    weighting_var = labeled_df.meta_df['weighting_var'][targetAttr]
+                else:
+                    weighting_var = ''
+
+                ratioRateAll, protectedVars, rateAll = getRatioRateAll(labeled_df.df, 
+                                                                        targetAttr, protectedAttrs, weighting_var)
+
+                ratioRateSub, rateSub = getRatioRateSub(labeled_df.df, targetAttr, protectedAttrs, groupbyAttrs, weighting_var)
+
+                protected_groupby_attrs = np.append(protectedAttrs, groupbyAttrs)
+                protected_groupby_attrs = pd.unique(protected_groupby_attrs)
+                all_attrs = np.append(protected_groupby_attrs, [targetAttr])
+
+                # adding weighting_var
+                if weighting_var != '':
+                    all_attrs = np.append(all_attrs, [weighting_var])
+                
+                result_dict = {'trend_type' : 'rank_trend',
+                            'protectedVars': protectedVars,
+                            'explanaryVars': groupbyAttrs.tolist(), 
+                            'targetAttr': targetAttr,
+                            'weighting_var': weighting_var,
+                            'ratioRateAll': ratioRateAll,
+                            'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
+                            'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
+                            'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]}
+
+                result_dict_dict[index] = result_dict
+                index =  index + 1
+
+    return result_dict_dict      
+
+class Decoder(json.JSONDecoder):
+    def decode(self, s):
+        result = super().decode(s)  # result = super(Decoder, self).decode(s) for Python 2.x
+        return self._decode(result)
+
+    def _decode(self, o):
+        if isinstance(o, str):
+            try:
+                return int(o)
+            except ValueError:
+                return o
+        elif isinstance(o, dict):
+            return {k: self._decode(v) for k, v in o.items()}
+        elif isinstance(o, list):
+            return [self._decode(v) for v in o]
+        else:
+            return o

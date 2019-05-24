@@ -4,17 +4,6 @@ function drawGraph(dataAll) {
 	selectValue = d3.select("#selectors").select('select').property('value');
 	selectTypeValue = d3.select("#typeSelector").select('select').property('value');
 
-	// Draw Slider
-	DrawSlider();
-
-	// Draw Legend
-	d3.select("#legend").selectAll('svg').remove();
-	DrawLegend();
-
-	// Initial legend click value
-	legendValue = -1;
-	//selectTypeValue = "Rate"
-
 	csvData = JSON.parse(dataAll[1].replace(/\bNaN\b/g, "null"))    
 
 	for (var key in dataAll){
@@ -149,4 +138,28 @@ function isEmpty(obj) {
             return false;
     }
     return true;
+}
+
+function drawGraphTable(data, action) {
+	// Get data from controller return data
+	drawGraph(data);
+
+	// Display info table
+	tableRecords = JSON.parse(data[0])    
+
+	tabulate(tableRecords, action);
+
+	// Avoid ctrl-click                                    
+	$('option').mousedown(function(e) {
+		e.preventDefault();
+		var originalScrollTop = $(this).parent().scrollTop();
+		$(this).prop('selected', $(this).prop('selected') ? false : true);
+		var self = this;
+		$(this).parent().focus();
+		setTimeout(function() {
+			$(self).parent().scrollTop(originalScrollTop);
+		}, 0);
+		
+		return false;
+	});                             
 }

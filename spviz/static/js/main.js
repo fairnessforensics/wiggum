@@ -35,6 +35,23 @@ var ranking = {};
 var tableColumns = [];
 var updateVars;
 var weightingAttr;
+var threshold;
+var agg_type;
+var server_data;
+
+// For table components
+var feat1_options = [];
+var feat2_options = [];
+var group_feat_options = [];
+var subgroup_options = [];
+var trend_type_options = [];
+var feat1_selected = [];
+var feat2_selected = [];
+var group_feat_selected = [];
+var subgroup_selected = [];
+var trend_type_selected = [];
+var subgrou_trend_quality = 0;
+var agg_trend_quality = 0;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectTypeData = ["pearson_corr", "rank_trend"];
@@ -59,6 +76,42 @@ var options = select.selectAll('option')
 					.append('option')
 					.text(function (d) { return d; });	
 
+
+					
+d3.select("#controlbuttons").append("button")
+							.attr("id", "filter-btn")
+							.attr("type", "button")
+							.attr("value", "filter")
+							.text("Filter")
+							.attr("onclick", "filter_button()"); 	
+d3.select("#controlbuttons").append("button")
+							.attr("id", "detect-btn")
+							.attr("type", "button")
+							.attr("value", "detect")
+							.text("Detect")
+							.attr("onclick", "detect_button()"); 																		
+//d3.select("#controlbuttons").append('br');
+d3.select("#controlbuttons").append("button")
+							.attr("id", "reset-btn")
+							.attr("type", "button")
+							.attr("value", "reset")
+							.text("Reset")
+							.attr("onclick", "reset_button()");		
+
+function setSelectedOptions() {
+	var feat1_selector = document.getElementById("feat1_selector");
+	var feat2_selector = document.getElementById("feat2_selector");
+	var group_feat_selector = document.getElementById("group_feat_selector");
+	var subgroup_selector = document.getElementById("subgroup_selector");    
+	var trend_type_selector = document.getElementById("trend_type_selector");   
+
+	feat1_selected = getSelectValues(feat1_selector);
+	feat2_selected = getSelectValues(feat2_selector);
+	group_feat_selected = getSelectValues(group_feat_selector);
+	subgroup_selected = getSelectValues(subgroup_selector);
+	trend_type_selected = getSelectValues(trend_type_selector);    
+}
+
 function onchange() {
 
 	selectValue = d3.select(this).property('value');
@@ -68,11 +121,12 @@ function onchange() {
 
 	DrawLegend();
 
-	if (selectTypeValue == "pearson_corr") {
-		updateContainer();
-	} else {
-		updateRateSPContainer();
-	}
+	drawGraph(server_data);
+	//if (selectTypeValue == "pearson_corr") {
+	//	updateContainer();
+	//} else {
+	//	updateRateSPContainer();
+	//}
 	
 };
 
@@ -127,6 +181,21 @@ function updateNumberInput(id, val) {
 	}
 }
 
+function getSelectValues(select) {
+	var result = [];
+	var options = select && select.options;
+	var opt;
+
+	for (var i=0, iLen=options.length; i<iLen; i++) {
+	opt = options[i];
+
+	if (opt.selected) {
+		result.push(opt.text);
+	}
+	}
+	return result;
+}
+
 function getBinaryAttrs(data, attrs){
 	var binaryAttrs = [];
 	var groupAttrs = [];
@@ -166,7 +235,7 @@ function updateContainer() {
 
 		Matrix({
 			container : '#container',
-			data      : UpdateMatrixFormat(bivariateMatrix, labels, categoryValuesList[i]),
+			data      : UpdateMatrixFormat(bivariateMatrix, labels, categoryValuesList[i], 'pearson_corr'),
 			labels    : labels,
 			subLabel  : subgroupLabel
 		});
@@ -253,7 +322,7 @@ function updateRateSPContainer() {
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
 							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex, 
-							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i]),
+							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i], "rank_trend"),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel
@@ -498,11 +567,13 @@ function DrawSlider(){
 		d3.select("#legend").selectAll('svg').remove();
 		DrawLegend();	
 
-		if (selectTypeValue == "pearson_corr") {
-			updateContainer();
-		} else {
-			updateRateSPContainer();
-		}
+		drawGraph(server_data);
+		
+		//if (selectTypeValue == "pearson_corr") {
+		//	updateContainer();
+		//} else {
+		//	updateRateSPContainer();
+		//}
 	});
 }
 
@@ -828,11 +899,13 @@ function doubleClickLegend(){
 
 	legendValue = -1;
 
-	if (selectTypeValue == "pearson_corr") {
-		updateContainer();
-	} else {
-		updateRateSPContainer();
-	}
+	drawGraph(server_data);
+
+	//if (selectTypeValue == "pearson_corr") {
+	//	updateContainer();
+	//} else {
+	//	updateRateSPContainer();
+	//}
 };
 
 function clickLegendCell(){	
@@ -846,11 +919,12 @@ function updateCorrelationMatrix() {
 	var d = this.datum();
 	legendValue = d.value;
 
-	if (selectTypeValue == "pearson_corr") {
-		updateContainer();
-	} else {
-		updateRateSPContainer();
-	}
+	drawGraph(server_data);
+	//if (selectTypeValue == "pearson_corr") {
+	//	updateContainer();
+	//} else {
+	//	updateRateSPContainer();
+	//}
 }
 
 function BivariateMatrix(correlationMatrix, correlationMatrixSubgroup) {
