@@ -10,34 +10,36 @@ function tabulate(data, action) {
 
 	var columns = Object.keys(data[0]);
 
-	// add rank option
-	var optionData = ['mean', 'min', 'max', 'sum'];
-	var select = d3.select("#ranking").append('select')
-								.attr('id','agg_type_selector');
-	var options = select.selectAll('option')
-						.data(optionData).enter()
-						.append('option')
-						.text(function(d){return d;})
-						.property("selected", 
-						function(d){ return d === agg_type; });
-	// view option
-	var optionData = ['mean', 'min', 'max', 'sum'];
-	var select = d3.select("#ranking").append('select')
-								.attr('id','agg_type_selector');
-	var options = select.selectAll('option')
-						.data(optionData).enter()
-						.append('option')
-						.text(function(d){return d;})
-						.property("selected", 
-						function(d){ return d === agg_type; });
+	if (action == 'page_load') {
+		// add rank option
+		var optionData = ['mean', 'min', 'max', 'sum'];
+		var select = d3.select("#ranking").append('select')
+									.attr('id','agg_type_selector');
+		var options = select.selectAll('option')
+							.data(optionData).enter()
+							.append('option')
+							.text(function(d){return d;});
+	}		
 
-	// rank button
-	d3.select("#ranking").append("button")
-						.attr("id", "rank-btn")
-						.attr("type", "button")
-						.attr("value", "rank")
-						.text("Rank")
-						.attr("onclick", "rank_button()"); 	
+	d3.select("#view_score_selector").remove();			
+	// view option
+	var optionData = ['distance'];
+	var select = d3.select("#ranking").append('select')
+								.attr('id','view_score_selector');
+	var options = select.selectAll('option')
+						.data(optionData).enter()
+						.append('option')
+						.text(function(d){return d;});
+
+	if (action == 'page_load') {	
+		// rank button
+		d3.select("#ranking").append("button")
+							.attr("id", "rank-btn")
+							.attr("type", "button")
+							.attr("value", "rank")
+							.text("Rank")
+							.attr("onclick", "rank_button()"); 	
+	}
 
 	// append the header row
 	var thead = table.append('thead').append('tr')
@@ -150,7 +152,7 @@ function tabulate(data, action) {
 					.attr('id', 'subgroup_trend_quality_label')
 					.style("font-size", "10px")
 					.style("color", "black")
-					.text("0");
+					.text(subgrou_trend_quality);
 				d3.select(this).append('br');
 				d3.select(this).append('input')
 								.attr('type', 'range')
@@ -159,7 +161,7 @@ function tabulate(data, action) {
 								.attr('min', '0')
 								.attr('max', '1')
 								.attr('step', '0.01')
-								.attr('value', 0)
+								.attr('value', subgrou_trend_quality)
 								.on("input", function() {
 									updateLabel(this.value, '#subgroup_trend_quality_label');
 								});
@@ -189,7 +191,7 @@ function tabulate(data, action) {
 					.attr('id', 'agg_trend_quality_label')
 					.style("font-size", "10px")
 					.style("color", "black")
-					.text("0");
+					.text(agg_trend_quality);
 				d3.select(this).append('br');
 				d3.select(this).append('input')
 								.attr('type', 'range')
@@ -198,7 +200,7 @@ function tabulate(data, action) {
 								.attr('min', '0')
 								.attr('max', '1')
 								.attr('step', '0.01')
-								.attr('value', 0)
+								.attr('value', agg_trend_quality)
 								.on("input", function() {
 									updateLabel(this.value, '#agg_trend_quality_label');
 								});
@@ -235,6 +237,12 @@ function tabulate(data, action) {
 
 function updateLabel(value, id) {
 	d3.select(id).text(value);
+
+	if (id == '#agg_trend_quality_label') {
+		agg_trend_quality = value;
+	} else {
+		subgrou_trend_quality = value;
+	}
 }
 
 function updateTabulate(vars) {	
