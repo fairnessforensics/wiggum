@@ -25,7 +25,8 @@ from .labeled_dataframe import (labeledDataFrame, possible_roles, var_types,
 # trend types
 from .trends import (all_pearson, continuous_pearson, spearman_correlation,
                     kendall_correlation, mean_rank_trend,linear_trend,
-                    all_linear_trend,binary_pearson_trend,binary_mean_rank_trend)
+                    all_linear_trend,binary_pearson_trend,binary_mean_rank_trend,
+                    median_rank_trend,binary_median_rank_trend)
 
 #tren lists
 from .trends import (all_trend_types,default_binary_trends,default_distance_trends)

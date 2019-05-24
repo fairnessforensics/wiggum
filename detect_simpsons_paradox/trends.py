@@ -12,8 +12,13 @@ from .trend_components import *
 
 
 class mean_rank_trend(statRankTrend,weightedRank,trend):
-    my_stat = lambda self, d,m,w :w_avg(d,m,w )
+    my_stat = lambda self, d,m,w : w_avg(d,m,w )
     name = 'rank_trend'
+
+
+class median_rank_trend(statRankTrend,weightedRank,trend):
+    my_stat = lambda self, d,m,w :w_avg(d,m,w )
+    name = 'median_rank_trend'
 
 class continuous_pearson(correlationTrend,continuousRegression,trend):
     name = 'pearson_corr'
@@ -48,13 +53,21 @@ class binary_mean_rank_trend(statBinRankTrend,binaryWeightedRank,trend):
     my_stat = lambda self, d,m,w :w_avg(d,m,w )
     name = 'binary_rank'
 
+class binary_median_rank_trend(statBinRankTrend,binaryWeightedRank,trend):
+    my_stat = lambda self, d,m,w :w_median(d,m,w )
+    name = 'binary_median_rank'
+
+
+
 
 all_trend_types = {'pearson_corr':all_pearson,
                     'spearman_corr': spearman_correlation,
                     'rank_trend':mean_rank_trend,
                     'lin_reg':linear_trend,
                     'binary_rank':binary_mean_rank_trend,
-                    'binary_sign':binary_pearson_trend}
+                    'binary_sign':binary_pearson_trend,
+                    'median_rank':mean_rank_trend,
+                    'binary_median_rank':binary_median_rank_trend}
 
 default_binary_trends = {'binary_rank':binary_mean_rank_trend,
                 'binary_sign':binary_pearson_trend}

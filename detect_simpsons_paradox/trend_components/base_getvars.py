@@ -123,6 +123,37 @@ class continuousRegression():
         return self.regression_vars
 
 
+def w_median(df,mcol,wcol):
+    """
+    compute the median or median with replication according to weights, gives a
+    confidence interval specified by the middle 50%
+
+    Parameters
+    ----------
+    df : DataFrame or DataFrameGroupBy
+        passed as the source of apply, the data to extract columns from for
+        computing a weighted average
+    mcol : string
+        name of column in df to take the average of
+    wcol : string
+        name of column in df to use for weighting
+
+    Returns
+    -------
+    wmed : float
+        median of df[avcol] weighted row wise by df[wcol]
+
+    """
+    if pd.isna(wcol):
+        wmed ,upper,lower = np.quantile(df[mcol],[.5,.25,.75])
+    else:
+        reps = [int(n) for n in df[wcol].values]
+        reps_mcol = np.repeat(df[mcol].values,reps)
+        wmed,upper,lower =np.quantile( reps_mcol,[.5,.25,.75])
+
+    return pd.Series([wmed ,upper,lower],index=['stat','max','min'])
+
+
 def w_avg(df,avcol,wcol):
     """
     commpute a weighted average through DataFrame.apply()
@@ -157,6 +188,10 @@ def w_avg(df,avcol,wcol):
         std = 0.0
 
     return pd.Series([wmean ,wmean+std,wmean-std],index=['stat','max','min'])
+
+
+
+
 
 class binaryWeightedRank():
     """
@@ -196,7 +231,6 @@ class weightedRank():
     """
     common parts for all continuous variable trends
     """
-    my_stat = lambda self, d,m,w :w_avg(d,m,w )
 
     def get_trend_vars(self,labeled_df):
         """
