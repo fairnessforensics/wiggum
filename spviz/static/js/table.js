@@ -10,7 +10,8 @@ function tabulate(data, action) {
 
 	var columns = Object.keys(data[0]);
 
-	if (action == 'page_load') {
+	if (action == 'detect') {
+		d3.select("#agg_type_selector").remove();		
 		// add rank option
 		var optionData = ['mean', 'min', 'max', 'sum'];
 		var select = d3.select("#ranking").append('select')
@@ -19,26 +20,29 @@ function tabulate(data, action) {
 							.data(optionData).enter()
 							.append('option')
 							.text(function(d){return d;});
-	}		
 
-	d3.select("#view_score_selector").remove();			
-	// view option
-	var optionData = columns.slice(9, 10 + counter_detect);
-	var select = d3.select("#ranking").append('select')
-								.attr('id','view_score_selector');
-	var options = select.selectAll('option')
-						.data(optionData).enter()
-						.append('option')
-						.text(function(d){return d;});
+		d3.select("#view_score_selector").remove();			
+		// view option
+		// Fix me if detected columns not replaced
+		//var optionData = columns.slice(9, 10 + counter_detect);
+		var optionData = ['distance', 'SP'];
+		var select = d3.select("#ranking").append('select')
+									.attr('id','view_score_selector');
+		var options = select.selectAll('option')
+							.data(optionData).enter()
+							.append('option')
+							.text(function(d){return d;});
+	
+		d3.select("#rank-btn").remove();	
+		// rank button
+		d3.select("#ranking").append("button")
+							.attr("id", "rank-btn")
+							.attr("type", "button")
+							.attr("value", "rank")
+							.text("Rank")
+							.attr("onclick", "rank_button()"); 	
+	}
 
-	d3.select("#rank-btn").remove();	
-	// rank button
-	d3.select("#ranking").append("button")
-						.attr("id", "rank-btn")
-						.attr("type", "button")
-						.attr("value", "rank")
-						.text("Rank")
-						.attr("onclick", "rank_button()"); 	
 
 	// append the header row
 	var thead = table.append('thead').append('tr')
