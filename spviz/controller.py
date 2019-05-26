@@ -59,7 +59,8 @@ def main():
                             'roles': roles,                  
                             'weighting_vars': weighting_vars,                                              
                             'samples': sample_list,
-                            'possible_roles': dsp.possible_roles})
+                            'possible_roles': dsp.possible_roles, 
+                            'trend_types': list(dsp.all_trend_types.keys())})
 
         # index.html 'Open' button clicked for data file
         if action == 'open':
@@ -86,7 +87,8 @@ def main():
 
             return jsonify({'var_types': var_types,
                             'samples': sample_list,
-                            'possible_roles': dsp.possible_roles})
+                            'possible_roles': dsp.possible_roles, 
+                            'trend_types': list(dsp.all_trend_types.keys())})
 
         if action == 'save':
             meta = request.form['metaList']
@@ -110,6 +112,10 @@ def main():
             global clusteringFlg
             clusteringFlg = request.form['clustering']
 
+            global user_trends
+            user_trends = request.form['trend_types']
+            user_trends = user_trends.split(",")
+
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
@@ -117,13 +123,9 @@ def main():
             if clusteringFlg == 'true':
                 labeled_df_setup.add_all_dpgmm()
 
-            corrobj = dsp.all_pearson()
-            corrobj.get_trend_vars(labeled_df_setup)
+            trend_list = [dsp.all_trend_types[trend]() for trend in user_trends]
 
-            rankobj = dsp.mean_rank_trend()
-            linreg_obj = dsp.linear_trend()
-           
-            labeled_df_setup.get_subgroup_trends_1lev([corrobj,rankobj,linreg_obj])
+            labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 
             # add distances
             labeled_df_setup.add_distance()
