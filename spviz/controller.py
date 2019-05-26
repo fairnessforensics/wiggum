@@ -103,6 +103,14 @@ def main():
             labeled_df_setup.to_csvs(directory)          
             return 'Saved'
 
+        # visualize.html 'Save' button clicked
+        if action == 'save_trends':
+            # store meta data into csv
+            project_name = request.form['projectName']
+            directory = 'data/' + project_name
+            labeled_df_setup.to_csvs(directory)          
+            return 'Saved'      
+
         # index.html 'Visualize' button clicked
         if action == 'visualize':
 
@@ -120,15 +128,16 @@ def main():
 
         # initial for visualize.html page
         if action == 'page_load':
-            if clusteringFlg == 'true':
-                labeled_df_setup.add_all_dpgmm()
+            if labeled_df_setup.result_df.empty:
+                if clusteringFlg == 'true':
+                    labeled_df_setup.add_all_dpgmm()
 
-            trend_list = [dsp.all_trend_types[trend]() for trend in user_trends]
+                trend_list = [dsp.all_trend_types[trend]() for trend in user_trends]
 
-            labeled_df_setup.get_subgroup_trends_1lev(trend_list)
+                labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 
-            # add distances
-            labeled_df_setup.add_distance()
+                # add distances
+                labeled_df_setup.add_distance()
 
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)

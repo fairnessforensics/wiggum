@@ -98,6 +98,22 @@ d3.select("#controlbuttons").append("button")
 							.text("Reset")
 							.attr("onclick", "reset_button()");		
 
+d3.select("#controlbuttons").append('br');
+d3.select("#controlbuttons").append('br');			
+d3.select("#controlbuttons").append('br');		
+d3.select("#controlbuttons").append('input')
+		.attr('type','text')
+		.attr('id','projectName')
+		.attr('placeholder', 'Project Name');
+d3.select("#controlbuttons").append("button")
+							.attr("id", "save-btn")
+							.attr("type", "button")
+							.attr("value", "save")
+							.text("Save")
+							.attr("onclick", "save_button()"); 	
+d3.select("#controlbuttons").append("text")			
+														.attr("id", "save-label")
+
 function setSelectedOptions() {
 	var feat1_selector = document.getElementById("feat1_selector");
 	var feat2_selector = document.getElementById("feat2_selector");
