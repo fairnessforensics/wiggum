@@ -168,8 +168,8 @@ def main():
         # visualize.html 'Detect' button clicked
         if action == 'detect':
             threshold = float(request.form['threshold'])
-            sg_qual_threshold = float(request.form['sg_qual_threshold'])
-            agg_qual_threshold = float(request.form['agg_qual_threshold'])
+            sg_strength_threshold = float(request.form['sg_strength_threshold'])
+            agg_strength_threshold = float(request.form['agg_strength_threshold'])
 
             filter_object = request.form['filter_object']
             filter_object = json.loads(filter_object, cls=Decoder)
@@ -179,8 +179,8 @@ def main():
                 # Default to detect all trend types from result_df
                 trend_filter = list(pd.unique(labeled_df_setup.result_df['trend_type']))
 
-            sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_quality':agg_qual_threshold,
-                'subgroup_trend_quality':sg_qual_threshold,'trend_type':trend_filter}
+            sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_strength':agg_strength_threshold,
+                'subgroup_trend_strength':sg_strength_threshold,'trend_type':trend_filter}
 
             detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)
 

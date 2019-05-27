@@ -147,24 +147,24 @@ function tabulate(data, action) {
 									.property("selected", 
 									function(d){ return subgroup_selected.includes(d); });
 			}	
-			// subgroup_trend_quality
+			// subgroup_trend_strength
 			if (i==5) {
 				d3.select(this).append("text")
-					.attr('id', 'subgroup_trend_quality_label')
+					.attr('id', 'subgroup_trend_strength_label')
 					.style("font-size", "10px")
 					.style("color", "black")
-					.text(subgrou_trend_quality);
+					.text(subgrou_trend_strength);
 				d3.select(this).append('br');
 				d3.select(this).append('input')
 								.attr('type', 'range')
-								.attr('id', 'subgroup_trend_quality_slider')
+								.attr('id', 'subgroup_trend_strength_slider')
 								.style('width', '100px')
 								.attr('min', '0')
 								.attr('max', '1')
 								.attr('step', '0.01')
-								.attr('value', subgrou_trend_quality)
+								.attr('value', subgrou_trend_strength)
 								.on("input", function() {
-									updateLabel(this.value, '#subgroup_trend_quality_label');
+									updateLabel(this.value, '#subgroup_trend_strength_label');
 								});
 			}	
 			// trend_type
@@ -186,24 +186,24 @@ function tabulate(data, action) {
 									.property("selected", 
 									function(d){ return trend_type_selected.includes(d); });
 			}	
-			// agg_trend_quality
+			// agg_trend_strength
 			if (i==8) {
 				d3.select(this).append("text")
-					.attr('id', 'agg_trend_quality_label')
+					.attr('id', 'agg_trend_strength_label')
 					.style("font-size", "10px")
 					.style("color", "black")
-					.text(agg_trend_quality);
+					.text(agg_trend_strength);
 				d3.select(this).append('br');
 				d3.select(this).append('input')
 								.attr('type', 'range')
-								.attr('id', 'agg_trend_quality_slider')
+								.attr('id', 'agg_trend_strength_slider')
 								.style('width', '100px')
 								.attr('min', '0')
 								.attr('max', '1')
 								.attr('step', '0.01')
-								.attr('value', agg_trend_quality)
+								.attr('value', agg_trend_strength)
 								.on("input", function() {
-									updateLabel(this.value, '#agg_trend_quality_label');
+									updateLabel(this.value, '#agg_trend_strength_label');
 								});
 			}												
 	})
@@ -239,10 +239,10 @@ function tabulate(data, action) {
 function updateLabel(value, id) {
 	d3.select(id).text(value);
 
-	if (id == '#agg_trend_quality_label') {
-		agg_trend_quality = value;
+	if (id == '#agg_trend_strength_label') {
+		agg_trend_strength = value;
 	} else {
-		subgrou_trend_quality = value;
+		subgrou_trend_strength = value;
 	}
 }
 

@@ -100,14 +100,14 @@
 
             var threshold = legendAdjustValue;
 
-            var agg_qual_threshold = document.getElementById("agg_trend_quality_slider").value;
-            var sg_qual_threshold = document.getElementById("subgroup_trend_quality_slider").value;
+            var agg_strength_threshold = document.getElementById("agg_trend_strength_slider").value;
+            var sg_strength_threshold = document.getElementById("subgroup_trend_strength_slider").value;
 
             $.ajax({
                         type: 'POST',
                         url: '/',
                         data: {'action':'detect', 'filter_object': filter_object, 'threshold': threshold, 
-                                'agg_qual_threshold': agg_qual_threshold, 'sg_qual_threshold': sg_qual_threshold},                               
+                                'agg_strength_threshold': agg_strength_threshold, 'sg_strength_threshold': sg_strength_threshold},                               
                         success: function(data) {
                             server_data = data;
                             d3.select("#container").selectAll('svg').remove();
