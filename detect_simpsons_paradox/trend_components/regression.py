@@ -3,6 +3,7 @@ import numpy as np
 import itertools
 import scipy.stats as stats
 from .base_getvars import  w_avg
+import warnings
 
 class linearRegression():
 
@@ -47,23 +48,44 @@ class linearRegression():
                 data_df = [('',data_df)]
 
 
+            # zip vars and weights together
+            w_reg_vars = list( zip(self.regression_vars,  self.var_weight_list))
 
-            slopes = []
-            w_reg_vars = zip(self.regression_vars,self.var_weight_list)
+            # sort so that vars with no weight are first then after combinations
+            #  all with aw not nan will be the ones with two weights
+            nasort = {True: lambda v:'000000000',False: lambda v: str(v)}
+            w_reg_vars.sort(key=lambda x: nasort[pd.isna(x[1])](x[1]))
 
             for groupby_lev,df in data_df:
                 # expand into all combinations if symmetric
                 if self.symmetric_vars:
-                    var_pairs = itertools.combinations(zip(self.regression_vars,
-                                            self.var_weight_list),2)
+                    var_pairs = itertools.combinations(w_reg_vars,2)
                 else:
                     # else assume list of tuples was passed
-                    var_pairs =  zip(self.regression_vars,self.var_weight_list)
+                    var_pairs = w_reg_vars
 
                 # var_pairs must be list of tuples or iterator
                 for (a,aw),(b,bw) in var_pairs:
                     # compute each slope
-                    slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
+
+                    if np.sum(pd.isna([aw,bw])) == 2:
+                        # both weights are NaNs
+                        slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
+                    elif aw==bw or (not(pd.isna(bw)) and pd.isna(aw)):
+                        # weights are the same or only bw has a weights
+                        weights =  np.sqrt(df[bw])
+                        i, slope = np.polyfit(df[a],df[b],1, w = df[bw])
+                        # compute weighted correlation coefficient
+                        r_val = np.average((df[a]-np.average(df[a]))*
+                                  (df[b]- np.average(df[b], weights = df[bw])),
+                                weights = df[bw])
+                    elif np.sum(pd.isna([aw,bw])) == 0:
+                        # don't know what to do i this case
+                        # both have weights, throw error
+                        slope = np.NaN
+                        r_val = np.NaN
+                        warnings.warn('cannot compute with two different weights')
+
                     # quality is absolute value of r_val (corelation coefficient)
                     slopes.append([a,b,slope,groupby_lev,np.abs(r_val)])
 
@@ -71,13 +93,13 @@ class linearRegression():
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
                                                 trend_col_name,'subgroup',
-                                                trend_col_name+'_quality'])
+                                                trend_col_name+'_strength'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
                                                     trend_col_name,'empty',
-                                                    trend_col_name+'_quality'])
+                                                    trend_col_name+'_strength'])
             reg_df.drop('empty',axis=1,inplace=True)
 
         reg_df['trend_type'] = self.name
