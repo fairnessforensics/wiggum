@@ -6,8 +6,8 @@ from sklearn import preprocessing
 
 DEFAULT_SP_DEF = {'distance':0.0,'name':'SP'}
 
-trend_quality_sp = {'distance':.2, 'agg_trend_quality':.15,
-                'subgroup_trend_quality':.15,'name':'default_qual_sp'}
+trend_quality_sp = {'distance':.2, 'agg_trend_strength':.15,
+                'subgroup_trend_strength':.15,'name':'default_qual_sp'}
 
 
 
@@ -425,6 +425,12 @@ class _resultDataFrame():
         dist_helper = lambda row: trend_dist[row['trend_type']](row)
 
         self.result_df['distance'] = self.result_df.apply(dist_helper,axis=1)
+
+    def dropna_trends(self,inplace=True):
+        """
+        drop rows from result_df that have na for trend value
+        """
+        self.result_df.dropna(subset= ['subgroup_trend','agg_trend'],inplace=inplace)
 
 
 ################################################################################

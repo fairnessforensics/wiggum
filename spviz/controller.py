@@ -9,7 +9,7 @@ from .models import Decoder
 
 @app.route("/")
 def index():
-    return render_template("index.html") 
+    return render_template("index.html")
 
 @app.route("/visualize", methods=['GET', 'POST'])
 def visualize():
@@ -22,7 +22,7 @@ def main():
         action = request.form['action']
 
         global labeled_df_setup
-        
+
         if action == 'folder_open':
 
             folder = request.form['folder']
@@ -47,7 +47,7 @@ def main():
 
             # get weighting_vars for dropbox
             weighting_vars = []
-            weighting_vars = labeled_df_setup.meta_df['weighting_var'].fillna('N/A').tolist()            
+            weighting_vars = labeled_df_setup.meta_df['weighting_var'].fillna('N/A').tolist()
 
             # get sample for data
             sample_list = []
@@ -55,9 +55,9 @@ def main():
 
             return jsonify({'var_names': var_names,
                             'var_types': var_types,
-                            'isCounts': isCounts,      
-                            'roles': roles,                  
-                            'weighting_vars': weighting_vars,                                              
+                            'isCounts': isCounts,
+                            'roles': roles,
+                            'weighting_vars': weighting_vars,
                             'samples': sample_list,
                             'possible_roles': dsp.possible_roles, 
                             'trend_types': list(dsp.all_trend_types.keys())})
@@ -100,7 +100,7 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)          
+            labeled_df_setup.to_csvs(directory)
             return 'Saved'
 
         # visualize.html 'Save' button clicked
@@ -144,13 +144,13 @@ def main():
 
             return jsonify(result_dict_dict)
 
-        # visualize.html 'Filter' button clicked 
+        # visualize.html 'Filter' button clicked
         if action == 'filter':
             filter_object = request.form['filter_object']
             filter_object = json.loads(filter_object, cls=Decoder)
 
             filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
-                                group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'], 
+                                group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                 trend_type =filter_object['trend_type'])
 
             result_dict_dict = {}
@@ -158,14 +158,14 @@ def main():
 
             return jsonify(result_dict_dict)
 
-        # visualize.html 'Reset' button clicked 
+        # visualize.html 'Reset' button clicked
         if action == 'reset':
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
 
             return jsonify(result_dict_dict)
 
-        # visualize.html 'Detect' button clicked 
+        # visualize.html 'Detect' button clicked
         if action == 'detect':
             threshold = float(request.form['threshold'])
             sg_qual_threshold = float(request.form['sg_qual_threshold'])
@@ -187,9 +187,9 @@ def main():
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, detect_result)
 
-            return jsonify(result_dict_dict)      
+            return jsonify(result_dict_dict)
 
-        # visualize.html 'Detect' button clicked 
+        # visualize.html 'Detect' button clicked
         if action == 'rank':
 
             agg_type = request.form['agg_type']
@@ -206,20 +206,20 @@ def main():
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, rank_result)
 
-            return jsonify(result_dict_dict)                  
+            return jsonify(result_dict_dict)
 
         spType = request.form['sptype']
 
         # weight for individual
         weight_param = request.form['weight_param']
         std_weights =json.loads(weight_param)
- 
+
         # weight for the view
-        weight_param_view = request.form['weight_param_view']        
+        weight_param_view = request.form['weight_param_view']
         std_weights_view =json.loads(weight_param_view)
 
         #view score parameter
-        view_score_param = request.form['view_score_param']        
+        view_score_param = request.form['view_score_param']
         view_score_param =json.loads(view_score_param)
 
         # weighting name
@@ -230,7 +230,7 @@ def main():
         if action == 'upload':
             # initial result
             global initial_result_df
-            
+
             # Construct the csv data fitting d3.csv format
             #csv_data = df.to_dict(orient='records')
             #csv_data = json.dumps(csv_data, indent=2)
@@ -270,24 +270,24 @@ def main():
                 return jsonify({'csv_data':csv_data,
                                 'table': initial_result_df.to_json(orient='records'),
                                 'rankViewResult': rankViewResult.to_json(orient='records'),
-                                'categoricalVars': categoricalVars, 
-                                'continousVars': continuousVars, 
+                                'categoricalVars': categoricalVars,
+                                'continousVars': continuousVars,
                                 'corrAll': corrAll.to_json(),
                                 'groupby_info': groupby_info,
                                 'corrSubs': [corrSub.to_json() for corrSub in correlationMatrixSubgroups]})
             elif spType == 'Rate':
                 targetAttr = models.getBinaryVariableName(labeled_df_setup.df)[0]
-                
+
                 groupingAttrs =  models.getCategoricalVariableName(labeled_df_setup.df)
                 groupingAttrs.remove(targetAttr)
-                
+
                 ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, targetAttr, groupingAttrs)
 
                 ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, groupingAttrs)
 
                 return jsonify({'csv_data':csv_data,
                                 'protectedVars': protectedVars,
-                                'explanaryVars': explanaryVars, 
+                                'explanaryVars': explanaryVars,
                                 'targetAttr': targetAttr,
                                 'ratioRateAll':ratioRateAll,
                                 'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
@@ -295,7 +295,7 @@ def main():
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
             elif spType == 'Rate2':
                 targetAttrList = labeled_df.loc[labeled_df['role'] == 'trend']['name'].tolist()
-                targetAttr = targetAttrList[0]    
+                targetAttr = targetAttrList[0]
 
                 groupingAttrs =  labeled_df.loc[labeled_df['role'] == 'groupby']['name'].tolist()
 
@@ -305,7 +305,7 @@ def main():
 
                 return jsonify({'csv_data':csv_data,
                                 'protectedVars': protectedVars,
-                                'explanaryVars': explanaryVars, 
+                                'explanaryVars': explanaryVars,
                                 'targetAttr': targetAttr,
                                 'ratioRateAll':ratioStatAll,
                                 'rateAll':[eachRateAll.to_json() for eachRateAll in statAll],
@@ -313,7 +313,7 @@ def main():
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
 
         # Auto Detect
-        elif action == 'autodetect':      
+        elif action == 'autodetect':
             threshold = float(request.form['threshold'])
 
             initial_result_df, ranking_view_df = models.auto_detect(labeled_df_setup.df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold,
