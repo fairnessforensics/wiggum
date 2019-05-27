@@ -175,6 +175,10 @@ def main():
             filter_object = json.loads(filter_object, cls=Decoder)
             trend_filter = filter_object['trend_type']
 
+            if not trend_filter:
+                # Default to detect all trend types from result_df
+                trend_filter = list(pd.unique(labeled_df_setup.result_df['trend_type']))
+
             sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_quality':agg_qual_threshold,
                 'subgroup_trend_quality':sg_qual_threshold,'trend_type':trend_filter}
 
