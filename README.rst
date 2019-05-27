@@ -15,9 +15,9 @@ To use the package, download (or clone) and:
   cd DetectSimpsonParadox/
   pip install .
 
-To use the package in python, after installed::
+To use the package in python, after installed:
 
-.. code-block:: python
+.. code-block:: Python
 
   import detect_simpsons_paradox as dsp
 
