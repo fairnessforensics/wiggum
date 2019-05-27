@@ -137,6 +137,24 @@
                     })
         }         
 
+        function save_button() {
+            var projectName = $('#projectName').val();
+                
+            if (projectName == '') {
+                alert("Please input your project name!")
+                return;
+            }
+            $.ajax({
+                        type: 'POST',
+                        url: '/',
+                        data: {'action':'save_trends', 'projectName': projectName},                               
+                        success: function(data) {
+                            var saved = document.getElementById("save-label");
+                            saved.innerText = data;
+                        }
+                    })
+        }           
+
         $(function() {
             // initial draw
             $(document).ready(function(){

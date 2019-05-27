@@ -298,4 +298,9 @@ div.tooltip {
     stroke: black;
     stroke-width: 2px;
     stroke-opacity: 1;  
-  }
+}
+
+#trend_type_selection {
+    position: absolute;
+    top: 50px;
+}
