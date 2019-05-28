@@ -30,37 +30,13 @@ def main():
             folder = 'data/' + folder
             labeled_df_setup = dsp.labeledDataFrame(folder)
 
-            # get variable names
-            var_names = labeled_df_setup.meta_df.index.tolist()
+            result_dict = {}
+            result_dict = models.getMetaDict(labeled_df_setup)
 
-            # get var_types for dropbox
-            var_types = []
-            var_types = labeled_df_setup.meta_df['var_type'].tolist()
+            result_dict['possible_roles'] = dsp.possible_roles
+            result_dict['trend_types'] = list(dsp.all_trend_types.keys())
 
-            # get isCounts for dropbox
-            isCounts = []
-            isCounts = labeled_df_setup.meta_df['isCount'].replace({True: 'Y', False: 'N'}).tolist()
-
-            # get isCounts for dropbox
-            roles = []
-            roles = labeled_df_setup.meta_df['role'].tolist()
-
-            # get weighting_vars for dropbox
-            weighting_vars = []
-            weighting_vars = labeled_df_setup.meta_df['weighting_var'].fillna('N/A').tolist()
-
-            # get sample for data
-            sample_list = []
-            sample_list = labeled_df_setup.get_data_sample()
-
-            return jsonify({'var_names': var_names,
-                            'var_types': var_types,
-                            'isCounts': isCounts,
-                            'roles': roles,
-                            'weighting_vars': weighting_vars,
-                            'samples': sample_list,
-                            'possible_roles': dsp.possible_roles, 
-                            'trend_types': list(dsp.all_trend_types.keys())})
+            return jsonify(result_dict)
 
         # index.html 'Open' button clicked for data file
         if action == 'open':
@@ -102,6 +78,38 @@ def main():
             directory = 'data/' + project_name
             labeled_df_setup.to_csvs(directory)
             return 'Saved'
+
+        # index.html 'Compute Quantiles' button clicked
+        if action == 'quantiles':
+
+            meta = request.form['metaList']
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            checked_vars = request.form['checked_vars']
+            checked_vars = checked_vars.split(",")
+            
+            if checked_vars:
+                user_cutoffs = request.form['user_cutoffs']
+                if user_cutoffs != '':
+                    # extract quantiles from user input
+                    cutoffs = [float(s) for s in user_cutoffs.split(',')]
+                    cutoffs.extend([1])
+                    cutoffs.insert(0,0)
+
+                    labels = [str(np.round(a*100,2))+'to'+str(np.round(b*100,2))+'%' for a,b in zip(cutoffs[:-1],cutoffs[1:])]
+
+                    quantiles_dict = dict(zip(labels, cutoffs[1:]))
+
+                    labeled_df_setup.add_quantile(checked_vars, quantiles_dict)
+                else:
+                    labeled_df_setup.add_quantile(checked_vars)
+
+            result_dict = {}
+            result_dict = models.getMetaDict(labeled_df_setup)
+
+            result_dict['possible_roles'] = dsp.possible_roles
+
+            return jsonify(result_dict)
 
         # visualize.html 'Save' button clicked
         if action == 'save_trends':

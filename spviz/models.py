@@ -572,6 +572,51 @@ def getResultDict(labeled_df, result_df, filter_subgroup= None):
 
     return result_dict_dict      
 
+def getMetaDict(labeled_df):
+    """
+    Get Display Dictitonary for index.html
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        labeledDataFrame    
+    Returns
+    --------
+    result_dict
+    """
+    result_dict = {}
+
+    # get variable names
+    var_names = labeled_df.meta_df.index.tolist()
+
+    # get var_types for dropbox
+    var_types = []
+    var_types = labeled_df.meta_df['var_type'].tolist()
+
+    # get isCounts for dropbox
+    isCounts = []
+    isCounts = labeled_df.meta_df['isCount'].replace({True: 'Y', False: 'N'}).tolist()
+
+    # get isCounts for dropbox
+    roles = []
+    roles = labeled_df.meta_df['role'].tolist()
+
+    # get weighting_vars for dropbox
+    weighting_vars = []
+    weighting_vars = labeled_df.meta_df['weighting_var'].fillna('N/A').tolist()
+
+    # get sample for data
+    sample_list = []
+    sample_list = labeled_df.get_data_sample()   
+
+    result_dict = {'var_names': var_names,
+                    'var_types': var_types,
+                    'isCounts': isCounts,
+                    'roles': roles,
+                    'weighting_vars': weighting_vars,
+                    'samples': sample_list}
+
+    return result_dict
+
 class Decoder(json.JSONDecoder):
     def decode(self, s):
         result = super().decode(s)  # result = super(Decoder, self).decode(s) for Python 2.x
