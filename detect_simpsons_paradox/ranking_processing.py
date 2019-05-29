@@ -49,6 +49,7 @@ class _resultDataFrame():
             col_name = filter_thresh.pop('name')
 
         sp_test = {float: lambda val,target: val>target,
+                int: lambda val,target: val>target,
                 str: lambda val, target: val ==target,
                 list: lambda val, target: val in target}
 
