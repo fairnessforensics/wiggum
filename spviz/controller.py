@@ -71,8 +71,6 @@ def main():
 
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
-            # clusteringFlg = request.form['clustering']
-
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
@@ -111,6 +109,23 @@ def main():
 
             return jsonify(result_dict)
 
+        # index.html 'Clustering' button clicked
+        if action == 'clustering':
+
+            meta = request.form['metaList']
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            qual_thresh = float(request.form['qual_thresh'])
+
+            labeled_df_setup.add_all_dpgmm(qual_thresh = qual_thresh)
+
+            result_dict = {}
+            result_dict = models.getMetaDict(labeled_df_setup)
+
+            result_dict['possible_roles'] = dsp.possible_roles
+
+            return jsonify(result_dict)            
+
         # visualize.html 'Save' button clicked
         if action == 'save_trends':
             # store meta data into csv
@@ -125,9 +140,6 @@ def main():
             meta = request.form['metaList']
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
-            global clusteringFlg
-            clusteringFlg = request.form['clustering']
-
             global user_trends
             user_trends = request.form['trend_types']
             user_trends = user_trends.split(",")
@@ -137,9 +149,6 @@ def main():
         # initial for visualize.html page
         if action == 'page_load':
             if labeled_df_setup.result_df.empty:
-                if clusteringFlg == 'true':
-                    labeled_df_setup.add_all_dpgmm()
-
                 trend_list = [dsp.all_trend_types[trend]() for trend in user_trends]
 
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)

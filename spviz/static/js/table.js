@@ -315,6 +315,7 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 							.attr("id", "roleTable")							
 							.style("border", "none")
 							.style("box-shadow", "none")
+							.style("margin-top", "30px")							
 							.style("margin-left", "20px");			
 
 		// append the header row

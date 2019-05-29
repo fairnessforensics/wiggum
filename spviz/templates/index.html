@@ -36,6 +36,10 @@
             return result;
         }
 
+        function update_qual_thresh(val) {
+            document.getElementById('qual_thresh_label').innerText=val; 
+        }
+
         var folder = "";
 
         function getFolder(e) {
@@ -160,15 +164,6 @@
 
                 form_data.append('action', action);
 
-                var clusteringFlg = false;
-                if($("input:checkbox:checked").prop("checked") == true){
-                    clusteringFlg = true;
-                }
-                else{
-                    clusteringFlg = false;
-                }
-                form_data.append('clustering', clusteringFlg);
-
                 var metaList = [];
                 metaList = getMetaList();
                 
@@ -204,15 +199,6 @@
 
                 form_data.append('action', action);
                 form_data.append('projectName', projectName);
-
-                var clusteringFlg = false;
-                if($("input:checkbox:checked").prop("checked") == true){
-                    clusteringFlg = true;
-                }
-                else{
-                    clusteringFlg = false;
-                }
-                form_data.append('clustering', clusteringFlg);
 
                 var metaList = [];
                 metaList = getMetaList();
@@ -296,6 +282,68 @@
                 });
                 
             }); 
+
+            $('#clustering-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#clustering-btn').val();
+
+                form_data.append('action', action);
+
+                var metaList = [];
+                metaList = getMetaList();
+                form_data.append('metaList', metaList);
+
+                var qual_thresh = document.getElementById("qual_thresh").value;
+                form_data.append('qual_thresh', qual_thresh);
+
+                var checked_vars = [];
+
+                var quantiles_checkbox = document.getElementsByName("quantiles_checkbox");
+
+                for (var i = 0; i < quantiles_checkbox.length; i++) {
+                    if (quantiles_checkbox[i].checked) {
+                        checked_vars.push(quantiles_checkbox[i].value);
+                    }
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data) {
+                        d3.select('#roleSelection').select("table").remove();
+
+                        var var_names = data.var_names;
+                        var var_types = data.var_types;
+                        var samples = data.samples;
+                        var isCounts = data.isCounts;
+                        var roles = data.roles;
+                        var possibleRoles = data.possible_roles;
+                        var weighting_vars = data.weighting_vars;
+
+                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars);      
+                        
+                        // Avoid ctrl-click                                    
+                        $('option:not(#trend_type_option)').mousedown(function(e) {
+                            e.preventDefault();
+                            var originalScrollTop = $(this).parent().scrollTop();
+
+                            $(this).prop('selected', $(this).prop('selected') ? false : true);
+                            var self = this;
+                            $(this).parent().focus();
+                            setTimeout(function() {
+                                $(self).parent().scrollTop(originalScrollTop);
+                            }, 0);
+                            
+                            return false;
+                        });                              
+                    },
+                });
+                
+            });             
         });           
     </script>
 </head>
@@ -317,15 +365,41 @@
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input name="user_cutoffs" type="text" id="user_cutoffs" placeholder="Quantiles(e.g., 0.25,0.75)">
-            <button id="quantiles-btn" type="button" value="quantiles">Compute Quantiles</button> &nbsp;&nbsp;&nbsp;
-            <input type="checkbox" id="clustering">&nbsp;<label style="font-size: 14px;">Clustering</label>&nbsp;&nbsp;&nbsp;
-            <input name="projectName" type="text" id="projectName" placeholder="Project Name" size="11">
-            <button id="save-btn" type="button" value="save">Save</button>    
-            <label id="save-label" style="font-size: 14px;"></label>&nbsp;&nbsp;&nbsp;          
-            <button id="visualize-btn" type="submit" value="visualize">viz & compute</button>
-            &nbsp;&nbsp;&nbsp;
-
+            <div id="control_table">
+                <table class="rankingparam" cellspacing="0" cellpadding="0" align="center">
+                    <tr class = "paramtr">
+                        <td class="param">            
+                            <input name="user_cutoffs" type="text" id="user_cutoffs" placeholder="Quantiles(e.g., 0.25,0.75)">
+                        </td>
+                        <td class="param">            
+                            <button id="quantiles-btn" type="button" value="quantiles">Compute Quantiles</button>
+                        </td>
+                        <td class="param">  
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button id="visualize-btn" type="submit" value="visualize">viz & compute</button> 
+                        </td>                                         
+                    </tr>
+                    <tr class = "paramtr">
+                        <td class="param">
+                            <input type="range" style = "width: 115px;" min="0" max="1" step="0.01" id="qual_thresh" value = "0.2" onchange="update_qual_thresh(this.value);">
+                            &nbsp;<label id="qual_thresh_label" style="font-size: 12px;">0.2</label>  
+                        </td>
+                        <td class="param">
+                            <button id="clustering-btn" type="button" value="clustering">Clustering</button> 
+                        </td>                    
+                    </tr>
+                    <tr class = "paramtr">
+                        <td class="param">
+                                <input name="projectName" type="text" id="projectName" placeholder="Project Name">                        
+                        </td>
+                        <td class="param">
+                                <button id="save-btn" type="button" value="save">Save</button>    
+                                <label id="save-label" style="font-size: 14px;"></label>                                            
+                        </td>                    
+                    </tr>                                    
+                </table>
+            </div>
         </div> 
         <div id="typeSelector">
             <br/>
