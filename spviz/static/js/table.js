@@ -272,7 +272,7 @@ function interactBivariateMatrix(vars) {
 	updateTabulate(vars);
 };
 
-function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, weighting_vars) {
+function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars) {
 
 		var myArray = [];
 		var my_var_types = {};
@@ -282,7 +282,7 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 		var my_weighting_var = {};
 		data.forEach(function(d,i) {
 			myArray.push({"name": d, "type_dropdown": d, "role_dropdown":d, "isCount_dropdown":d, 
-							"weighting_var_dropdown": d, "sample": d});
+							"weighting_var_dropdown": d, "sample": d, "quantiles": d});
 			my_var_types[d] = var_types[i];
 			my_sample[d] = samples[i];
 			if (typeof isCounts !== 'undefined') {
@@ -302,20 +302,24 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 			} else {
 				// set default weighting_var to ''
 				my_weighting_var[d] = '';
-			}			
+			}	
+			if (typeof checked_vars === 'undefined') {
+				checked_vars = [];
+			}							
 		});
 
-		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "weighting_var_dropdown", "sample"];
+		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "weighting_var_dropdown", "sample", "quantiles"];
 		
 		var roleTable = d3.select("#roleSelection")
 							.append("table")
 							.attr("id", "roleTable")							
 							.style("border", "none")
 							.style("box-shadow", "none")
+							.style("margin-top", "30px")							
 							.style("margin-left", "20px");			
 
 		// append the header row
-		var META_COLUMNS = ['name','var_type','role','isCount', 'weighting_var', 'sample']
+		var META_COLUMNS = ['name','var_type','role','isCount', 'weighting_var', 'sample', "quantiles"]
 		var thead = roleTable.append('thead').append('tr')
 							.selectAll('th')
 							.data(META_COLUMNS).enter()
@@ -403,7 +407,54 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 													.text(function(d){return d;})
 													.property("selected", 
 													function(d){ return d === weighting_var; });
-							}																								
+							}	
+							if (i==6) {
+								var select = d3.select(this).append('input')
+															.attr('type', 'checkbox')
+															.attr('name', 'quantiles_checkbox')
+															.attr('value', d.value)
+															.property('checked', 
+															function(d){return checked_vars.includes(d.value)})
+							}																															
 						})
 											
+}
+
+function getMetaList() {
+	var table, tr, td, i;
+	table = document.getElementById("roleTable");
+	tr = table.getElementsByTagName("tr");
+
+	var metaList = [];
+	for(i = 1; i < tr.length; i++){
+		// name
+		var name_td = tr[i].getElementsByTagName("td")[0];
+		var nameValue = name_td.innerText;                    
+		// type
+		var type_td = tr[i].getElementsByTagName("td")[1];
+		var typeValue = type_td.getElementsByTagName("select")[0];
+		// role
+		var role_td = tr[i].getElementsByTagName("td")[2];
+		var roleValue = role_td.getElementsByTagName("select")[0];                 
+		// isCount
+		var isCount_td = tr[i].getElementsByTagName("td")[3];
+		var isCountValue = isCount_td.getElementsByTagName("select")[0];  
+		// weighting_var
+		var weighting_var_td = tr[i].getElementsByTagName("td")[4];
+		var weighting_varValue = weighting_var_td.getElementsByTagName("select")[0];  
+
+		var singleObject =            
+						{   
+							name: nameValue,
+							var_type: typeValue.options[typeValue.selectedIndex].value, 
+							role: getSelectValues(roleValue),
+							isCount: isCountValue.options[isCountValue.selectedIndex].value,
+							weighting_var: weighting_varValue.options[weighting_varValue.selectedIndex].value                                                               
+						};
+
+		metaList.push(singleObject);    
+	}
+	metaList = JSON.stringify(metaList);
+
+	return metaList;
 }

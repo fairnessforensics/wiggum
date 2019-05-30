@@ -30,37 +30,16 @@ def main():
             folder = 'data/' + folder
             labeled_df_setup = dsp.labeledDataFrame(folder)
 
-            # get variable names
-            var_names = labeled_df_setup.meta_df.index.tolist()
+            result_dict = {}
+            result_dict = models.getMetaDict(labeled_df_setup)
 
-            # get var_types for dropbox
-            var_types = []
-            var_types = labeled_df_setup.meta_df['var_type'].tolist()
+            result_dict['possible_roles'] = dsp.possible_roles
+            result_dict['trend_types'] = list(dsp.all_trend_types.keys())
 
-            # get isCounts for dropbox
-            isCounts = []
-            isCounts = labeled_df_setup.meta_df['isCount'].replace({True: 'Y', False: 'N'}).tolist()
+            trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
+            result_dict['trend_type_list'] = list(trend_type_list)
 
-            # get isCounts for dropbox
-            roles = []
-            roles = labeled_df_setup.meta_df['role'].tolist()
-
-            # get weighting_vars for dropbox
-            weighting_vars = []
-            weighting_vars = labeled_df_setup.meta_df['weighting_var'].fillna('N/A').tolist()
-
-            # get sample for data
-            sample_list = []
-            sample_list = labeled_df_setup.get_data_sample()
-
-            return jsonify({'var_names': var_names,
-                            'var_types': var_types,
-                            'isCounts': isCounts,
-                            'roles': roles,
-                            'weighting_vars': weighting_vars,
-                            'samples': sample_list,
-                            'possible_roles': dsp.possible_roles, 
-                            'trend_types': list(dsp.all_trend_types.keys())})
+            return jsonify(result_dict)
 
         # index.html 'Open' button clicked for data file
         if action == 'open':
@@ -95,13 +74,60 @@ def main():
 
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
-            # clusteringFlg = request.form['clustering']
-
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
             labeled_df_setup.to_csvs(directory)
             return 'Saved'
+
+        # index.html 'Compute Quantiles' button clicked
+        if action == 'quantiles':
+
+            meta = request.form['metaList']
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            checked_vars = request.form['checked_vars']
+            checked_vars = checked_vars.split(",")
+            
+            if checked_vars:
+                user_cutoffs = request.form['user_cutoffs']
+                if user_cutoffs != '':
+                    # extract quantiles from user input
+                    cutoffs = [float(s) for s in user_cutoffs.split(',')]
+                    cutoffs.extend([1])
+                    cutoffs.insert(0,0)
+
+                    labels = [str(np.round(a*100,2))+'to'+str(np.round(b*100,2))+'%' for a,b in zip(cutoffs[:-1],cutoffs[1:])]
+
+                    quantiles_dict = dict(zip(labels, cutoffs[1:]))
+
+                    labeled_df_setup.add_quantile(checked_vars, quantiles_dict)
+                else:
+                    labeled_df_setup.add_quantile(checked_vars)
+
+            result_dict = {}
+            result_dict = models.getMetaDict(labeled_df_setup)
+
+            result_dict['possible_roles'] = dsp.possible_roles
+
+            return jsonify(result_dict)
+
+        # index.html 'Clustering' button clicked
+        if action == 'clustering':
+
+            meta = request.form['metaList']
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            qual_thresh = float(request.form['qual_thresh'])
+
+            labeled_df_setup.add_all_dpgmm(qual_thresh = qual_thresh)
+
+            result_dict = {}
+            result_dict = models.getMetaDict(labeled_df_setup)
+
+            result_dict['possible_roles'] = dsp.possible_roles
+
+            return jsonify(result_dict)            
 
         # visualize.html 'Save' button clicked
         if action == 'save_trends':
@@ -117,9 +143,6 @@ def main():
             meta = request.form['metaList']
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
-            global clusteringFlg
-            clusteringFlg = request.form['clustering']
-
             global user_trends
             user_trends = request.form['trend_types']
             user_trends = user_trends.split(",")
@@ -129,9 +152,6 @@ def main():
         # initial for visualize.html page
         if action == 'page_load':
             if labeled_df_setup.result_df.empty:
-                if clusteringFlg == 'true':
-                    labeled_df_setup.add_all_dpgmm()
-
                 trend_list = [dsp.all_trend_types[trend]() for trend in user_trends]
 
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)

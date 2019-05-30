@@ -304,3 +304,9 @@ div.tooltip {
     position: absolute;
     top: 50px;
 }
+
+#control_table {
+    position: fixed;
+    top: 30px;
+    margin-left: 660px;
+}
