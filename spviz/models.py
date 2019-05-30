@@ -581,7 +581,7 @@ def getMetaDict(labeled_df):
         labeledDataFrame    
     Returns
     --------
-    result_dict
+    result_dict : Dictionary for meta data
     """
     result_dict = {}
 

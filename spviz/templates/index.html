@@ -77,8 +77,14 @@
                             // populate trend type dropdown options
                             var option = '';
                             var trend_types = data.trend_types;
+                            var trend_type_list = data.trend_type_list;
+
                             for (var i=0;i<trend_types.length;i++){
-                            option += '<option value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                if (trend_type_list.includes(trend_types[i])){
+                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '" selected>' + trend_types[i] + '</option>';
+                                } else {
+                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                }
                             }
                             $('#trend_type_selection').append(option);
 

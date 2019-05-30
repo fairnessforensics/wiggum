@@ -36,6 +36,9 @@ def main():
             result_dict['possible_roles'] = dsp.possible_roles
             result_dict['trend_types'] = list(dsp.all_trend_types.keys())
 
+            trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
+            result_dict['trend_type_list'] = list(trend_type_list)
+
             return jsonify(result_dict)
 
         # index.html 'Open' button clicked for data file
