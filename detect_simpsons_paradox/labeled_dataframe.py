@@ -51,7 +51,7 @@ def check_meta(row,meta_val,meta_type):
 
 def simple_type_mapper(df):
     """
-    get varialbe types using the data types and counts
+    get variable types using the data types and counts
 
 
     Parameters
@@ -214,6 +214,14 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
                 self.meta_df['var_type'][k] = v
         elif type(var_type_list) == list:
             self.meta_df['var_type'] = var_type_list
+
+        for var, metadata in self.meta_df.iterrows():
+            # recode binary that are not numerical to 0_1
+            if metadata['var_type'] == binary and 'object' in metadata['dtype']:
+                vals = pd.unique(self.df[var])
+                bin_map = {v:i for i,v in enumerate(vals)}
+                self.df[var].replace(bin_map,inplace=True)
+
 
     def set_roles(self,role_info):
         """
