@@ -217,7 +217,7 @@ class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
 
         for var, metadata in self.meta_df.iterrows():
             # recode binary that are not numerical to 0_1
-            if metadata['var_type'] == binary and 'object' in metadata['dtype']:
+            if metadata['var_type'] == 'binary' and 'object' in metadata['dtype']:
                 vals = pd.unique(self.df[var])
                 bin_map = {v:i for i,v in enumerate(vals)}
                 self.df[var].replace(bin_map,inplace=True)
