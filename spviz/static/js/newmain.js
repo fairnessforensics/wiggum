@@ -45,7 +45,7 @@ function drawGraph(dataAll) {
 			rateAllKeySlopeGraph = [];
 			rateSubSlopeGraph = [];
 			rateSubKeySlopeGraph = [];
-
+			var slopeKey = key;
 			//csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
 
 			rateTrendMatrixAll = data.ratioRateAll;
@@ -113,8 +113,7 @@ function drawGraph(dataAll) {
 					rateColLabels[i].push(key)	
 				}
 			}
-
-			updateRateSPContainer();
+			updateRateSPContainer(slopeKey);
 		}
 	}
 }

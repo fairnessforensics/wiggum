@@ -13,7 +13,7 @@ var targetAttr;
 var groupingAttrs;
 var rateRowLabels;
 var rateColLabels;
-var arraySlopeGraph;
+var arraySlopeGraph = [];
 var rateRowVars;
 var rateMatrixIndex;
 var rateColKeys;
@@ -274,22 +274,24 @@ function updateContainer() {
 	.on("click", clickMatrixCell);	
 }
 
-function updateRateSPContainer() {
+function updateRateSPContainer(slopeKey) {
 
 	//d3.select("#container").selectAll('svg').remove();
 
-	arraySlopeGraph = [];
+	arraySlopeGraph[slopeKey] = [];
+
 	rateMatrixIndex = 0;
 
 	var temp = rateTrendMatrixSub.length/rateAllSlopeGraph.length;
+
 	var index = 0;
 	var index_explanary = 0;
 	var protectedAttr_current, explanaryAttrs_current;
 	for (var i = 0; i < rateTrendMatrixSub.length; i++){
 		// Prepare for Slope Graph
-		arraySlopeGraph[rateMatrixIndex] = [];
+		arraySlopeGraph[slopeKey][rateMatrixIndex] = [];
 		// Construct Slope Graph array for ALL--------->
-		arraySlopeGraph[rateMatrixIndex] = [];
+		arraySlopeGraph[slopeKey][rateMatrixIndex] = [];
 		var singleObj = {};
 
 		index = Math.floor(i/temp);
@@ -301,7 +303,7 @@ function updateRateSPContainer() {
 		}
 		index_explanary = i%temp;
 		singleObj[explanaryAttrs_current[index_explanary]] = 'ALL';
-		arraySlopeGraph[rateMatrixIndex].push(singleObj);
+		arraySlopeGraph[slopeKey][rateMatrixIndex].push(singleObj);
 		// <-------------------------------------
 
 		// Construct Slope Graph array for subgroups--------->
@@ -316,7 +318,7 @@ function updateRateSPContainer() {
 		  	}
   
 		  	singleObj[explanaryAttrs_current[index_explanary]] = rateColLabels[i][j];
-			arraySlopeGraph[rateMatrixIndex].push(singleObj);
+			arraySlopeGraph[slopeKey][rateMatrixIndex].push(singleObj);
 			  
 			rateColKeys.push(j);
 		}	
@@ -338,7 +340,7 @@ function updateRateSPContainer() {
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
 							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex, 
-							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i], "rank_trend"),
+							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i], "rank_trend", slopeKey),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel
