@@ -557,10 +557,13 @@ def getResultDict(labeled_df, result_df, filter_subgroup= None):
                 if weighting_var != '':
                     all_attrs = np.append(all_attrs, [weighting_var])
                 
+                target_var_type = labeled_df.meta_df['var_type'][targetAttr]
+
                 result_dict = {'trend_type' : 'rank_trend',
                             'protectedVars': protectedVars,
                             'explanaryVars': groupbyAttrs.tolist(), 
                             'targetAttr': targetAttr,
+                            'target_var_type': target_var_type,
                             'weighting_var': weighting_var,
                             'ratioRateAll': ratioRateAll,
                             'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
