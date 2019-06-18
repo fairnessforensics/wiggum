@@ -467,7 +467,7 @@ function calcLinear(data, x, y, minX, maxX){
 	}
 }
 
-var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
+var UpdateMatrixFormat = function(matrix, vars, category, Trend_type) {
 
 
 	if (autoDetectFlag == 0 || autoDetectResult == null) {
@@ -481,7 +481,7 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 						categoryAttr: category.groupby,
 						category: category.value,
 						autoDetectFlg: 0,
-						trend_type: trend_type
+						Trend_type: Trend_type
 					};
 			});
 		});
@@ -500,7 +500,7 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 				};
 
 				if (!isEmpty(autoDetectResult)) {
-					var len = Object.keys(autoDetectResult.agg_trend).length
+					var len = Object.keys(autoDetectResult.agg_Trend).length
 					for (var k = 0; k < len; k++){
 						if ((autoDetectResult.feat1[k] == vars[i] &&
 							autoDetectResult.feat2[k] == vars[j] &&
@@ -537,7 +537,7 @@ var clickMatrixCell = function() {
 function updateScatter() {
 	var d = this.datum();
 	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
-		categoryAttr: d.categoryAttr, category: d.category, trend_type: d.trend_type};
+		categoryAttr: d.categoryAttr, category: d.category, Trend_type: d.Trend_type};
 
 	// updateVars used for same axis range
 	updateVars = vars;	

@@ -4,29 +4,29 @@ import itertools
 import scipy.stats as stats
 
 
-class correlationSignTrend():
+class CorrelationSignTrend():
 
 
     ############################################################################
-    # trend computation functions
+    # Trend computation functions
     ############################################################################
 
-    def get_trends(self,data_df,trend_col_name):
+    def get_Trends(self,data_df,Trend_col_name):
         """
-        Compute a trend, its quality and return a partial result_df
+        Compute a Trend, its quality and return a partial result_df
 
         Parameters
         ----------
         data_df : DataFrame or DataFrameGroupBy
-            data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
-        trend_col_name : {'subgroup_trend','agg_trend'}
-            which type of trend is to be computed
+            data to compute Trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get Trend functions
+        Trend_col_name : {'subgroup_Trend','agg_Trend'}
+            which type of Trend is to be computed
 
         Required properties
         --------------------
         name : string
-            used in the trend_type column of result_df and by viz
+            used in the Trend_type column of result_df and by viz
         regression_vars : list of strings
             variables to compute correlations of
         corrtype : string {'pearson','spearman','kendall'}
@@ -68,7 +68,7 @@ class correlationSignTrend():
                 triu_feat_indices = triu_indices
 
             # compute correlations, only store vlaues from upper right triangle
-            trend_name = '_'.join([self.name , trend_col_name])
+            Trend_name = '_'.join([self.name , Trend_col_name])
             corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
             corr_triu = corr_mat.values[triu_indices]
 
@@ -76,7 +76,7 @@ class correlationSignTrend():
             sign_map = {1:'positive', -1:'negative'}
             sign_labels = [sign_map[np.sign(corr)] for corr in corr_triu]
 
-            self.trend_precompute[trend_name] = corr_mat
+            self.Trend_precompute[Trend_name] = corr_mat
 
 
             # create dataframe with rows, att1 label, attr2 label, correlation
@@ -84,13 +84,13 @@ class correlationSignTrend():
                                         self.regression_vars[y],sign,np.abs(val)]
                                         for x,y,sign,val in zip(*triu_feat_indices,
                                                     sign_labels,corr_triu)],
-                        columns = ['feat1','feat2',trend_col_name,
-                                                    trend_col_name+'_strength'])
-                                                # trend is sign, qual is corr
+                        columns = ['feat1','feat2',Trend_col_name,
+                                                    Trend_col_name+'_strength'])
+                                                # Trend is sign, qual is corr
 
         else:
             n_triu_values = 0
-            reg_df = pd.DataFrame(columns = ['feat1','feat2',trend_col_name])
+            reg_df = pd.DataFrame(columns = ['feat1','feat2',Trend_col_name])
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
@@ -99,13 +99,13 @@ class correlationSignTrend():
             # repeat the values each the number of time sfor the size of the triu
             reg_df['subgroup'] = list(data_df.groups.keys())*n_triu_values
 
-        reg_df['trend_type'] = self.name
+        reg_df['Trend_type'] = self.name
 
         return reg_df
 
     def get_distance(self,row):
         """
-        distance between the subgroup and aggregate trends for a row of a
+        distance between the subgroup and aggregate Trends for a row of a
         result_df  binary 0 for same sign, 1 for opposite sign
 
         Parameters
@@ -116,42 +116,42 @@ class correlationSignTrend():
         Returns
         -------
         <>_dist : float
-            distance between the subgroup_trend and agg_trend, compatible with
+            distance between the subgroup_Trend and agg_Trend, compatible with
             assignment to a cell of a result_df
         """
-        sg_trend = row['subgroup_trend']
-        ag_trend = row['agg_trend']
+        sg_Trend = row['subgroup_Trend']
+        ag_Trend = row['agg_Trend']
 
         # if they're the same set to False
-        binary_distance  = int(not(sg_trend == ag_trend))
+        binary_distance  = int(not(sg_Trend == ag_Trend))
         return binary_distance
 
 
 
 
-class correlationTrend():
+class CorrelationTrend():
 
 
     ############################################################################
-    # trend computation functions
+    # Trend computation functions
     ############################################################################
 
-    def get_trends(self,data_df,trend_col_name):
+    def get_Trends(self,data_df,Trend_col_name):
         """
-        Compute a trend, its quality and return a partial result_df
+        Compute a Trend, its quality and return a partial result_df
 
         Parameters
         ----------
         data_df : DataFrame or DataFrameGroupBy
-            data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
-        trend_col_name : {'subgroup_trend','agg_trend'}
-            which type of trend is to be computed
+            data to compute Trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get Trend functions
+        Trend_col_name : {'subgroup_Trend','agg_Trend'}
+            which type of Trend is to be computed
 
         Required properties
         --------------------
         name : string
-            used in the trend_type column of result_df and by viz
+            used in the Trend_type column of result_df and by viz
         regression_vars : list of strings
             variables to compute correlations of
         corrtype : string {'pearson','spearman','kendall'}
@@ -193,24 +193,24 @@ class correlationTrend():
                 triu_feat_indices = triu_indices
 
             # compute correlations, only store vlaues from upper right triangle
-            trend_name = '_'.join([self.name , trend_col_name])
+            Trend_name = '_'.join([self.name , Trend_col_name])
             corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
             corr_triu = corr_mat.values[triu_indices]
 
-            self.trend_precompute[trend_name] = corr_mat
+            self.Trend_precompute[Trend_name] = corr_mat
 
 
             # create dataframe with rows, att1 label, attr2 label, correlation
             reg_df = pd.DataFrame(data=[[self.regression_vars[x],
                                     self.regression_vars[y],val,np.abs(val)]
                                         for x,y,val in zip(*triu_feat_indices,corr_triu)],
-                        columns = ['feat1','feat2',trend_col_name,trend_col_name+'_strength'])
+                        columns = ['feat1','feat2',Trend_col_name,Trend_col_name+'_strength'])
 
-            # quality here is the absolute value of the trend value
+            # quality here is the absolute value of the Trend value
 
         else:
             n_triu_values = 0
-            reg_df = pd.DataFrame(columns = ['feat1','feat2',trend_col_name])
+            reg_df = pd.DataFrame(columns = ['feat1','feat2',Trend_col_name])
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
@@ -219,13 +219,13 @@ class correlationTrend():
             # repeat the values each the number of time sfor the size of the triu
             reg_df['subgroup'] = list(data_df.groups.keys())*n_triu_values
 
-        reg_df['trend_type'] = self.name
+        reg_df['Trend_type'] = self.name
 
         return reg_df
 
     def get_distance(self,row):
         """
-        distance between the subgroup and aggregate trends for a row of a
+        distance between the subgroup and aggregate Trends for a row of a
         result_df  binary 0 for same sign, 1 for opposite sign
 
         Parameters
@@ -236,12 +236,12 @@ class correlationTrend():
         Returns
         -------
         <>_dist : float
-            distance between the subgroup_trend and agg_trend, compatible with
+            distance between the subgroup_Trend and agg_Trend, compatible with
             assignment to a cell of a result_df
         """
-        sg_trend = row['subgroup_trend']
-        ag_trend = row['agg_trend']
+        sg_Trend = row['subgroup_Trend']
+        ag_Trend = row['agg_Trend']
 
         # if they're the same set to False
-        binary_distance  = int(not(np.sign(sg_trend) == np.sign(ag_trend)))
+        binary_distance  = int(not(np.sign(sg_Trend) == np.sign(ag_Trend)))
         return binary_distance

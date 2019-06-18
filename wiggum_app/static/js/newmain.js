@@ -11,7 +11,7 @@ function drawGraph(dataAll) {
 		if (key > 1) {
 			data = dataAll[key];
 
-			selectTypeValue = data.trend_type;
+			selectTypeValue = data.Trend_type;
 		}
 		if (selectTypeValue == "pearson_corr") {
 			// Correlation for all
@@ -38,7 +38,7 @@ function drawGraph(dataAll) {
 			// Scatter plot
 			createScatterplot(csvData, labels);
 
-		} else if (selectTypeValue == "rank_trend") {
+		} else if (selectTypeValue == "rank_Trend") {
 			// initial
 			rateTrendMatrixSub = [];
 			rateAllSlopeGraph = [];

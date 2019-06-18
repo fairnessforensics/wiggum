@@ -5,24 +5,24 @@ import scipy.stats as stats
 from .base_getvars import  w_avg
 import warnings
 
-class linearRegression():
+class LinearRegression():
 
-    def get_trends(self,data_df,trend_col_name):
+    def get_Trends(self,data_df,Trend_col_name):
         """
         Compute a linear regressions and return a partial result_df
 
         Parameters
         ----------
         data_df : DataFrame or DataFrameGroupBy
-            data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
-        trend_col_name : {'subgroup_trend','agg_trend'}
-            which type of trend is to be computed
+            data to compute Trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get Trend functions
+        Trend_col_name : {'subgroup_Trend','agg_Trend'}
+            which type of Trend is to be computed
 
         Required properties
         --------------------
         name : string
-            used in the trend_type column of result_df and by viz
+            used in the Trend_type column of result_df and by viz
         regression_vars : list of strings or list of tuples
             variables to compute correlations of
         symmetric_vars : Boolean
@@ -92,17 +92,17 @@ class linearRegression():
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
-                                                trend_col_name,'subgroup',
-                                                trend_col_name+'_strength'])
+                                                Trend_col_name,'subgroup',
+                                                Trend_col_name+'_strength'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
-                                                    trend_col_name,'empty',
-                                                    trend_col_name+'_strength'])
+                                                    Trend_col_name,'empty',
+                                                    Trend_col_name+'_strength'])
             reg_df.drop('empty',axis=1,inplace=True)
 
-        reg_df['trend_type'] = self.name
+        reg_df['Trend_type'] = self.name
 
 
         return reg_df
@@ -122,7 +122,7 @@ class linearRegression():
         Returns
         -------
         angle : float
-            angle in degrees between the subgroup_trend and agg_trend, compatible with
+            angle in degrees between the subgroup_Trend and agg_Trend, compatible with
             assignment to a cell of a result_df
 
         """
@@ -150,14 +150,14 @@ class linearRegression():
         Returns
         -------
         angle : float
-            angle in degrees between the subgroup_trend and agg_trend, compatible with
+            angle in degrees between the subgroup_Trend and agg_Trend, compatible with
             assignment to a cell of a result_df
 
         """
         # take absolute value, because the two will be in opposite directions
         # relative to the angle of interest
-        theta_sub = np.arctan(row['subgroup_trend'])
-        theta_all = np.arctan(row['agg_trend'])
+        theta_sub = np.arctan(row['subgroup_Trend'])
+        theta_all = np.arctan(row['agg_Trend'])
 
         # take difference them and convert to degrees
         return np.abs(theta_all - theta_sub)

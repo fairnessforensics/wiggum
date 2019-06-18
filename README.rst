@@ -12,21 +12,21 @@ To use the package, download (or clone) and:
 
 .. code-block:: bash
 
-  cd DetectSimpsonParadox/
+  cd Wiggum/
   pip install .
 
 To use the package in python, after installed:
 
 .. code-block:: Python
 
-  import detect_simpsons_paradox as dsp
+  import wiggum as wg
 
 Installing makes the flask app for interactive vizualization
 in browser available as a command line tool. To run the app:
 
 .. code-block:: bash
 
-  spviz-app
+  wiggum-app
 
 
 

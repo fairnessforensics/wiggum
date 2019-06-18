@@ -55,7 +55,7 @@
                                         feat2: feat2_selected, 
                                         group_feat: group_feat_selected,
                                         subgroup: subgroup_selected,
-                                        trend_type: trend_type_selected                                                            
+                                        Trend_type: Trend_type_selected                                                            
                                     };
             filter_object = JSON.stringify(filter_object);
 
@@ -93,15 +93,15 @@
                                         feat2: feat2_selected, 
                                         group_feat: group_feat_selected,
                                         subgroup: subgroup_selected,
-                                        trend_type: trend_type_selected                                                            
+                                        Trend_type: Trend_type_selected                                                            
                                     };
 
             filter_object = JSON.stringify(filter_object);
 
             var threshold = legendAdjustValue;
 
-            var agg_strength_threshold = document.getElementById("agg_trend_strength_slider").value;
-            var sg_strength_threshold = document.getElementById("subgroup_trend_strength_slider").value;
+            var agg_strength_threshold = document.getElementById("agg_Trend_strength_slider").value;
+            var sg_strength_threshold = document.getElementById("subgroup_Trend_strength_slider").value;
 
             $.ajax({
                         type: 'POST',
@@ -147,7 +147,7 @@
             $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'save_trends', 'projectName': projectName},                               
+                        data: {'action':'save_Trends', 'projectName': projectName},                               
                         success: function(data) {
                             var saved = document.getElementById("save-label");
                             saved.innerText = data;
@@ -212,30 +212,30 @@
 
                 // Sending weight parameters
                 var weight_param = 
-                    {   agg_trend: Number(document.getElementById("agg_trend_individual").value), 
+                    {   agg_Trend: Number(document.getElementById("agg_Trend_individual").value), 
                         all_slope: Number(document.getElementById("all_slope_individual").value),
                         angle: Number(document.getElementById("angle_individual").value), 
                         subgroup_slope: Number(document.getElementById("subgroup_slope_individual").value),  
-                        subgroup_trend: Number(document.getElementById("subgroup_trend_individual").value)                                           
+                        subgroup_Trend: Number(document.getElementById("subgroup_Trend_individual").value)                                           
                     };
                 weight_param = JSON.stringify(weight_param);
                 form_data.append('weight_param', weight_param);
 
                 var angle_agg_type = document.getElementById("angle_selection").value;
                 var subgroup_slope_agg_type = document.getElementById("subgroup_slope_selection").value;
-                var subgroup_trend_agg_type = document.getElementById("subgroup_trend_selection").value;
+                var subgroup_Trend_agg_type = document.getElementById("subgroup_Trend_selection").value;
 
                 var angle_key = "angle_" + angle_agg_type;
                 var subgroup_slope_key = "subgroup_slope_" + subgroup_slope_agg_type;
-                var subgroup_trend_key = "subgroup_trend_" + subgroup_trend_agg_type;                                
+                var subgroup_Trend_key = "subgroup_Trend_" + subgroup_Trend_agg_type;                                
 
                 // Sending weight parameters for view
                 var weight_param_view = 
-                    {   agg_trend: Number(document.getElementById("agg_trend_view").value), 
+                    {   agg_Trend: Number(document.getElementById("agg_Trend_view").value), 
                         all_slope: Number(document.getElementById("all_slope_view").value),
                         [angle_key]: Number(document.getElementById("angle_view").value), 
                         [subgroup_slope_key]: Number(document.getElementById("subgroup_slope_view").value),  
-                        [subgroup_trend_key]: Number(document.getElementById("subgroup_trend_view").value)                             
+                        [subgroup_Trend_key]: Number(document.getElementById("subgroup_Trend_view").value)                             
                     };
                 weight_param_view = JSON.stringify(weight_param_view);
                 form_data.append('weight_param_view', weight_param_view);    
@@ -244,7 +244,7 @@
                 var view_score_param = 
                     {   angle: angle_agg_type, 
                         subgroup_slope: subgroup_slope_agg_type,  
-                        subgroup_trend: subgroup_trend_agg_type                                            
+                        subgroup_Trend: subgroup_Trend_agg_type                                            
                     };
                 view_score_param = JSON.stringify(view_score_param);
                 form_data.append('view_score_param', view_score_param);                  
@@ -282,9 +282,9 @@
                         tableRecords = JSON.parse(data.table)
                         //d3.select("#table").style("display", "inline-block");                  
 
-                        tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
-                                'subgroup', 'subgroup_slope', 'subgroup_trend',
-                                angle_key, subgroup_slope_key, subgroup_trend_key, individual_weight_name, view_weight_name];
+                        tableColumns = ['agg_Trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
+                                'subgroup', 'subgroup_slope', 'subgroup_Trend',
+                                angle_key, subgroup_slope_key, subgroup_Trend_key, individual_weight_name, view_weight_name];
 
                         tabulate(tableRecords, tableColumns);
 
@@ -304,29 +304,29 @@
                 
                 // Sending weight parameters
                 var weight_param = 
-                    {   agg_trend: Number(document.getElementById("agg_trend_individual").value), 
+                    {   agg_Trend: Number(document.getElementById("agg_Trend_individual").value), 
                         all_slope: Number(document.getElementById("all_slope_individual").value),
                         angle: Number(document.getElementById("angle_individual").value), 
                         subgroup_slope: Number(document.getElementById("subgroup_slope_individual").value),  
-                        subgroup_trend: Number(document.getElementById("subgroup_trend_individual").value)                                            
+                        subgroup_Trend: Number(document.getElementById("subgroup_Trend_individual").value)                                            
                     };
                 weight_param = JSON.stringify(weight_param);
 
                 var angle_agg_type = document.getElementById("angle_selection").value;
                 var subgroup_slope_agg_type = document.getElementById("subgroup_slope_selection").value;
-                var subgroup_trend_agg_type = document.getElementById("subgroup_trend_selection").value;
+                var subgroup_Trend_agg_type = document.getElementById("subgroup_Trend_selection").value;
 
                 var angle_key = "angle_" + angle_agg_type;
                 var subgroup_slope_key = "subgroup_slope_" + subgroup_slope_agg_type;
-                var subgroup_trend_key = "subgroup_trend_" + subgroup_trend_agg_type;     
+                var subgroup_Trend_key = "subgroup_Trend_" + subgroup_Trend_agg_type;     
 
                 // Sending weight parameters for view
                 var weight_param_view = 
-                    {   agg_trend: Number(document.getElementById("agg_trend_view").value), 
+                    {   agg_Trend: Number(document.getElementById("agg_Trend_view").value), 
                         all_slope: Number(document.getElementById("all_slope_view").value),
                         [angle_key]: Number(document.getElementById("angle_view").value), 
                         [subgroup_slope_key]: Number(document.getElementById("subgroup_slope_view").value),  
-                        [subgroup_trend_key]: Number(document.getElementById("subgroup_trend_view").value),
+                        [subgroup_Trend_key]: Number(document.getElementById("subgroup_Trend_view").value),
                         SP_subgroups: Number(document.getElementById("sp_subgroups_view").value),
                         gby_counts: Number(document.getElementById("gby_counts_view").value),
                         portions: Number(document.getElementById("portions_view").value)                                                                    
@@ -337,7 +337,7 @@
                 var view_score_param = 
                     {   angle: angle_agg_type, 
                         subgroup_slope: subgroup_slope_agg_type,  
-                        subgroup_trend: subgroup_trend_agg_type                                            
+                        subgroup_Trend: subgroup_Trend_agg_type                                            
                     };
                 view_score_param = JSON.stringify(view_score_param);              
 
@@ -364,9 +364,9 @@
                         autoDetectResult = JSON.parse(data.result)
 
                         if (autoDetectFlag == 0) {
-                            tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
-                                'subgroup', 'subgroup_slope',subgroup_trend_key, 'SP_subgroups', 'gby_counts', 'portions',
-                                angle_key, subgroup_trend_key, individual_weight_name, view_weight_name];
+                            tableColumns = ['agg_Trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
+                                'subgroup', 'subgroup_slope',subgroup_Trend_key, 'SP_subgroups', 'gby_counts', 'portions',
+                                angle_key, subgroup_Trend_key, individual_weight_name, view_weight_name];
                         }
 
                         autoDetectFlag = 1;
@@ -505,12 +505,12 @@
                             </td>                                                        
                         </tr>                           
                         <tr class = "paramtr">
-                            <td class="param">agg_trend</td>
+                            <td class="param">agg_Trend</td>
                             <td class="param">
-                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_trend_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_Trend_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>                    
                             <td class="param">
-                                <input type="number" id="agg_trend_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                                <input type="number" id="agg_Trend_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>
                         </tr>
                         <tr class = "paramtr">
@@ -541,12 +541,12 @@
                             </td>                    
                         </tr>                    
                         <tr class = "paramtr">
-                            <td class="param">subgroup_trend</td>
+                            <td class="param">subgroup_Trend</td>
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_trend_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">  
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_Trend_individual" value = "0" onchange="updateNumberInput(this.id, this.value);">  
                             </td>    
                             <td class="param">
-                                <input type="number" id="subgroup_trend_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                                <input type="number" id="subgroup_Trend_individual_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                         
                         </tr>                                      
                     </table>
@@ -568,13 +568,13 @@
                                 </td>                                                        
                             </tr>                          
                         <tr class = "paramtr">
-                            <td class="param">agg_trend</td>
+                            <td class="param">agg_Trend</td>
                             <td class="param"></td>
                             <td class="param">
-                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_trend_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="agg_Trend_view" value = "0" onchange="updateNumberInput(this.id, this.value);">
                             </td>
                             <td class="param">
-                                <input type="number" id="agg_trend_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                                <input type="number" id="agg_Trend_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>  
                             <td class="param">&nbsp;&nbsp;&nbsp;SP_subgroups</td>
                             <td class="param"></td>                            
@@ -647,18 +647,18 @@
                             </td>                                                 
                         </tr>                    
                         <tr class = "paramtr">
-                            <td class="param">subgroup_trend</td>
+                            <td class="param">subgroup_Trend</td>
                             <td class="param">
-                                <select id = "subgroup_trend_selection" class="paramselection">
+                                <select id = "subgroup_Trend_selection" class="paramselection">
                                     <option value="sum">Sum</option>
                                     <option value="mean">Mean</option>
                                 </select>                                
                             </td>                           
                             <td class="param">                        
-                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_trend_view" value = "0" onchange="updateNumberInput(this.id, this.value);">  
+                                <input type="range" class="paramslider" min="0" max="1" step="0.01" id="subgroup_Trend_view" value = "0" onchange="updateNumberInput(this.id, this.value);">  
                             </td>   
                             <td class="param">
-                                <input type="number" id="subgroup_trend_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
+                                <input type="number" id="subgroup_Trend_view_number" value="0" min="0" max="1" step="0.01" class="paramnumber"/>
                             </td>                            
                         </tr>                                                        
                     </table>  

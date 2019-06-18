@@ -1,9 +1,9 @@
-from spviz import app, render_template
-from spviz import models
+from wiggum_app import app, render_template
+from wiggum_app import models
 from flask import request, flash, redirect,jsonify, url_for
 import pandas as pd
 import json
-import detect_simpsons_paradox as dsp
+import wiggum as wg
 import numpy as np
 from .models import Decoder
 
@@ -28,16 +28,16 @@ def main():
             folder = request.form['folder']
 
             folder = 'data/' + folder
-            labeled_df_setup = dsp.labeledDataFrame(folder)
+            labeled_df_setup = wg.LabeledDataFrame(folder)
 
             result_dict = {}
             result_dict = models.getMetaDict(labeled_df_setup)
 
-            result_dict['possible_roles'] = dsp.possible_roles
-            result_dict['trend_types'] = list(dsp.all_trend_types.keys())
+            result_dict['possible_roles'] = wg.possible_roles
+            result_dict['Trend_types'] = list(wg.all_Trend_types.keys())
 
-            trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
-            result_dict['trend_type_list'] = list(trend_type_list)
+            Trend_type_list = pd.unique(labeled_df_setup.result_df['Trend_type'])
+            result_dict['Trend_type_list'] = list(Trend_type_list)
 
             return jsonify(result_dict)
 
@@ -52,7 +52,7 @@ def main():
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
 
-            labeled_df_setup = dsp.labeledDataFrame(df)
+            labeled_df_setup = wg.LabeledDataFrame(df)
 
             labeled_df_setup.infer_var_types()
 
@@ -66,8 +66,8 @@ def main():
 
             return jsonify({'var_types': var_types,
                             'samples': sample_list,
-                            'possible_roles': dsp.possible_roles, 
-                            'trend_types': list(dsp.all_trend_types.keys())})
+                            'possible_roles': wg.possible_roles,
+                            'Trend_types': list(wg.all_Trend_types.keys())})
 
         if action == 'save':
             meta = request.form['metaList']
@@ -88,7 +88,7 @@ def main():
 
             checked_vars = request.form['checked_vars']
             checked_vars = checked_vars.split(",")
-            
+
             if checked_vars:
                 user_cutoffs = request.form['user_cutoffs']
                 if user_cutoffs != '':
@@ -108,7 +108,7 @@ def main():
             result_dict = {}
             result_dict = models.getMetaDict(labeled_df_setup)
 
-            result_dict['possible_roles'] = dsp.possible_roles
+            result_dict['possible_roles'] = wg.possible_roles
 
             return jsonify(result_dict)
 
@@ -125,17 +125,17 @@ def main():
             result_dict = {}
             result_dict = models.getMetaDict(labeled_df_setup)
 
-            result_dict['possible_roles'] = dsp.possible_roles
+            result_dict['possible_roles'] = wg.possible_roles
 
-            return jsonify(result_dict)            
+            return jsonify(result_dict)
 
         # visualize.html 'Save' button clicked
-        if action == 'save_trends':
+        if action == 'save_Trends':
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)          
-            return 'Saved'      
+            labeled_df_setup.to_csvs(directory)
+            return 'Saved'
 
         # index.html 'Visualize' button clicked
         if action == 'visualize':
@@ -143,18 +143,18 @@ def main():
             meta = request.form['metaList']
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
-            global user_trends
-            user_trends = request.form['trend_types']
-            user_trends = user_trends.split(",")
+            global user_Trends
+            user_Trends = request.form['Trend_types']
+            user_Trends = user_Trends.split(",")
 
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
         if action == 'page_load':
             if labeled_df_setup.result_df.empty:
-                trend_list = [dsp.all_trend_types[trend]() for trend in user_trends]
+                Trend_list = [wg.all_Trend_types[Trend]() for Trend in user_Trends]
 
-                labeled_df_setup.get_subgroup_trends_1lev(trend_list)
+                labeled_df_setup.get_subgroup_Trends_1lev(Trend_list)
 
                 # add distances
                 labeled_df_setup.add_distance()
@@ -169,9 +169,9 @@ def main():
             filter_object = request.form['filter_object']
             filter_object = json.loads(filter_object, cls=Decoder)
 
-            filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+            filter_result = labeled_df_setup.get_Trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
                                 group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
-                                trend_type =filter_object['trend_type'])
+                                Trend_type =filter_object['Trend_type'])
 
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, filter_result, filter_object['subgroup'])
@@ -193,14 +193,14 @@ def main():
 
             filter_object = request.form['filter_object']
             filter_object = json.loads(filter_object, cls=Decoder)
-            trend_filter = filter_object['trend_type']
+            Trend_filter = filter_object['Trend_type']
 
-            if not trend_filter:
-                # Default to detect all trend types from result_df
-                trend_filter = list(pd.unique(labeled_df_setup.result_df['trend_type']))
+            if not Trend_filter:
+                # Default to detect all Trend types from result_df
+                Trend_filter = list(pd.unique(labeled_df_setup.result_df['Trend_type']))
 
-            sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_strength':agg_strength_threshold,
-                'subgroup_trend_strength':sg_strength_threshold,'trend_type':trend_filter}
+            sp_filter = {'name':'SP', 'distance':threshold, 'agg_Trend_strength':agg_strength_threshold,
+                'subgroup_Trend_strength':sg_strength_threshold,'Trend_type':Trend_filter}
 
             detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)
 
@@ -314,7 +314,7 @@ def main():
                                 'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
                                 'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
             elif spType == 'Rate2':
-                targetAttrList = labeled_df.loc[labeled_df['role'] == 'trend']['name'].tolist()
+                targetAttrList = labeled_df.loc[labeled_df['role'] == 'Trend']['name'].tolist()
                 targetAttr = targetAttrList[0]
 
                 groupingAttrs =  labeled_df.loc[labeled_df['role'] == 'groupby']['name'].tolist()

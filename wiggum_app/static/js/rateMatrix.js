@@ -42,7 +42,7 @@ function getRateMatrixAll(data, groupAttr1, groupAttr2) {
 
 	for (var i = 0; i < resultArray.length; i++){
 		result[i] = resultArray[i].values.mean;
-	}	
+	}
 
 	return result;
 }
@@ -56,7 +56,7 @@ function getRateTrendMatrixAll(data) {
 				result[index] = data[i] / data[j];
 				index = index + 1;
 		}
-	}	
+	}
 	return result;
 }
 
@@ -78,14 +78,14 @@ function getRateTrendMatrixSub(data) {
 //				}
 			}
 		}
-	}	
+	}
 	return result;
 }
 
 function getRateMatrixSub(data, groupAttr1, groupAttr2) {
 
 	var result = [];
-	  
+
 	  var resultArray = d3.nest()
 				  .key(function(d) {return d[groupAttr1]})
 				  .key(function(d) {return d[groupAttr2]})
@@ -95,24 +95,24 @@ function getRateMatrixSub(data, groupAttr1, groupAttr2) {
 					  };
 				  })
 		  .entries(data);
-  
+
 		  // Get all values in explanatory grouping variable
 		  var explanatoryGroupValues = d3.nest()
 			  .key(function(d) {return d[groupAttr2];})
 			  .entries(data);
-  
+
 		  var expalanatoryValues = [];
 		  explanatoryGroupValues.forEach(function(value) {
 			  expalanatoryValues.push(value.key);
 		  })
-  
+
 	  // Construct an object array for slope graph
 	  for (var i = 0; i < expalanatoryValues.length; i++){
 		  var singleObj = {};
 
 		for (var j = 0; j < resultArray.length; j++){
 			if (i==0) {
-				result[j] = [];	
+				result[j] = [];
 			}
 
 			var foundFlg = false;
@@ -133,13 +133,13 @@ function getRateMatrixSub(data, groupAttr1, groupAttr2) {
 
 		singleObj[groupAttr2] = expalanatoryValues[i];
 		arraySlopeGraph[rateMatrixIndex].push(singleObj);
-	  }	
- 
+	  }
+
 	  rateColKeys = [];
 	  for (var i=0; i < expalanatoryValues.length;i++) {
 		rateColKeys.push(i);
 	  }
-	  
+
 	  rateColLabels = expalanatoryValues;
 
 	  return result;
@@ -157,7 +157,7 @@ function rateBivariateMatrix(rateMatrix, rateMatrixSubgroup) {
 		result = rateBivariateMatrixSequential3(rateMatrix, rateMatrixSubgroup);
 	} else if (selectValue == 'Diverging 3x3'){
 			result = rateBivariateMatrixDiverging3(rateMatrix, rateMatrixSubgroup);
-	} else if(selectValue == 'Diverging 5x5') {	
+	} else if(selectValue == 'Diverging 5x5') {
 		result = rateBivariateMatrixDiverging5(rateMatrix, rateMatrixSubgroup);
 	}
 	return result;
@@ -177,22 +177,22 @@ function rateBivariateMatrixSequential3(rateMatrix, rateMatrixSubgroup) {
         // Set rateMatrixSubgroup to bivariateMatrix
         if (rateMatrixSubgroup[i][j] > (1+legendAdjustValue)) {
           bivariateMatrix[i][j] = 2;
-		} else if ((rateMatrixSubgroup[i][j] >= (1-legendAdjustValue)) 
+		} else if ((rateMatrixSubgroup[i][j] >= (1-legendAdjustValue))
 						&& (rateMatrixSubgroup[i][j] <= (1+legendAdjustValue))){
           bivariateMatrix[i][j] = 1;
         } else {
           bivariateMatrix[i][j] = 0;
-        }    
+        }
 
         // Set rateMatrix to bivariateMatrix
         if (rateMatrix[i] > (1+legendAdjustValue)) {
           bivariateMatrix[i][j] += 6;
-		} else if ((rateMatrix[i] >= (1-legendAdjustValue)) 
+		} else if ((rateMatrix[i] >= (1-legendAdjustValue))
 						&& (rateMatrix[i] <= (1+legendAdjustValue))){
           bivariateMatrix[i][j] += 3;
         } else {
           bivariateMatrix[i][j] += 0;
-        }                 
+        }
       }
 	}
 
@@ -213,22 +213,22 @@ function rateBivariateMatrixDiverging3(rateMatrix, rateMatrixSubgroup) {
         // Set rateMatrixSubgroup to bivariateMatrix
         if (rateMatrixSubgroup[i][j] > (1+legendAdjustValue)) {
           bivariateMatrix[i][j] = 2;
-		} else if ((rateMatrixSubgroup[i][j] <= (1+legendAdjustValue)) 
+		} else if ((rateMatrixSubgroup[i][j] <= (1+legendAdjustValue))
 						&& (rateMatrixSubgroup[i][j] >= (1-legendAdjustValue))){
 			bivariateMatrix[i][j] = 1;
         } else {
           bivariateMatrix[i][j] = 0;
-        }    
+        }
 
         // Set rateMatrix to bivariateMatrix
         if (rateMatrix[i] > (1+legendAdjustValue)) {
           bivariateMatrix[i][j] += 6;
-		} else if ((rateMatrix[i] <= (1+legendAdjustValue)) 
+		} else if ((rateMatrix[i] <= (1+legendAdjustValue))
 					&& (rateMatrix[i] >= (1-legendAdjustValue))){
 			bivariateMatrix[i][j] += 3;
         } else {
           bivariateMatrix[i][j] += 0;
-        }                 
+        }
       }
 	}
 
@@ -254,51 +254,51 @@ function rateBivariateMatrixDiverging5(rateMatrix, rateMatrixSubgroup) {
 					&& (rateMatrixSubgroup[i][j] < (1+2*legendAdjustValue))) {
 			// [1+x, 1+2x)
 			bivariateMatrix[i][j] = 3;
-		} else if (((rateMatrixSubgroup[i][j] < (1+legendAdjustValue))) 
+		} else if (((rateMatrixSubgroup[i][j] < (1+legendAdjustValue)))
 					&& (rateMatrixSubgroup[i][j] >= (1-legendAdjustValue))){
 			// [1-x, 1+x)
 		  bivariateMatrix[i][j] = 2;
-		} else if (((rateMatrixSubgroup[i][j] < (1-legendAdjustValue))) 
+		} else if (((rateMatrixSubgroup[i][j] < (1-legendAdjustValue)))
 					&& (rateMatrixSubgroup[i][j] >= (1-2*legendAdjustValue))){
 			// [1-2x, 1-x)
-			bivariateMatrix[i][j] = 1;		  
+			bivariateMatrix[i][j] = 1;
         } else {
 			// [0, 1-2x)
           bivariateMatrix[i][j] = 0;
-		}    
-		
+		}
+
         // Set rateMatrix to bivariateMatrix
         if (rateMatrix[i] >= (1+2*legendAdjustValue)) {
 			//[1+2x, infinite)
 		  	bivariateMatrix[i][j] += 20;
 		} else if ((rateMatrix[i] >= (1+legendAdjustValue))
-					&& (rateMatrix[i] < (1+2*legendAdjustValue))) {		
-			// [1+x, 1+2x)	
+					&& (rateMatrix[i] < (1+2*legendAdjustValue))) {
+			// [1+x, 1+2x)
 			bivariateMatrix[i][j] += 15;
-		} else if (((rateMatrix[i] < (1+legendAdjustValue))) 
-					&& (rateMatrix[i] >= (1-legendAdjustValue))){	
-			// [1-x, 1+x)		
+		} else if (((rateMatrix[i] < (1+legendAdjustValue)))
+					&& (rateMatrix[i] >= (1-legendAdjustValue))){
+			// [1-x, 1+x)
 		  	bivariateMatrix[i][j] += 10;
-		} else if (((rateMatrix[i]< (1-legendAdjustValue))) 
+		} else if (((rateMatrix[i]< (1-legendAdjustValue)))
 					&& (rateMatrix[i] >= (1-2*legendAdjustValue))){
 			// [1-2x, 1-x)
-			bivariateMatrix[i][j] += 5;		  
+			bivariateMatrix[i][j] += 5;
         } else {
 			// [0, 1-2x)
     	    bivariateMatrix[i][j] += 0;
-		}               
+		}
       }
 	}
 
 	return bivariateMatrix;
 }
 
-var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, 
+var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex,
 	protectedAttr, weightingAttr, targetAttr, target_var_type, subgroups, trend_type, slopeKey) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
-		
+
 			matrix[i][j] = {
 					colVar: vars[j],
 					start: rowVars[i][0],
@@ -308,10 +308,10 @@ var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixInde
 					index: matrixIndex,
 					protectedAttr: protectedAttr,
 					weightingAttr: weightingAttr,
-					targetAttr: targetAttr,	
-					target_var_type: target_var_type,				
+					targetAttr: targetAttr,
+					target_var_type: target_var_type,
 					subgroups: subgroups,
-					trend_type: trend_type,
+					Trend_type: Trend_type,
 					slopeKey: slopeKey
 				};
 		});
@@ -348,8 +348,8 @@ function rateSPMatrix(options) {
 	function redraw() {
 		svg.attr("transform",
 			"translate(" + d3.event.translate + ")"
-			+ " scale(" + d3.event.scale + ")");	
-	}	
+			+ " scale(" + d3.event.scale + ")");
+	}
 
 	var svg = d3.select(container).append("svg")
 		.attr("width", width + margin.left + margin.right)
@@ -378,7 +378,7 @@ function rateSPMatrix(options) {
 	var cells = row.selectAll(".ratecell")
 	    .data(function(d) { return d; })
 		.enter()
-		.append("rect")	
+		.append("rect")
 		.attr("class", "ratecell")
 		.attr("id", function(d) {return targetAttr + "_" + d.protectedAttr + "_" + d.keyName + "_" + d.subgroups[d.colVar]})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
@@ -395,36 +395,36 @@ function rateSPMatrix(options) {
 		.filter(function(d){
 			if (legendValue != -1) {
 				return d.value == legendValue;
-			} else 
+			} else
 			{
 				return d;
-			}			
+			}
 		})
 		.style("opacity", 1);
 
 	corrPlot.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", height + (margin.bottom / 2))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
 		.text(subLabel);
-		
-	corrPlot.append("text")
-	.attr("x", (width / 2))             
-	.attr("y", -60)
-	.attr("text-anchor", "middle")  
-	.style("font-size", "15px") 
-	.text(targetAttr);	
 
 	corrPlot.append("text")
-	.attr("x", -(width/2))             
+	.attr("x", (width / 2))
+	.attr("y", -60)
+	.attr("text-anchor", "middle")
+	.style("font-size", "15px")
+	.text(targetAttr);
+
+	corrPlot.append("text")
+	.attr("x", -(width/2))
 	.attr("y", -(height)+15)
-	.attr("text-anchor", "middle")  
+	.attr("text-anchor", "middle")
 //	.attr("text-anchor", "start")
 	.attr("transform", "rotate(-90)")
-	.style("font-size", "15px") 
-	.text("ratio");	
+	.style("font-size", "15px")
+	.text("ratio");
 
 	var labels = corrPlot.append('g')
 		.attr('class', "labels");
@@ -472,7 +472,7 @@ function rateSPMatrix(options) {
 	    .attr("dy", ".32em")
 	    .attr("text-anchor", "end")
 		.text(function(d, i) { return d; })
-		.style("font-size", "10px");	
+		.style("font-size", "10px");
 }
 
 var clickRateMatrixCell = function() {
@@ -498,13 +498,13 @@ var doubleClickRateMatrixCell = function() {
 function prepareDetail() {
 	var d = this.datum();
 
-	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
-				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr, 
+	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName,
+				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr,
 				targetAttr: d.targetAttr, target_var_type: d.target_var_type, slopeKey: d.slopeKey};
 
 	// find subgroup for vars_tables
 	var subgroups = d.subgroups;
-	var vars_table = { x: d.targetAttr, y: d.protectedAttr, categoryAttr: d.keyName, category: subgroups[d.colVar], trend_type:d.trend_type };		
+	var vars_table = { x: d.targetAttr, y: d.protectedAttr, categoryAttr: d.keyName, category: subgroups[d.colVar], Trend_type:d.Trend_type };
 
 	updateTabulate(vars_table);
 	updateSlopeGraph(vars);

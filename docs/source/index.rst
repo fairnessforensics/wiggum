@@ -12,7 +12,7 @@ Detecting Simpson's Paradox's documentation!
 
    API
    app_structure
-   trend_objects
+   Trend_objects
 
  .. toctree::
     :maxdepth: 1

@@ -4,4 +4,4 @@ app = Flask(__name__)
 app.config.from_pyfile("config.py")
 
 
-from spviz import controller
+from wiggum_app import controller

@@ -3,39 +3,39 @@ import numpy as np
 import itertools
 import scipy.stats as stats
 
-class statBinRankTrend():
+class StatBinRankTrend():
     """
-    Compute a trend that determines between alphabetically ordered values of a
+    Compute a Trend that determines between alphabetically ordered values of a
     two-valued categorical variable are > or < when ordered by a statistic of
     another variable
     quality based on the ratio and the distance is 0/1 loss
 
     """
-    def get_trends(self,data_df,trend_col_name):
+    def get_Trends(self,data_df,Trend_col_name):
         """
-        Compute a trend between a binary ranking variable
+        Compute a Trend between a binary ranking variable
 
 
         Parameters
         ----------
         data_df : DataFrame or DataFrameGroupBy
-            data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
-        trend_col_name : {'subgroup_trend','agg_trend'}
-            which type of trend is to be computed
+            data to compute Trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get Trend functions
+        Trend_col_name : {'subgroup_Trend','agg_Trend'}
+            which type of Trend is to be computed
             TODO: could infer this by type of above?
 
 
         Required properties
         --------------------
         name : string
-            used in the trend_type column of result_df and by viz
+            used in the Trend_type column of result_df and by viz
         my_stat : function handle
             statistic to compute, must be compatible with DataFrame.apply,
             have the interface (self,df,statfeat,weightfeat) and return a Series
             with 'stat', 'max', 'min' values defining the statistic and a
             confidence interval
-        trendgroup : list of strings
+        Trendgroup : list of strings
             list of variable names to be ranked (and used for grouping in this
             method)
         target : list of strings
@@ -54,12 +54,12 @@ class statBinRankTrend():
 
         """
         # use all
-        cur_trendgroup = self.trendgroup
+        cur_Trendgroup = self.Trendgroup
 
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-            # remove the grouping var from trendgroup this roung
+            # remove the grouping var from Trendgroup this roung
             rmv_var = data_df.count().index.name
-            cur_trendgroup = [gv for gv in cur_trendgroup if not(gv==rmv_var)]
+            cur_Trendgroup = [gv for gv in cur_Trendgroup if not(gv==rmv_var)]
         else:
 
             # make it tupe-like so that the loop can work
@@ -72,7 +72,7 @@ class statBinRankTrend():
 
         for groupby_lev,df in data_df:
 
-            views = itertools.product(self.target,cur_trendgroup)
+            views = itertools.product(self.target,cur_Trendgroup)
 
             for statfeat,rankfeat  in views:
 
@@ -90,8 +90,8 @@ class statBinRankTrend():
                 comparison_sign = sign_map[stat_df[alpha1] < stat_df[alpha2]]
 
                 # save detailed precompute
-                trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
-                self.trend_precompute[trend_name] = stat_df
+                Trend_name = '_'.join([self.name , Trend_col_name,statfeat,rankfeat])
+                self.Trend_precompute[Trend_name] = stat_df
 
 
 
@@ -108,20 +108,20 @@ class statBinRankTrend():
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
-                                                    trend_col_name,
-                                                    trend_col_name +'_strength',
+                                                    Trend_col_name,
+                                                    Trend_col_name +'_strength',
                                                     'subgroup'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
-                                                    trend_col_name,
-                                                    trend_col_name +'_strength',
+                                                    Trend_col_name,
+                                                    Trend_col_name +'_strength',
                                                     'empty'])
             reg_df.drop('empty',axis=1,inplace=True)
 
 
-        reg_df['trend_type'] = self.name
+        reg_df['Trend_type'] = self.name
         return reg_df
 
     def get_distance(self,row):
@@ -131,57 +131,57 @@ class statBinRankTrend():
         Parameters
         ----------
         row : pd.Series
-            row of a result_df DataFrame. the `agg_trend` and `subgroup_trend`
+            row of a result_df DataFrame. the `agg_Trend` and `subgroup_Trend`
             columns must contain lists
 
         Returns
         -------
         0_1_loss : float
-            0/1 loss distance between the subgroup_trend and agg_trend
+            0/1 loss distance between the subgroup_Trend and agg_Trend
             compatible with assignment to a cell of a result_df
         """
 
         # if they're the same, int(True) =1, but dist =0
         # if they're not, int(False) = 0 bust dist =1
-        return 1- int(row['agg_trend'] == row['subgroup_trend'])
+        return 1- int(row['agg_Trend'] == row['subgroup_Trend'])
 
     def is_SP(self,row,thresh=0):
-        return not(row['agg_trend'] == row['subgroup_trend'])
+        return not(row['agg_Trend'] == row['subgroup_Trend'])
 
 
-class statRankTrend():
+class StatRankTrend():
     """
-    Compute a trend that is the ascending ranking of categorical variables,
-    quality based on the trend vs actual kendall tau distance and the distance
+    Compute a Trend that is the ascending ranking of categorical variables,
+    quality based on the Trend vs actual kendall tau distance and the distance
     in subgroup vs aggregtae is 1-tau
 
     """
 
-    def get_trends(self,data_df,trend_col_name):
+    def get_Trends(self,data_df,Trend_col_name):
         """
-        Compute a trend that is the ascending ranking of categorical variables
+        Compute a Trend that is the ascending ranking of categorical variables
 
 
         Parameters
         ----------
         data_df : DataFrame or DataFrameGroupBy
-            data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
-        trend_col_name : {'subgroup_trend','agg_trend'}
-            which type of trend is to be computed
+            data to compute Trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get Trend functions
+        Trend_col_name : {'subgroup_Trend','agg_Trend'}
+            which type of Trend is to be computed
             TODO: could infer this by type of above?
 
 
         Required properties
         --------------------
         name : string
-            used in the trend_type column of result_df and by viz
+            used in the Trend_type column of result_df and by viz
         my_stat : function handle
             statistic to compute, must be compatible with DataFrame.apply and
             have the interface (self,df,statfeat,weightfeat) and return a Series
             with 'stat', 'max', 'min' values defining the statistic and a
             confidence interval
-        trendgroup : list of strings
+        Trendgroup : list of strings
             list of variable names to be ranked (and used for grouping in this
             method)
         target : list of strings
@@ -200,12 +200,12 @@ class statRankTrend():
 
         """
         # use all
-        cur_trendgroup = self.trendgroup
+        cur_Trendgroup = self.Trendgroup
 
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-            # remove the grouping var from trendgroup this roung
+            # remove the grouping var from Trendgroup this roung
             rmv_var = data_df.count().index.name
-            cur_trendgroup = [gv for gv in cur_trendgroup if not(gv==rmv_var)]
+            cur_Trendgroup = [gv for gv in cur_Trendgroup if not(gv==rmv_var)]
         else:
 
             # make it tupe-like so that the loop can work
@@ -218,7 +218,7 @@ class statRankTrend():
 
         for groupby_lev,df in data_df:
 
-            views = itertools.product(self.target,cur_trendgroup)
+            views = itertools.product(self.target,cur_Trendgroup)
 
             for statfeat,rankfeat  in views:
 
@@ -228,14 +228,14 @@ class statRankTrend():
                 stat_df.sort_values('stat',inplace=True)
 
                 # save detailed precompute
-                trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
-                self.trend_precompute[trend_name] = stat_df
+                Trend_name = '_'.join([self.name , Trend_col_name,statfeat,rankfeat])
+                self.Trend_precompute[Trend_name] = stat_df
 
                 # extract for result_df
                 ordered_rank_feat = stat_df.index.values
 
                 # quality is kendall tau distance between the data and a list
-                # of that length sorted accordingn to the trend
+                # of that length sorted accordingn to the Trend
                 # this calculation is VERY slow for large weights, need to fix
 
                 # sort the whole data by statfeat, extract rankfeat
@@ -280,17 +280,17 @@ class statRankTrend():
                     actual_order = np.repeat(actual_order,act_reps)
 
                 # TODO: make weights not required to be integers
-                #repeat the trend sorted rankfeats by the number that were used
+                #repeat the Trend sorted rankfeats by the number that were used
                 # in the stat
                 rep_counts = [int(counts[ov]) for ov in ordered_rank_feat]
-                trend_order = np.repeat(ordered_rank_feat,rep_counts)
+                Trend_order = np.repeat(ordered_rank_feat,rep_counts)
 
                 # map the possibly string order lists into numbers
                 numeric_map = {a:i for i,a in enumerate(actual_order)}
                 num_acutal = [numeric_map[a] for a in actual_order]
-                num_trend = [numeric_map[b] for b in trend_order]
+                num_Trend = [numeric_map[b] for b in Trend_order]
                 # compute and round
-                tau,p = stats.kendalltau(num_trend,num_acutal)
+                tau,p = stats.kendalltau(num_Trend,num_acutal)
                 tau_qual = np.abs(np.round(tau,4))
 
                 # create row
@@ -301,20 +301,20 @@ class statRankTrend():
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
-                                                    trend_col_name,
-                                                    trend_col_name +'_strength',
+                                                    Trend_col_name,
+                                                    Trend_col_name +'_strength',
                                                     'subgroup'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
-                                                    trend_col_name,
-                                                    trend_col_name +'_strength',
+                                                    Trend_col_name,
+                                                    Trend_col_name +'_strength',
                                                     'empty'])
             reg_df.drop('empty',axis=1,inplace=True)
 
 
-        reg_df['trend_type'] = self.name
+        reg_df['Trend_type'] = self.name
         return reg_df
 
     def get_distance(self,row):
@@ -324,20 +324,20 @@ class statRankTrend():
         Parameters
         ----------
         row : pd.Series
-            row of a result_df DataFrame. the `agg_trend` and `subgroup_trend`
+            row of a result_df DataFrame. the `agg_Trend` and `subgroup_Trend`
             columns must contain lists
 
         Returns
         -------
         tau_dist : float
-            perumation distance between the subgroup_trend and agg_trend
+            perumation distance between the subgroup_Trend and agg_Trend
             compatible with assignment to a cell of a result_df
         """
 
-        trend_numeric_map = {val:i for i,val in enumerate(row['agg_trend'])}
+        Trend_numeric_map = {val:i for i,val in enumerate(row['agg_Trend'])}
 
-        numeric_agg = [trend_numeric_map[val] for val in row['agg_trend']]
-        numeric_subgroup = [trend_numeric_map[val] for val in row['subgroup_trend']]
+        numeric_agg = [Trend_numeric_map[val] for val in row['agg_Trend']]
+        numeric_subgroup = [Trend_numeric_map[val] for val in row['subgroup_Trend']]
 
         n_sg = len(numeric_subgroup)
         n_ag = len(numeric_agg)

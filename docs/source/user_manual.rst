@@ -41,15 +41,15 @@ Auto Detect
 Ranking
 ##########
   1 Regression-based
-    * agg_trend: the correlation coefficient for the aggregate data
+    * agg_Trend: the correlation coefficient for the aggregate data
 
-    * all_slope: the slope of the overall trend line
+    * all_slope: the slope of the overall Trend line
   
-    * angle: angle between the overall trend line and the subgroup trend line
+    * angle: angle between the overall Trend line and the subgroup Trend line
   
-    * subgroup_slope: the slope of each subgroup trend
+    * subgroup_slope: the slope of each subgroup Trend
   
-    * subgroup_trend: the correlation coefficient for the subgroup data
+    * subgroup_Trend: the correlation coefficient for the subgroup data
   
     * SP_sbugroups: the number of subgroups containing SP
   

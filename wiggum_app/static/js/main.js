@@ -45,27 +45,27 @@ var feat1_options = [];
 var feat2_options = [];
 var group_feat_options = [];
 var subgroup_options = [];
-var trend_type_options = [];
+var Trend_type_options = [];
 var feat1_selected = [];
 var feat2_selected = [];
 var group_feat_selected = [];
 var subgroup_selected = [];
-var trend_type_selected = [];
-var subgrou_trend_strength = 0;
-var agg_trend_strength = 0;
+var Trend_type_selected = [];
+var subgrou_Trend_strength = 0;
+var agg_Trend_strength = 0;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
-var selectTypeData = ["pearson_corr", "rank_trend"];
+var selectTypeData = ["pearson_corr", "rank_Trend"];
 
 var selectType = d3.select("#typeSelector")
 					.append('select')
 					.attr('class','select')
 					.on('change',ontypechange);
-	
+
 var optionsType = selectType.selectAll('option')
 					.data(selectTypeData).enter()
 					.append('option')
-					.text(function (d) { return d; });	
+					.text(function (d) { return d; });
 
 var select = d3.select("#selectors")
 				.append('select')
@@ -75,33 +75,33 @@ var select = d3.select("#selectors")
 var options = select.selectAll('option')
 					.data(selectData).enter()
 					.append('option')
-					.text(function (d) { return d; });	
+					.text(function (d) { return d; });
 
 
-					
+
 d3.select("#controlbuttons").append("button")
 							.attr("id", "filter-btn")
 							.attr("type", "button")
 							.attr("value", "filter")
 							.text("Filter")
-							.attr("onclick", "filter_button()"); 	
+							.attr("onclick", "filter_button()");
 d3.select("#controlbuttons").append("button")
 							.attr("id", "detect-btn")
 							.attr("type", "button")
 							.attr("value", "detect")
 							.text("Detect")
-							.attr("onclick", "detect_button()"); 																		
+							.attr("onclick", "detect_button()");
 //d3.select("#controlbuttons").append('br');
 d3.select("#controlbuttons").append("button")
 							.attr("id", "reset-btn")
 							.attr("type", "button")
 							.attr("value", "reset")
 							.text("Reset")
-							.attr("onclick", "reset_button()");		
+							.attr("onclick", "reset_button()");
 
 d3.select("#controlbuttons").append('br');
-d3.select("#controlbuttons").append('br');			
-d3.select("#controlbuttons").append('br');		
+d3.select("#controlbuttons").append('br');
+d3.select("#controlbuttons").append('br');
 d3.select("#controlbuttons").append('input')
 		.attr('type','text')
 		.attr('id','projectName')
@@ -111,22 +111,22 @@ d3.select("#controlbuttons").append("button")
 							.attr("type", "button")
 							.attr("value", "save")
 							.text("Save")
-							.attr("onclick", "save_button()"); 	
-d3.select("#controlbuttons").append("text")			
+							.attr("onclick", "save_button()");
+d3.select("#controlbuttons").append("text")
 														.attr("id", "save-label")
 
 function setSelectedOptions() {
 	var feat1_selector = document.getElementById("feat1_selector");
 	var feat2_selector = document.getElementById("feat2_selector");
 	var group_feat_selector = document.getElementById("group_feat_selector");
-	var subgroup_selector = document.getElementById("subgroup_selector");    
-	var trend_type_selector = document.getElementById("trend_type_selector");   
+	var subgroup_selector = document.getElementById("subgroup_selector");
+	var Trend_type_selector = document.getElementById("Trend_type_selector");
 
 	feat1_selected = getSelectValues(feat1_selector);
 	feat2_selected = getSelectValues(feat2_selector);
 	group_feat_selected = getSelectValues(group_feat_selector);
 	subgroup_selected = getSelectValues(subgroup_selector);
-	trend_type_selected = getSelectValues(trend_type_selector);    
+	Trend_type_selected = getSelectValues(Trend_type_selector);
 }
 
 function onchange() {
@@ -144,7 +144,7 @@ function onchange() {
 	//} else {
 	//	updateRateSPContainer();
 	//}
-	
+
 };
 
 function ontypechange() {
@@ -158,8 +158,8 @@ function ontypechange() {
 		d3.select("#extra_regression").style("display", "inline-block");
 		d3.select("#slopegraph").style("display", "none");
 		d3.select("#scatterplot").style("display", "inline-block");
-		d3.select("#rankingdiv").style("display", "inline-block");	
-		d3.select("#rate_rankingdiv").style("display", "none");				
+		d3.select("#rankingdiv").style("display", "inline-block");
+		d3.select("#rate_rankingdiv").style("display", "none");
 //		updateContainer();
 	} else {
 		alert('here');
@@ -167,8 +167,8 @@ function ontypechange() {
 		d3.select("#scatterplot").style("display", "none");
 		d3.select("#slopegraph").style("display", "inline-block");
 		d3.select("#rankingdiv").style("display", "none");
-		d3.select("#rate_rankingdiv").style("display", "inline-block");			
-		
+		d3.select("#rate_rankingdiv").style("display", "inline-block");
+
 		// Get binary decision variable
 //		var attrs = getBinaryAttrs(csvData, catAttrs);
 
@@ -181,7 +181,7 @@ function ontypechange() {
 };
 
 function updateTextInput(id, val) {
-	document.getElementById(id+'_label').innerText=val + "%"; 
+	document.getElementById(id+'_label').innerText=val + "%";
 }
 
 function updateNumberInput(id, val) {
@@ -272,7 +272,7 @@ function updateContainer() {
 
 	// Cell Click Event
 	d3.select(container).selectAll(".cell")
-	.on("click", clickMatrixCell);	
+	.on("click", clickMatrixCell);
 }
 
 function updateRateSPContainer(slopeKey) {
@@ -317,12 +317,12 @@ function updateRateSPContainer(slopeKey) {
 		  	for (var k = 0; k < rateSubSlopeGraph[i].length; k++){
 				singleObj[rateSubKeySlopeGraph[i][k]] = precisionRound(rateSubSlopeGraph[i][k][keyObj], 3);
 		  	}
-  
+
 		  	singleObj[explanaryAttrs_current[index_explanary]] = rateColLabels[i][j];
 			arraySlopeGraph[slopeKey][rateMatrixIndex].push(singleObj);
-			  
+
 			rateColKeys.push(j);
-		}	
+		}
 
 		// <-------------------------------------
 
@@ -339,8 +339,8 @@ function updateRateSPContainer(slopeKey) {
 
 		rateSPMatrix({
 			container : '#container',
-			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
-							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex, 
+			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys,
+							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex,
 							protectedAttr_current, weightingAttr, targetAttr, target_var_type, rateColLabels[i], "rank_trend", slopeKey),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
@@ -353,19 +353,19 @@ function updateRateSPContainer(slopeKey) {
 
 	// Cell Click Event
 	d3.select(container).selectAll(".ratecell")
-		.on("click", clickRateMatrixCell);	
+		.on("click", clickRateMatrixCell);
 
 	// Double click event: Reset
 	d3.select(container).selectAll(".ratecell")
-		.on("dblclick", doubleClickRateMatrixCell);		
+		.on("dblclick", doubleClickRateMatrixCell);
 }
 
 /**
  * Constructs a bivariate matrix.
  *
  *  Parameters
- *  options: contain, data, labels, subLabel 
- * 
+ *  options: contain, data, labels, subLabel
+ *
  */
 function Matrix(options) {
 
@@ -416,7 +416,7 @@ function Matrix(options) {
 	var cells = row.selectAll(".cell")
 	    .data(function(d) { return d; })
 		.enter()
-		.append("rect")	
+		.append("rect")
 		.attr("class", "cell")
 		.attr("id", function(d) {return d.colVar + "_" + d.rowVar + "_" + d.categoryAttr + "_" + d.category})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
@@ -434,39 +434,39 @@ function Matrix(options) {
 			if (legendValue != -1) {
 				if (autoDetectFlag != 0) {
 					if (isEmpty(ranking)) {
-						return d.value == legendValue && d.autoDetectFlg == 1; 
+						return d.value == legendValue && d.autoDetectFlg == 1;
 					} else {
-						return d.value == legendValue && d.autoDetectFlg == 1 && d.colVar == ranking.feat1 && 
+						return d.value == legendValue && d.autoDetectFlg == 1 && d.colVar == ranking.feat1 &&
 							d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;
-					}					
+					}
 				} else if (!isEmpty(ranking)) {
-					return d.value == legendValue && d.colVar == ranking.feat1 && 
-						d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;					
+					return d.value == legendValue && d.colVar == ranking.feat1 &&
+						d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;
 				} else {
 					return d.value == legendValue;
 				}
 			} else if (autoDetectFlag != 0) {
 				if (isEmpty(ranking)) {
-					return d.autoDetectFlg == 1; 
+					return d.autoDetectFlg == 1;
 				} else {
-					return d.autoDetectFlg == 1 && d.colVar == ranking.feat1 && 
-						d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;; 
+					return d.autoDetectFlg == 1 && d.colVar == ranking.feat1 &&
+						d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;;
 				}
 			} else if (!isEmpty(ranking)) {
 				return d.colVar == ranking.feat1 && d.rowVar == ranking.feat2 && d.categoryAttr == ranking.group_feat;
-			} else 
+			} else
 			{
 				return d;
-			}					
+			}
 		})
 		.style("opacity", 1);
 
 	corrPlot.append("text")
-        .attr("x", (width / 2))             
+        .attr("x", (width / 2))
         .attr("y", height + (margin.bottom / 2))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px") 
-        .style("text-decoration", "underline")  
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("text-decoration", "underline")
         .text(subLabel);
 
 	var labels = corrPlot.append('g')
@@ -485,7 +485,7 @@ function Matrix(options) {
 	    .attr("x2", x.rangeBand() / 2)
 	    .attr("y1", 0)
 		.attr("y2", -5);
-		
+
 	var yAttr = x.rangeBand()/numcols/2 + 3;
 	columnLabels.append("text")
 	    .attr("x", x.rangeBand() - 15)
@@ -516,13 +516,13 @@ function Matrix(options) {
 	    .attr("dy", ".32em")
 	    .attr("text-anchor", "end")
 		.text(function(d, i) { return d; })
-		.style("font-size", "10px");	
+		.style("font-size", "10px");
 }
 
 var UpdateLegendMatrixFormat = function(matrix, vars, category) {
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
-		
+
 			matrix[i][j] = {
 					color: cell,
 					value: (matrix.length - i - 1) * matrix.length + j
@@ -532,7 +532,7 @@ var UpdateLegendMatrixFormat = function(matrix, vars, category) {
 	return matrix;
 };
 
-function DrawSlider(){		
+function DrawSlider(){
 	// Draw slider
 	var sliderWidth = 120;
 	var sliderHeight = 30;
@@ -566,7 +566,7 @@ function DrawSlider(){
 		})
 		.on("drag", function() {
 		dispatch.sliderChange(slider_x.invert(d3.mouse(sliderTray.node())[0]));
-		}));	
+		}));
 
 	slider.append("text")
 		.attr("class", "slider-text")
@@ -580,14 +580,14 @@ function DrawSlider(){
 		legendAdjustValue = value.toFixed(2);
 		slider.select("#slidetext")
 			.text(value.toFixed(2));
-		
+
 		// Redraw Legend
 		legendValue = -1;
 		d3.select("#legend").selectAll('svg').remove();
-		DrawLegend();	
+		DrawLegend();
 
 		drawGraph(server_data);
-		
+
 		//if (selectTypeValue == "pearson_corr") {
 		//	updateContainer();
 		//} else {
@@ -602,31 +602,31 @@ function DrawLegend() {
 	width = 120,
 	height = 120;
 	var colorMap4Legend;
-	
+
 	selectValue = d3.select("#selectors").select('select').property('value');
 
 	if (selectValue == 'Sequential 3x3'){
 		colorMap4Legend = [
-			["#be64ac", "#8c62aa", "#3b4994"], 
-			["#dfb0d6", "#a5add3", "#5698b9"], 
+			["#be64ac", "#8c62aa", "#3b4994"],
+			["#dfb0d6", "#a5add3", "#5698b9"],
 			["#e8e8e8", "#ace4e4", "#5ac8c8"]
 			];
 	} else if(selectValue == 'Diverging 3x3') {
 		colorMap4Legend = [
-			["#008d61", "#79bb4e", "#946a00"], 
+			["#008d61", "#79bb4e", "#946a00"],
 			["#00c4f2", "#ffffff", "#ff8364"],
 			["#007fff", "#c693ff", "#e80081"]
 			];
 	} else if(selectValue == 'Diverging 5x5') {
 		colorMap4Legend = [
-			["#008d61", "#00b264", "#79bb4e", "#9c9f00", "#946a00"], 
-			["#00b6b4", "#64ebcd", "#dafac1", "#f7d081", "#dd831a"], 
+			["#008d61", "#00b264", "#79bb4e", "#9c9f00", "#946a00"],
+			["#00b6b4", "#64ebcd", "#dafac1", "#f7d081", "#dd831a"],
 			["#00c4f2", "#99ffff", "#ffffff", "#ffdeca", "#ff8364"],
 			["#00acff", "#8cdcff", "#ffe5ff", "#ffb5de", "#ff597f"],
 			["#007fff", "#4297ff", "#c693ff", "#ee65cc", "#e80081"]
 			];
 	}
-	
+
   	// draw legend
 	var numrowsLegend = colorMap4Legend.length;
 	var numcolsLegend = colorMap4Legend[0].length;
@@ -651,9 +651,9 @@ function DrawLegend() {
 		.attr("width", width + margin.left + margin.right)
 	    .attr("height", height + margin.top + margin.bottom)
 		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");					
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	var legendRow = key.selectAll(".legendRow")	
+	var legendRow = key.selectAll(".legendRow")
 		.data(UpdateLegendMatrixFormat(colorMap4Legend))
 		.enter()
 		.append("g")
@@ -666,11 +666,11 @@ function DrawLegend() {
 		.append("rect")
 		.attr("class", "legendCell")
 		.attr("transform", function(d, i) { return "translate(" + xLegend(i) + ", 0)"; });
-		
+
   	// draw legend colored rectangles
 	  legendCell.attr("width", xLegend.rangeBand()-1)
 	  	.attr("height", yLegend.rangeBand()-1)
-		.style("fill", function(d, i) {return d.color;});	 
+		.style("fill", function(d, i) {return d.color;});
 
 	// label
 	var xlegendLabelsData;
@@ -684,46 +684,46 @@ function DrawLegend() {
 //			xlegendLabelsData.push("(0.05, 1]");
 			xlegendLabelsData.push("[-1, -" + legendAdjustValue+")");
 			xlegendLabelsData.push("[-"+legendAdjustValue+", "+legendAdjustValue+"]");
-			xlegendLabelsData.push("("+legendAdjustValue+", 1]");			
-	
+			xlegendLabelsData.push("("+legendAdjustValue+", 1]");
+
 			ylegendLabelsData = [];
-//			ylegendLabelsData.push("(0.05, 1]");	
+//			ylegendLabelsData.push("(0.05, 1]");
 //			ylegendLabelsData.push("[-0.05, 0.05]");
-//			ylegendLabelsData.push("[-1, -0.05)");		
-			ylegendLabelsData.push("(" + legendAdjustValue + ", 1]");	
+//			ylegendLabelsData.push("[-1, -0.05)");
+			ylegendLabelsData.push("(" + legendAdjustValue + ", 1]");
 			ylegendLabelsData.push("[-" + legendAdjustValue +", " + legendAdjustValue +"]");
-			ylegendLabelsData.push("[-1, -" + legendAdjustValue + ")");		
+			ylegendLabelsData.push("[-1, -" + legendAdjustValue + ")");
 //		} else if (selectValue == 'Diverging 3x3'){
 //			xlegendLabelsData = [];
-	
+
 //			xlegendLabelsData.push("[-1, -0.01)");
 //			xlegendLabelsData.push("[-0.01, 0.01]");
 //			xlegendLabelsData.push("(0.01, 1]");
-	
+
 //			ylegendLabelsData = [];
 //			ylegendLabelsData.push("(0.01, 1]");
 //			ylegendLabelsData.push("[-0.01, 0.01]");
-//			ylegendLabelsData.push("[-1, -0.01)");		
-		} else if(selectValue == 'Diverging 5x5') {	
+//			ylegendLabelsData.push("[-1, -0.01)");
+		} else if(selectValue == 'Diverging 5x5') {
 			xlegendLabelsData = [];
 //			xlegendLabelsData.push("[-1, -0.6)");
 //			xlegendLabelsData.push("[-0.6, -0.01)");
-//			xlegendLabelsData.push("[-0.01, 0.01]");	
+//			xlegendLabelsData.push("[-0.01, 0.01]");
 //			xlegendLabelsData.push("(0.01, 0.6]");
 //			xlegendLabelsData.push("(0.6, 1]");
-			
+
 			xlegendLabelsData.push("[-1, -"+2*legendAdjustValue+")");
 			xlegendLabelsData.push("[-"+2*legendAdjustValue+", -"+legendAdjustValue+")");
-			xlegendLabelsData.push("[-" + legendAdjustValue+", "+legendAdjustValue+"]");	
+			xlegendLabelsData.push("[-" + legendAdjustValue+", "+legendAdjustValue+"]");
 			xlegendLabelsData.push("("+legendAdjustValue+", "+2*legendAdjustValue+"]");
 			xlegendLabelsData.push("("+2*legendAdjustValue+", 1]");
 
 			ylegendLabelsData = [];
 			ylegendLabelsData.push("("+2*legendAdjustValue+", 1]");
 			ylegendLabelsData.push("("+legendAdjustValue+", "+2*legendAdjustValue+"]");
-			ylegendLabelsData.push("[-"+legendAdjustValue+", "+legendAdjustValue+"]");	
+			ylegendLabelsData.push("[-"+legendAdjustValue+", "+legendAdjustValue+"]");
 			ylegendLabelsData.push("[-"+2*legendAdjustValue+", -"+legendAdjustValue+")");
-			ylegendLabelsData.push("[-1, -"+2*legendAdjustValue+")");		
+			ylegendLabelsData.push("[-1, -"+2*legendAdjustValue+")");
 		}
 	} else {
 		// rate based
@@ -733,25 +733,25 @@ function DrawLegend() {
 			xlegendLabelsData.push("[0, "+(1-legendAdjustValue).toFixed(2)+")");
 			xlegendLabelsData.push("[" + (1-legendAdjustValue).toFixed(2)+", "+(1+legendAdjustValue).toFixed(2)+"]");
 			xlegendLabelsData.push("("+ (1+legendAdjustValue).toFixed(2)+", infin)");
-	
+
 			ylegendLabelsData = [];
 			ylegendLabelsData.push("(" + (1+legendAdjustValue).toFixed(2)+", infin)");
 			ylegendLabelsData.push("[" + (1-legendAdjustValue).toFixed(2)+", "+(1+legendAdjustValue).toFixed(2)+"]");
-			ylegendLabelsData.push("[0, "+(1-legendAdjustValue).toFixed(2)+")");		
-		} else if(selectValue == 'Diverging 5x5') {	
+			ylegendLabelsData.push("[0, "+(1-legendAdjustValue).toFixed(2)+")");
+		} else if(selectValue == 'Diverging 5x5') {
 			xlegendLabelsData = [];
 			xlegendLabelsData.push("[0, "+(1-2*legendAdjustValue).toFixed(2)+")");
 			xlegendLabelsData.push("[" + (1-2*legendAdjustValue).toFixed(2)+", "+(1-legendAdjustValue).toFixed(2)+")");
 			xlegendLabelsData.push("[" + (1-legendAdjustValue).toFixed(2)+", "+(1+legendAdjustValue).toFixed(2)+")");
 			xlegendLabelsData.push("[" + (1+legendAdjustValue).toFixed(2)+", "+(1+2*legendAdjustValue).toFixed(2)+")");
 			xlegendLabelsData.push("[" + (1+2*legendAdjustValue).toFixed(2)+", infin)");
-	
+
 			ylegendLabelsData = [];
 			ylegendLabelsData.push("["+(1+2*legendAdjustValue).toFixed(2)+", infin)");
 			ylegendLabelsData.push("["+(1+legendAdjustValue).toFixed(2)+", "+(1+2*legendAdjustValue).toFixed(2)+")");
 			ylegendLabelsData.push("["+(1-legendAdjustValue).toFixed(2)+", "+(1+legendAdjustValue).toFixed(2)+")");
 			ylegendLabelsData.push("["+(1-2*legendAdjustValue).toFixed(2)+", "+(1-legendAdjustValue).toFixed(2)+")");
-			ylegendLabelsData.push("[0, "+(1-2*legendAdjustValue).toFixed(2)+")");	
+			ylegendLabelsData.push("[0, "+(1-2*legendAdjustValue).toFixed(2)+")");
 		}
 	}
 
@@ -804,12 +804,12 @@ function DrawLegend() {
 		.text(function(d, i) { return d; })
 		.style("font-size", "10px");
 
-	// draw trend labels
+	// draw Trend labels
 	var nodes = [{x:130,y:105}, {x:130,y:15}, {x:15,y:135}, {x:105,y:135}];
 	var nodes4label = [{x:150,y:100}, {x:150,y:10}, {x:10,y:150}, {x:100,y:150}];
-	var links = [{s:0,t:1,label:"All"}, {s:2,t:3,label:"Subgroup"}]; 	
+	var links = [{s:0,t:1,label:"All"}, {s:2,t:3,label:"Subgroup"}];
 	var nodes4Text = [{x:125,y:110,label:"-"}, {x:125,y:10,label:"+"}, {x:10,y:140,label:"-"}, {x:110,y:140,label:"+"}];
-	
+
 	key.append("svg:defs").selectAll("marker")
     .data(["arrow"])
   	.enter().append("svg:marker")
@@ -833,8 +833,8 @@ function DrawLegend() {
     .attr("x2", function(d) { return nodes[d.t].x; })
     .attr("y2", function(d) { return nodes[d.t].y; })
 	.attr("class", "link arrow")
-	.attr("stroke","#bbbbbb")  
-	.attr("stroke-width",2)  
+	.attr("stroke","#bbbbbb")
+	.attr("stroke-width",2)
 	.attr("marker-end", "url(#arrow)");
 
 	key.selectAll("#text")
@@ -862,7 +862,7 @@ function DrawLegend() {
     .append("svg:g")
     .append("svg:text")
     .text(function(d) { return d.label; })
-	.attr("class", "node-label")	
+	.attr("class", "node-label")
 	.attr("text-anchor", "middle")
     .attr("transform", function(d) {
 		var dx = d.x,
@@ -874,33 +874,33 @@ function DrawLegend() {
 			deg = 90;
 		}
         return "translate(" + dx + ", " + dy + ") rotate(" + deg + ")";
-	});	
+	});
 
 	// Add Notes
 	key.append("text")
-	.attr("x", (width / 2))             
+	.attr("x", (width / 2))
 	.attr("y", height + margin.bottom/3+30)
-	.attr("text-anchor", "middle")  
-	.style("font-size", "16px") 
-//	.style("text-decoration", "underline")  
+	.attr("text-anchor", "middle")
+	.style("font-size", "16px")
+//	.style("text-decoration", "underline")
 //	.text("click here to focus...");
 	.text("Select a cell to focus on a ");
 
 	key.append("text")
-	.attr("x", (width / 2))             
+	.attr("x", (width / 2))
 	.attr("y", height + 2*(margin.bottom/3)+10)
-	.attr("text-anchor", "middle")  
-	.style("font-size", "16px") 
-//	.style("text-decoration", "underline")  
+	.attr("text-anchor", "middle")
+	.style("font-size", "16px")
+//	.style("text-decoration", "underline")
 //	.text("click here to focus...");
-	.text("subgroup-aggregate trend");	
+	.text("subgroup-aggregate Trend");
 
 	key.append("text")
-	.attr("x", (width / 2))             
+	.attr("x", (width / 2))
 	.attr("y", height + margin.bottom-10)
-	.attr("text-anchor", "middle")  
-	.style("font-size", "16px") 
-//	.style("text-decoration", "underline")  
+	.attr("text-anchor", "middle")
+	.style("font-size", "16px")
+//	.style("text-decoration", "underline")
 //	.text("click here to focus...");
 	.text("relationship type");
 
@@ -909,10 +909,10 @@ function DrawLegend() {
 		.on("click", clickLegendCell);
 
 	// Double click event
-	key.selectAll(".legendCell").on("dblclick",doubleClickLegend);	
+	key.selectAll(".legendCell").on("dblclick",doubleClickLegend);
 }
 
-function doubleClickLegend(){	
+function doubleClickLegend(){
 	var legendsvg = d3.select("#legend");
 	legendsvg.selectAll(".legendCell").classed("clicked", false);
 
@@ -927,7 +927,7 @@ function doubleClickLegend(){
 	//}
 };
 
-function clickLegendCell(){	
+function clickLegendCell(){
 	var legendsvg = d3.select("#legend");
 	legendsvg.selectAll(".legendCell").classed("clicked", false);
 	var clickFlg = d3.select(this).classed("clicked", true);
@@ -953,7 +953,7 @@ function BivariateMatrix(correlationMatrix, correlationMatrixSubgroup) {
 		result = BivariateMatrixSequential3(correlationMatrix, correlationMatrixSubgroup);
 	} else if (selectValue == 'Diverging 3x3'){
 			result = BivariateMatrixDiverging3(correlationMatrix, correlationMatrixSubgroup);
-	} else if(selectValue == 'Diverging 5x5') {	
+	} else if(selectValue == 'Diverging 5x5') {
 		result = BivariateMatrixDiverging5(correlationMatrix, correlationMatrixSubgroup);
 	}
 	return result;
@@ -976,7 +976,7 @@ function BivariateMatrixSequential3(correlationMatrix, correlationMatrixSubgroup
           bivariateMatrix[i][j] = 1;
         } else {
           bivariateMatrix[i][j] = 0;
-        }    
+        }
 
         // Set correlationMatrixSubgroup to bivariateMatrix
         if (correlationMatrix[i][j] > legendAdjustValue) {
@@ -985,7 +985,7 @@ function BivariateMatrixSequential3(correlationMatrix, correlationMatrixSubgroup
           bivariateMatrix[i][j] += 3;
         } else {
           bivariateMatrix[i][j] += 0;
-        }                 
+        }
       }
 	}
 
@@ -1009,7 +1009,7 @@ function BivariateMatrixDiverging3(correlationMatrix, correlationMatrixSubgroup)
 			bivariateMatrix[i][j] = 1;
         } else {
           bivariateMatrix[i][j] = 0;
-        }    
+        }
 
         // Set correlationMatrixSubgroup to bivariateMatrix
         if (correlationMatrix[i][j] > legendAdjustValue) {
@@ -1018,7 +1018,7 @@ function BivariateMatrixDiverging3(correlationMatrix, correlationMatrixSubgroup)
 			bivariateMatrix[i][j] += 3;
         } else {
           bivariateMatrix[i][j] += 0;
-        }                 
+        }
       }
 	}
 
@@ -1043,11 +1043,11 @@ function BivariateMatrixDiverging5(correlationMatrix, correlationMatrixSubgroup)
         } else if ((correlationMatrixSubgroup[i][j] <= legendAdjustValue) && (correlationMatrixSubgroup[i][j] >= -legendAdjustValue)){
 		  bivariateMatrix[i][j] = 2;
         } else if (correlationMatrixSubgroup[i][j] > -2*legendAdjustValue){
-			bivariateMatrix[i][j] = 1;		  
+			bivariateMatrix[i][j] = 1;
         } else {
           bivariateMatrix[i][j] = 0;
-		}    
-		
+		}
+
         // Set correlationMatrixSubgroup to bivariateMatrix
         if (correlationMatrix[i][j] > 2*legendAdjustValue) {
 		  bivariateMatrix[i][j] += 20;
@@ -1056,10 +1056,10 @@ function BivariateMatrixDiverging5(correlationMatrix, correlationMatrixSubgroup)
         } else if ((correlationMatrix[i][j] <= legendAdjustValue) && (correlationMatrix[i][j] >= -legendAdjustValue)){
 		  bivariateMatrix[i][j] += 10;
         } else if (correlationMatrix[i][j] > -2*legendAdjustValue){
-			bivariateMatrix[i][j] += 5;		  
+			bivariateMatrix[i][j] += 5;
         } else {
           bivariateMatrix[i][j] += 0;
-		}               
+		}
       }
 	}
 

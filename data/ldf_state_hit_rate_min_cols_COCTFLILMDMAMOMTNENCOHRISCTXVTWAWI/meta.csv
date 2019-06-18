@@ -9,11 +9,11 @@ recreational,int64,categorical,['groupby'],False,
 no_reforms,int64,False,['groupby'],False,
 search_conducted_false,float64,continuous,ignore,True,
 search_conducted_true,float64,continuous,ignore,True,
-search_conducted_rate,float64,continuous,trend,False,num_stops
+search_conducted_rate,float64,continuous,Trend,False,num_stops
 contraband_found_false,float64,continuous,ignore,True,
 contraband_found_true,float64,continuous,ignore,True,
-contraband_found_rate,float64,continuous,trend,False,num_stops
+contraband_found_rate,float64,continuous,Trend,False,num_stops
 hit_false,float64,continuous,ignore,True,
 hit_true,float64,continuous,ignore,True,
-hit_rate,float64,continuous,trend,False,search_conducted_true
-num_stops,float64,continuous,trend,True,
+hit_rate,float64,continuous,Trend,False,search_conducted_true
+num_stops,float64,continuous,Trend,True,

@@ -8,7 +8,7 @@ from .labeled_dataframe import META_COLUMNS
 clustering_techniques = {'dpgmm': lambda df,var_list : mixture.BayesianGaussianMixture(n_components=20,
                                 covariance_type='full').fit(df[var_list]).predict(df[var_list])}
 
-class _augmentedData():
+class _AugmentedData():
 
     def update_meta_df_cluster(self):
         """
