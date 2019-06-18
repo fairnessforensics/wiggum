@@ -294,7 +294,7 @@ function rateBivariateMatrixDiverging5(rateMatrix, rateMatrixSubgroup) {
 }
 
 var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixIndex, 
-	protectedAttr, weightingAttr, targetAttr, subgroups, trend_type, slopeKey) {
+	protectedAttr, weightingAttr, targetAttr, target_var_type, subgroups, trend_type, slopeKey) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
@@ -308,7 +308,8 @@ var UpdateRateMatrixFormat = function(matrix, vars, rowVars, keyName, matrixInde
 					index: matrixIndex,
 					protectedAttr: protectedAttr,
 					weightingAttr: weightingAttr,
-					targetAttr: targetAttr,					
+					targetAttr: targetAttr,	
+					target_var_type: target_var_type,				
 					subgroups: subgroups,
 					trend_type: trend_type,
 					slopeKey: slopeKey
@@ -498,7 +499,8 @@ function prepareDetail() {
 	var d = this.datum();
 
 	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
-				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr, targetAttr: d.targetAttr, slopeKey: d.slopeKey};
+				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr, 
+				targetAttr: d.targetAttr, target_var_type: d.target_var_type, slopeKey: d.slopeKey};
 
 	// find subgroup for vars_tables
 	var subgroups = d.subgroups;
@@ -521,7 +523,8 @@ var updateSlopeGraph = function(vars) {
 		keyName     : vars.keyName,
 		protectedAttr: vars.protectedAttr,
 		weightingAttr: vars.weightingAttr,
-		targetAttr: vars.targetAttr
+		targetAttr: vars.targetAttr,
+		target_var_type: vars.target_var_type
 	});
 
 	highlightLine(parseInt(vars.x)+1);

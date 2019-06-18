@@ -880,9 +880,16 @@
                                 .key(function(d) {return d[explanatoryAttr]})
                                 .key(function(d) {return d[protectedAttr]})
                                 .rollup(function(v) {
-                                    return {
-                                        count: v[0][keyWeightingAttr]
-                                    };
+                                    if (keyWeightingAttr=="") {
+                                        // no weighting column
+                                        return {
+                                            count: v.length
+                                        };
+                                    } else {
+                                        return {
+                                            count: d3.sum(v, function(d) {return d[keyWeightingAttr]})
+                                        };
+                                    }
                                 })
                 .entries(csvData);
 

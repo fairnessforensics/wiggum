@@ -7,11 +7,12 @@ function DrawSlopeGraph(options) {
     var protectedAttr = options.protectedAttr;
     var weightingAttr = options.weightingAttr;
     var targetAttr = options.targetAttr;
+    var target_var_type = options.target_var_type;
 
     //Title
     d3.select('#slopeLabel').select("text").remove();
 
-    if (weightingAttr == '') {
+    if (target_var_type == 'binary') {
         d3.select('#slopeLabel').append("text")
         .attr("x", 20)             
         .attr("y", 90)
@@ -34,14 +35,14 @@ function DrawSlopeGraph(options) {
         .datum(data)
         .call(slopegraph);
     } else {
-        // when it's the binary and  set it to "<stat> <variable> by <groupby> and <explanatory>" 
+        // continuous
         d3.select('#slopeLabel').append("text")
-            .attr("x", 200)             
-            .attr("y", 0)
-            .style("font-size", "16px") 
-            .text(targetAttr + " by " + protectedAttr +  " and " + keyName)
-            .attr("text-anchor", "middle")     
-            .attr("transform", "translate(180, 0)");   
+        .attr("x", 200)             
+        .attr("y", 0)
+        .style("font-size", "16px") 
+        .text(targetAttr + " by " + protectedAttr +  " and " + keyName)
+        .attr("text-anchor", "middle")     
+        .attr("transform", "translate(180, 0)");   
 
         var slopegraph = d3.my.slopegraph4count()
             //.margin({top: 20, bottom: 20, left: 100, right:100})
@@ -57,8 +58,8 @@ function DrawSlopeGraph(options) {
         d3.select('#slopegraph')
             .datum(data)
             .call(slopegraph);
-    }
 
+    }
 }
 
 function highlightLine(i) {

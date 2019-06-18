@@ -10,6 +10,7 @@ var csvData;
 var legendValue;
 var selectTypeValue;
 var targetAttr;
+var target_var_type;
 var groupingAttrs;
 var rateRowLabels;
 var rateColLabels;
@@ -340,7 +341,7 @@ function updateRateSPContainer(slopeKey) {
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
 							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex, 
-							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i], "rank_trend", slopeKey),
+							protectedAttr_current, weightingAttr, targetAttr, target_var_type, rateColLabels[i], "rank_trend", slopeKey),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel
