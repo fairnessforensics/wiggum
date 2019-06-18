@@ -10,11 +10,11 @@
 
     <script>
         function validate() {
-            var trend_type_selection = document.getElementById("trend_type_selection");   
-            var trend_types = getSelectValues(trend_type_selection);
+            var Trend_type_selection = document.getElementById("Trend_type_selection");   
+            var Trend_types = getSelectValues(Trend_type_selection);
 
-            if (trend_types === undefined || trend_types.length == 0) {
-                alert("Please select the trend type!");
+            if (Trend_types === undefined || Trend_types.length == 0) {
+                alert("Please select the Trend type!");
                 return false;
             }
 
@@ -74,19 +74,19 @@
                             var weighting_vars = data.weighting_vars;
                             roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars);
 
-                            // populate trend type dropdown options
+                            // populate Trend type dropdown options
                             var option = '';
-                            var trend_types = data.trend_types;
-                            var trend_type_list = data.trend_type_list;
+                            var Trend_types = data.Trend_types;
+                            var Trend_type_list = data.Trend_type_list;
 
-                            for (var i=0;i<trend_types.length;i++){
-                                if (trend_type_list.includes(trend_types[i])){
-                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '" selected>' + trend_types[i] + '</option>';
+                            for (var i=0;i<Trend_types.length;i++){
+                                if (Trend_type_list.includes(Trend_types[i])){
+                                    option += '<option id="Trend_type_option" value="'+ Trend_types[i] + '" selected>' + Trend_types[i] + '</option>';
                                 } else {
-                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                    option += '<option id="Trend_type_option" value="'+ Trend_types[i] + '">' + Trend_types[i] + '</option>';
                                 }
                             }
-                            $('#trend_type_selection').append(option);
+                            $('#Trend_type_selection').append(option);
 
                             // Avoid ctrl-click                                    
                             $('option').mousedown(function(e) {
@@ -134,13 +134,13 @@
                                         var possibleRoles = data.possible_roles;
                                         roleTable(header, var_types, samples, possibleRoles);
 
-                                        // populate trend type dropdown options
+                                        // populate Trend type dropdown options
                                         var option = '';
-                                        var trend_types = data.trend_types;
-                                        for (var i=0;i<trend_types.length;i++){
-                                            option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                        var Trend_types = data.Trend_types;
+                                        for (var i=0;i<Trend_types.length;i++){
+                                            option += '<option id="Trend_type_option" value="'+ Trend_types[i] + '">' + Trend_types[i] + '</option>';
                                         }
-                                        $('#trend_type_selection').append(option);
+                                        $('#Trend_type_selection').append(option);
 
                                         // Avoid ctrl-click                                    
                                         $('option').mousedown(function(e) {
@@ -175,9 +175,9 @@
                 
                 form_data.append('metaList', metaList);
 
-                var trend_type_selection = document.getElementById("trend_type_selection");   
-                var trend_types = getSelectValues(trend_type_selection);
-                form_data.append('trend_types', trend_types);
+                var Trend_type_selection = document.getElementById("Trend_type_selection");   
+                var Trend_types = getSelectValues(Trend_type_selection);
+                form_data.append('Trend_types', Trend_types);
 
                 $.ajax({
                     type: 'POST',
@@ -271,7 +271,7 @@
                         roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars);      
                         
                         // Avoid ctrl-click                                    
-                        $('option:not(#trend_type_option)').mousedown(function(e) {
+                        $('option:not(#Trend_type_option)').mousedown(function(e) {
                             e.preventDefault();
                             var originalScrollTop = $(this).parent().scrollTop();
 
@@ -333,7 +333,7 @@
                         roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars);      
                         
                         // Avoid ctrl-click                                    
-                        $('option:not(#trend_type_option)').mousedown(function(e) {
+                        $('option:not(#Trend_type_option)').mousedown(function(e) {
                             e.preventDefault();
                             var originalScrollTop = $(this).parent().scrollTop();
 
@@ -366,7 +366,7 @@
             <input name="file" type="file" id="myFile" style = "width:170px">
             <input name="file" type="file" id="myFolder" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
             <button id="open-file-btn" type="button" value="open">Open</button>&nbsp;&nbsp;&nbsp;&nbsp;
-            <select id = "trend_type_selection" multiple="multiple">
+            <select id = "Trend_type_selection" multiple="multiple">
             </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 

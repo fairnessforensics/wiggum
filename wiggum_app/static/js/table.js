@@ -147,63 +147,63 @@ function tabulate(data, action) {
 									.property("selected", 
 									function(d){ return subgroup_selected.includes(d); });
 			}	
-			// subgroup_trend_strength
+			// subgroup_Trend_strength
 			if (i==5) {
 				d3.select(this).append("text")
-					.attr('id', 'subgroup_trend_strength_label')
+					.attr('id', 'subgroup_Trend_strength_label')
 					.style("font-size", "10px")
 					.style("color", "black")
-					.text(subgrou_trend_strength);
+					.text(subgrou_Trend_strength);
 				d3.select(this).append('br');
 				d3.select(this).append('input')
 								.attr('type', 'range')
-								.attr('id', 'subgroup_trend_strength_slider')
+								.attr('id', 'subgroup_Trend_strength_slider')
 								.style('width', '100px')
 								.attr('min', '0')
 								.attr('max', '1')
 								.attr('step', '0.01')
-								.attr('value', subgrou_trend_strength)
+								.attr('value', subgrou_Trend_strength)
 								.on("input", function() {
-									updateLabel(this.value, '#subgroup_trend_strength_label');
+									updateLabel(this.value, '#subgroup_Trend_strength_label');
 								});
 			}	
-			// trend_type
+			// Trend_type
 			if (i==6) {
 				if (action == 'page_load') {
-					trend_type_options = d3.map(data, function(d){return d.trend_type;}).keys();
+					Trend_type_options = d3.map(data, function(d){return d.Trend_type;}).keys();
 				} 					
 
 				var select = d3.select(this).append('select')
-											.attr('id','trend_type_selector')
+											.attr('id','Trend_type_selector')
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(trend_type_options).enter()
+									.data(Trend_type_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
 									.text(function(d){return d;})
 									.property("selected", 
-									function(d){ return trend_type_selected.includes(d); });
+									function(d){ return Trend_type_selected.includes(d); });
 			}	
-			// agg_trend_strength
+			// agg_Trend_strength
 			if (i==8) {
 				d3.select(this).append("text")
-					.attr('id', 'agg_trend_strength_label')
+					.attr('id', 'agg_Trend_strength_label')
 					.style("font-size", "10px")
 					.style("color", "black")
-					.text(agg_trend_strength);
+					.text(agg_Trend_strength);
 				d3.select(this).append('br');
 				d3.select(this).append('input')
 								.attr('type', 'range')
-								.attr('id', 'agg_trend_strength_slider')
+								.attr('id', 'agg_Trend_strength_slider')
 								.style('width', '100px')
 								.attr('min', '0')
 								.attr('max', '1')
 								.attr('step', '0.01')
-								.attr('value', agg_trend_strength)
+								.attr('value', agg_Trend_strength)
 								.on("input", function() {
-									updateLabel(this.value, '#agg_trend_strength_label');
+									updateLabel(this.value, '#agg_Trend_strength_label');
 								});
 			}												
 	})
@@ -215,10 +215,10 @@ function tabulate(data, action) {
 	  .data(data)
 	  .enter()
 		.append('tr')
-		.attr("row", function(d) { return d.trend_type + "_"+ d.feat1+"_"+d.feat2+"_"+d.group_feat+"_"+d.subgroup; })
+		.attr("row", function(d) { return d.Trend_type + "_"+ d.feat1+"_"+d.feat2+"_"+d.group_feat+"_"+d.subgroup; })
 		.attr("class", "tablerow")
 		.on("click", function(d, i) {
-			var vars = {x: d.feat1, y: d.feat2, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_type};
+			var vars = {x: d.feat1, y: d.feat2, categoryAttr: d.group_feat, category: d.subgroup, Trend_type: d.Trend_type};
 			return interactBivariateMatrix(vars, i); });
 
 	// create a cell in each row for each column
@@ -239,17 +239,17 @@ function tabulate(data, action) {
 function updateLabel(value, id) {
 	d3.select(id).text(value);
 
-	if (id == '#agg_trend_strength_label') {
-		agg_trend_strength = value;
+	if (id == '#agg_Trend_strength_label') {
+		agg_Trend_strength = value;
 	} else {
-		subgrou_trend_strength = value;
+		subgrou_Trend_strength = value;
 	}
 }
 
 function updateTabulate(vars) {	
 
 	d3.selectAll(".tablerow").classed("highlighted", false);
-	var cell_id = vars.trend_type + "_" + vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
+	var cell_id = vars.Trend_type + "_" + vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
 	d3.select("tr[row='" + cell_id + "']").classed("highlighted", true);
 }
 

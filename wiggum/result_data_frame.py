@@ -6,14 +6,14 @@ from sklearn import preprocessing
 
 DEFAULT_SP_DEF = {'distance':0.0,'name':'SP'}
 
-trend_quality_sp = {'distance':.2, 'agg_trend_strength':.15,
-                'subgroup_trend_strength':.15,'name':'default_qual_sp'}
+Trend_quality_sp = {'distance':.2, 'agg_Trend_strength':.15,
+                'subgroup_Trend_strength':.15,'name':'default_qual_sp'}
 
 
 
 
 
-class _resultDataFrame():
+class _ResultDataFrame():
     """
     this is a mixin class to separate groups of methods across separate files
     """
@@ -26,7 +26,7 @@ class _resultDataFrame():
         Parameters
         -----------
 
-        self : labeledDataFrame
+        self : LabeledDataFrame
             must have values in result_df
         filter_thresh : dict or string
             dictionary of column label, threshold pairs or string name of a
@@ -35,7 +35,7 @@ class _resultDataFrame():
         """
 
         thresh_lookup = {'SP':DEFAULT_SP_DEF,
-                        'default_qual_sp':trend_quality_sp}
+                        'default_qual_sp':Trend_quality_sp}
 
         if filter_thresh:
             if type(filter_thresh) == str:
@@ -55,9 +55,9 @@ class _resultDataFrame():
         is_SP = lambda row: bool(np.prod([sp_test[type(th)](row[col],th) for
                                 col,th in filter_thresh.items()]))
 
-        # trend_SP = {t.name:t.is_SP for t in self.trend_list}
+        # Trend_SP = {t.name:t.is_SP for t in self.Trend_list}
         #
-        # is_SP = lambda row: self.trend_list[row['trend_type']](row)
+        # is_SP = lambda row: self.Trend_list[row['Trend_type']](row)
 
         self.result_df[col_name] = self.result_df.apply(is_SP,axis=1)
 
@@ -147,8 +147,8 @@ class _resultDataFrame():
 
         return self.result_df
 
-    def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
-                            subgroup= None,trend_type=None):
+    def get_Trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
+                            subgroup= None,Trend_type=None):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -157,9 +157,9 @@ class _resultDataFrame():
         Parameters
         -----------
         feat1 : str, list, or  None
-            trend variable name or None to include all
+            Trend variable name or None to include all
         feat2 : str, list, or  None
-            trend variable name or None to include all
+            Trend variable name or None to include all
         group_feat : str, list, or  None
             groupoby variable name or None to include all
         subgroup : str, list, or  None
@@ -191,8 +191,8 @@ class _resultDataFrame():
         else:
             sg_rows = True
 
-        if trend_type:
-            tt_rows = pd.Series([tt in trend_type for tt in self.result_df.trend_type])
+        if Trend_type:
+            tt_rows = pd.Series([tt in Trend_type for tt in self.result_df.Trend_type])
         else:
             tt_rows = True
 
@@ -320,7 +320,7 @@ class _resultDataFrame():
     def rank_occurences_by_view(self,view_score=None,occurence_score=None,
                                 colored=False,ascending=False):
         """
-        return a DataFrame of trends with the views ranked and within in view the
+        return a DataFrame of Trends with the views ranked and within in view the
         occurences ranked as well
 
         Parameters
@@ -412,25 +412,25 @@ class _resultDataFrame():
     # def dist_helper(self,row):
     #     """
     #     """
-    #     trend_dist = {t.name:t.get_distance for t in self.trend_list}
+    #     Trend_dist = {t.name:t.get_distance for t in self.Trend_list}
     #
-    #     return trend_dist[row['trend_type']](row)
+    #     return Trend_dist[row['Trend_type']](row)
 
     def add_distance(self):
         """
-        add a column with the trend-appropriate distance
+        add a column with the Trend-appropriate distance
         """
-        trend_dist = {t.name:t.get_distance for t in self.trend_list}
+        Trend_dist = {t.name:t.get_distance for t in self.Trend_list}
 
-        dist_helper = lambda row: trend_dist[row['trend_type']](row)
+        dist_helper = lambda row: Trend_dist[row['Trend_type']](row)
 
         self.result_df['distance'] = self.result_df.apply(dist_helper,axis=1)
 
-    def dropna_trends(self,inplace=True):
+    def dropna_Trends(self,inplace=True):
         """
-        drop rows from result_df that have na for trend value
+        drop rows from result_df that have na for Trend value
         """
-        self.result_df.dropna(subset= ['subgroup_trend','agg_trend'],inplace=inplace)
+        self.result_df.dropna(subset= ['subgroup_Trend','agg_Trend'],inplace=inplace)
 
 
 ################################################################################

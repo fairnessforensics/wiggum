@@ -44,17 +44,17 @@ var feat1_options = [];
 var feat2_options = [];
 var group_feat_options = [];
 var subgroup_options = [];
-var trend_type_options = [];
+var Trend_type_options = [];
 var feat1_selected = [];
 var feat2_selected = [];
 var group_feat_selected = [];
 var subgroup_selected = [];
-var trend_type_selected = [];
-var subgrou_trend_strength = 0;
-var agg_trend_strength = 0;
+var Trend_type_selected = [];
+var subgrou_Trend_strength = 0;
+var agg_Trend_strength = 0;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
-var selectTypeData = ["pearson_corr", "rank_trend"];
+var selectTypeData = ["pearson_corr", "rank_Trend"];
 
 var selectType = d3.select("#typeSelector")
 					.append('select')
@@ -119,13 +119,13 @@ function setSelectedOptions() {
 	var feat2_selector = document.getElementById("feat2_selector");
 	var group_feat_selector = document.getElementById("group_feat_selector");
 	var subgroup_selector = document.getElementById("subgroup_selector");    
-	var trend_type_selector = document.getElementById("trend_type_selector");   
+	var Trend_type_selector = document.getElementById("Trend_type_selector");   
 
 	feat1_selected = getSelectValues(feat1_selector);
 	feat2_selected = getSelectValues(feat2_selector);
 	group_feat_selected = getSelectValues(group_feat_selector);
 	subgroup_selected = getSelectValues(subgroup_selector);
-	trend_type_selected = getSelectValues(trend_type_selector);    
+	Trend_type_selected = getSelectValues(Trend_type_selector);    
 }
 
 function onchange() {
@@ -340,7 +340,7 @@ function updateRateSPContainer(slopeKey) {
 			container : '#container',
 			data      : UpdateRateMatrixFormat(bivariateMatrix, rateColKeys, 
 							rateRowVars[i], explanaryAttrs_current[index_explanary], rateMatrixIndex, 
-							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i], "rank_trend", slopeKey),
+							protectedAttr_current, weightingAttr, targetAttr, rateColLabels[i], "rank_Trend", slopeKey),
 			rowLabels : rateRowLabels[i],
 			colLabels : rateColLabels[i],
 			subLabel  : subgroupLabel
@@ -803,7 +803,7 @@ function DrawLegend() {
 		.text(function(d, i) { return d; })
 		.style("font-size", "10px");
 
-	// draw trend labels
+	// draw Trend labels
 	var nodes = [{x:130,y:105}, {x:130,y:15}, {x:15,y:135}, {x:105,y:135}];
 	var nodes4label = [{x:150,y:100}, {x:150,y:10}, {x:10,y:150}, {x:100,y:150}];
 	var links = [{s:0,t:1,label:"All"}, {s:2,t:3,label:"Subgroup"}]; 	
@@ -892,7 +892,7 @@ function DrawLegend() {
 	.style("font-size", "16px") 
 //	.style("text-decoration", "underline")  
 //	.text("click here to focus...");
-	.text("subgroup-aggregate trend");	
+	.text("subgroup-aggregate Trend");	
 
 	key.append("text")
 	.attr("x", (width / 2))             
