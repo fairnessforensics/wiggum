@@ -887,7 +887,7 @@
                                         };
                                     } else {
                                         return {
-                                            count: v[0][keyWeightingAttr]
+                                            count: d3.sum(v, function(d) {return d[keyWeightingAttr]})
                                         };
                                     }
                                 })
