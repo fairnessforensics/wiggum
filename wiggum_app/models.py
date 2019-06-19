@@ -557,9 +557,7 @@ def getResultDict(labeled_df, result_df, filter_subgroup= None):
                 if weighting_var != '':
                     all_attrs = np.append(all_attrs, [weighting_var])
 
-                target_var_type = labeled_df.meta_df['var_type'][targetAttr]
-
-                result_dict = {'trend_type' : 'rank_trend',
+                result_dict = {'Trend_type' : 'rank_Trend',
                             'protectedVars': protectedVars,
                             'explanaryVars': groupbyAttrs.tolist(),
                             'targetAttr': targetAttr,
