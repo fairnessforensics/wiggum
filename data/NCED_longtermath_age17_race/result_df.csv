@@ -1,0 +1,9 @@
+feat1,feat2,group_feat,subgroup,subgroup_trend,subgroup_trend_strength,trend_type,agg_trend,agg_trend_strength
+year,average_scale_score,race_ethnicity,Black,0.7621171102990256,0.7621171102990256,pearson_corr,0.2329549866945828,0.2329549866945828
+year,average_scale_score,race_ethnicity,Hispanic,0.8569310784223622,0.8569310784223622,pearson_corr,0.2329549866945828,0.2329549866945828
+year,average_scale_score,race_ethnicity,Other,0.5875781031849276,0.5875781031849276,pearson_corr,0.2329549866945828,0.2329549866945828
+year,average_scale_score,race_ethnicity,White,0.8456662565298281,0.8456662565298281,pearson_corr,0.2329549866945828,0.2329549866945828
+year,average_scale_score,test_format,new,-0.04867464279258117,0.04867464279258117,pearson_corr,0.2329549866945828,0.2329549866945828
+year,average_scale_score,test_format,original,0.28081525673638036,0.28081525673638036,pearson_corr,0.2329549866945828,0.2329549866945828
+average_scale_score,race_ethnicity,test_format,new,['Black' 'Hispanic' 'White' 'Other'],1.0,rank_trend,['Black' 'Hispanic' 'White' 'Other'],0.7821
+average_scale_score,race_ethnicity,test_format,original,['Black' 'Hispanic' 'White' 'Other'],0.7407,rank_trend,['Black' 'Hispanic' 'White' 'Other'],0.7821
