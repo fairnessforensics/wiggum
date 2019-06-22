@@ -13,19 +13,20 @@ To use the package, download (or clone) and:
 .. code-block:: bash
 
   cd DetectSimpsonParadox/
-  pip install -r requirements.txt
+  pip install .
 
-To use the package, after installed::
+To use the package in python, after installed:
 
-.. code-block:: python
+.. code-block:: Python
 
   import detect_simpsons_paradox as dsp
 
-To run the app:
+Installing makes the flask app for interactive vizualization
+in browser available as a command line tool. To run the app:
 
 .. code-block:: bash
 
-  python3 run.py
+  spviz-app
 
 
 

@@ -42,6 +42,9 @@ var yAxis = d3.svg.axis()
 	.orient("left");
 
 var updateScatterplot = function(data, vars) {
+	d3.select("#scatterplot").style("display", "inline-block");
+	d3.select("#slopegraph").selectAll('svg').remove();
+    d3.select('#slopeLabel').select("text").remove();
 
 	d3.selectAll('.axis').remove();
 
@@ -69,12 +72,14 @@ var updateScatterplot = function(data, vars) {
 	} else {
 		tempMin = xMin;
 	}	
-	x.domain([tempMin, tempMax]);
-	y.domain([tempMin, tempMax]);
 
-	// Old Scale
-	//x.domain([xMin, xMax]);
-	//y.domain([yMin, yMax]);
+	if(d3.select("#samerange").property("checked")){
+		x.domain([tempMin, tempMax]);
+		y.domain([tempMin, tempMax]);
+	}else {
+		x.domain([xMin, xMax]);
+		y.domain([yMin, yMax]);
+	}
 
 	var getX = function(d) {return x(d[vars.x]) ; };
 	var getY = function(d) {return y(d[vars.y]) ; };
@@ -246,12 +251,28 @@ function getCategoricalAttrs(data){
 
 function createScatterplot(data) {
 
+	d3.select("#scatterplot").selectAll('svg').remove();
+
 	scatterplot = d3.select("div#scatterplot")
 					.append("svg")
 					.attr("width", width + margin.left + margin.right)
 					.attr("height", height + margin.top + margin.bottom)									
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+	// axis range selection
+	updateVars = { x: conAttrs[0], y: conAttrs[1],  
+		categoryAttr: catAttrs[0], category: "all"};
+	var controls = scatterplot.append("foreignObject")
+							.attr("width", 630)
+							.attr("height", 30)
+							.append("xhtml:body")
+							.html("<form><input type=checkbox id=samerange checked /></form>")
+							.on("click", function(){
+								updateScatterplot(csvData, updateVars);
+							});
+	controls.append("text")
+			.style("font-size", "13px")
+			.text("Same Axis Range (Warning: angles are not preserved when unchecked!)");	
 
 	// Default: first two continous attributes
 	// Zoom out
@@ -278,9 +299,9 @@ function createScatterplot(data) {
 	} else {
 		tempMin = xMin;
 	}	
-	x.domain([tempMin, tempMax]);
-	y.domain([tempMin, tempMax]);
 
+	x.domain([tempMin, tempMax]);
+	y.domain([tempMin, tempMax]);	
 	//x.domain([xMin, xMax]);
 	//y.domain([yMin, yMax]);	
 
@@ -446,7 +467,7 @@ function calcLinear(data, x, y, minX, maxX){
 	}
 }
 
-var UpdateMatrixFormat = function(matrix, vars, category) {
+var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 
 
 	if (autoDetectFlag == 0 || autoDetectResult == null) {
@@ -459,7 +480,8 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 						value: cell,
 						categoryAttr: category.groupby,
 						category: category.value,
-						autoDetectFlg: 0 
+						autoDetectFlg: 0,
+						trend_type: trend_type
 					};
 			});
 		});
@@ -474,7 +496,7 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 					categoryAttr: category.groupby,
 
 					category: category.value,
-					autoDetectFlg: 0 
+					autoDetectFlg: 0
 				};
 
 				if (!isEmpty(autoDetectResult)) {
@@ -504,7 +526,10 @@ var UpdateMatrixFormat = function(matrix, vars, category) {
 
 var clickMatrixCell = function() {
 	var allsvg = d3.select(container);
+
 	allsvg.selectAll(".cell").classed("clicked", false);
+	allsvg.selectAll(".ratecell").classed("clicked", false);
+
 	var clickFlg = d3.select(this).classed("clicked", true);
 	if (clickFlg) { clickFlg.call(updateScatter); }
 };
@@ -512,8 +537,10 @@ var clickMatrixCell = function() {
 function updateScatter() {
 	var d = this.datum();
 	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
-		categoryAttr: d.categoryAttr, category: d.category};
+		categoryAttr: d.categoryAttr, category: d.category, trend_type: d.trend_type};
 
+	// updateVars used for same axis range
+	updateVars = vars;	
 	updateScatterplot(csvData, vars);
 	updateTabulate(vars);
 }
@@ -698,20 +725,10 @@ function openFile(){
 				labels.push(conAttrs[i]);
 			}
 
-			arrayRankingList = [];
-
 			for (var i = 0; i < correlationMatrixSubgroup.length; i++){
 
 				var bivariateMatrix = BivariateMatrix(correlationMatrix, correlationMatrixSubgroup[i]);
-				var subgroupLabel = categoryValuesList[i].groupby +": "+ categoryValuesList[i].value;
-
-				// Ranking the matrix
-				var averageWeight = getAverageWeight(bivariateMatrix);
-				var singleObj = {};
-
-				singleObj["label"] = subgroupLabel;
-				singleObj["weight"] = averageWeight;
-				arrayRankingList.push(singleObj);				
+				var subgroupLabel = categoryValuesList[i].groupby +": "+ categoryValuesList[i].value;			
 
 				Matrix({
 					container : '#container',
@@ -720,12 +737,6 @@ function openFile(){
 					subLabel  : subgroupLabel
 				});
 			}
-
-			arrayRankingList.sort(function(x, y){
-				return d3.descending(x.weight, y.weight);
-			})
-			
-			rankingListbox(arrayRankingList);
 
 			// Draw Tree
 			DrawTree(

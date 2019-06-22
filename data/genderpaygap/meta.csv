@@ -1,0 +1,5 @@
+variable,dtype,var_type,role,isCount,weighting_var
+role,object,categorical,"['groupby', 'trend']",False,
+gender,object,categorical,"['groupby', 'trend']",False,
+Headcount,int64,ordinal,['ignore'],True,
+MeanHourlyPay,int64,continuous,['trend'],False,Headcount

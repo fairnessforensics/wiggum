@@ -18,28 +18,60 @@
 	stroke-width: 2px!important;
 }
 
+.ratecell.clicked {
+	stroke: black !important;
+	stroke-width: 2px!important;
+}
+
+#container {
+    width: 630px;
+    display: block;
+    background: white;
+    margin-left: 300px;
+    margin-top: -150px;
+    height: 660px;
+    max-height: 660px;    
+    overflow-y: scroll;
+}
+
+/* with user input parameter for ranking
 #container {
     width: 630px;
     display: block;
     background: white;
     margin-left: 260px;
-    margin-top: -30px;
+    margin-top: 60px;
+    height: 560px;
+    max-height: 560px;    
+    overflow-y: scroll;
 }
+*/
 
 #legend {
     width: 230px;
     display: block;
     background: white;
-    position: fixed;
+    position: absolute;
+}
+
+#controlbuttons {
+    position: absolute;
+    margin-left: 40px;    
+    margin-top: 360px;   
+}
+
+#ranking {
+    position: absolute;
+    margin-left: 40px;    
+    margin-top: 390px;   
 }
 
 #scatterplot {
     display: block;
     background: white;
-    position: fixed;
-    border-style: solid;
-    border-width: 2px;
-    border-color: grey;
+    position: absolute;
+    margin-left: 90px;    
+    margin-top: 10px;      
 }
 
 #tree {
@@ -65,31 +97,31 @@ path.link {
 
 #slopegraph {
     display: block;
-    position: fixed;
+    position: absolute;
     background: white;
-    right: 50px;
+    right: 120px;
     border-style: solid;
     border-width: 2px;
-    border-color: grey;
-    top: 50px;
+    border-color: white;
+    top: 220px;
 }
 
 #slopeLabel {
     display: block;
-    position: fixed;
-    right: 115px;
-    top: 30px;
+    position: absolute;
+    right: 240px;
+    top: 200px;
 }
 
 #groupedbarchart {
     display: block;
     position: fixed;
-    right: 50px;
-    top: 380px;
+    right: 120px;
+    top: 800px;
 }
 
 line.slope-line4all{
-    stroke:red;
+    stroke: black;
     stroke-dasharray: 5,5;
     stroke-width: 2;
 }
@@ -98,7 +130,7 @@ line.slope-line4all{
     border-left: 2px solid grey;
     height: 630px;
     position: absolute;
-    left: 25%;
+    left: 28%;
     margin-left: -3px;
     margin-top: 80px;
     top: 0;
@@ -144,22 +176,33 @@ line.slope-line4all{
     top: -3px;
 }
 
-#rankingdiv {
+#rankingdiv, #rate_rankingdiv {
     width: 60px;
     size: 3;
     display: block;
     background: white;
-    margin-left: 270px;
-    margin-top: -115px;
+    margin-left: 50px;
+    margin-top: 10px;
+    position: absolute;
+    top: 10px;
+    left: 500px;
+}
+
+.row {
+    height: 160px;
 }
 
 #table {
-    width: 600px;
+    width: 1200px;
     display: block;
     background: white;
-    margin-left: 260px;
-    margin-top: 90px;
+    margin-left: 100px;
+    margin-top: 20px;
+    height: 272px;
+    max-height: 272px;    
+    overflow-y: scroll;    
 }
+
 table {
     font-family: "Helvetica", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", Tahoma, sans-serif;
     box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
@@ -191,4 +234,79 @@ table {
   
   .tablerow.highlighted {
     background-color:#D8D8D8;
+}
+
+.filterrow {
+    border: none;
+    background-color: rgb(255,255,255);
+}
+
+
+.rankingparam {
+    border: none;
+    box-shadow: none;
+}
+
+.paramtr {
+    height: 10px;
+  }
+.paramth {
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    border: none;
+    padding: 6px;
+  }
+.param {
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    border: none;
+    text-align: left;
+    padding: 3px;
+}
+
+.paramslider {
+    height: 10px;
+    width: 90px;
+  }
+.paramselection {
+    font-size: 10px;
+    height: 10px;
+}
+.paramnumber {
+    height: 8px;
+}
+
+#roleSelection {
+    width: 200px;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+div.tooltip {	
+    position: fixed;									
+    padding: 10px;				
+    background: white;	
+    border: solid;	
+    border-width: 2px;	
+    border-radius: 5px;	
+}
+
+.border-lines {
+    stroke: black;
+    stroke-width: 2px;
+    stroke-opacity: 1;  
+}
+
+#trend_type_selection {
+    position: absolute;
+    top: 50px;
+}
+
+#control_table {
+    position: absolute;
+    top: 30px;
+    margin-left: 660px;
 }

@@ -7,8 +7,10 @@ setup(name='detect_simpsons_paradox',
       author='Sarah M Brown',
       author_email='smb@sarahmbrown.org',
       license='MIT',
-      packages=['detect_simpsons_paradox', 'spviz'],
+      packages=['detect_simpsons_paradox', 'spviz','detect_simpsons_paradox.trend_components'],
       zip_safe=False,
-      install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas',
-      'mlsim @ https://github.com/brownsarahm/ml-sim/archive/master.zip','flask'],
-      dependency_links=[    ])
+      include_package_data = True,
+      install_requires=['matplotlib', 'Numpy', 'Scipy', 'seaborn', 'pandas','flask'],
+      entry_points = {
+        'console_scripts': ['spviz-app=spviz.command_line:main'],
+    })

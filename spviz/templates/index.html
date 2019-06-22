@@ -3,193 +3,418 @@
 <head>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Correlation Matrix</title>
+	<title>Wiggum: Data Configuration</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <script>
-        var divs = ["container", "tree", "scatterplot"];
-        var visibleDivId = null;
-        function toggleVisibility(divId) {
-          //if(visibleDivId === divId) {
-          //  visibleDivId = null;
-          //} else {
-          //  visibleDivId = divId;
-          //}
-          visibleDivId = divId;
-          hideNonVisibleDivs();
-        }
-        function hideNonVisibleDivs() {
-          var i, divId, div;
-          var x = document.getElementById("scatterplot"); 
+        function validate() {
+            var trend_type_selection = document.getElementById("trend_type_selection");   
+            var trend_types = getSelectValues(trend_type_selection);
 
-          for(i = 0; i < divs.length; i++) {
-            divId = divs[i];
-            div = document.getElementById(divId);
+            if (trend_types === undefined || trend_types.length == 0) {
+                alert("Please select the trend type!");
+                return false;
+            }
 
-            if(visibleDivId === divId) {
-              div.style.display = "block";
-            } else {
-              div.style.display = "none";
-            }
-            // Set for scatterplot
-            if((x.id === divId) && (selectTypeValue == "Regression")) {
-              x.style.display = "inline-block";
-            } else {
-              x.style.display = "none";
-            }
-          }
+            return true;
         }
 
+        function getSelectValues(select) {
+            var result = [];
+            var options = select && select.options;
+            var opt;
+        
+            for (var i=0, iLen=options.length; i<iLen; i++) {
+            opt = options[i];
+        
+            if (opt.selected) {
+                result.push(opt.text);
+            }
+            }
+            return result;
+        }
+
+        function update_qual_thresh(val) {
+            document.getElementById('qual_thresh_label').innerText=val; 
+        }
+
+        var folder = "";
+
+        function getFolder(e) {
+            var files = e.target.files;
+            var path = files[0].webkitRelativePath;
+
+            var path_split = path.split("/");
+            folder = path_split[0];
+        }
 
         $(function() {
-            $('#upload-file-btn').click(function() {
-                var form_data = new FormData($('#upload-file')[0]);
-                var action = $('#upload-file-btn').val();
+            // initialize 
+            selectTypeValue = "pearson_corr";
+            
+            $('#open-file-btn').click(function() {
+
+                if (folder != "") {
+                    // folder chosen for saved data
+                    $('#projectName').val(folder);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/',
+                        data: {'action':'folder_open', 'folder': folder},                               
+                        success: function(data) {
+                            var var_names = data.var_names;
+                            var var_types = data.var_types;
+                            var samples = data.samples;
+                            var isCounts = data.isCounts;
+                            var roles = data.roles;
+                            var possibleRoles = data.possible_roles;
+                            var weighting_vars = data.weighting_vars;
+                            roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars);
+
+                            // populate trend type dropdown options
+                            var option = '';
+                            var trend_types = data.trend_types;
+                            var trend_type_list = data.trend_type_list;
+
+                            for (var i=0;i<trend_types.length;i++){
+                                if (trend_type_list.includes(trend_types[i])){
+                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '" selected>' + trend_types[i] + '</option>';
+                                } else {
+                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                }
+                            }
+                            $('#trend_type_selection').append(option);
+
+                            // Avoid ctrl-click                                    
+                            $('option').mousedown(function(e) {
+                                e.preventDefault();
+                                var originalScrollTop = $(this).parent().scrollTop();
+                                $(this).prop('selected', $(this).prop('selected') ? false : true);
+                                var self = this;
+                                $(this).parent().focus();
+                                setTimeout(function() {
+                                    $(self).parent().scrollTop(originalScrollTop);
+                                }, 0);
+                                
+                                return false;
+                            });                                   
+                        }
+                    })
+                } else {
+                    // When data file chosen
+                    var form_data = new FormData($('#open-file')[0]);
+                    var action = $('#open-file-btn').val();
+                    form_data.append('action', action);
+
+                    d3.select('#roleSelection').select("table").remove();
+                    var header;
+                    var file = document.querySelector('input[type=file]').files[0]; 
+
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onloadend = function(evt) {
+                            var dataUrl = evt.target.result;
+
+                            d3.csv( dataUrl, function( rows ) {
+                                header = Object.keys(rows[0]);
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '/',
+                                    data: form_data,                                
+                                    contentType: false,
+                                    cache: false,
+                                    processData: false,
+                                    success: function(data) {
+                                        var var_types = data.var_types;
+                                        var samples = data.samples;
+                                        var possibleRoles = data.possible_roles;
+                                        roleTable(header, var_types, samples, possibleRoles);
+
+                                        // populate trend type dropdown options
+                                        var option = '';
+                                        var trend_types = data.trend_types;
+                                        for (var i=0;i<trend_types.length;i++){
+                                            option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                        }
+                                        $('#trend_type_selection').append(option);
+
+                                        // Avoid ctrl-click                                    
+                                        $('option').mousedown(function(e) {
+                                            e.preventDefault();
+                                            var originalScrollTop = $(this).parent().scrollTop();
+                                            $(this).prop('selected', $(this).prop('selected') ? false : true);
+                                            var self = this;
+                                            $(this).parent().focus();
+                                            setTimeout(function() {
+                                                $(self).parent().scrollTop(originalScrollTop);
+                                            }, 0);
+                                            
+                                            return false;
+                                        });                                    
+                                    },
+                                });
+                            })
+                        };
+                        reader.readAsDataURL(file);
+                    }  
+                }              
+            });
+
+            $('#visualize-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#visualize-btn').val();
+
                 form_data.append('action', action);
-                var sp_type = $("#typeSelector option:selected").text();
-                form_data.append('sptype', sp_type);
+
+                var metaList = [];
+                metaList = getMetaList();
+                
+                form_data.append('metaList', metaList);
+
+                var trend_type_selection = document.getElementById("trend_type_selection");   
+                var trend_types = getSelectValues(trend_type_selection);
+                form_data.append('trend_types', trend_types);
 
                 $.ajax({
                     type: 'POST',
                     url: '/',
                     data: form_data,
-                    //data: {'form_data':form_data, 'action':action},
-                    //data: {'action':action},
                     contentType: false,
                     cache: false,
                     processData: false,
                     success: function(data) {
-
-                        var $categoricalVarsSelect = $('#categoricalVarsSelect');
-
-                        for (var i = 0; i < data.length; i++) {
-                            $categoricalVarsSelect.append('<option id=' + data[i] + ' value=' + data[i] + '>' + data[i] + '</option>');
-                        }
-                        // Get data from controller return data
-                        drawGraph(data);
-
-                        // Display info table
-                        tableRecords = JSON.parse(data.table)
-                        d3.select("#table").style("display", "inline-block");
-                        tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 'subgroup', 'subgroup_slope','subgroup_trend']);
+                        
                     },
                 });
+                
             });
 
-            // Button Auto Detect
-            $('#autodetect').click(function() {
+            $('#save-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#save-btn').val();
+                var projectName = $('#projectName').val();
                 
-                var action = $('#autodetect').val();
-                var threshold = legendAdjustValue;
-                var sp_type = $("#typeSelector option:selected").text();
-                
+                if (projectName == '') {
+                    alert("Please input your project name!")
+                    return;
+                }
+
+                form_data.append('action', action);
+                form_data.append('projectName', projectName);
+
+                var metaList = [];
+                metaList = getMetaList();
+                form_data.append('metaList', metaList);
+
                 $.ajax({
+                    type: 'POST',
                     url: '/',
-                    data: {'action' : action, 'threshold': threshold, 'sptype': sp_type},     
-                    type: 'POST',      
-                    success: function(data) { 
-                        // Get data from controller return data
-                        autoDetectResult = JSON.parse(data.result)
-                        autoDetectFlag = 1;
-
-                        if (selectTypeValue == "Regression") {
-                            updateContainer();
-
-                            // Display info table
-                            tableRecords = JSON.parse(data.table)
-                            // remove existing table
-                            d3.select("#table").selectAll('table').remove();
-                            tabulate(tableRecords, ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 'subgroup', 'subgroup_slope','subgroup_trend']);
-                        } else {
-                            updateRateSPContainer();
-                        }
-
-                    }
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data) {
+                        var saved = document.getElementById("save-label");
+                        saved.innerText = data;
+                    },
                 });
-            });
-        });    
+                
+            });  
+            
+            $('#quantiles-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#quantiles-btn').val();
+
+                form_data.append('action', action);
+
+                var metaList = [];
+                metaList = getMetaList();
+                form_data.append('metaList', metaList);
+
+                var checked_vars = [];
+
+                var quantiles_checkbox = document.getElementsByName("quantiles_checkbox");
+
+                for (var i = 0; i < quantiles_checkbox.length; i++) {
+                    if (quantiles_checkbox[i].checked) {
+                        checked_vars.push(quantiles_checkbox[i].value);
+                    }
+                }
+
+                form_data.append('checked_vars', checked_vars);
+
+                var user_cutoffs = $('#user_cutoffs').val();
+                form_data.append('user_cutoffs', user_cutoffs);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data) {
+                        d3.select('#roleSelection').select("table").remove();
+
+                        var var_names = data.var_names;
+                        var var_types = data.var_types;
+                        var samples = data.samples;
+                        var isCounts = data.isCounts;
+                        var roles = data.roles;
+                        var possibleRoles = data.possible_roles;
+                        var weighting_vars = data.weighting_vars;
+
+                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars);      
+                        
+                        // Avoid ctrl-click                                    
+                        $('option:not(#trend_type_option)').mousedown(function(e) {
+                            e.preventDefault();
+                            var originalScrollTop = $(this).parent().scrollTop();
+
+                            $(this).prop('selected', $(this).prop('selected') ? false : true);
+                            var self = this;
+                            $(this).parent().focus();
+                            setTimeout(function() {
+                                $(self).parent().scrollTop(originalScrollTop);
+                            }, 0);
+                            
+                            return false;
+                        });                              
+                    },
+                });
+                
+            }); 
+
+            $('#clustering-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#clustering-btn').val();
+
+                form_data.append('action', action);
+
+                var metaList = [];
+                metaList = getMetaList();
+                form_data.append('metaList', metaList);
+
+                var qual_thresh = document.getElementById("qual_thresh").value;
+                form_data.append('qual_thresh', qual_thresh);
+
+                var checked_vars = [];
+
+                var quantiles_checkbox = document.getElementsByName("quantiles_checkbox");
+
+                for (var i = 0; i < quantiles_checkbox.length; i++) {
+                    if (quantiles_checkbox[i].checked) {
+                        checked_vars.push(quantiles_checkbox[i].value);
+                    }
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data) {
+                        d3.select('#roleSelection').select("table").remove();
+
+                        var var_names = data.var_names;
+                        var var_types = data.var_types;
+                        var samples = data.samples;
+                        var isCounts = data.isCounts;
+                        var roles = data.roles;
+                        var possibleRoles = data.possible_roles;
+                        var weighting_vars = data.weighting_vars;
+
+                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars);      
+                        
+                        // Avoid ctrl-click                                    
+                        $('option:not(#trend_type_option)').mousedown(function(e) {
+                            e.preventDefault();
+                            var originalScrollTop = $(this).parent().scrollTop();
+
+                            $(this).prop('selected', $(this).prop('selected') ? false : true);
+                            var self = this;
+                            $(this).parent().focus();
+                            setTimeout(function() {
+                                $(self).parent().scrollTop(originalScrollTop);
+                            }, 0);
+                            
+                            return false;
+                        });                              
+                    },
+                });
+                
+            });             
+        });           
     </script>
 </head>
 <body class="center">
-               <form id="upload-file" method="post" enctype="multipart/form-data"> 
-   <!--  <form action="/" method="post" role="form">   -->
+ <!--  <form id="upload-file" method="post" enctype="multipart/form-data">   -->
+  <form id="open-file" action="/visualize" method="post" onsubmit="return validate();"> 
 
     <div class= "row">
         <div id="extra">
             <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label style="font-size: 14px;">Choose one file to load a new dataset or a direcotry with previously saved metadata</label><br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-            <!--
-            <input type="file" onchange="loadFile()" />
-            -->
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                {% endif %}
-                {% endwith %}
-            <input name="file" type="file" style = "width:170px">
-            <button id="upload-file-btn" type="button" value="upload">Upload</button>
-            &nbsp;&nbsp;&nbsp;
-
-            <a href="#" onclick="toggleVisibility('container')">Linear Layout</a>
-            &nbsp;&nbsp;&nbsp;
-            <div id="extra_regression" style="display:inline-block;" >
-                <a href="#" onclick="toggleVisibility('tree')">Tree Hierarchy</a>
+            <input name="file" type="file" id="myFile" style = "width:170px">
+            <input name="file" type="file" id="myFolder" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
+            <button id="open-file-btn" type="button" value="open">Open</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <select id = "trend_type_selection" multiple="multiple">
+            </select>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <div id="control_table">
+                <table class="rankingparam" cellspacing="0" cellpadding="0" align="center">
+                    <tr class = "paramtr">
+                        <td class="param">            
+                            <input name="user_cutoffs" type="text" id="user_cutoffs" placeholder="Quantiles(e.g., 0.25,0.75)">
+                        </td>
+                        <td class="param">            
+                            <button id="quantiles-btn" type="button" value="quantiles">Compute Quantiles</button>
+                        </td>
+                        <td class="param">  
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button id="visualize-btn" type="submit" value="visualize">Visualize Trends</button> 
+                        </td>                                         
+                    </tr>
+                    <tr class = "paramtr">
+                        <td class="param">
+                            <input type="range" style = "width: 115px;" min="0" max="1" step="0.01" id="qual_thresh" value = "0.2" onchange="update_qual_thresh(this.value);">
+                            &nbsp;<label id="qual_thresh_label" style="font-size: 12px;">0.2</label>  
+                        </td>
+                        <td class="param">
+                            <button id="clustering-btn" type="button" value="clustering">Clustering</button> 
+                        </td>                    
+                    </tr>
+                    <tr class = "paramtr">
+                        <td class="param">
+                                <input name="projectName" type="text" id="projectName" placeholder="Project Name">                        
+                        </td>
+                        <td class="param">
+                                <button id="save-btn" type="button" value="save">Save</button>    
+                                <label id="save-label" style="font-size: 14px;"></label>                                            
+                        </td>                    
+                    </tr>                                    
+                </table>
             </div>
-            &nbsp;&nbsp;&nbsp;(Click a title to select a detail plot or a cell to focus a detail plot)       
         </div> 
         <div id="typeSelector">
             <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div>
-        <div id="selectors">
-            <br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>
-        <div id ="slider" class="slider"></div>
-        <br/><br/>
-        <div id="legend"></div>
+        <div id="roleSelection">
+        </div>             
     </div>
-
-           <!--
-    <div style="display:inline-block;" id="categoricalVars">
-        <select id="categoricalVarsSelect">
-            <option id='all' value='all'>ALL</option>
-        </select>
-    </div>            -->
-    <div id="rankingdiv">
-            <select multiple id ="ranking"></select>      
-            <button id="autodetect" type="button" name="autodetect" value="autodetect">AutoDetect</button>  
-    </div>
-    <div style="display:none; float:left" id="container">
-    </div>
-
-    <div style="display:none; float:left" id="tree"></div>
-    <div style="display:none; float:left" id="table"></div>
-    <div class="vl"></div>
-    <div id="slopeLabel"></div>
-    <div style="display:none; float:left" id="scatterplot"></div>
-    <div id="slopegraph"></div>
-    <div id="groupedbarchart"></div>
-
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/newmain.js') }}"></script>
-
-    <script src="{{ url_for('static', filename='js/tree.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/scatterplot.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/correlationMatrix.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/rateMatrix.js') }}"></script>
-    <script> d3.eesur = {}; </script>
-    <script src="{{ url_for('static', filename='js/d3_code_slopegraph.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/slopegraph.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/groupedbarchart.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/rankingListbox.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/table.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/table.js') }}"></script>    
     </form>
 
 </body>
