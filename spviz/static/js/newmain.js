@@ -1,5 +1,9 @@
 function drawGraph(dataAll) {
 
+	// Remove old svg
+	d3.select("#container").selectAll('svg').remove();
+	d3.select("#scatterplot").selectAll('svg').remove();  
+
 	// Bivariate color scheme selection
 	selectValue = d3.select("#selectors").select('select').property('value');
 	selectTypeValue = d3.select("#typeSelector").select('select').property('value');

@@ -65,8 +65,7 @@
                         data: {'action':'filter', 'filter_object': filter_object},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();                            
+                          
                             drawGraphTable(data);
                         }
                     })
@@ -79,8 +78,7 @@
                         data: {'action':'reset'},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();          
+       
                             drawGraphTable(data);
                         }
                     })
@@ -110,8 +108,6 @@
                                 'agg_strength_threshold': agg_strength_threshold, 'sg_strength_threshold': sg_strength_threshold},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();       
  
                             drawGraphTable(data, 'detect');
                         }
@@ -130,8 +126,7 @@
                         data: {'action':'rank', 'agg_type': agg_type, 'view_score': view_score},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();          
+      
                             drawGraphTable(data);
                         }
                     })
