@@ -6,17 +6,22 @@ function drawGraph(dataAll) {
 
 	// Bivariate color scheme selection
 	selectValue = d3.select("#selectors").select('select').property('value');
-	selectTypeValue = d3.select("#typeSelector").select('select').property('value');
+	selectTypeValue = '';
 
 	csvData = JSON.parse(dataAll[1].replace(/\bNaN\b/g, "null"))    
 
 	for (var key in dataAll){
-		selectTypeValue = '';	
 		if (key > 1) {
 			data = dataAll[key];
 
+			// LegendTypeSelector display
+			if (selectTypeValue != '' && selectTypeValue != data.trend_type) {
+				legendTypeSelector.style.display = "inline-block";
+			}
+
 			selectTypeValue = data.trend_type;
 		}
+
 		if (selectTypeValue == "pearson_corr") {
 			// Correlation for all
 			correlationMatrix = jsonto2darray(JSON.parse(data.corrAll));

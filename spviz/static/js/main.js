@@ -55,15 +55,15 @@ var subgrou_trend_strength = 0;
 var agg_trend_strength = 0;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
-var selectTypeData = ["pearson_corr", "rank_trend"];
+var selectLegendTypeData = ["pearson_corr", "rank_trend"];
 
-var selectType = d3.select("#typeSelector")
+var selectLegendType = d3.select("#legendTypeSelector")
 					.append('select')
 					.attr('class','select')
-					.on('change',ontypechange);
+					.on('change',onlegendtypechange);
 	
-var optionsType = selectType.selectAll('option')
-					.data(selectTypeData).enter()
+var optionsType = selectLegendType.selectAll('option')
+					.data(selectLegendTypeData).enter()
 					.append('option')
 					.text(function (d) { return d; });	
 
@@ -139,45 +139,15 @@ function onchange() {
 	DrawLegend();
 
 	drawGraph(server_data);
-	//if (selectTypeValue == "pearson_corr") {
-	//	updateContainer();
-	//} else {
-	//	updateRateSPContainer();
-	//}
-	
+
 };
 
-function ontypechange() {
+function onlegendtypechange() {
 
 	selectTypeValue = d3.select(this).property('value');
-	legendValue = -1;
+
 	d3.select("#legend").selectAll('svg').remove();
 	DrawLegend();
-
-	if (selectTypeValue == "pearson_corr") {
-		d3.select("#extra_regression").style("display", "inline-block");
-		d3.select("#slopegraph").style("display", "none");
-		d3.select("#scatterplot").style("display", "inline-block");
-		d3.select("#rankingdiv").style("display", "inline-block");	
-		d3.select("#rate_rankingdiv").style("display", "none");				
-//		updateContainer();
-	} else {
-		alert('here');
-		d3.select("#extra_regression").style("display", "none");
-		d3.select("#scatterplot").style("display", "none");
-		d3.select("#slopegraph").style("display", "inline-block");
-		d3.select("#rankingdiv").style("display", "none");
-		d3.select("#rate_rankingdiv").style("display", "inline-block");			
-		
-		// Get binary decision variable
-//		var attrs = getBinaryAttrs(csvData, catAttrs);
-
-//		targetAttr = attrs[0];
-//		groupingAttrs =  attrs[1];
-
-//		updateRateSPContainer();
-	}
-
 };
 
 function updateTextInput(id, val) {
@@ -587,12 +557,7 @@ function DrawSlider(){
 		DrawLegend();	
 
 		drawGraph(server_data);
-		
-		//if (selectTypeValue == "pearson_corr") {
-		//	updateContainer();
-		//} else {
-		//	updateRateSPContainer();
-		//}
+
 	});
 }
 
@@ -920,11 +885,6 @@ function doubleClickLegend(){
 
 	drawGraph(server_data);
 
-	//if (selectTypeValue == "pearson_corr") {
-	//	updateContainer();
-	//} else {
-	//	updateRateSPContainer();
-	//}
 };
 
 function clickLegendCell(){	
@@ -939,11 +899,6 @@ function updateCorrelationMatrix() {
 	legendValue = d.value;
 
 	drawGraph(server_data);
-	//if (selectTypeValue == "pearson_corr") {
-	//	updateContainer();
-	//} else {
-	//	updateRateSPContainer();
-	//}
 }
 
 function BivariateMatrix(correlationMatrix, correlationMatrixSubgroup) {
