@@ -23,6 +23,8 @@ function drawGraph(dataAll) {
 		}
 
 		if (selectTypeValue == "pearson_corr") {
+			// no need to redraw
+			rankTrendLegendFlg = false;
 			// Correlation for all
 			correlationMatrix = jsonto2darray(JSON.parse(data.corrAll));
 			//csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));

@@ -171,6 +171,12 @@
 	                        legendValue = -1;
                             
                             drawGraphTable(data, 'page_load');
+
+                            if (rankTrendLegendFlg == true) {
+                                // redraw legend for rank_trend
+                                d3.select("#legend").selectAll('svg').remove();
+                                DrawLegend();
+                            }
                     },
                     error: function(ts) { console.log(ts.responseText) }
                 });

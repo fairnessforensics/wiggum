@@ -53,6 +53,7 @@ var subgroup_selected = [];
 var trend_type_selected = [];
 var subgrou_trend_strength = 0;
 var agg_trend_strength = 0;
+var rankTrendLegendFlg = true;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
 var selectLegendTypeData = ["pearson_corr", "rank_trend"];
