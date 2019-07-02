@@ -65,8 +65,7 @@
                         data: {'action':'filter', 'filter_object': filter_object},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();                            
+                          
                             drawGraphTable(data);
                         }
                     })
@@ -79,8 +78,7 @@
                         data: {'action':'reset'},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();          
+       
                             drawGraphTable(data);
                         }
                     })
@@ -110,8 +108,6 @@
                                 'agg_strength_threshold': agg_strength_threshold, 'sg_strength_threshold': sg_strength_threshold},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();       
  
                             drawGraphTable(data, 'detect');
                         }
@@ -130,8 +126,7 @@
                         data: {'action':'rank', 'agg_type': agg_type, 'view_score': view_score},                               
                         success: function(data) {
                             server_data = data;
-                            d3.select("#container").selectAll('svg').remove();
-                            d3.select("#scatterplot").selectAll('svg').remove();          
+      
                             drawGraphTable(data);
                         }
                     })
@@ -176,6 +171,12 @@
 	                        legendValue = -1;
                             
                             drawGraphTable(data, 'page_load');
+
+                            if (rankTrendLegendFlg == true) {
+                                // redraw legend for rank_trend
+                                d3.select("#legend").selectAll('svg').remove();
+                                DrawLegend();
+                            }
                     },
                     error: function(ts) { console.log(ts.responseText) }
                 });
@@ -464,10 +465,6 @@
             &nbsp;&nbsp;&nbsp;(Click a title to select a detail plot or a cell to focus a detail plot)       
         </div> 
         -->
-        <div id="typeSelector" style="display:none;">
-            <br/>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        </div>
         <br/><br/><br/>
         <div id="selectors">
             <br/>
@@ -480,6 +477,10 @@
          <!-- <button id="upload-file-btn" type="button" value="upload">Visualize</button> -->
         <div id ="slider" class="slider"></div>
         <br/><br/>
+        <div id="legendTypeSelector" style="display:none;">
+            <br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
         <div id="legend"></div>
         <div id ="controlbuttons"></div>       
         <div id ="ranking"></div>           

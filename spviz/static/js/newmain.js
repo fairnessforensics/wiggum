@@ -1,19 +1,30 @@
 function drawGraph(dataAll) {
 
+	// Remove old svg
+	d3.select("#container").selectAll('svg').remove();
+	d3.select("#scatterplot").selectAll('svg').remove();  
+
 	// Bivariate color scheme selection
 	selectValue = d3.select("#selectors").select('select').property('value');
-	selectTypeValue = d3.select("#typeSelector").select('select').property('value');
+	selectTypeValue = '';
 
 	csvData = JSON.parse(dataAll[1].replace(/\bNaN\b/g, "null"))    
 
 	for (var key in dataAll){
-		selectTypeValue = '';	
 		if (key > 1) {
 			data = dataAll[key];
 
+			// LegendTypeSelector display
+			if (selectTypeValue != '' && selectTypeValue != data.trend_type) {
+				legendTypeSelector.style.display = "inline-block";
+			}
+
 			selectTypeValue = data.trend_type;
 		}
+
 		if (selectTypeValue == "pearson_corr") {
+			// no need to redraw
+			rankTrendLegendFlg = false;
 			// Correlation for all
 			correlationMatrix = jsonto2darray(JSON.parse(data.corrAll));
 			//csvData = JSON.parse(data.csv_data.replace(/\bNaN\b/g, "null"));
