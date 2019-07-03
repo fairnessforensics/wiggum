@@ -14,9 +14,9 @@ var_types = ['binary', 'ordinal', 'categorical', 'continuous']
 
 
 
-from .detect_sp import RESULT_DF_HEADER, _trendDetectors
-from .data_augmentation import _augmentedData
-from .ranking_processing import _resultDataFrame
+from .detectors import RESULT_DF_HEADER, _TrendDetectors
+from .data_augmentation import _AugmentedData
+from .ranking_processing import _ResultDataFrame
 
 
 
@@ -99,11 +99,11 @@ def column_rate(df, rate_column):
 
 
 
-class labeledDataFrame(_resultDataFrame,_trendDetectors,_augmentedData):
+class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     """
     this is the object
 
-    a labeledDataFrame object contains 3 DataFrames of information: the actual data(df),
+    a LabeledDataFrame object contains 3 DataFrames of information: the actual data(df),
     meta data(meta_df) about it and the trends (result_df) in it.
 
 

@@ -3,5 +3,5 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-import detect_simpsons_paradox as dsp
+import wiggum as wg
 from sp_data_util import sp_plot

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-class trend():
+class Trend():
     """
     baseclass for abstraction and building trend objects. All trend objects must
     inherit this class in order to have a constructor (__init__). This may be
@@ -10,7 +10,7 @@ class trend():
     Parameters
     ----------
     self
-    labeled_df : labeledDataFrame or None
+    labeled_df : LabeledDataFrame or None
         if passed, get_trend_vars is called on initialization using labeled_df
     as the target dataset to compute trends on
     """
@@ -36,7 +36,7 @@ class trend():
 # these parts can be mixed together to create full final classes that are used
 # for importing and only those are revealed in
 
-class ordinalRegression():
+class OrdinalRegression():
     """
     regression compatible varTypeMixin, sets list formatted regression_vars and
     symmetric_vars = True
@@ -49,7 +49,7 @@ class ordinalRegression():
 
         Parameters
         -----------
-        labeled_df : labeledDataFrame
+        labeled_df : LabeledDataFrame
             object to parse for variable types
 
         Returns
@@ -78,7 +78,7 @@ class continuousOrdinalRegression():
 
         Parameters
         -----------
-        labeled_df : labeledDataFrame
+        labeled_df : LabeledDataFrame
             object to parse for variable types
 
         Returns
@@ -93,7 +93,7 @@ class continuousOrdinalRegression():
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
         return self.regression_vars
 
-class continuousRegression():
+class ContinuousRegression():
     """
     regression compatible varTypeMixin, for working with continuous variables
     sets list formatted regression_vars and symmetric_vars = True
@@ -108,7 +108,7 @@ class continuousRegression():
 
         Parameters
         -----------
-        labeled_df : labeledDataFrame
+        labeled_df : LabeledDataFrame
             object to parse for variable types
 
         Returns
@@ -195,10 +195,10 @@ def w_avg(df,avcol,wcol):
 
 
 
-class binaryWeightedRank():
+class BinaryWeightedRank():
     """
     statRank compatible varTypeMixin, for computing means of only binary valued
-    variables sets stat to dsp.trend_components.w_avg
+    variables sets stat to wg.trend_components.w_avg
     """
 
 
@@ -208,7 +208,7 @@ class binaryWeightedRank():
 
         Parameters
         -----------
-        labeled_df : labeledDataFrame
+        labeled_df : LabeledDataFrame
             object to parse for variable types
 
         Returns
@@ -229,7 +229,7 @@ class binaryWeightedRank():
 
 
 
-class weightedRank():
+class WeightedRank():
     """
     common parts for all continuous variable trends
     """

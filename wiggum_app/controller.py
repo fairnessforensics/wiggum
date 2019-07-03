@@ -3,7 +3,7 @@ from spviz import models
 from flask import request, flash, redirect,jsonify, url_for
 import pandas as pd
 import json
-import detect_simpsons_paradox as dsp
+import wiggum as wg
 import numpy as np
 from .models import Decoder
 
@@ -28,13 +28,13 @@ def main():
             folder = request.form['folder']
 
             folder = 'data/' + folder
-            labeled_df_setup = dsp.labeledDataFrame(folder)
+            labeled_df_setup = wg.LabeledDataFrame(folder)
 
             result_dict = {}
             result_dict = models.getMetaDict(labeled_df_setup)
 
-            result_dict['possible_roles'] = dsp.possible_roles
-            result_dict['trend_types'] = list(dsp.all_trend_types.keys())
+            result_dict['possible_roles'] = wg.possible_roles
+            result_dict['trend_types'] = list(wg.all_trend_types.keys())
 
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
             result_dict['trend_type_list'] = list(trend_type_list)
@@ -52,7 +52,7 @@ def main():
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
 
-            labeled_df_setup = dsp.labeledDataFrame(df)
+            labeled_df_setup = wg.LabeledDataFrame(df)
 
             labeled_df_setup.infer_var_types()
 
@@ -66,8 +66,8 @@ def main():
 
             return jsonify({'var_types': var_types,
                             'samples': sample_list,
-                            'possible_roles': dsp.possible_roles, 
-                            'trend_types': list(dsp.all_trend_types.keys())})
+                            'possible_roles': wg.possible_roles, 
+                            'trend_types': list(wg.all_trend_types.keys())})
 
         if action == 'save':
             meta = request.form['metaList']
@@ -108,7 +108,7 @@ def main():
             result_dict = {}
             result_dict = models.getMetaDict(labeled_df_setup)
 
-            result_dict['possible_roles'] = dsp.possible_roles
+            result_dict['possible_roles'] = wg.possible_roles
 
             return jsonify(result_dict)
 
@@ -125,7 +125,7 @@ def main():
             result_dict = {}
             result_dict = models.getMetaDict(labeled_df_setup)
 
-            result_dict['possible_roles'] = dsp.possible_roles
+            result_dict['possible_roles'] = wg.possible_roles
 
             return jsonify(result_dict)            
 
@@ -152,7 +152,7 @@ def main():
         # initial for visualize.html page
         if action == 'page_load':
             if labeled_df_setup.result_df.empty:
-                trend_list = [dsp.all_trend_types[trend]() for trend in user_trends]
+                trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
 
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 

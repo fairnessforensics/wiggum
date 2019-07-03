@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 import scipy.stats as stats
 
-class statBinRankTrend():
+class StatBinRankTrend():
     """
     Compute a trend that determines between alphabetically ordered values of a
     two-valued categorical variable are > or < when ordered by a statistic of
@@ -20,7 +20,7 @@ class statBinRankTrend():
         ----------
         data_df : DataFrame or DataFrameGroupBy
             data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
+        a grouped DataFrame as passed by LabeledDataFrame get trend functions
         trend_col_name : {'subgroup_trend','agg_trend'}
             which type of trend is to be computed
             TODO: could infer this by type of above?
@@ -149,7 +149,7 @@ class statBinRankTrend():
         return not(row['agg_trend'] == row['subgroup_trend'])
 
 
-class statRankTrend():
+class StatRankTrend():
     """
     Compute a trend that is the ascending ranking of categorical variables,
     quality based on the trend vs actual kendall tau distance and the distance
@@ -166,7 +166,7 @@ class statRankTrend():
         ----------
         data_df : DataFrame or DataFrameGroupBy
             data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
+        a grouped DataFrame as passed by LabeledDataFrame get trend functions
         trend_col_name : {'subgroup_trend','agg_trend'}
             which type of trend is to be computed
             TODO: could infer this by type of above?

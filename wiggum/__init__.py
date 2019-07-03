@@ -3,8 +3,8 @@ import numpy as np
 import scipy.stats as stats
 import itertools as itert
 
-#from .detect_sp import upper_triangle_df, upper_triangle_element, isReverse,
-from .detect_sp import detect_simpsons_paradox
+#from .detectors import upper_triangle_df, upper_triangle_element, isReverse,
+from .detectors import detect_simpsons_paradox
 
 
 from .ranking_processing import DEFAULT_SP_DEF, trend_quality_sp
@@ -19,14 +19,14 @@ from .ranking_processing import DEFAULT_SP_DEF, trend_quality_sp
 # from .data_augmentation import add_quantile, add_all_dpgmm
 
 
-from .labeled_dataframe import (labeledDataFrame, possible_roles, var_types,
+from .labeled_dataframe import (LabeledDataFrame, possible_roles, var_types,
                             simple_type_mapper)
 
 # trend types
-from .trends import (all_pearson, continuous_pearson, spearman_correlation,
-                    kendall_correlation, mean_rank_trend,linear_trend,
-                    all_linear_trend,binary_pearson_trend,binary_mean_rank_trend,
-                    median_rank_trend,binary_median_rank_trend)
+from .trends import (All_Pearson, Continuous_Pearson, Spearman_Correlation,
+                    Kendall_Correlation, Mean_Rank_Trend,Linear_Trend,
+                    All_Linear_Trend,Binary_Pearson_Trend,Binary_Mean_Rank_Trend,
+                    Median_Rank_Trend,Binary_Median_Rank_Trend)
 
 #tren lists
 from .trends import (all_trend_types,default_binary_trends,default_distance_trends)

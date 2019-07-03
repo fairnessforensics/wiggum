@@ -1,4 +1,4 @@
-import detect_simpsons_paradox as dsp
+import wiggum as wg
 from itertools import combinations
 import pandas as pd
 import sys
@@ -127,7 +127,7 @@ def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_
         a dataframe with SP info
     """
     # get SP rows
-    result_df = dsp.get_SP_rows(initial_result_df, sp_type='SP_thresh', 
+    result_df = wg.get_SP_rows(initial_result_df, sp_type='SP_thresh', 
                     cols_pair = ['agg_trend','subgroup_trend'], colored=True, sp_args = threshold)
 
     # ranking
@@ -157,13 +157,13 @@ def getInfoTable(data_df, std_weights, std_weights_view, view_score_param, indiv
         a DataFrame that contains ranking information        
     """
     # get subgroup trends' info
-    initial_result_df = dsp.get_subgroup_trends_1lev(data_df,['pearson_corr'])
+    initial_result_df = wg.get_subgroup_trends_1lev(data_df,['pearson_corr'])
 
     # add slope
-    initial_result_df = dsp.add_slope_cols(data_df,initial_result_df)
+    initial_result_df = wg.add_slope_cols(data_df,initial_result_df)
     
     # add angle
-    initial_result_df = dsp.add_angle_col(initial_result_df)
+    initial_result_df = wg.add_angle_col(initial_result_df)
 
     # get ranking info
     initial_result_df, ranking_view_df = getInitialRankInfo(initial_result_df, 
@@ -195,15 +195,15 @@ def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_sc
         a DataFrame that contains ranking information          
     """ 
     # weight
-    result_df = dsp.add_weighted(result_df,std_weights,name=individual_weight_name).sort_values(by=individual_weight_name,ascending=False)
+    result_df = wg.add_weighted(result_df,std_weights,name=individual_weight_name).sort_values(by=individual_weight_name,ascending=False)
 
     # rank by view
     # add view score
     for key,val in view_score_param.items():    
-        result_df = dsp.add_view_score(result_df, key, val, True)
+        result_df = wg.add_view_score(result_df, key, val, True)
 
     # weight for view
-    result_df = dsp.add_weighted(result_df,std_weights_view,name=view_weight_name)
+    result_df = wg.add_weighted(result_df,std_weights_view,name=view_weight_name)
 
     ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', view_weight_name]].drop_duplicates()
     ranking_view_df = ranking_view_df.sort_values(by=view_weight_name,ascending=False)
@@ -231,17 +231,17 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
         a DataFrame that contains SP ranked information
     """ 
     # weight
-    result_df = dsp.add_weighted(result_df,std_weights,name=individual_weight_name).sort_values(by=individual_weight_name,ascending=False)    
+    result_df = wg.add_weighted(result_df,std_weights,name=individual_weight_name).sort_values(by=individual_weight_name,ascending=False)    
 
     # check if the column already exists
     if 'SP_subgroups' in result_df.columns:   
         result_df = result_df.drop(columns=['SP_subgroups', 'gby_counts', 'portions'])
     
     # view counts 
-    colored_view_df = dsp.count_sp_views(result_df, colored=True, portions=True, 
+    colored_view_df = wg.count_sp_views(result_df, colored=True, portions=True, 
                                 data_df = data_df, groupby_count=True)       
                                       
-    result_df = dsp.add_view_count(result_df, colored_view_df,colored=True)                                
+    result_df = wg.add_view_count(result_df, colored_view_df,colored=True)                                
 
     # rank by view
     # add view score
@@ -249,10 +249,10 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
         # remove the same column 
         column_name = key + "_" + val
         result_df = result_df.drop(columns=column_name)
-        result_df = dsp.add_view_score(result_df, key, val, True)
+        result_df = wg.add_view_score(result_df, key, val, True)
 
     # weight for view
-    result_df = dsp.add_weighted(result_df,std_weights_view,name=view_weight_name)
+    result_df = wg.add_weighted(result_df,std_weights_view,name=view_weight_name)
 
     ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', view_weight_name]].drop_duplicates()
     ranking_view_df = ranking_view_df.sort_values(by=view_weight_name,ascending=False)
@@ -436,7 +436,7 @@ def updateMetaData(labeled_df, meta):
     Parameters
     -----------
     labeled_df : DataFrame
-        labeledDataFrame
+        LabeledDataFrame
     meta : DataFrame
         data organized in a pandas dataframe
     Returns
@@ -473,9 +473,9 @@ def getResultDict(labeled_df, result_df, filter_subgroup= None):
     Parameters
     -----------
     labeled_df : DataFrame
-        labeledDataFrame    
+        LabeledDataFrame    
     result_df : DataFrame
-        result_df from labeledDataFrame
+        result_df from LabeledDataFrame
     filter_subgroup : list, or  None
             value of groupby_feat or or None to include all        
     Returns
@@ -581,7 +581,7 @@ def getMetaDict(labeled_df):
     Parameters
     -----------
     labeled_df : DataFrame
-        labeledDataFrame    
+        LabeledDataFrame    
     Returns
     --------
     result_dict : Dictionary for meta data

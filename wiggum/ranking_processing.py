@@ -13,7 +13,7 @@ trend_quality_sp = {'distance':.2, 'agg_trend_strength':.15,
 
 
 
-class _resultDataFrame():
+class _ResultDataFrame():
     """
     this is a mixin class to separate groups of methods across separate files
     """
@@ -26,7 +26,7 @@ class _resultDataFrame():
         Parameters
         -----------
 
-        self : labeledDataFrame
+        self : LabeledDataFrame
             must have values in result_df
         filter_thresh : dict or string
             dictionary of column label, threshold pairs or string name of a

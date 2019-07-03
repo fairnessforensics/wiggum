@@ -55,7 +55,7 @@ def get_views(df,colored=False):
 ################################################################################
 # helper Mixin class
 ################################################################################
-class _trendDetectors():
+class _TrendDetectors():
     """
     a mixin class of detectors and trend computations
     """
@@ -155,7 +155,7 @@ class _trendDetectors():
 
         Parameters
         -----------
-        labeled_df : labeledDataFrame
+        labeled_df : LabeledDataFrame
             data to find SP in, must be tidy
         trend_types: list of strings or list trend objects
             info on what trends to compute and the variables to use, dict is of form
