@@ -19,24 +19,38 @@ def visualize():
 def main():
     if request.method == 'POST':
 
+        app.logger.info('%s logged in successfully', "test", extra={'remote_addr':request.environ['HTTP_X_FORWARDED_FOR']})
+
         action = request.form['action']
 
         global labeled_df_setup
+        try:
+            labeled_df_setup
+        except NameError:
+            labeled_df_setup = {}
+
+        global user_trends
+        try:
+            user_trends
+        except NameError:
+            user_trends = {}
+
+        remote_addr = request.environ['HTTP_X_FORWARDED_FOR']
 
         if action == 'folder_open':
 
             folder = request.form['folder']
 
             folder = 'data/' + folder
-            labeled_df_setup = wg.LabeledDataFrame(folder)
+            labeled_df_setup[remote_addr] = wg.LabeledDataFrame(folder)
 
             result_dict = {}
-            result_dict = models.getMetaDict(labeled_df_setup)
+            result_dict = models.getMetaDict(labeled_df_setup[remote_addr])
 
             result_dict['possible_roles'] = wg.possible_roles
             result_dict['trend_types'] = list(wg.all_trend_types.keys())
 
-            trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
+            trend_type_list = pd.unique(labeled_df_setup[remote_addr].result_df['trend_type'])
             result_dict['trend_type_list'] = list(trend_type_list)
 
             return jsonify(result_dict)
@@ -52,17 +66,17 @@ def main():
             csv_data = df.to_dict(orient='records')
             csv_data = json.dumps(csv_data, indent=2)
 
-            labeled_df_setup = wg.LabeledDataFrame(df)
+            labeled_df_setup[remote_addr] = wg.LabeledDataFrame(df)
 
-            labeled_df_setup.infer_var_types()
+            labeled_df_setup[remote_addr].infer_var_types()
 
             # get var_types for dropbox
             var_types = []
-            var_types = labeled_df_setup.meta_df['var_type'].tolist()
+            var_types = labeled_df_setup[remote_addr].meta_df['var_type'].tolist()
 
             # get sample for data
             sample_list = []
-            sample_list = labeled_df_setup.get_data_sample()
+            sample_list = labeled_df_setup[remote_addr].get_data_sample()
 
             return jsonify({'var_types': var_types,
                             'samples': sample_list,
@@ -72,19 +86,19 @@ def main():
         if action == 'save':
             meta = request.form['metaList']
 
-            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+            labeled_df_setup[remote_addr] = models.updateMetaData(labeled_df_setup[remote_addr], meta)
 
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)
+            labeled_df_setup[remote_addr].to_csvs(directory)
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
         if action == 'quantiles':
 
             meta = request.form['metaList']
-            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+            labeled_df_setup[remote_addr] = models.updateMetaData(labeled_df_setup[remote_addr], meta)
 
             checked_vars = request.form['checked_vars']
             checked_vars = checked_vars.split(",")
@@ -101,12 +115,12 @@ def main():
 
                     quantiles_dict = dict(zip(labels, cutoffs[1:]))
 
-                    labeled_df_setup.add_quantile(checked_vars, quantiles_dict)
+                    labeled_df_setup[remote_addr].add_quantile(checked_vars, quantiles_dict)
                 else:
-                    labeled_df_setup.add_quantile(checked_vars)
+                    labeled_df_setup[remote_addr].add_quantile(checked_vars)
 
             result_dict = {}
-            result_dict = models.getMetaDict(labeled_df_setup)
+            result_dict = models.getMetaDict(labeled_df_setup[remote_addr])
 
             result_dict['possible_roles'] = wg.possible_roles
 
@@ -116,14 +130,14 @@ def main():
         if action == 'clustering':
 
             meta = request.form['metaList']
-            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+            labeled_df_setup[remote_addr] = models.updateMetaData(labeled_df_setup[remote_addr], meta)
 
             qual_thresh = float(request.form['qual_thresh'])
 
-            labeled_df_setup.add_all_dpgmm(qual_thresh = qual_thresh)
+            labeled_df_setup[remote_addr].add_all_dpgmm(qual_thresh = qual_thresh)
 
             result_dict = {}
-            result_dict = models.getMetaDict(labeled_df_setup)
+            result_dict = models.getMetaDict(labeled_df_setup[remote_addr])
 
             result_dict['possible_roles'] = wg.possible_roles
 
@@ -134,33 +148,32 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)          
+            labeled_df_setup[remote_addr].to_csvs(directory)          
             return 'Saved'      
 
         # index.html 'Visualize' button clicked
         if action == 'visualize':
-
+            print("$$$$$$$$$$$$$$$$$$$$$")
             meta = request.form['metaList']
-            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+            labeled_df_setup[remote_addr] = models.updateMetaData(labeled_df_setup[remote_addr], meta)
 
-            global user_trends
-            user_trends = request.form['trend_types']
-            user_trends = user_trends.split(",")
-
+            user_trends[remote_addr] = request.form['trend_types']
+            user_trends[remote_addr] = user_trends[remote_addr].split(",")
+            print(user_trends)
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
         if action == 'page_load':
-            if labeled_df_setup.result_df.empty:
-                trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
+            if labeled_df_setup[remote_addr].result_df.empty:
+                trend_list = [wg.all_trend_types[trend]() for trend in user_trends[remote_addr]]
 
-                labeled_df_setup.get_subgroup_trends_1lev(trend_list)
+                labeled_df_setup[remote_addr].get_subgroup_trends_1lev(trend_list)
 
                 # add distances
-                labeled_df_setup.add_distance()
+                labeled_df_setup[remote_addr].add_distance()
 
             result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            result_dict_dict = models.getResultDict(labeled_df_setup[remote_addr], labeled_df_setup[remote_addr].result_df)
 
             return jsonify(result_dict_dict)
 
@@ -169,19 +182,19 @@ def main():
             filter_object = request.form['filter_object']
             filter_object = json.loads(filter_object, cls=Decoder)
 
-            filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+            filter_result = labeled_df_setup[remote_addr].get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
                                 group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                 trend_type =filter_object['trend_type'])
 
             result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, filter_result, filter_object['subgroup'])
+            result_dict_dict = models.getResultDict(labeled_df_setup[remote_addr], filter_result, filter_object['subgroup'])
 
             return jsonify(result_dict_dict)
 
         # visualize.html 'Reset' button clicked
         if action == 'reset':
             result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            result_dict_dict = models.getResultDict(labeled_df_setup[remote_addr], labeled_df_setup[remote_addr].result_df)
 
             return jsonify(result_dict_dict)
 
@@ -197,15 +210,15 @@ def main():
 
             if not trend_filter:
                 # Default to detect all trend types from result_df
-                trend_filter = list(pd.unique(labeled_df_setup.result_df['trend_type']))
+                trend_filter = list(pd.unique(labeled_df_setup[remote_addr].result_df['trend_type']))
 
             sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_strength':agg_strength_threshold,
                 'subgroup_trend_strength':sg_strength_threshold,'trend_type':trend_filter}
 
-            detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)
+            detect_result = labeled_df_setup[remote_addr].get_SP_rows(sp_filter,replace=True)
 
             result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, detect_result)
+            result_dict_dict = models.getResultDict(labeled_df_setup[remote_addr], detect_result)
 
             return jsonify(result_dict_dict)
 
@@ -216,15 +229,15 @@ def main():
             view_score = request.form['view_score']
 
             if view_score == 'distance':
-                rank_result = labeled_df_setup.rank_occurences_by_view(ascending=False)
+                rank_result = labeled_df_setup[remote_addr].rank_occurences_by_view(ascending=False)
             else:
-                labeled_df_setup.add_view_score(view_score,agg_type=agg_type,colored=False)
+                labeled_df_setup[remote_addr].add_view_score(view_score,agg_type=agg_type,colored=False)
 
                 rank_param = agg_type + '_view_' + view_score
-                rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
+                rank_result = labeled_df_setup[remote_addr].rank_occurences_by_view(rank_param,view_score)
 
             result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, rank_result)
+            result_dict_dict = models.getResultDict(labeled_df_setup[remote_addr], rank_result)
 
             return jsonify(result_dict_dict)
 
