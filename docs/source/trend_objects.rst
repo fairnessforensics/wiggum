@@ -2,23 +2,23 @@ Trend objects
 ==============
 
 
-Trend objects are passed to `labeledDataFrame.get_subgroup_trends_1lev` or another trend
-computation method of `labeledDataFrame`.  These functions store them in the
+Trend objects are passed to `LabeledDataFrame.get_subgroup_trends_1lev` or another trend
+computation method of `LabeledDataFrame`.  These functions store them in the
 data structure in a property `trend_list`.
 
 The design of the trend objects is to make mixing and matching of trends
 components easy.
 
 In `trends.py` we define complete trend objects that are available as
-`dsp.<trend_name>`. In the `trend_components` subpackage, we define the
+`wg.<trend_name>`. In the `trend_components` subpackage, we define the
 component parts that are used to compose complete trend objects through
 inheritence. We use Mixins in python to build complete trends. A complete,
 usable trend object should be organized as follows.
 
 There are three types of mixins and available Mixin classes are acessible in
-`dsp.trend_components.baseTrendMixin_list`,
-`dsp.trend_components.varTypeMixin_list`, and
-`dsp.trend_components.trendCommputeMixin_list`
+`wg.trend_components.baseTrendMixin_list`,
+`wg.trend_components.varTypeMixin_list`, and
+`wg.trend_components.trendCommputeMixin_list`
 
 
 .. code-block:: python
@@ -74,7 +74,7 @@ required properties.
           ----------
           data_df : DataFrame or DataFrameGroupBy
               data to compute trends on, may be a whole, unmodified DataFrame or
-          a grouped DataFrame as passed by labeledDataFrame get trend functions
+          a grouped DataFrame as passed by LabeledDataFrame get trend functions
           trend_col_name : {'subgroup_trend','agg_trend'}
               which type of trend is to be computed
 
@@ -132,7 +132,7 @@ of the `get_trends` functions. These are defined in
 
           Parameters
           -----------
-          labeled_df : labeledDataFrame
+          labeled_df : LabeledDataFrame
               object to parse by variable types and roles, may be set to None as
               default or unused in custom overrides, but must be accepted for
               compatibility

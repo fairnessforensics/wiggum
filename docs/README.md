@@ -9,7 +9,7 @@ This will start the server on http://127.0.0.1:5000/ from the current working di
 
 ### A directory layout
 
-    ├── spviz
+    ├── wiggum_app
         ├── static           
         │   ├── css             # style
         │   ├── data            # csv data files

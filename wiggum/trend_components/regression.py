@@ -5,7 +5,7 @@ import scipy.stats as stats
 from .base_getvars import  w_avg
 import warnings
 
-class linearRegression():
+class LinearRegression():
 
     def get_trends(self,data_df,trend_col_name):
         """
@@ -15,7 +15,7 @@ class linearRegression():
         ----------
         data_df : DataFrame or DataFrameGroupBy
             data to compute trends on, may be a whole, unmodified DataFrame or
-        a grouped DataFrame as passed by labeledDataFrame get trend functions
+        a grouped DataFrame as passed by LabeledDataFrame get trend functions
         trend_col_name : {'subgroup_trend','agg_trend'}
             which type of trend is to be computed
 
