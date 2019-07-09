@@ -64,7 +64,7 @@ class OrdinalRegression():
         return self.regression_vars
 
 
-class continuousOrdinalRegression():
+class ContinuousOrdinalRegression():
     """
     regression compatible varTypeMixin, sets list formatted regression_vars and
     symmetric_vars = True

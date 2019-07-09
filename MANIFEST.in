@@ -1,2 +1,2 @@
-recursive-include spviz/templates *
-recursive-include spviz/static *
+recursive-include wiggum_app/templates *
+recursive-include wiggum_app/static *

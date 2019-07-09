@@ -1,5 +1,5 @@
-from .base_getvars import (trend, OrdinalRegression,ContinuousRegression,
-                    continuousOrdinalRegression, BinaryWeightedRank,
+from .base_getvars import (Trend, OrdinalRegression,ContinuousRegression,
+                    ContinuousOrdinalRegression, BinaryWeightedRank,
                      WeightedRank)
 
 from .base_getvars import (w_median, w_avg)
@@ -12,14 +12,14 @@ from .statistical import CorrelationTrend, CorrelationSignTrend
 
 
 
-__all__ = ['trend','OrdinalRegression','w_avg',
-    'continuousOrdinalRegression',
+__all__ = ['Trend','OrdinalRegression','w_avg',
+    'ContinuousOrdinalRegression',
     'ContinuousRegression', 'BinaryWeightedRank', 'WeightedRank', 'StatRankTrend',
     'LinearRegression','CorrelationTrend','StatBinRankTrend','CorrelationSignTrend']
 
-baseTrendMixin_list = ['trend']
+baseTrendMixin_list = ['Trend']
 
-varTypeMixin_list = ['OrdinalRegression','continuousOrdinalRegression',
+varTypeMixin_list = ['OrdinalRegression','ContinuousOrdinalRegression',
                 'ContinuousRegression', 'BinaryWeightedRank', 'WeightedRank']
 
 
