@@ -205,8 +205,8 @@ class _TrendDetectors():
 
 
         # condense and merge all trends with subgroup trends
+        subgroup_trends = pd.concat(subgroup_trends, sort=False)
         all_trends = pd.concat(all_trends)
-        subgroup_trends = pd.concat(subgroup_trends)
         if self.result_df.empty or replace:
             self.result_df = pd.merge(subgroup_trends,all_trends)
         else:
