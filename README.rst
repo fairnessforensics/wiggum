@@ -26,7 +26,7 @@ in browser available as a command line tool. To run the app:
 
 .. code-block:: bash
 
-  spviz-app
+  wiggum_app-app
 
 
 

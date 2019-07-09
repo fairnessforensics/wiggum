@@ -1,5 +1,5 @@
-from spviz import app, render_template
-from spviz import models
+from wiggum_app import app, render_template
+from wiggum_app import models
 from flask import request, flash, redirect,jsonify, url_for
 import pandas as pd
 import json
