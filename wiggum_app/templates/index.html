@@ -48,12 +48,18 @@
 
             var path_split = path.split("/");
             folder = path_split[0];
+            document.getElementById('myFile').value= null;
+        }
+
+        function clearFolder() {
+            folder = "";
+            document.getElementById('myFolder').value= null;
         }
 
         $(function() {
             // initialize 
             selectTypeValue = "pearson_corr";
-            
+
             $('#open-file-btn').click(function() {
 
                 if (folder != "") {
@@ -78,7 +84,7 @@
                             var option = '';
                             var trend_types = data.trend_types;
                             var trend_type_list = data.trend_type_list;
-
+                            $('#trend_type_selection').empty();
                             for (var i=0;i<trend_types.length;i++){
                                 if (trend_type_list.includes(trend_types[i])){
                                     option += '<option id="trend_type_option" value="'+ trend_types[i] + '" selected>' + trend_types[i] + '</option>';
@@ -135,6 +141,7 @@
                                         roleTable(header, var_types, samples, possibleRoles);
 
                                         // populate trend type dropdown options
+                                        $('#trend_type_selection').empty();
                                         var option = '';
                                         var trend_types = data.trend_types;
                                         for (var i=0;i<trend_types.length;i++){
@@ -363,7 +370,7 @@
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <label style="font-size: 14px;">Choose one file to load a new dataset or a direcotry with previously saved metadata</label><br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input name="file" type="file" id="myFile" style = "width:170px">
+            <input name="file" type="file" id="myFile" style = "width:170px" onchange="clearFolder()">
             <input name="file" type="file" id="myFolder" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
             <button id="open-file-btn" type="button" value="open">Open</button>&nbsp;&nbsp;&nbsp;&nbsp;
             <select id = "trend_type_selection" multiple="multiple">

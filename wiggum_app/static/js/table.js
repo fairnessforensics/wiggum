@@ -310,6 +310,8 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 
 		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "weighting_var_dropdown", "sample", "quantiles"];
 		
+		d3.select("#roleSelection").selectAll('table').remove();
+
 		var roleTable = d3.select("#roleSelection")
 							.append("table")
 							.attr("id", "roleTable")							
