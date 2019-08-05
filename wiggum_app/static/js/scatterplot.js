@@ -134,26 +134,32 @@ var updateScatterplot = function(data, vars) {
 
 	// Regression line for group
 	if (vars.category != "all") {
-		var dataFiltered = data.filter(function(d){
-								return d[vars.categoryAttr] == vars.category;
-							});
+		var lgGroup_nest = d3.nest()
+					.key(function(d){
+						return d[vars.categoryAttr];
+					})
+					.rollup(function(leaves){
+						var lgGroup = calcLinear(leaves, vars.x, vars.y, 
+							d3.min(leaves, function(d){ return d[vars.x]}), 
+							d3.max(leaves, function(d){ return d[vars.x]}))
+							return lgGroup;})
+					.entries(data)
 
-		var lgGroup = calcLinear(dataFiltered, vars.x, vars.y, 
-			d3.min(dataFiltered, function(d){ return d[vars.x]}), 
-			d3.max(dataFiltered, function(d){ return d[vars.x]}));
+		var lines = scatterplot.selectAll('.line')
+						.data(lgGroup_nest);
 
-		scatterplot.append("line")
-				.transition()
-				.duration(300)
-				.ease("linear")
-				.attr("class", "regression")
-				.attr("x1", x(lgGroup.ptA.x))
-				.attr("y1", y(lgGroup.ptA.y))
-				.attr("x2", x(lgGroup.ptB.x))
-				.attr("y2", y(lgGroup.ptB.y))
-				.attr("stroke", color(vars.category))
-				.attr("stroke-width", 2)
-				.attr("transform", "translate("+margin.left+"," + margin.top + ")");
+		lines.enter().append('line')
+						.attr({
+							class: function (d) { 
+								return 's-line elm ' + 'sel-' + d.key;} 
+						})			
+						.attr("x1", function(d) { return x(d.values.ptA.x); })
+						.attr("y1", function(d) { return y(d.values.ptA.y); })
+						.attr("x2", function(d) { return x(d.values.ptB.x); })
+						.attr("y2", function(d) { return y(d.values.ptB.y); })		
+						.attr("stroke", function(d) { return color(d.key); })																		
+						.attr("stroke-width", 2)
+						.attr("transform", "translate("+margin.left+"," + margin.top + ")");
 	}
 
 	// Update legend
@@ -343,7 +349,7 @@ function createScatterplot(data) {
 		.style("fill", function(d) { return color(d[catAttrs[0]]); })
 		.attr("transform", "translate("+margin.left+"," + margin.top + ")");
 
-	// Regression line
+	// Regression line for all
 	var lg = calcLinear(data, conAttrs[0], conAttrs[1], 
 		d3.min(data, function(d){ return d[conAttrs[0]]}), 
 		d3.max(data, function(d){ return d[conAttrs[0]]}));
@@ -358,6 +364,34 @@ function createScatterplot(data) {
 		.attr("stroke-dasharray", "5,5")
 		.attr("stroke-width", 2)
 		.attr("transform", "translate("+margin.left+"," + margin.top + ")");
+
+	// Regression line for group
+	var lgGroup_nest = d3.nest()
+				.key(function(d){
+					return d[catAttrs[0]];
+				})
+				.rollup(function(leaves){
+					var lgGroup = calcLinear(leaves, conAttrs[0], conAttrs[1], 
+						d3.min(leaves, function(d){ return d[conAttrs[0]]}), 
+						d3.max(leaves, function(d){ return d[conAttrs[0]]}))
+						return lgGroup;})
+				.entries(data)
+
+	var lines = scatterplot.selectAll('.line')
+					.data(lgGroup_nest);
+
+	lines.enter().append('line')
+					.transition()
+					.duration(300)
+					.ease("linear")
+					.attr("class", "regression")
+					.attr("x1", function(d) { return x(d.values.ptA.x); })
+					.attr("y1", function(d) { return y(d.values.ptA.y); })
+					.attr("x2", function(d) { return x(d.values.ptB.x); })
+					.attr("y2", function(d) { return y(d.values.ptB.y); })		
+					.attr("stroke", function(d) { return color(d.key); })																		
+					.attr("stroke-width", 2)
+					.attr("transform", "translate("+margin.left+"," + margin.top + ")");
 
 	// Legend
 	var legend = scatterplot.selectAll(".legend")
@@ -543,6 +577,12 @@ function updateScatter() {
 	updateVars = vars;	
 	updateScatterplot(csvData, vars);
 	updateTabulate(vars);
+	highlightSubgroup(vars.category);
+}
+
+function highlightSubgroup(subgroup) {
+	d3.selectAll('.elm').transition().style('opacity', 0.2);
+	d3.selectAll('.sel-' + subgroup).transition().style('opacity', 1);
 }
 
 function openFile(){
