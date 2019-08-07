@@ -9,6 +9,7 @@ install:
   - pip install -r requirements.txt
 # command to run tests
 script:
-  - python tests/wiggum_test_script.py
+  - pytest
+  # - python tests/wiggum_test_script.py
 # save info to speed up builds
 cache: pip
