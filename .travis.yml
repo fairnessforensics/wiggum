@@ -10,3 +10,5 @@ install:
 # command to run tests
 script:
   - python tests/wiggum_test_script.py
+# save info to speed up builds
+cache: pip
