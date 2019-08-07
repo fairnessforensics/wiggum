@@ -45,10 +45,10 @@ def test_basic_load_df():
     labeled_df_setup.set_var_types(var_types)
 
 
-    labeled_df_setup.to_csvs('../data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI')
+    labeled_df_setup.to_csvs('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI')
 
     # load saved data back
-    labeled_df = wg.LabeledDataFrame('../data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI')
+    labeled_df = wg.LabeledDataFrame('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI')
 
     # test augmentatiton
     labeled_df.add_all_dpgmm(qual_thresh =.2)
