@@ -66,7 +66,7 @@ class min_lin_reg(wg.Linear_Trend):
         return self.regression_vars
 
 def test_custom_trends():
-    labeled_df = wg.LabeledDataFrame('../data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI')
+    labeled_df = wg.LabeledDataFrame('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI')
 
     rankobj = wg.Mean_Rank_Trend()
     linregobj = wg.Linear_Trend()
