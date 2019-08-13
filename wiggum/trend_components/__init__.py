@@ -1,6 +1,6 @@
 from .base_getvars import (Trend, OrdinalRegression,ContinuousRegression,
                     ContinuousOrdinalRegression, BinaryWeightedRank,
-                     WeightedRank)
+                     WeightedRank, PredictionClass)
 
 from .base_getvars import (w_median, w_avg)
 
@@ -10,19 +10,23 @@ from .regression import LinearRegression
 
 from .statistical import CorrelationTrend, CorrelationSignTrend
 
+from .classification import BinClassStats
+
 
 
 __all__ = ['Trend','OrdinalRegression','w_avg',
     'ContinuousOrdinalRegression',
-    'ContinuousRegression', 'BinaryWeightedRank', 'WeightedRank', 'StatRankTrend',
+    'ContinuousRegression', 'BinaryWeightedRank', 'WeightedRank',
+     'StatRankTrend', 'BinClassStats', 'PredictionClass',
     'LinearRegression','CorrelationTrend','StatBinRankTrend','CorrelationSignTrend']
 
 baseTrendMixin_list = ['Trend']
 
 varTypeMixin_list = ['OrdinalRegression','ContinuousOrdinalRegression',
-                'ContinuousRegression', 'BinaryWeightedRank', 'WeightedRank']
+                'ContinuousRegression', 'BinaryWeightedRank', 'WeightedRank',
+                'PredictionClass']
 
 
 trendCommputeMixin_list = ['StatRankTrend','StatBinRankTrend',
-                        'LinearRegression',
+                        'LinearRegression','BinClassStats'
                         'CorrelationTrend','CorrelationSignTrend']

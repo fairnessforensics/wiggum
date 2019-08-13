@@ -17,6 +17,7 @@ class Trend():
 
     def __init__(self,labeled_df = None):
         self.trend_precompute = {}
+        self.preaugment = None
 
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
@@ -243,3 +244,15 @@ class WeightedRank():
         self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.target)
         return self.target, self.trendgroup
+
+class PredictionClass():
+    """
+    for binary classification performance stats
+    """
+
+    def get_trend_vars(self,labeled_df):
+        self.groundtruth = labeled_df.get_vars_per_role('groundtruth')
+        self.prediction = labeled_df.get_vars_per_role('prediction')
+
+        self.preaugment = 'confusion'
+        return self.groundtruth, self.prediction

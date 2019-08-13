@@ -9,7 +9,29 @@ from .trend_components import *
 
 
 ## set all list at bottom
+class Binary_Accuracy_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'acc'
+    name = 'binary_acc'
 
+class Binary_TPR_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'tpr'
+    name = 'binary_tpr'
+
+class Binary_PPV_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'ppv'
+    name = 'binary_ppv'
+
+class Binary_TNR_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'tnr'
+    name = 'binary_tnr'
+
+class Binary_FDR_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'fdr'
+    name = 'binary_fdr'
+
+class Binary_F1_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'f1'
+    name = 'binary_f1'
 
 class Mean_Rank_Trend(StatRankTrend,WeightedRank,Trend):
     my_stat = lambda self, d,m,w : w_avg(d,m,w )
