@@ -147,6 +147,7 @@ class _TrendDetectors():
 
 
 
+
     def get_subgroup_trends_1lev(self,trend_types, replace=False):
         """
         find subgroup and aggregate trends in the dataset, return a DataFrame that
@@ -184,6 +185,17 @@ class _TrendDetectors():
         for cur_trend in self.trend_list:
             cur_trend.get_trend_vars(self)
 
+            # augment the data with precomputed parts if needed
+            
+
+            if cur_trend.preaugment == 'confusion':
+                acc_pairs = itert.product(cur_trend.groundtruth,
+                                            cur_trend.prediction)
+
+                for var_pair in acc_pairs:
+                    self.add_acc(*var_pair)
+
+
             # Tabulate aggregate statistics
             agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
@@ -218,6 +230,7 @@ class _TrendDetectors():
         self.result_df.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
 
         return self.result_df
+
 
     def get_subgroup_trends_2lev(self,trend_types):
         """

@@ -10,6 +10,25 @@ clustering_techniques = {'dpgmm': lambda df,var_list : mixture.BayesianGaussianM
 
 class _AugmentedData():
 
+    def add_acc(self,true_col,pred_col):
+        """
+        add a column to data_df that labels the confusion matrix role of each
+        row given the two columns to compare
+
+        new column name is truthVar_predictionName_acc
+        """
+        col_name = '_'.join([true_col,pred_col,'acc'])
+        label_mat = [['TN','FP'],['FN','TP']]
+        add_acc_cur = lambda row: label_mat[row[true_col]][row[pred_col]]
+        print('adding',col_name)
+        self.df[col_name] = self.df.apply(add_acc_cur,axis=1)
+
+        return self.df
+
+
+
+
+
     def update_meta_df_cluster(self):
         """
         update meta_df after clustering or adding other additional groupby vars
