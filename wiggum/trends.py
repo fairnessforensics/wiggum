@@ -89,7 +89,14 @@ all_trend_types = {'pearson_corr':All_Pearson,
                     'binary_rank':Binary_Mean_Rank_Trend,
                     'binary_sign':Binary_Pearson_Trend,
                     'median_rank':Mean_Rank_Trend,
-                    'binary_median_rank':Binary_Median_Rank_Trend}
+                    'binary_median_rank':Binary_Median_Rank_Trend,
+                    'binary_acc':Binary_Accuracy_Trend,
+                    'binary_tpr':Binary_TPR_Trend,
+                  'binary_ppv':Binary_PPV_Trend,
+                  'binary_tnr':Binary_TNR_Trend,
+                   'binary_fdr':Binary_FDR_Trend,
+                   'binary_f1':Binary_F1_Trend
+                  }
 
 default_binary_trends = {'binary_rank':Binary_Mean_Rank_Trend,
                 'binary_sign':Binary_Pearson_Trend}
