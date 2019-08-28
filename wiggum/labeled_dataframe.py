@@ -355,12 +355,14 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         # use a lambda to pass extra var, make it func of only the row
         check_cur_type = lambda r_l: check_meta(r_l,vartype,'var_type')
 
+
         # check every row of the meda_df
         is_target_type = self.meta_df.apply(check_cur_type,axis=1)
+        drop_ignore = not([cr == 'ignore' for cr in self.meta_df['role']])
 
         all_vars = self.meta_df.index
 
-        return list(all_vars[is_target_type])
+        return list(all_vars[is_target_type & drop_ignore])
 
     def get_vars_per_roletype(self,role,vartype):
         """

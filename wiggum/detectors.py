@@ -186,13 +186,14 @@ class _TrendDetectors():
             cur_trend.get_trend_vars(self)
 
             # augment the data with precomputed parts if needed
-            
+
 
             if cur_trend.preaugment == 'confusion':
                 acc_pairs = itert.product(cur_trend.groundtruth,
                                             cur_trend.prediction)
 
                 for var_pair in acc_pairs:
+                    # TODO: only if col not there already
                     self.add_acc(*var_pair)
 
 

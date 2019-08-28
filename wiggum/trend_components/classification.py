@@ -9,10 +9,12 @@ import itertools as itert
 
 stat_comp = {
     'acc': lambda c: (c['TP'] + c['TN'])/sum(c),
+    'err': lambda c: (c['FP'] + c['FN'])/sum(c),
     'ppv': lambda c: c['TP']/(c['TP'] + c['FP']),
     'tpr': lambda c: c['TP']/(c['TP'] + c['FN']),
     'tnr': lambda c: c['TN']/(c['TN'] + c['FP']),
     'fdr': lambda c: c['FP']/(c['TP'] + c['FP']),
+    'fnr': lambda c: c['FN']/(c['TP'] + c['FP']),
     'f1': lambda c: 2*c['TP']/(2*c['TP']+c['FP']+c['FN'])}
 
 class BinClassStats():
@@ -49,8 +51,11 @@ class BinClassStats():
                 # ppv = confusion['TP']/(confusion['TP'] + confusion['FP'])
                 # tnr = confusion['TN']/(confusion['TN'] + confusion['FN'])
 
-
-
+                # add values that are not there
+                req_keys = ['TP','TN','FP','FN']
+                for k in req_keys:
+                    if not(k in confusion.keys()):
+                        confusion[k] = 0
 
                 # TODO: fix this
                 strength = 1
@@ -78,10 +83,10 @@ class BinClassStats():
         reg_df['trend_type'] = self.name
         return reg_df
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
 
         """
 
         #
-        return np.abs(1 - row['subgroup_trend']/row['agg_trend'])
+        return np.abs(1 - row[col_a]/row[col_b])

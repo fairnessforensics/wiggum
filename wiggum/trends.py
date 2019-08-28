@@ -13,6 +13,10 @@ class Binary_Accuracy_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'acc'
     name = 'binary_acc'
 
+class Binary_Error_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'err'
+    name = 'binary_err'
+
 class Binary_TPR_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'tpr'
     name = 'binary_tpr'
@@ -28,6 +32,10 @@ class Binary_TNR_Trend(BinClassStats,PredictionClass,Trend):
 class Binary_FDR_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'fdr'
     name = 'binary_fdr'
+
+class Binary_FNR_Trend(BinClassStats,PredictionClass,Trend):
+    my_stat = 'fnr'
+    name = 'binary_fnr'
 
 class Binary_F1_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'f1'

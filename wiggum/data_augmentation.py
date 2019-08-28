@@ -20,14 +20,10 @@ class _AugmentedData():
         col_name = '_'.join([true_col,pred_col,'acc'])
         label_mat = [['TN','FP'],['FN','TP']]
         add_acc_cur = lambda row: label_mat[row[true_col]][row[pred_col]]
-        print('adding',col_name)
+
         self.df[col_name] = self.df.apply(add_acc_cur,axis=1)
 
         return self.df
-
-
-
-
 
     def update_meta_df_cluster(self):
         """
@@ -51,6 +47,39 @@ class _AugmentedData():
         # append new rows
         self.meta_df = self.meta_df.append(new_vars_df)
         return self.meta_df
+
+    def add_intersectional(self,var_list=None,tuple_lens=2):
+        """
+        add categorical variables that are intersectional combinatitons of other
+        categorical variables of lengs 2:tuple_len if integer
+        """
+        # comput var list if not passed
+        if not var_list:
+            var_list = list(self.get_vars_per_type('categorical'))
+
+        # make tuple len a list for looping
+        if not(type(tuple_lens)==list):
+            tuple_lens = list(range(2,tuple_lens+1))
+
+        # loop over lengths
+        for k in tuple_lens:
+            # generate tuples of cat variables
+            vl_tuples = itertools.combinations(var_list,k)
+            for cur_var_list in vl_tuples:
+                # create column name
+                new_name = '_'.join(cur_var_list)
+
+                # lambda to merge the valuse fo the current columns
+                mergerow =  lambda row: '_'.join([str(v) for v in
+                                            row[list(cur_var_list)].values])
+                # apply and save to df
+                self.df[new_name] = self.df.apply(mergerow,axis=1)
+
+
+        self.update_meta_df_cluster()
+
+        return self.df
+
 
 
 

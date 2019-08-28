@@ -124,7 +124,7 @@ class StatBinRankTrend():
         reg_df['trend_type'] = self.name
         return reg_df
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         0/1 loss on ><
 
@@ -143,10 +143,10 @@ class StatBinRankTrend():
 
         # if they're the same, int(True) =1, but dist =0
         # if they're not, int(False) = 0 bust dist =1
-        return 1- int(row['agg_trend'] == row['subgroup_trend'])
+        return 1- int(row[col_b] == row[col_a])
 
-    def is_SP(self,row,thresh=0):
-        return not(row['agg_trend'] == row['subgroup_trend'])
+    def is_SP(self,row,thresh=0,col_a='subgroup_trend',col_b='agg_trend'):
+        return not(row[col_a] == row[col_b])
 
 
 class StatRankTrend():

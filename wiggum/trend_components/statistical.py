@@ -103,7 +103,7 @@ class CorrelationSignTrend():
 
         return reg_df
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         distance between the subgroup and aggregate trends for a row of a
         result_df  binary 0 for same sign, 1 for opposite sign
@@ -119,8 +119,8 @@ class CorrelationSignTrend():
             distance between the subgroup_trend and agg_trend, compatible with
             assignment to a cell of a result_df
         """
-        sg_trend = row['subgroup_trend']
-        ag_trend = row['agg_trend']
+        sg_trend = row[col_a]
+        ag_trend = row[col_b]
 
         # if they're the same set to False
         binary_distance  = int(not(sg_trend == ag_trend))
@@ -223,7 +223,7 @@ class CorrelationTrend():
 
         return reg_df
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         distance between the subgroup and aggregate trends for a row of a
         result_df  binary 0 for same sign, 1 for opposite sign
@@ -239,8 +239,8 @@ class CorrelationTrend():
             distance between the subgroup_trend and agg_trend, compatible with
             assignment to a cell of a result_df
         """
-        sg_trend = row['subgroup_trend']
-        ag_trend = row['agg_trend']
+        sg_trend = row[col_a]
+        ag_trend = row[col_b]
 
         # if they're the same set to False
         binary_distance  = int(not(np.sign(sg_trend) == np.sign(ag_trend)))
