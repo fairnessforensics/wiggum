@@ -22,13 +22,16 @@ def test_classification_trends():
     labeled_df = wg.LabeledDataFrame(dataset)
 
     acc_trend = wg.Binary_Accuracy_Trend()
-    tpr_trend = wg.Binary_TPR_Trend()
+    tpr_trend = wgx.Binary_TPR_Trend()
     ppv_trend = wg.Binary_PPV_Trend()
     tnr_trend = wg.Binary_TNR_Trend()
     fdr_trend = wg.Binary_FDR_Trend()
+    fnr_trend = wg.Binary_FNR_Trend()
+    err_trend = wg.Binary_Error_Trend()
     f1_trend = wg.Binary_F1_Trend()
     labeled_df.get_subgroup_trends_1lev([acc_trend,tpr_trend,ppv_trend,
-                                    tnr_trend,fdr_trend,f1_trend])
+                                    tnr_trend,fdr_trend,f1_trend,
+                                    fnr_trend,err_trend])
 
 
     # In[36]:
