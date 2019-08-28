@@ -156,6 +156,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             # handle lists
             self.meta_df['role'] = [var.replace("'",'').replace("[",'').replace("]",'').replace(",",'').split()
                       for var in self.meta_df['role']]
+            self.meta_df['isCount'] = self.meta_df['isCount'].replace(np.nan, False)
 
         # initialize result_df
         if results == None:
