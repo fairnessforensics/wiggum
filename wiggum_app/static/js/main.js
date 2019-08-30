@@ -244,7 +244,17 @@ function updateContainer() {
 	// Cell Click Event
 	d3.select(container).selectAll(".cell")
 	.on("click", clickMatrixCell);	
+
+	// Cell Click Event
+	d3.select(container).selectAll(".cell")
+		.on("dblclick", doubleClickMatrixCell);		
 }
+
+function doubleClickMatrixCell(){	
+	d3.select("#container").selectAll('.cell').classed("clicked", false);
+	d3.selectAll('.elm').transition().style('opacity', 1);
+	d3.selectAll('.dot').transition().style('opacity', 0.6);
+};
 
 function updateRateSPContainer(slopeKey) {
 

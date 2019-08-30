@@ -158,25 +158,31 @@
                         url: "/",
                         data: {'action':'page_load'},
                         success: function(data){
-                            server_data = data;
+                            if (data == 'no_result') {
+                                alert("Current data description yeilds no results for selected trends. Try selecting more trend types or changing variable roles.")
+                                document.location.href="/";  
+                            } else {
+                                server_data = data;
 
-                            // Draw Slider
-                            DrawSlider();
+                                // Draw Slider
+                                DrawSlider();
 
-                            // Draw Legend
-                            d3.select("#legend").selectAll('svg').remove();
-                            DrawLegend();
-
-                            // Initial legend click value
-	                        legendValue = -1;
-                            
-                            drawGraphTable(data, 'page_load');
-
-                            if (rankTrendLegendFlg == true) {
-                                // redraw legend for rank_trend
+                                // Draw Legend
                                 d3.select("#legend").selectAll('svg').remove();
                                 DrawLegend();
+
+                                // Initial legend click value
+                                legendValue = -1;
+
+                                drawGraphTable(data, 'page_load');
+
+                                if (rankTrendLegendFlg == true) {
+                                    // redraw legend for rank_trend
+                                    d3.select("#legend").selectAll('svg').remove();
+                                    DrawLegend();
+                                }
                             }
+
                     },
                     error: function(ts) { console.log(ts.responseText) }
                 });

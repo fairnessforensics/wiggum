@@ -156,6 +156,9 @@ def main():
 
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 
+                if labeled_df_setup.result_df.empty:
+                    return 'no_result'
+
                 # add distances
                 labeled_df_setup.add_distance()
 
