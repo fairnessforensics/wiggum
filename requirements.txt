@@ -10,7 +10,6 @@ click==6.7
 cycler==0.10.0
 decorator==4.3.0
 docutils==0.14
-entrypoints==0.2.3
 Flask==1.1.1
 html5lib==1.0.1
 idna==2.7
@@ -77,5 +76,4 @@ wcwidth==0.1.7
 webencodings==0.5.1
 Werkzeug==0.15.5
 widgetsnbextension==3.4.0
-wiggum==0.2
 zipp==0.5.2
