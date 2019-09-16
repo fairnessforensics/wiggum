@@ -1,0 +1,15 @@
+dist: xenial   # required for Python >= 3.7
+language: python
+python:
+  - "3.6"
+  - "3.7"
+# command to install dependencies
+install:
+  - pip install .
+  - pip install -r requirements.txt
+# command to run tests
+script:
+  - pytest
+  # - python tests/wiggum_test_script.py
+# save info to speed up builds
+cache: pip
