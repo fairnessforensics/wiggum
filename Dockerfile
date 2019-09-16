@@ -8,7 +8,9 @@ ENV LANG en_US.utf8
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y python3-pip ipython3
 
-RUN python3 -m pip install --upgrade pip && python3 -m pip install click grpcio grpcio-tools
+RUN python3 -m pip install --upgrade pip && python3 -m pip install click grpcio grpcio-tools pipenv
+
+RUN apt install -y htop vim 
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
