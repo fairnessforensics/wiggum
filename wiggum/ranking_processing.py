@@ -417,13 +417,13 @@ class _ResultDataFrame():
     #
     #     return trend_dist[row['trend_type']](row)
 
-    def add_distance(self):
+    def add_distance(self, col_a='subgroup_trend',col_b='agg_trend'):
         """
         add a column with the trend-appropriate distance
         """
         trend_dist = {t.name:t.get_distance for t in self.trend_list}
 
-        dist_helper = lambda row: trend_dist[row['trend_type']](row)
+        dist_helper = lambda row: trend_dist[row['trend_type']](row, col_a,col_b)
 
         self.result_df['distance'] = self.result_df.apply(dist_helper,axis=1)
 

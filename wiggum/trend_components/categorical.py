@@ -317,7 +317,7 @@ class StatRankTrend():
         reg_df['trend_type'] = self.name
         return reg_df
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         kendalltau distance as a permuation distance
 
@@ -334,10 +334,10 @@ class StatRankTrend():
             compatible with assignment to a cell of a result_df
         """
 
-        trend_numeric_map = {val:i for i,val in enumerate(row['agg_trend'])}
+        trend_numeric_map = {val:i for i,val in enumerate(row[col_b])}
 
-        numeric_agg = [trend_numeric_map[val] for val in row['agg_trend']]
-        numeric_subgroup = [trend_numeric_map[val] for val in row['subgroup_trend']]
+        numeric_agg = [trend_numeric_map[val] for val in row[col_b]]
+        numeric_subgroup = [trend_numeric_map[val] for val in row[col_a]]
 
         n_sg = len(numeric_subgroup)
         n_ag = len(numeric_agg)
@@ -347,5 +347,5 @@ class StatRankTrend():
 
         tau,p = stats.kendalltau(numeric_agg,numeric_subgroup)
         # scale, flip and round
-        tau_dist = np.round(1- (tau+1/2),4)
+        tau_dist = np.round(1- (tau+1)/2,4)
         return tau_dist

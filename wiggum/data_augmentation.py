@@ -52,6 +52,14 @@ class _AugmentedData():
         """
         add categorical variables that are intersectional combinatitons of other
         categorical variables of lengs 2:tuple_len if integer
+
+        Parameters
+        -----------
+        var_list : None or list of strings
+            variables from data_df to use for creating intersectional groupby
+        variables or None to use all categorical variables
+        tuple_lens : integer (2)
+            length of variables to combine, default is 2 for pairwise groups
         """
         # comput var list if not passed
         if not var_list:

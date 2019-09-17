@@ -340,13 +340,15 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         """
         # use a lambda to pass extra var, make it func of only the row
         check_cur_role = lambda r_l: check_meta(r_l,role,'role')
+        check_ignore_status = lambda r: not(check_meta(r,'ignore','role'))
 
         # check every row of the meda_df
         is_target_role = self.meta_df.apply(check_cur_role,axis=1)
+        drop_ignore = self.meta_df.apply(check_ignore_status,axis=1)
 
         all_vars = self.meta_df.index
 
-        return list(all_vars[is_target_role])
+        return list(all_vars[is_target_role & drop_ignore])
 
     def get_vars_per_type(self, vartype):
         """
@@ -354,11 +356,12 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         """
         # use a lambda to pass extra var, make it func of only the row
         check_cur_type = lambda r_l: check_meta(r_l,vartype,'var_type')
+        check_ignore_status = lambda r: not(check_meta(r,'ignore','role'))
 
 
         # check every row of the meda_df
         is_target_type = self.meta_df.apply(check_cur_type,axis=1)
-        drop_ignore = not([cr == 'ignore' for cr in self.meta_df['role']])
+        drop_ignore = self.meta_df.apply(check_ignore_status,axis=1)
 
         all_vars = self.meta_df.index
 
@@ -371,13 +374,16 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         # use a lambda to pass extra vars, make it func of only the row
         check_cur_role = lambda r_l: check_meta(r_l,role,'role')
         check_cur_type = lambda r_l: check_meta(r_l,vartype,'var_type')
+        check_ignore_status = lambda r: not(check_meta(r,'ignore','role'))
 
         # check every row of the meda_df
         is_target_role = self.meta_df.apply(check_cur_role,axis=1)
         is_target_type = self.meta_df.apply(check_cur_type,axis=1)
+        drop_ignore = self.meta_df.apply(check_ignore_status,axis=1)
 
         # combine
-        target_rows = [r & t for r,t in zip(is_target_role,is_target_type)]
+        target_rows = [r & t & d for r,t,d in zip(is_target_role,is_target_type,
+                                            drop_ignore)]
 
         all_vars = self.meta_df.index
 
