@@ -11,8 +11,6 @@ trend_quality_sp = {'distance':.2, 'agg_trend_strength':.15,
 
 
 
-
-
 class _ResultDataFrame():
     """
     this is a mixin class to separate groups of methods across separate files

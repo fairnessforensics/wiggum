@@ -16,7 +16,7 @@ RESULT_DF_HEADER = ['feat1','feat2','trend_type','agg_trend','group_feat',
 from .trends import all_trend_types
 
 
-def get_views(df,colored=False):
+def get_views(result_df,colored=False):
     """
     return a list of tuples of the views of the dataset that have at least one
     trend. Assumes no views are listed in in opposite orders
@@ -38,14 +38,14 @@ def get_views(df,colored=False):
     """
     # get all the views in a zip iterator
     if colored:
-        views_per_occurence = zip(df.feat1.values,
-                                    df.feat2.values,
-                                    df.group_feat.values)
+        views_per_occurence = zip(result_df.feat1.values,
+                                    result_df.feat2.values,
+                                    result_df.group_feat.values)
         views_unique = set([(a,b,c) for a,b,c in views_per_occurence])
     else:
         # uncolored (no grouping var)
-        views_per_occurence = zip(df.feat1.values,
-                                 df.feat2.values)
+        views_per_occurence = zip(result_df.feat1.values,
+                                 result_df.feat2.values)
         # iterate over pairs to make list, get unique by type casting to a set
         views_unique = set([(a,b) for a,b in views_per_occurence])
 
@@ -221,9 +221,11 @@ class _TrendDetectors():
         subgroup_trends = pd.concat(subgroup_trends, sort=False)
         all_trends = pd.concat(all_trends)
         if self.result_df.empty or replace:
+            print('replacing',self.result_df.empty,replace)
             self.result_df = pd.merge(subgroup_trends,all_trends)
         else:
             new_res = pd.merge(subgroup_trends,all_trends)
+            print('appending ',len(new_res), ' to ',len(self.result_df))
             self.result_df = pd.concat([self.result_df,new_res])
         # ,on=['feat1','feat2'], how='left
 
@@ -231,6 +233,120 @@ class _TrendDetectors():
         self.result_df.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
 
         return self.result_df
+
+
+    def get_pairwise_trends_1lev(self,trend_types, replace=False):
+        """
+        find subgroup and aggregate trends in the dataset, return a DataFrame that
+        contains information necessary to filter for SP and relaxations
+        computes for 1 level grouby (eg correlation and linear trends)
+
+        Parameters
+        -----------
+        labeled_df : LabeledDataFrame
+            data to find SP in, must be tidy
+        trend_types: list of strings or list trend objects
+            info on what trends to compute and the variables to use, dict is of form
+        {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
+
+        """
+        data_df = self.df
+        groupby_vars = self.get_vars_per_role('groupby')
+
+
+        if type(trend_types[0]) is str:
+            # instantiate objects
+            self.trend_list.extend([all_trend_types[trend]()
+                                                    for trend in trend_types])
+        else:
+            # use provided, must be instantiated
+            self.trend_list.extend(trend_types)
+
+        # prep the result df to add data to later
+        self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
+
+        # create empty lists
+        all_trends = []
+        subgroup_trends = []
+        pairwise = []
+
+        for cur_trend in self.trend_list:
+            cur_trend.get_trend_vars(self)
+
+            # augment the data with precomputed parts if needed
+
+
+            if cur_trend.preaugment == 'confusion':
+                acc_pairs = itert.product(cur_trend.groundtruth,
+                                            cur_trend.prediction)
+
+                for var_pair in acc_pairs:
+                    # TODO: only if col not there already
+                    self.add_acc(*var_pair)
+
+
+            # # Tabulate aggregate statistics
+            # agg_trends = cur_trend.get_trends(self.df,'agg_trend')
+            #
+            # all_trends.append(agg_trends)
+
+            # iterate over groupby attributes
+            for groupbyAttr in groupby_vars:
+
+                #condition the data
+                cur_grouping = self.df.groupby(groupbyAttr)
+
+                # get subgoup trends
+                curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+
+                # append
+                # subgroup_trends.append(curgroup_corr)
+
+
+
+                # make pairwise rows
+
+                # for groupbyAttr in groupby_vars:
+                for view, view_df, in curgroup_corr.groupby(['feat1','feat2']):
+
+                    sg_vars = pd.unique(view_df['subgroup'])
+
+                    merge_subsets = {sg:df for sg,df in view_df.groupby('subgroup')}
+                    for lsel,rsel in itert.combinations(sg_vars,2):
+                #         se
+                        r_sub = merge_subsets[rsel].rename(columns={'subgroup_trend':'subgroup_trend2',
+                                                                    'subgroup_trend_strength':'subgroup_trend_strength2',
+                                                                   'subgroup':'subgroup2'})
+
+                        r_sub = r_sub[['subgroup_trend2','subgroup_trend_strength2','trend_type','subgroup2']]
+                        pairwise.append(pd.merge(merge_subsets[lsel],r_sub,on=['trend_type'],sort=False))
+
+                #         subsets.append(merge_subsets[lsel].append(r_sub,sort=False,axis=1))
+                #         subsets.append(pd.concat([merge_subsets[lsel],r_sub],axis='columns',sort=False))
+
+
+        # merge and condense all
+        pairwise_df = pd.concat(pairwise,axis=0,sort=False).reset_index()
+        pairwise_df.drop('index',axis=1,inplace=True)
+
+
+        if self.result_df.empty or replace:
+            self.result_df = pairwise_df
+        else:
+
+            self.result_df = pd.concat([self.result_df,pairwise_df])
+        # ,on=['feat1','feat2'], how='left
+
+        # remove rows where a trend is undefined
+        self.result_df.dropna(subset=['subgroup_trend','subgroup_trend2'],
+                                axis=0,inplace=True)
+
+        return self.result_df
+
+
+
+
+
 
 
     def get_subgroup_trends_2lev(self,trend_types):
