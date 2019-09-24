@@ -176,7 +176,8 @@ class _TrendDetectors():
             self.trend_list.extend(trend_types)
 
         # prep the result df to add data to later
-        self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
+        if self.result_df.empty:
+            self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
 
         # create empty lists
         all_trends = []
