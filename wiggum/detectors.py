@@ -7,9 +7,17 @@ import itertools as itert
 
 RESULT_DF_HEADER_old = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
 
-RESULT_DF_HEADER = ['feat1','feat2','trend_type','agg_trend','group_feat',
+RESULT_DF_HEADER = ['feat1','feat2','trend_type','group_feat', 'agg_trend',
                     'subgroup','subgroup_trend']
 
+RESULT_DF_HEADER_PAIRWISE = ['feat1','feat2','trend_type','group_feat',
+                    'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
+
+RESULT_DF_HEADER_ALL = ['feat1','feat2','trend_type','group_feat', 'agg_trend',
+                    'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
+
+#also in ranking_processing
+result_df_type_col_name = 'comparison_type'
 
 
 
@@ -221,17 +229,23 @@ class _TrendDetectors():
         # condense and merge all trends with subgroup trends
         subgroup_trends = pd.concat(subgroup_trends, sort=False)
         all_trends = pd.concat(all_trends)
+        new_res = pd.merge(subgroup_trends,all_trends)
+
+        # remove rows where a trend is undefined
+        new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+
+        new_res[result_df_type_col_name] = 'aggregate-subgroup'
+
         if self.result_df.empty or replace:
-            print('replacing',self.result_df.empty,replace)
-            self.result_df = pd.merge(subgroup_trends,all_trends)
+            # print('replacing',self.result_df.empty,replace)
+            self.result_df = new_res
         else:
-            new_res = pd.merge(subgroup_trends,all_trends)
-            print('appending ',len(new_res), ' to ',len(self.result_df))
+
+            # print('appending ',len(new_res), ' to ',len(self.result_df))
             self.result_df = pd.concat([self.result_df,new_res])
         # ,on=['feat1','feat2'], how='left
 
-        # remove rows where a trend is undefined
-        self.result_df.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+
 
         return self.result_df
 
@@ -263,8 +277,6 @@ class _TrendDetectors():
             # use provided, must be instantiated
             self.trend_list.extend(trend_types)
 
-        # prep the result df to add data to later
-        self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
 
         # create empty lists
         all_trends = []
@@ -301,51 +313,62 @@ class _TrendDetectors():
                 curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
 
                 # append
-                # subgroup_trends.append(curgroup_corr)
+                subgroup_trends.append(curgroup_corr)
 
-
-
-                # make pairwise rows
-
-                # for groupbyAttr in groupby_vars:
-                for view, view_df, in curgroup_corr.groupby(['feat1','feat2']):
-
-                    sg_vars = pd.unique(view_df['subgroup'])
-
-                    merge_subsets = {sg:df for sg,df in view_df.groupby('subgroup')}
-                    for lsel,rsel in itert.combinations(sg_vars,2):
-                #         se
-                        r_sub = merge_subsets[rsel].rename(columns={'subgroup_trend':'subgroup_trend2',
-                                                                    'subgroup_trend_strength':'subgroup_trend_strength2',
-                                                                   'subgroup':'subgroup2'})
-
-                        r_sub = r_sub[['subgroup_trend2','subgroup_trend_strength2','trend_type','subgroup2']]
-                        pairwise.append(pd.merge(merge_subsets[lsel],r_sub,on=['trend_type'],sort=False))
-
-                #         subsets.append(merge_subsets[lsel].append(r_sub,sort=False,axis=1))
-                #         subsets.append(pd.concat([merge_subsets[lsel],r_sub],axis='columns',sort=False))
-
-
-        # merge and condense all
-        pairwise_df = pd.concat(pairwise,axis=0,sort=False).reset_index()
-        pairwise_df.drop('index',axis=1,inplace=True)
-
-
-        if self.result_df.empty or replace:
-            self.result_df = pairwise_df
-        else:
-
-            self.result_df = pd.concat([self.result_df,pairwise_df])
-        # ,on=['feat1','feat2'], how='left
+        # merge together
+        lgroup = pd.concat(subgroup_trends,axis=0,sort=False).reset_index()
+        # make a copy and rename them to 2
+        rgroup = lgroup.copy()
+        # TODO: unhardcode this
+        rgroup.rename(columns={'subgroup_trend':'subgroup_trend2',
+                            'subgroup_trend_strength':'subgroup_trend_strength2',
+                            'subgroup':'subgroup2'}, inplace=True)
+        # merge back together
+        pairwise_df = pd.merge(lgroup,rgroup)
+        # TODO remove when subgroup is the same
 
         # remove rows where a trend is undefined
-        self.result_df.dropna(subset=['subgroup_trend','subgroup_trend2'],
+        pairwise_df.dropna(subset=['subgroup_trend','subgroup_trend2'],
                                 axis=0,inplace=True)
+
+        pairwise_df[result_df_type_col_name] = 'pairwise'
+
+        if self.result_df.empty or replace:
+            print('replaceing')
+            self.result_df = pairwise_df
+        else:
+            print('appending')
+            self.result_df = pd.concat([self.result_df,pairwise_df],axis = 0)
+        # ,on=['feat1','feat2'], how='left
+
 
         return self.result_df
 
 
 
+                # make pairwise rows
+
+                # Probalby too brute force
+                # for view, view_df, in curgroup_corr.groupby(['feat1','feat2']):
+                #
+                #     sg_vars = pd.unique(view_df['subgroup'])
+                #
+                #     merge_subsets = {sg:df for sg,df in view_df.groupby('subgroup')}
+                #     for lsel,rsel in itert.combinations(sg_vars,2):
+                #         # TODO: unhardcode this
+                #         r_sub = merge_subsets[rsel].rename(columns={'subgroup_trend':'subgroup_trend2',
+                #                                                     'subgroup_trend_strength':'subgroup_trend_strength2',
+                #                                                    'subgroup':'subgroup2'})
+                #
+                #         r_sub = r_sub[['subgroup_trend2','subgroup_trend_strength2','trend_type','subgroup2']]
+                #         pairwise.append(pd.merge(merge_subsets[lsel],r_sub,on=['trend_type'],sort=False))
+
+
+
+        # merge and condense all
+        #  Probalby too brute force
+        # pairwise_df = pd.concat(pairwise,axis=0,sort=False).reset_index()
+        # pairwise_df.drop('index',axis=1,inplace=True)
 
 
 

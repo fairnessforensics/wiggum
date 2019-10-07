@@ -4,10 +4,18 @@ import scipy.stats as stats
 import itertools as itert
 from sklearn import preprocessing
 
-DEFAULT_SP_DEF = {'distance':0.0,'name':'SP'}
+#also in detectors
+result_df_type_col_name = 'comparison_type'
+
+DEFAULT_SP_DEF = {'distance':0.0,'name':'SP',
+                result_df_type_col_name:'aggregate'}
+
+DEFAULT_PAIRWISE = {'distance':0.25,'name':'pairwise',
+                result_df_type_col_name:'pairwise'}
 
 trend_quality_sp = {'distance':.2, 'agg_trend_strength':.15,
                 'subgroup_trend_strength':.15,'name':'default_qual_sp'}
+
 
 
 
@@ -33,7 +41,8 @@ class _ResultDataFrame():
         """
 
         thresh_lookup = {'SP':DEFAULT_SP_DEF,
-                        'default_qual_sp':trend_quality_sp}
+                        'default_qual_sp':trend_quality_sp,
+                        'pairwise':DEFAULT_PAIRWISE}
 
         if filter_thresh:
             if type(filter_thresh) == str:
@@ -415,13 +424,35 @@ class _ResultDataFrame():
     #
     #     return trend_dist[row['trend_type']](row)
 
-    def add_distance(self, col_a='subgroup_trend',col_b='agg_trend'):
+    def add_distance(self, col_a='subgroup_trend',col_b='agg_trend', row_wise = False):
         """
         add a column with the trend-appropriate distance
+
+        Parameters
+        -----------
+        col_a : string
+            column to compute distance with
+        col_b : string
+            column to compute distance with
+        row_wise : Boolean
+            if True, determine the columns to use on a row by row basis
         """
         trend_dist = {t.name:t.get_distance for t in self.trend_list}
 
-        dist_helper = lambda row: trend_dist[row['trend_type']](row, col_a,col_b)
+        if row_wise:
+            dist_cols = {'aggregate-subgroup':('subgroup_trend','agg_trend'),
+                        'pairwise':('subgroup_trend','subgroup_trend2')}
+            # use the row's result_df_type_col_name column to determin the type
+            # of row and the above dictionary to determine the two columns for
+            # that type, then unpack the tuple with * to pass as 2 params
+            dist_helper = lambda row: trend_dist[row['trend_type']](row,
+                                    *dist_cols[row[result_df_type_col_name]])
+            # TODO: possible faster implementation is to group by
+            #    result_df_type_col_name then append them together?
+
+        else:
+            dist_helper = lambda row: trend_dist[row['trend_type']](row,
+                                                                    col_a,col_b)
 
         self.result_df['distance'] = self.result_df.apply(dist_helper,axis=1)
 
