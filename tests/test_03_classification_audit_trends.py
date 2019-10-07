@@ -22,7 +22,7 @@ def test_classification_trends():
     labeled_df = wg.LabeledDataFrame(dataset)
 
     acc_trend = wg.Binary_Accuracy_Trend()
-    tpr_trend = wgx.Binary_TPR_Trend()
+    tpr_trend = wg.Binary_TPR_Trend()
     ppv_trend = wg.Binary_PPV_Trend()
     tnr_trend = wg.Binary_TNR_Trend()
     fdr_trend = wg.Binary_FDR_Trend()

@@ -92,7 +92,7 @@ def test_basic_load_df():
 
     # These  two methods give the same, the string based version allows for simple access to default setting but passing a trend object would allow for overriding defaults and creating more custom subests of trends.
 
-    labeled_df.add_distance()
+    labeled_df.add_distance(row_wise = True)
 
 
     # So, we can use that function to filter and look at subsets of the trends based on the features, groupby, or subgroups
