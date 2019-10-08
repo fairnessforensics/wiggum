@@ -338,7 +338,8 @@ class _TrendDetectors():
             self.result_df = pairwise_df
         else:
             print('appending')
-            self.result_df = pd.concat([self.result_df,pairwise_df],axis = 0)
+            self.result_df = pd.concat([self.result_df,pairwise_df],axis = 0,
+                                    sort=True)
         # ,on=['feat1','feat2'], how='left
 
 
