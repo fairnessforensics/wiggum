@@ -51,6 +51,8 @@ def test_basic_load_df():
     labeled_df = wg.LabeledDataFrame('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI')
 
     # test augmentatiton
+    labeled_df.add_intersectional()
+    labeled_df.df.head()
     labeled_df.add_all_dpgmm(qual_thresh =.2)
     labeled_df.add_quantile(['hit_rate','num_stops'])
 
@@ -86,10 +88,11 @@ def test_basic_load_df():
 
 
     labeled_df.get_subgroup_trends_1lev([rankobj,linreg_obj])
+    labeled_df.get_pairwise_trends_1lev([rankobj,linreg_obj])
 
     # These  two methods give the same, the string based version allows for simple access to default setting but passing a trend object would allow for overriding defaults and creating more custom subests of trends.
 
-    labeled_df.add_distance()
+    labeled_df.add_distance(row_wise = True)
 
 
     # So, we can use that function to filter and look at subsets of the trends based on the features, groupby, or subgroups

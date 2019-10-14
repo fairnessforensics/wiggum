@@ -28,7 +28,8 @@ from .trends import (All_Pearson, Continuous_Pearson, Spearman_Correlation,
                     All_Linear_Trend,Binary_Pearson_Trend,Binary_Mean_Rank_Trend,
                     Median_Rank_Trend,Binary_Median_Rank_Trend,
                     Binary_Accuracy_Trend, Binary_TPR_Trend,Binary_PPV_Trend,
-                    Binary_TNR_Trend, Binary_FDR_Trend, Binary_F1_Trend)
+                    Binary_TNR_Trend, Binary_FDR_Trend, Binary_F1_Trend,
+                    Binary_Error_Trend,Binary_FNR_Trend)
 
 #tren lists
 from .trends import (all_trend_types,default_binary_trends,default_distance_trends)

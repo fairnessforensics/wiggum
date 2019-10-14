@@ -108,7 +108,7 @@ class LinearRegression():
         return reg_df
 
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
         closest to the positive x axis and is always positive valued, to be used as
@@ -128,7 +128,7 @@ class LinearRegression():
         """
         # take absolute value, because the two will be in opposite directions
         # relative to the angle of interest
-        abs_angle = self.get_distance_unnormalized(row)
+        abs_angle = self.get_distance_unnormalized(row,col_a,col_b)
 
 
         # normalize so that right angle is 1 and parallel is 0
@@ -136,7 +136,7 @@ class LinearRegression():
         right_angle = np.pi/2
         return (abs_angle%right_angle)/right_angle
 
-    def get_distance_unnormalized(self,row):
+    def get_distance_unnormalized(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
         closest to the positive x axis and is always positive valued, to be used as
@@ -156,8 +156,8 @@ class LinearRegression():
         """
         # take absolute value, because the two will be in opposite directions
         # relative to the angle of interest
-        theta_sub = np.arctan(row['subgroup_trend'])
-        theta_all = np.arctan(row['agg_trend'])
+        theta_sub = np.arctan(row[col_a])
+        theta_all = np.arctan(row[col_b])
 
         # take difference them and convert to degrees
         return np.abs(theta_all - theta_sub)

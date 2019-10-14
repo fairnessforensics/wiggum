@@ -124,7 +124,7 @@ class StatBinRankTrend():
         reg_df['trend_type'] = self.name
         return reg_df
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         0/1 loss on ><
 
@@ -143,10 +143,10 @@ class StatBinRankTrend():
 
         # if they're the same, int(True) =1, but dist =0
         # if they're not, int(False) = 0 bust dist =1
-        return 1- int(row['agg_trend'] == row['subgroup_trend'])
+        return 1- int(row[col_b] == row[col_a])
 
-    def is_SP(self,row,thresh=0):
-        return not(row['agg_trend'] == row['subgroup_trend'])
+    def is_SP(self,row,thresh=0,col_a='subgroup_trend',col_b='agg_trend'):
+        return not(row[col_a] == row[col_b])
 
 
 class StatRankTrend():
@@ -317,7 +317,7 @@ class StatRankTrend():
         reg_df['trend_type'] = self.name
         return reg_df
 
-    def get_distance(self,row):
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
         kendalltau distance as a permuation distance
 
@@ -333,19 +333,31 @@ class StatRankTrend():
             perumation distance between the subgroup_trend and agg_trend
             compatible with assignment to a cell of a result_df
         """
+        # make a numeric map for all possible values
+        a_vals = list(row[col_a])
+        b_vals = list(row[col_b])
+        # set(sum) gives nonrepeating union of lists
+        all_vals = set(a_vals + b_vals)
+        # make numeric dict
+        trend_numeric_map = {val:i for i,val in enumerate(all_vals)}
 
-        trend_numeric_map = {val:i for i,val in enumerate(row['agg_trend'])}
+        # make numeric lists for each column
+        numeric_a = [trend_numeric_map[val] for val in row[col_a]]
+        numeric_b = [trend_numeric_map[val] for val in row[col_b]]
 
-        numeric_agg = [trend_numeric_map[val] for val in row['agg_trend']]
-        numeric_subgroup = [trend_numeric_map[val] for val in row['subgroup_trend']]
+        # if not the same length, append to shorter to match
+        #     add high numbers to end to minimially impact sort
+        n_a = len(numeric_a)
+        n_b = len(numeric_b)
+        if n_a < n_b:
+            append_nums = list(range(n_a,n_b))
+            numeric_a.extend(append_nums)
+        if n_a > n_b:
+            append_nums = list(range(n_b,n_a))
+            numeric_b.extend(append_nums)
 
-        n_sg = len(numeric_subgroup)
-        n_ag = len(numeric_agg)
-        if n_sg < n_ag:
-            append_nums = list(range(n_sg,n_ag))
-            numeric_subgroup.extend(append_nums)
-
-        tau,p = stats.kendalltau(numeric_agg,numeric_subgroup)
-        # scale, flip and round
-        tau_dist = np.round(1- (tau+1/2),4)
+        # compute correlation of prepared numerical lists
+        tau,p = stats.kendalltau(numeric_a,numeric_b)
+        # scale and flip to normalize in [0,1] and round for display
+        tau_dist = np.round(1- (tau+1)/2,4)
         return tau_dist
