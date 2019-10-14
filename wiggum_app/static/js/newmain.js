@@ -174,3 +174,11 @@ function drawGraphTable(data, action) {
 		return false;
 	});                             
 }
+
+function drawDistanceMatrixHeatmap(data, action) {
+	updateDistanceHeatmapContainer(data.distance_heatmap_dict);
+
+	// Display info table
+	tableRecords = JSON.parse(data.result_df)    
+	tabulate(tableRecords, action);
+}

@@ -169,17 +169,20 @@
 
                                 // Draw Legend
                                 d3.select("#legend").selectAll('svg').remove();
-                                DrawLegend();
+                                //DrawLegend();
 
                                 // Initial legend click value
                                 legendValue = -1;
 
-                                drawGraphTable(data, 'page_load');
+                                //drawGraphTable(data, 'page_load');
+
+                                DrawHeatmapLegend();
+                                drawDistanceMatrixHeatmap(data, 'page_load');
 
                                 if (rankTrendLegendFlg == true) {
                                     // redraw legend for rank_trend
-                                    d3.select("#legend").selectAll('svg').remove();
-                                    DrawLegend();
+                                    //d3.select("#legend").selectAll('svg').remove();
+                                    //DrawLegend();
                                 }
                             }
 
@@ -907,6 +910,7 @@
     <script src="{{ url_for('static', filename='js/table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rankingView.js') }}"></script>    
     <script src="{{ url_for('static', filename='js/circularProcess.js') }}"></script>        
+    <script src="{{ url_for('static', filename='js/distanceMatrixHeatmap.js') }}"></script>      
     </form>
 
 </body>

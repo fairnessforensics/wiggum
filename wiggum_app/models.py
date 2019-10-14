@@ -467,6 +467,48 @@ def updateMetaData(labeled_df, meta):
 
     return labeled_df
 
+def getDistanceHeatmapDict(labeled_df):
+    """
+    Get Distance Heatmap Dictitonary
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        LabeledDataFrame    
+    Returns
+    --------
+    distance_heatmap_dict
+    """
+
+    distance_heatmap_dict_list = {}
+    index = 0
+
+    trend_type_list = pd.unique(labeled_df.result_df['trend_type'])
+
+    for trend_type in trend_type_list:
+        # iterate over the groupby variables
+        for gby in pd.unique(labeled_df.result_df['group_feat']):
+            # groupby the values of the curent groupby varialbe
+            cgby = labeled_df.get_trend_rows(group_feat=gby, trend_type=trend_type).groupby('subgroup')
+
+            # iterate over the values of the groupby
+            for gby_lev,df in cgby:
+                distance_heatmap_dict = {}
+                heatmap = df.pivot(index='feat1', columns='feat2', values='distance')
+
+                # replace Nan to 99
+                heatmap.fillna(99, inplace=True)
+
+                print(heatmap)
+                distance_heatmap_dict = {'trend_type' : trend_type,
+                            'group_feat': gby,
+                            'subgroup': gby_lev,
+                            'heatmap':heatmap.to_dict('index')}
+
+                distance_heatmap_dict_list[index] = distance_heatmap_dict
+                index =  index + 1
+
+    return distance_heatmap_dict_list
+
 def getResultDict(labeled_df, result_df, filter_subgroup= None):
     """
     Get Result Dictitonary

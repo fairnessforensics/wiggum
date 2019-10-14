@@ -200,8 +200,13 @@ def main():
 
             result_dict_dict = {}
             result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            
+            distance_heatmap_dict = {}
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup)
 
-            return jsonify(result_dict_dict)
+            #return jsonify(result_dict_dict)
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = labeled_df_setup.result_df.to_json(orient='records'))
 
         # visualize.html 'Filter' button clicked
         if action == 'filter':
