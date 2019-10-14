@@ -198,10 +198,10 @@ def main():
                 # add distances
                 labeled_df_setup.add_distance()
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            #result_dict_dict = {}
+            #result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
             
-            distance_heatmap_dict = {}
+            # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup)
 
             #return jsonify(result_dict_dict)

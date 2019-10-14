@@ -469,14 +469,14 @@ def updateMetaData(labeled_df, meta):
 
 def getDistanceHeatmapDict(labeled_df):
     """
-    Get Distance Heatmap Dictitonary
+    Generate Distance Heatmap Dictitonary List for overview
     Parameters
     -----------
     labeled_df : DataFrame
         LabeledDataFrame    
     Returns
     --------
-    distance_heatmap_dict
+    distance_heatmap_dict_list: Distance Heatmap Dictitonary List
     """
 
     distance_heatmap_dict_list = {}
@@ -498,7 +498,6 @@ def getDistanceHeatmapDict(labeled_df):
                 # replace Nan to 99
                 heatmap.fillna(99, inplace=True)
 
-                print(heatmap)
                 distance_heatmap_dict = {'trend_type' : trend_type,
                             'group_feat': gby,
                             'subgroup': gby_lev,

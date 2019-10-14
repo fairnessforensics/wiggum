@@ -1,3 +1,9 @@
+/**
+ * Update distance heatmap container
+ *
+ * @param dataAll - distance heatmap dictionary.
+ * @returns none.
+ */
 function updateDistanceHeatmapContainer(dataAll) {
 
 	d3.select("#container").selectAll('svg').remove();
@@ -13,6 +19,12 @@ function updateDistanceHeatmapContainer(dataAll) {
 	}
 }
 
+/**
+ * Draw distance heatmap
+ *
+ * @param options - Data containing matrix information.
+ * @returns none.
+ */
 function distanceMatrixHeatmap(options) {
 
 	var margin = {top: 93, right: 20, bottom: 30, left: 93},
@@ -203,6 +215,12 @@ function distanceMatrixHeatmap(options) {
 		.style("font-size", "10px");	
 }
 
+/**
+ * Draw heatmap legend
+ *
+ * @param none.
+ * @returns none.
+ */
 function DrawHeatmapLegend() {
 
 	var heatmapColors = ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081"];
