@@ -219,7 +219,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         for var, metadata in self.meta_df.iterrows():
             # recode binary that are not numerical to 0_1
             if metadata['var_type'] == 'binary' and metadata['dtype'] == object:
-                vals = pd.unique(self.df[var])
+                vals = sorted(pd.unique(self.df[var]))
                 bin_map = {v:i for i,v in enumerate(vals)}
                 self.df[var].replace(bin_map,inplace=True)
 
