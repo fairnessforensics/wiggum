@@ -17,6 +17,10 @@ function updateDistanceHeatmapContainer(dataAll) {
 			subLabel  : data.group_feat + ' : ' + data.subgroup
 		});
 	}
+
+	// Cell Click Event
+	d3.select(container).selectAll(".cell")
+		.on("click", clickMatrixCell);	
 }
 
 /**
@@ -86,8 +90,8 @@ function distanceMatrixHeatmap(options) {
 		.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
 		.append("g");
 
-	var corrPlot = svg.append("g")
-		.attr("id", "corrPlot")
+	var distanceMatrixPlot = svg.append("g")
+		.attr("id", "distanceMatrixPlot")
 	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	var x = d3.scale.ordinal()
@@ -98,17 +102,17 @@ function distanceMatrixHeatmap(options) {
 	    .domain(d3.range(numrows))
 	    .rangeBands([0, height]);
 
-	var row = corrPlot.selectAll(".row")
+	var row = distanceMatrixPlot.selectAll(".row")
 	    .data(data)
 		.enter().append("g")
 	    .attr("class", "row")
 	    .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; });
 
-	var cells = row.selectAll(".ratecell")
+	var cells = row.selectAll(".cell")
 	    .data(function(d) { return d; })
 		.enter()
 		.append("rect")	
-		.attr("class", "ratecell")
+		.attr("class", "cell")
 //		.attr("id", function(d) {return targetAttr + "_" + d.protectedAttr + "_" + d.keyName + "_" + d.subgroups[d.colVar]})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
 
@@ -136,7 +140,7 @@ function distanceMatrixHeatmap(options) {
 		})
 		.style("opacity", 1);
 
-	corrPlot.append("text")
+	distanceMatrixPlot.append("text")
 			.attr("x", (width / 2))             
 			.attr("y", height + (margin.bottom / 2))
 			.attr("text-anchor", "middle")  
@@ -144,14 +148,14 @@ function distanceMatrixHeatmap(options) {
 			.style("text-decoration", "underline")  
 			.text(subLabel);
 		
-	corrPlot.append("text")
+	distanceMatrixPlot.append("text")
 			.attr("x", (width / 2))             
 			.attr("y", -60)
 			.attr("text-anchor", "middle")  
 			.style("font-size", "15px") 
 			.text(targetAttr);	
 
-	corrPlot.append("text")
+	distanceMatrixPlot.append("text")
 			.attr("x", -(width/2))             
 			.attr("y", -(height)+15)
 			.attr("text-anchor", "middle")  
@@ -159,14 +163,14 @@ function distanceMatrixHeatmap(options) {
 			.style("font-size", "15px") 
 			.text("feat1");	
 
-	corrPlot.append("text")
+	distanceMatrixPlot.append("text")
 			.attr("x", (width / 2))             
 			.attr("y", -60)
 			.attr("text-anchor", "middle")  
 			.style("font-size", "15px") 
 			.text("feat2");	
 
-	var labels = corrPlot.append('g')
+	var labels = distanceMatrixPlot.append('g')
 		.attr('class', "labels");
 
 	var columnLabels = labels.selectAll(".column-label")
