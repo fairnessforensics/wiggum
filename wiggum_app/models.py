@@ -478,7 +478,7 @@ def getDistanceHeatmapDict(labeled_df):
         LabeledDataFrame    
     Returns
     --------
-    distance_heatmap_dict_list: Distance Heatmap Dictitonary List
+    distance_heatmap_dict_list: Distance Heatmap Dictitonary List formatted for use in visualization
     """
 
     distance_heatmap_dict_list = []
