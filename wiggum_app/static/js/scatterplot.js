@@ -596,13 +596,20 @@ var clickMatrixCell = function() {
  * @param none.
  * @returns none.
  */
-function updateScatter() {
-	var d = this.datum();
+function updateScatter(data) {
+	var d;
+	if (typeof data !== 'undefined') {
+		d = data;
+	} else {
+		d = this.datum();
+	}
+
 	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
 		categoryAttr: d.categoryAttr, category: d.category, trend_type: d.trend_type};
 
 	// updateVars used for same axis range
 	updateVars = vars;	
+
 	updateScatterplot(csvData, vars);
 	updateTabulate(vars);
 	highlightSubgroup(vars.category);
@@ -618,4 +625,3 @@ function highlightSubgroup(subgroup) {
 	d3.selectAll('.elm').transition().style('opacity', 0.2);
 	d3.selectAll('.sel-' + subgroup).transition().style('opacity', 1);
 }
-

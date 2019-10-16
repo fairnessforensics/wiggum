@@ -307,13 +307,6 @@ function updateRateSPContainer(slopeKey) {
 
 		// <-------------------------------------
 
-		// rate SP matrix for all
-		//var rateMatrix = getRateMatrixAll(csvData, groupingAttrs[i], groupingAttrs[j]);
-		//var rateTrendMatrixAll = getRateTrendMatrixAll(rateMatrix);
-		// rate SP matrix for subgroups
-		//var rateMatrixGroups = getRateMatrixSub(csvData, groupingAttrs[i], groupingAttrs[j]);
-		//var rateTrendMatrixSub = getRateTrendMatrixSub(rateMatrixGroups);
-
 		var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll[index], rateTrendMatrixSub[i]);
 
 		var subgroupLabel = protectedAttr_current + ' - ' + explanaryAttrs_current[index_explanary];

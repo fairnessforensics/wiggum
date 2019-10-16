@@ -204,9 +204,13 @@ def main():
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup)
 
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
             #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
-                            result_df = labeled_df_setup.result_df.to_json(orient='records'))
+                            result_df = labeled_df_setup.result_df.to_json(orient='records'),
+                            df = df)
 
         # visualize.html 'Filter' button clicked
         if action == 'filter':

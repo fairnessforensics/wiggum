@@ -7,20 +7,103 @@
 function updateDistanceHeatmapContainer(dataAll) {
 
 	d3.select("#container").selectAll('svg').remove();
+	var createScatterPlotFlag = true;
 
 	for (var key in dataAll){
 		data = dataAll[key];
+		heatmapMatrix = jsonto2darray(data.heatmap);
+
+		if (data.trend_type == 'lin_reg') {
+			groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
+			
+			var labels = [];
+			for (var rowkey in data.heatmap) {
+				labels.push(rowkey);
+			}
+
+			matrix_data = UpdateMatrixFormat(heatmapMatrix, labels, groupInfo, data.trend_type);
+
+			rowLabels = labels;
+			colLabels = labels;
+
+			if (createScatterPlotFlag) {
+				// Scatter plot
+				catAttrs = data.group_feat;
+				conAttrs = labels;
+				createScatterplot(csvData, labels);
+				createScatterPlotFlag = false;
+			}
+
+		} else if (data.trend_type == 'rank_trend') {
+			var pushFlag = true;
+			var rowLabels = [];
+			var colLabels = [];
+			var preData = data.heatmap;
+
+			for (var rowkey in preData) {
+				row = preData[rowkey];
+				for (var colKey in row) {
+					if (pushFlag) {
+						colLabels.push(colKey);
+						pushFlag =  false;
+					}
+				}
+		
+				rowLabels.push(rowkey);
+			}
+
+			matrix_data = UpdateRateMatrixFormat(heatmapMatrix, 
+
+
+												rateColKeys, 
+												rateRowVars[i], 
+												explanaryAttrs_current[index_explanary], 
+												rateMatrixIndex, 
+												protectedAttr_current, 
+												weightingAttr, 
+												targetAttr, 
+												target_var_type, 
+												rateColLabels[i], 
+
+
+												data.trend_type, 
+
+
+												slopeKey);
+		}
 
 		distanceMatrixHeatmap({
 			container : '#container',
-			data      : data.heatmap,
+			data	  : matrix_data,
+			rowLabels : rowLabels,
+			colLabels : colLabels,			
 			subLabel  : data.group_feat + ' : ' + data.subgroup
 		});
 	}
 
 	// Cell Click Event
 	d3.select(container).selectAll(".cell")
-		.on("click", clickMatrixCell);	
+		.on("click", clickHeatmapMatrixCell);	
+}
+
+var clickHeatmapMatrixCell = function() {
+	var allsvg = d3.select(container);
+
+	allsvg.selectAll(".cell").classed("clicked", false);
+
+	var clickFlg = d3.select(this).classed("clicked", true);
+
+	if (clickFlg) { clickFlg.call(updateDetailView); }
+};
+
+function updateDetailView() {
+	var d = this.datum();
+
+	if (d.trend_type == 'lin_reg') {
+		updateScatter(d);
+	} else if (d.trend_type == 'rank_trend') {
+		prepareDetail(d);
+	}
 }
 
 /**
@@ -34,11 +117,11 @@ function distanceMatrixHeatmap(options) {
 	var margin = {top: 93, right: 20, bottom: 30, left: 93},
 	    width = 90,
 	    height = 90,
-	    preData = options.data,
+	    data = options.data,
 	    container = options.container,
 		subLabel = options.subLabel;
 
-	if(!preData){
+	if(!data){
 		throw new Error('Please pass data');
 	}
 
@@ -46,7 +129,7 @@ function distanceMatrixHeatmap(options) {
 	var index = 0;
 	var rowLabelsData = [];
 	var colLabelsData = [];
-
+/*
 	for (var rowkey in preData) {
 		row = preData[rowkey];
 		data[index] = [];
@@ -66,7 +149,7 @@ function distanceMatrixHeatmap(options) {
 		rowLabelsData.push(rowkey);
 		index++;
 	}
-	
+*/
 	//var heatmapColor = d3.scale.linear().domain([0, 1]).range(["beige", "red"]);
 	var heatmapColors = ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081"];
 	//var heatmapColors = ["#ccebc5","#a8ddb5","#7bccc4","#2b8cbe","#084081"];
@@ -174,7 +257,7 @@ function distanceMatrixHeatmap(options) {
 		.attr('class', "labels");
 
 	var columnLabels = labels.selectAll(".column-label")
-	    .data(colLabelsData)
+	    .data(options.colLabels)
 	    .enter().append("g")
 	    .attr("class", "column-label")
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + "," + 0 + ")"; });
@@ -197,7 +280,7 @@ function distanceMatrixHeatmap(options) {
 		.style("font-size", "10px");
 
 	var rowLabels = labels.selectAll(".row-label")
-	    .data(rowLabelsData)
+	    .data(options.rowLabels)
 	  .enter().append("g")
 	    .attr("class", "row-label")
 	    .attr("transform", function(d, i) { return "translate(" + 0 + "," + y(i) + ")"; });

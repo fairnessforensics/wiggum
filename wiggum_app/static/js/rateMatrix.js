@@ -1,150 +1,3 @@
-function getRateMatrixAll(data, groupAttr1, groupAttr2) {
-
-	var result = [];
-	var tempLabels = [];
-
-	var resultArray = d3.nest()
-				.key(function(d) {return d[groupAttr1]})
-				.rollup(function(v) {
-					return {
-						mean: d3.mean(v, function(d){return d[targetAttr]})
-					};
-				})
-				.entries(data);
-
-	// Construct Slope Graph array --------->
-	arraySlopeGraph[rateMatrixIndex] = [];
-	var singleObj = {};
-	for (var i = 0; i < resultArray.length; i++){
-		singleObj[resultArray[i].key] = precisionRound(resultArray[i].values.mean, 3);
-	}
-	singleObj[groupAttr2] = 'ALL';
-	arraySlopeGraph[rateMatrixIndex].push(singleObj);
-	// <-------------------------------------
-
-	for(var key in resultArray) {
-			var value = resultArray[key];
-			tempLabels.push(value.key);
-	}
-
-	rateRowLabels = [];
-	rateRowVars = [];
-	var index = 0;
-	for (var i = 0; i < tempLabels.length; i++){
-		for (var j=i+1; j< tempLabels.length; j++) {
-				rateRowLabels[index] = tempLabels[i] +" / "+ tempLabels[j];
-				rateRowVars[index] = [];
-				rateRowVars[index][0] = tempLabels[i];
-				rateRowVars[index][1] = tempLabels[j];
-				index = index + 1;
-		}
-	}
-
-	for (var i = 0; i < resultArray.length; i++){
-		result[i] = resultArray[i].values.mean;
-	}	
-
-	return result;
-}
-
-function getRateTrendMatrixAll(data) {
-
-  var result = [];
-	var index = 0;
-	for (var i = 0; i < data.length; i++){
-		for (var j=i+1; j< data.length; j++) {
-				result[index] = data[i] / data[j];
-				index = index + 1;
-		}
-	}	
-	return result;
-}
-
-function getRateTrendMatrixSub(data) {
-
-  var result = [];
-	var index;
-	for (var i = 0; i < data[0].length; i++){
-		index = 0;
-		for (var j=0; j< data.length; j++) {
-			for (var k=j+1; k<data.length; k++) {
-//				if (j!=k){
-					// initial when first column
-					if (i == 0) {
-						result[index] = [];
-					}
-					result[index][i] = data[j][i] / data[k][i];
-					index = index + 1;
-//				}
-			}
-		}
-	}	
-	return result;
-}
-
-function getRateMatrixSub(data, groupAttr1, groupAttr2) {
-
-	var result = [];
-	  
-	  var resultArray = d3.nest()
-				  .key(function(d) {return d[groupAttr1]})
-				  .key(function(d) {return d[groupAttr2]})
-				  .rollup(function(v) {
-					  return {
-						  mean: d3.mean(v, function(d){return d[targetAttr]})
-					  };
-				  })
-		  .entries(data);
-  
-		  // Get all values in explanatory grouping variable
-		  var explanatoryGroupValues = d3.nest()
-			  .key(function(d) {return d[groupAttr2];})
-			  .entries(data);
-  
-		  var expalanatoryValues = [];
-		  explanatoryGroupValues.forEach(function(value) {
-			  expalanatoryValues.push(value.key);
-		  })
-  
-	  // Construct an object array for slope graph
-	  for (var i = 0; i < expalanatoryValues.length; i++){
-		  var singleObj = {};
-
-		for (var j = 0; j < resultArray.length; j++){
-			if (i==0) {
-				result[j] = [];	
-			}
-
-			var foundFlg = false;
-			for (var k = 0; k < resultArray[j].values.length; k++){
-				if (expalanatoryValues[i] == resultArray[j].values[k].key) {
-					// resultArray[j].values[k] may have undefined, check it later
-					singleObj[resultArray[j].key] = precisionRound(resultArray[j].values[k].values.mean, 3);
-					result[j][i] = resultArray[j].values[k].values.mean;
-					foundFlg = true;
-					break;
-				}
-			}
-			if (foundFlg == false){
-				singleObj[resultArray[j].key] = 0;
-				result[j][i] = 0;
-			}
-		}
-
-		singleObj[groupAttr2] = expalanatoryValues[i];
-		arraySlopeGraph[rateMatrixIndex].push(singleObj);
-	  }	
- 
-	  rateColKeys = [];
-	  for (var i=0; i < expalanatoryValues.length;i++) {
-		rateColKeys.push(i);
-	  }
-	  
-	  rateColLabels = expalanatoryValues;
-
-	  return result;
-  }
-
 function precisionRound(number, precision) {
   var factor = Math.pow(10, precision);
   return Math.round(number * factor) / factor;
@@ -495,8 +348,13 @@ var doubleClickRateMatrixCell = function() {
 
 };
 
-function prepareDetail() {
-	var d = this.datum();
+function prepareDetail(data) {
+	var d;
+	if (typeof data !== 'undefined') {
+		d = data;
+	} else {
+		d = this.datum();
+	}
 
 	var vars = { x: d.colVar, left: d.start, right: d.end, keyName: d.keyName, 
 				index: d.index, protectedAttr: d.protectedAttr, weightingAttr: d.weightingAttr, 

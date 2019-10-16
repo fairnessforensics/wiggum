@@ -176,6 +176,9 @@ function drawGraphTable(data, action) {
 }
 
 function drawDistanceMatrixHeatmap(data, action) {
+	
+	csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+
 	updateDistanceHeatmapContainer(data.distance_heatmap_dict);
 
 	// Display info table
