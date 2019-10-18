@@ -1,3 +1,10 @@
+/**
+ * Generate reuslt table
+ *
+ * @param data - result table from server side.
+ * @param action - User action.
+ * @returns result table.
+ */
 function tabulate(data, action) {	
 	
 	// remove existing table
@@ -236,6 +243,13 @@ function tabulate(data, action) {
   return table;
 }
 
+/**
+ * Update label for slide
+ *
+ * @param value - label value.
+ * @param id - label id.
+ * @returns none.
+ */
 function updateLabel(value, id) {
 	d3.select(id).text(value);
 
@@ -246,6 +260,12 @@ function updateLabel(value, id) {
 	}
 }
 
+/**
+ * Change highlight row when table is interacted
+ *
+ * @param vars - variables' values.
+ * @returns none.
+ */
 function updateTabulate(vars) {	
 
 	d3.selectAll(".tablerow").classed("highlighted", false);
@@ -253,6 +273,12 @@ function updateTabulate(vars) {
 	d3.select("tr[row='" + cell_id + "']").classed("highlighted", true);
 }
 
+/**
+ * interact bivariate matrix with result talbe
+ *
+ * @param vars - variables' values.
+ * @returns none.
+ */
 function interactBivariateMatrix(vars) {
 
 	// update bivariate matrix
@@ -272,7 +298,22 @@ function interactBivariateMatrix(vars) {
 	updateTabulate(vars);
 };
 
-function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars) {
+/**
+ * Setting role table for data augmentation and data annotation
+ *
+ * @param data - variable name.
+ * @param var_types - variable type.
+ * @param samples - samples.
+ * @param possibleRoles - possible roles.
+ * @param isCounts - counts for weighting.
+ * @param roles - variable role.
+ * @param weighting_vars - weighting variable.
+ * @param checked_vars - variable for quantiles.
+ * @param intersection_vars - intersections of categorical variables.
+ * @returns none.
+ */
+function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, 
+					weighting_vars, checked_vars, intersection_vars) {
 
 		var myArray = [];
 		var my_var_types = {};
@@ -280,9 +321,10 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 		var my_isCounts = {};
 		var my_roles = {};		
 		var my_weighting_var = {};
+		
 		data.forEach(function(d,i) {
 			myArray.push({"name": d, "type_dropdown": d, "role_dropdown":d, "isCount_dropdown":d, 
-							"weighting_var_dropdown": d, "sample": d, "quantiles": d});
+							"weighting_var_dropdown": d, "sample": d, "quantiles": d, "intersection": d});
 			my_var_types[d] = var_types[i];
 			my_sample[d] = samples[i];
 			if (typeof isCounts !== 'undefined') {
@@ -305,10 +347,14 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 			}	
 			if (typeof checked_vars === 'undefined') {
 				checked_vars = [];
-			}							
+			}	
+			if (typeof intersection_vars === 'undefined') {
+				intersection_vars = [];
+			}										
 		});
 
-		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", "weighting_var_dropdown", "sample", "quantiles"];
+		var columns = ["name", "type_dropdown", "role_dropdown", "isCount_dropdown", 
+						"weighting_var_dropdown", "sample", "quantiles", "intersection"];
 		
 		d3.select("#roleSelection").selectAll('table').remove();
 
@@ -321,7 +367,7 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 							.style("margin-left", "20px");			
 
 		// append the header row
-		var META_COLUMNS = ['name','var_type','role','isCount', 'weighting_var', 'sample', "quantiles"]
+		var META_COLUMNS = ['name','var_type','role','isCount', 'weighting_var', 'sample', "quantiles", "intersection"]
 		var thead = roleTable.append('thead').append('tr')
 							.selectAll('th')
 							.data(META_COLUMNS).enter()
@@ -417,11 +463,25 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles, wei
 															.attr('value', d.value)
 															.property('checked', 
 															function(d){return checked_vars.includes(d.value)})
-							}																															
+							}	
+							if (i==7) {
+								var select = d3.select(this).append('input')
+															.attr('type', 'checkbox')
+															.attr('name', 'intersection_checkbox')
+															.attr('value', d.value)
+															.property('checked', 
+															function(d){return intersection_vars.includes(d.value)})
+							}																																						
 						})
 											
 }
 
+/**
+ * Get metadata
+ *
+ * @param none.
+ * @returns meta data list.
+ */
 function getMetaList() {
 	var table, tr, td, i;
 	table = document.getElementById("roleTable");

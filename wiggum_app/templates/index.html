@@ -258,6 +258,16 @@
                 var user_cutoffs = $('#user_cutoffs').val();
                 form_data.append('user_cutoffs', user_cutoffs);
 
+                var intersection_vars = [];
+
+                var intersection_checkbox = document.getElementsByName("intersection_checkbox");
+
+                for (var i = 0; i < intersection_checkbox.length; i++) {
+                    if (intersection_checkbox[i].checked) {
+                        intersection_vars.push(intersection_checkbox[i].value);
+                    }
+                }
+
                 $.ajax({
                     type: 'POST',
                     url: '/',
@@ -276,7 +286,8 @@
                         var possibleRoles = data.possible_roles;
                         var weighting_vars = data.weighting_vars;
 
-                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars);      
+                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, 
+                                    weighting_vars, checked_vars, intersection_vars);      
                         
                         // Avoid ctrl-click                                    
                         $('option:not(#trend_type_option)').mousedown(function(e) {
@@ -320,6 +331,16 @@
                     }
                 }
 
+                var intersection_vars = [];
+
+                var intersection_checkbox = document.getElementsByName("intersection_checkbox");
+
+                for (var i = 0; i < intersection_checkbox.length; i++) {
+                    if (intersection_checkbox[i].checked) {
+                        intersection_vars.push(intersection_checkbox[i].value);
+                    }
+                }
+
                 $.ajax({
                     type: 'POST',
                     url: '/',
@@ -338,7 +359,8 @@
                         var possibleRoles = data.possible_roles;
                         var weighting_vars = data.weighting_vars;
 
-                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, weighting_vars, checked_vars);      
+                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, 
+                                    weighting_vars, checked_vars, intersection_vars);      
                         
                         // Avoid ctrl-click                                    
                         $('option:not(#trend_type_option)').mousedown(function(e) {
@@ -357,7 +379,83 @@
                     },
                 });
                 
-            });             
+            }); 
+            
+            $('#intersection-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#intersection-btn').val();
+
+                form_data.append('action', action);
+
+                var metaList = [];
+                metaList = getMetaList();
+                form_data.append('metaList', metaList);
+
+                var checked_vars = [];
+
+                var quantiles_checkbox = document.getElementsByName("quantiles_checkbox");
+
+                for (var i = 0; i < quantiles_checkbox.length; i++) {
+                    if (quantiles_checkbox[i].checked) {
+                        checked_vars.push(quantiles_checkbox[i].value);
+                    }
+                }
+
+                var intersection_vars = [];
+
+                var intersection_checkbox = document.getElementsByName("intersection_checkbox");
+
+                for (var i = 0; i < intersection_checkbox.length; i++) {
+                    if (intersection_checkbox[i].checked) {
+                        intersection_vars.push(intersection_checkbox[i].value);
+                    }
+                }
+
+                form_data.append('intersection_vars', intersection_vars);     
+                
+                var user_cutoffs = $('#tuple_lens').val();
+                form_data.append('tuple_lens', tuple_lens);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: form_data,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data) {
+                        d3.select('#roleSelection').select("table").remove();
+
+                        var var_names = data.var_names;
+                        var var_types = data.var_types;
+                        var samples = data.samples;
+                        var isCounts = data.isCounts;
+                        var roles = data.roles;
+                        var possibleRoles = data.possible_roles;
+                        var weighting_vars = data.weighting_vars;
+
+                        roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, 
+                                weighting_vars, checked_vars, intersection_vars);      
+                        
+                        // Avoid ctrl-click                                    
+                        $('option:not(#trend_type_option)').mousedown(function(e) {
+                            e.preventDefault();
+                            var originalScrollTop = $(this).parent().scrollTop();
+
+                            $(this).prop('selected', $(this).prop('selected') ? false : true);
+                            var self = this;
+                            $(this).parent().focus();
+                            setTimeout(function() {
+                                $(self).parent().scrollTop(originalScrollTop);
+                            }, 0);
+                            
+                            return false;
+                        });                              
+                    },
+                });
+                
+            }); 
+
         });           
     </script>
 </head>
@@ -403,6 +501,14 @@
                             <button id="clustering-btn" type="button" value="clustering">Clustering</button> 
                         </td>                    
                     </tr>
+                    <tr class = "paramtr">
+                        <td class="param">            
+                            <input name="tuple_lens" type="text" id="tuple_lens" placeholder="Default: 2">
+                        </td>
+                        <td class="param">            
+                            <button id="intersection-btn" type="button" value="intersection">Add Intersection</button>
+                        </td>                 
+                    </tr>                        
                     <tr class = "paramtr">
                         <td class="param">
                                 <input name="projectName" type="text" id="projectName" placeholder="Project Name">                        

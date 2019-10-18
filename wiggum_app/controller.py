@@ -129,6 +129,30 @@ def main():
 
             return jsonify(result_dict)            
 
+        # index.html 'Add Intersection' button clicked
+        if action == 'intersection':
+
+            meta = request.form['metaList']
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            checked_vars = request.form['intersection_vars']
+            checked_vars = checked_vars.split(",")
+            
+            if checked_vars:
+                tuple_lens = request.form['tuple_lens']
+                if tuple_lens != '':
+                    tuple_lens = [int(t) for t in tuple_lens.split(',')]
+                    labeled_df_setup.add_intersectional(checked_vars, tuple_lens)
+                else:
+                    labeled_df_setup.add_intersectional(checked_vars)
+
+            result_dict = {}
+            result_dict = models.getMetaDict(labeled_df_setup)
+
+            result_dict['possible_roles'] = wg.possible_roles
+
+            return jsonify(result_dict)
+
         # visualize.html 'Save' button clicked
         if action == 'save_trends':
             # store meta data into csv
