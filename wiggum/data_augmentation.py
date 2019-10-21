@@ -237,7 +237,7 @@ class _AugmentedData():
 
 
         # concatenate uppers and lwoers
-        q_intervals = pd.concat([ql_df,qu_df],axis=1)
+        q_intervals = pd.concat([ql_df,qu_df],axis=1,sort=True)
 
         if q_names is None:
             q_intervals['quantile_name'] = [' - '.join([str(l),str(u)]) for l,u in zip(q_l,q_u)]
