@@ -4,14 +4,13 @@ var margin = {top: 30, right: 30, bottom: 30, left: 30},
 	height = 360;	
 
 var scatterplot;
-//var scatterplot = d3.select("div#scatterplot")
-//	.append("svg")
-//	.attr("width", width + margin.left + margin.right)
-//	.attr("height", height + margin.top + margin.bottom)									
-//	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-// Draw frame
+/**
+ * Draw frame
+ *
+ * @param none.
+ * @returns none.
+ */
 var drawFrame = function() {
 	scatterplot.append("rect")
 			.attr("class","frame")
@@ -41,6 +40,14 @@ var yAxis = d3.svg.axis()
     .scale(y)
 	.orient("left");
 
+
+/**
+ * Update Scatterplot
+ *
+ * @param data - data for drawing dots.
+ * @param vars - variables containing scatterplot elements information.
+ * @returns none.
+ */
 var updateScatterplot = function(data, vars) {
 	d3.select("#scatterplot").style("display", "inline-block");
 	d3.select("#slopegraph").selectAll('svg').remove();
@@ -175,7 +182,31 @@ var updateScatterplot = function(data, vars) {
 		  .attr("width", 18)
 		  .attr("height", 18)
 		  .style("opacity", 0.6)
-		  .style("fill", color);
+		  .style("fill", color)
+		  .on("click", function(d){
+				clickedSubgroup = d;
+				currentDots = d3.selectAll(".dot")
+									.filter(function(d){
+										return d[vars.categoryAttr] == clickedSubgroup;
+									});
+
+				currentOpacity = d3.selectAll(".dot")
+									.filter(function(d){
+										return d[vars.categoryAttr] == clickedSubgroup;
+									}).style("opacity");
+	
+				// Rounding to 1 decimal
+				currentOpacity = Math.round( currentOpacity * 10 ) / 10;
+				// Change the opacity: from 0.1 to 0.6 or from 0.6 to 0.1
+				currentDots.transition().style("opacity", currentOpacity == 0.6 ? 0.1:0.6);
+
+				// Regression Line
+				currentOpacity = d3.selectAll('.sel-' + clickedSubgroup).style("opacity");
+
+				// Change the opacity: from 0.2 to 1 or from 1 to 0.2
+				d3.selectAll('.sel-' + clickedSubgroup)
+					.transition().style("opacity", currentOpacity == 1 ? 0.2:1)
+		  });
 
 	legend.append("text")
 		  .attr("x", width - 24)
@@ -211,6 +242,12 @@ var updateScatterplot = function(data, vars) {
 			.text(vars.y);
 }
 
+/**
+ * Check the value if it is float or not
+ *
+ * @param x - the value.
+ * @returns {boolean} is float or not.
+ */
 function isFloat(x){
 	var value = parseFloat(x);
 
@@ -222,39 +259,12 @@ function isFloat(x){
 	return false;
 }
 
-function getcontinousAttrs(data){
-	var columnNames;
-	var continousAttrs = [];
-
-	data.forEach(function(d){
-		columnNames = Object.keys(d);
-	});
-
-	columnNames.forEach(function(name) {
-		if (isFloat(data[0][name])) {
-			continousAttrs.push(name);
-		}
-	});
-	return continousAttrs;
-}
-
-function getCategoricalAttrs(data){
-	var columnNames;
-	var categoricalAttrs = [];
-
-	data.forEach(function(d){
-		columnNames = Object.keys(d);
-	});
-
-	columnNames.forEach(function(name) {
-		if (!isFloat(data[0][name])) {
-			categoricalAttrs.push(name);
-		}
-	});
-	return categoricalAttrs;
-}
-
-
+/**
+ * Create Scatterplot
+ *
+ * @param data - the data for drawing the dots.
+ * @returns none.
+ */
 function createScatterplot(data) {
 
 	d3.select("#scatterplot").selectAll('svg').remove();
@@ -275,6 +285,7 @@ function createScatterplot(data) {
 							.html("<form><input type=checkbox id=samerange checked /></form>")
 							.on("click", function(){
 								updateScatterplot(csvData, updateVars);
+								highlightSubgroup(updateVars.category);
 							});
 	controls.append("text")
 			.style("font-size", "13px")
@@ -416,22 +427,17 @@ function createScatterplot(data) {
 
 }
 
-
-var reader = new FileReader();  
-var file;
-
-function loadFile() {      
-	d3.selectAll("svg").remove();
-	file = document.querySelector('input[type=file]').files[0];    
-
-	openFile();
-
-	reader.addEventListener("load", openFile, false);
-	if (file) {
-		reader.readAsText(file);
-	}      
-}
-
+/**
+ * Calculate linear regression line
+ *
+ * @param data - data for drawing dots.
+ * @param x - the variable for x axis.
+ * @param y - the variable for y axis.
+ * @param minX - minimal value for X.
+ * @param maxX - maximal value for X.
+ * @returns {object} an object of two points,
+ *                   each point is an object with an x and y coordinate.
+ */
 function calcLinear(data, x, y, minX, maxX){
 	/////////
 	//SLOPE//
@@ -501,6 +507,15 @@ function calcLinear(data, x, y, minX, maxX){
 	}
 }
 
+/**
+ * Update matrix format
+ *
+ * @param matrix - matrix used for formatting.
+ * @param vars - containing feat1, feat2 info.
+ * @param category - groupby info.
+ * @param trend_type - trend type.
+ * @returns none.
+ */
 var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 
 
@@ -558,6 +573,13 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 	return matrix;
 };
 
+
+/**
+ * Interact with matrix cell when clicking
+ *
+ * @param none.
+ * @returns none.
+ */
 var clickMatrixCell = function() {
 	var allsvg = d3.select(container);
 
@@ -568,6 +590,12 @@ var clickMatrixCell = function() {
 	if (clickFlg) { clickFlg.call(updateScatter); }
 };
 
+/**
+ * Update scatterplot
+ *
+ * @param none.
+ * @returns none.
+ */
 function updateScatter() {
 	var d = this.datum();
 	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
@@ -580,219 +608,14 @@ function updateScatter() {
 	highlightSubgroup(vars.category);
 }
 
+/**
+ * highlight the regression line in scatterplot
+ *
+ * @param subgroup - the group needed for highlight.
+ * @returns none.
+ */
 function highlightSubgroup(subgroup) {
 	d3.selectAll('.elm').transition().style('opacity', 0.2);
 	d3.selectAll('.sel-' + subgroup).transition().style('opacity', 1);
 }
 
-function openFile(){
-
-
-	//d3.csv("iris.csv", function(error, data) {
-
-	d3.csv("/static/data/syntheticdata.csv", function(error, data) {
-	//d3.csv("/static/data/" + file.name, function(error, data) {
-		if (error) throw error;	
-
-		csvData = data;	
-		//console.log(csvData);
-
-		// Reset color after removed by loading new file
-		color = d3.scale.category10();
-
-		conAttrs = getcontinousAttrs(data);
-		catAttrs = getCategoricalAttrs(data);
-
-
-		// Categorical attributes' value list
-		categoryValuesList = [];
-
-		// Get all categorical attributes' values
-		catAttrs.forEach(function(name) {
-			var categoryValues = d3.nest()
-				.key(function(d) {return d[name];})
-				.entries(data);
-
-			categoryValues.forEach(function(value) {
-				var singleObj = {};
-				singleObj['groupby'] = name;
-				singleObj['value'] = value.key;
-				categoryValuesList.push(singleObj);
-			})
-		});
-
-		data.forEach(function(d) {
-			conAttrs.forEach(function(name) {
-				d[name] = +d[name];
-			});
-		});
-
-		// Initial selectbox
-		selectValue = d3.select("#selectors").select('select').property('value');
-		selectTypeValue = d3.select("#typeSelector").select('select').property('value');
-		// Initial legend click value
-		legendValue = -1;
-
-		// Draw Slider
-		DrawSlider();
-
-		// Draw Legend
-		DrawLegend();
-
-		// If then number of continuous Attributes >=2, assuming regression type SP 
-		// prepare the visualization
-		if (conAttrs.length>=2) {
-			// Reset svg after removed by loading new file
-			scatterplot = d3.select("div#scatterplot")
-				.append("svg")
-				.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)									
-				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-
-			// Default: first two continous attributes
-			// Zoom out
-			var xMax = d3.max(data, function(d) { return d[conAttrs[0]]; }),
-				xMin = d3.min(data, function(d) { return d[conAttrs[0]]; }),
-				xDiff = xMax - xMin,
-				xMin = xMin - 0.1 * xDiff,
-				xMax = xMax + 0.1 * xDiff,
-				yMax = d3.max(data, function(d) { return d[conAttrs[1]]; }),
-				yMin = d3.min(data, function(d) { return d[conAttrs[1]]; }),
-				yDiff = yMax - yMin,
-				yMin = yMin - 0.1 * yDiff,
-				yMax = yMax + 0.1 * yDiff;
-
-			x.domain([xMin, xMax]);
-			y.domain([yMin, yMax]);		
-
-			scatterplot.append("g")
-				.attr("class", "x axis")
-				.attr("transform", "translate("+margin.left+"," + (height + margin.top) + ")")
-				.call(xAxis)
-				.append("text")
-				.attr("id", "xTitle")
-				.attr("class", "label")
-				.attr("x", width)
-				.attr("y", -6)
-				.style("text-anchor", "end")
-				.text(conAttrs[0]);
-			
-			scatterplot.append("g")
-				.attr("class", "y axis")
-				.attr("transform", "translate("+margin.left+"," + margin.top + ")")		  
-				.call(yAxis)
-				.append("text")
-				.attr("id", "yTitle")
-				.attr("class", "label")
-				.attr("transform", "rotate(-90)")
-				.attr("y", 6)
-				.attr("dy", ".71em")
-				.style("text-anchor", "end")
-				.text(conAttrs[1]);
-
-			scatterplot.selectAll(".dot")
-				.data(data)
-				.enter().append("circle")
-				.attr("class", "dot")
-				.attr("r", 5)
-				.attr("cx", function(d) { return x(d[conAttrs[0]]); })
-				.attr("cy", function(d) { return y(d[conAttrs[1]]); })
-				.style("opacity", 0.6)
-				.attr("stroke", "black")
-				.attr("stroke-width", 1)		  
-				.style("fill", function(d) { return color(d[catAttrs[0]]); })
-				.attr("transform", "translate("+margin.left+"," + margin.top + ")");
-
-			// Regression line
-			var lg = calcLinear(data, conAttrs[0], conAttrs[1], 
-				d3.min(data, function(d){ return d[conAttrs[0]]}), 
-				d3.max(data, function(d){ return d[conAttrs[0]]}));
-
-			scatterplot.append("line")
-				.attr("class", "regression")
-				.attr("x1", x(lg.ptA.x))
-				.attr("y1", y(lg.ptA.y))
-				.attr("x2", x(lg.ptB.x))
-				.attr("y2", y(lg.ptB.y))
-				.attr("stroke", "black")
-				.attr("stroke-dasharray", "5,5")
-				.attr("stroke-width", 2)
-				.attr("transform", "translate("+margin.left+"," + margin.top + ")");
-
-			// Legend
-			var legend = scatterplot.selectAll(".legend")
-				.data(color.domain())
-				.enter().append("g")
-				.attr("class", "legend")
-				.attr("transform", function(d, i) { return "translate("+margin.left+" ," + (margin.top+ i * 20) + ")"; });
-			
-			legend.append("rect")
-				.attr("x", width - 18)
-				.attr("width", 18)
-				.attr("height", 18)
-				.style("opacity", 0.6)
-				.style("fill", color);
-			
-			legend.append("text")
-				.attr("x", width - 24)
-				.attr("y", 9)
-				.attr("dy", ".35em")
-				.style("text-anchor", "end")
-				.text(function(d) { return d; });	
-
-
-			////////////////////////////////////////////////////
-			///            DRAW Correlation Matrix
-			////////////////////////////////////////////////////
-			// Correlation for all
-			correlationMatrix = [];
-			correlationMatrix = getCorrelationMatrix(data, conAttrs);
-
-			// Correlation for subgroup
-			correlationMatrixSubgroup = [];
-			for (var i = 0; i < categoryValuesList.length; i++) {
-
-					var subgroupData = data.filter(function(d){
-						return d[categoryValuesList[i].groupby] == categoryValuesList[i].value;
-					});
-
-					correlationMatrixSubgroup[i] = getCorrelationMatrix(subgroupData, conAttrs);
-			}
-
-			labels = [];
-			for (var i=0; i< conAttrs.length; i++){
-				labels.push(conAttrs[i]);
-			}
-
-			for (var i = 0; i < correlationMatrixSubgroup.length; i++){
-
-				var bivariateMatrix = BivariateMatrix(correlationMatrix, correlationMatrixSubgroup[i]);
-				var subgroupLabel = categoryValuesList[i].groupby +": "+ categoryValuesList[i].value;			
-
-				Matrix({
-					container : '#container',
-					data      : UpdateMatrixFormat(bivariateMatrix, labels, categoryValuesList[i]),
-					labels    : labels,
-					subLabel  : subgroupLabel
-				});
-			}
-
-			// Draw Tree
-			DrawTree(
-				{
-					data         : data,
-					matrixAll    : correlationMatrix,
-					matrixGroups : correlationMatrixSubgroup,
-					catAttrs     : catAttrs,
-					cateAttrInfo : categoryValuesList,
-					labels       : labels
-				}
-			);
-		
-			d3.select(container).selectAll(".cell")
-			.on("click", clickMatrixCell);	
-		}		
-	});
-
-};
