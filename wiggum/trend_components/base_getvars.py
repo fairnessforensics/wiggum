@@ -18,6 +18,9 @@ class Trend():
     def __init__(self,labeled_df = None):
         self.trend_precompute = {}
         self.preaugment = None
+        # initialize this to False, it's changed by the the get_trend_vars
+        # functions and then used to avoid reconstructing var lists
+        self.set_vars = False
 
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
@@ -30,6 +33,7 @@ class Trend():
 
         """
         return row['distance'] > thresh
+
 
 ################################################################################
 #              Components
@@ -57,11 +61,15 @@ class OrdinalRegression():
         --------
         regression_vars : list of strings
             variables list of all ordinal trend variables
+
+        var_weight_list : list of strings
+            list of variables to be used as weights for each regression_vars
         """
 
-        self.regression_vars = labeled_df.get_vars_per_roletype('trend',
-                                    'ordinal')
+        self.regression_vars = labeled_df.get_vars_per_roletype('trend', 'ordinal')
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
+
+        self.set_vars = True
         return self.regression_vars
 
 
@@ -87,11 +95,15 @@ class ContinuousOrdinalRegression():
         regression_vars : list of strings
             variables list of all trend variables with type set to ordinal or
             continuous
+        var_weight_list : list of strings
+            list of variables to be used as weights for each regression_vars
         """
 
         self.regression_vars = labeled_df.get_vars_per_roletype('trend',
-                                    ['continuous','ordinal'])
+                                                                    ['continuous','ordinal'])
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
+
+        self.set_vars = True
         return self.regression_vars
 
 class ContinuousRegression():
@@ -117,12 +129,18 @@ class ContinuousRegression():
         regression_vars : list of strings
             variables list of all trend variables with type set to ordinal or
             continuous
+        var_weight_list : list of strings
+            list of variables to be used as weights for each regression_vars
+
+
         """
 
         self.regression_vars = labeled_df.get_vars_per_roletype('trend',
                                     'continuous')
 
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
+
+        self.set_vars = True
         return self.regression_vars
 
 
@@ -153,7 +171,6 @@ def w_median(df,mcol,wcol):
         reps = [int(n) for n in df[wcol].values]
         reps_mcol = np.repeat(df[mcol].values,reps)
         wmed,upper,lower =np.quantile( reps_mcol,[.5,.25,.75])
-
     return pd.Series([wmed ,upper,lower],index=['stat','max','min'])
 
 
@@ -219,12 +236,14 @@ class BinaryWeightedRank():
             continuous
         """
 
-        self.target = labeled_df.get_vars_per_roletype('trend',['binary','continuous'])
+        self.target = labeled_df.get_vars_per_roletype('trend','binary')
         all_cat = labeled_df.get_vars_per_roletype('trend','categorical')
 
         self.trendgroup = [var for var in all_cat if
                                 len(pd.unique(labeled_df.df[var])) == 2]
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.target)
+
+        self.set_vars = True
         return (self.target,self.trendgroup)
 
 
@@ -243,6 +262,7 @@ class WeightedRank():
         self.target = labeled_df.get_vars_per_roletype('trend',['binary','continuous'])
         self.trendgroup = labeled_df.get_vars_per_roletype('trend','categorical')
         self.var_weight_list = labeled_df.get_weightcol_per_var(self.target)
+        self.set_vars = True
         return self.target, self.trendgroup
 
 class PredictionClass():
@@ -255,4 +275,6 @@ class PredictionClass():
         self.prediction = labeled_df.get_vars_per_role('prediction')
 
         self.preaugment = 'confusion'
+
+        self.set_vars = True
         return self.groundtruth, self.prediction

@@ -284,7 +284,8 @@ class _TrendDetectors():
         pairwise = []
 
         for cur_trend in self.trend_list:
-            cur_trend.get_trend_vars(self)
+            if not( cur_trend.set_vars):
+                cur_trend.get_trend_vars(self)
 
             # augment the data with precomputed parts if needed
 

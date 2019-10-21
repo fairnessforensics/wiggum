@@ -7,6 +7,36 @@ import warnings
 
 class LinearRegression():
 
+
+    def is_computable(self,labeled_df=None):
+        """
+        check if this trend can be computed based on data and metadata available
+
+        Parameters
+        ----------
+        self : Trend
+            a trend object with a set_vars Parameters
+        labeled_df : LabeledDataFrame {None} (optional)
+            data to use if trend is not already configured
+
+
+        Returns
+        -------
+        computable : bool
+            True if requirements of get_trends are filled
+
+        See also:
+        get_trends() for description of how this trend computes and
+        """
+        if not( self.set_vars):
+            self.get_trend_vars(labeled_df)
+
+        vart_test_list = [len(self.regression_vars)>=2,
+                        bool(self.symmetric_vars),
+                    len(self.var_weight_list)==len(self.regression_vars)]
+
+        return np.product([vartest for vartest in vart_test_list])
+
     def get_trends(self,data_df,trend_col_name):
         """
         Compute a linear regressions and return a partial result_df
@@ -25,6 +55,8 @@ class LinearRegression():
             used in the trend_type column of result_df and by viz
         regression_vars : list of strings or list of tuples
             variables to compute correlations of
+        var_weight_list : list of strings
+            variables to use to weight each regression_vars
         symmetric_vars : Boolean
             if True, pairs of variables will be computed with
             itertools.combinations, taking all unique pairs of variables in the

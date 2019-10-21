@@ -11,6 +11,40 @@ class StatBinRankTrend():
     quality based on the ratio and the distance is 0/1 loss
 
     """
+
+
+    def is_computable(self,labeled_df=None):
+        """
+        check if this trend can be computed based on data and metadata available
+
+        Parameters
+        ----------
+        self : Trend
+            a trend object with a set_vars Parameters
+        labeled_df : LabeledDataFrame {None} (optional)
+            data to use if trend is not already configured
+
+
+        Returns
+        -------
+        computable : bool
+            True if requirements of get_trends are filled
+
+        See also:
+        get_trends() for description of how this trend computes and
+        """
+        if not( self.set_vars):
+            self.get_trend_vars(labeled_df)
+
+        vart_test_list = [bool(self.my_stat),
+                        bool(self.trendgroup),
+                        bool(self.target),
+                        len(self.var_weight_list)==len(self.target)]
+
+        return np.product([vartest for vartest in vart_test_list])
+
+
+
     def get_trends(self,data_df,trend_col_name):
         """
         Compute a trend between a binary ranking variable
@@ -156,6 +190,35 @@ class StatRankTrend():
     in subgroup vs aggregtae is 1-tau
 
     """
+    def is_computable(self,labeled_df=None):
+        """
+        check if this trend can be computed based on data and metadata available
+
+        Parameters
+        ----------
+        self : Trend
+            a trend object with a set_vars Parameters
+        labeled_df : LabeledDataFrame {None} (optional)
+            data to use if trend is not already configured
+
+
+        Returns
+        -------
+        computable : bool
+            True if requirements of get_trends are filled
+
+        See also:
+        get_trends() for description of how this trend computes and
+        """
+        if not( self.set_vars):
+            self.get_trend_vars(labeled_df)
+
+        vart_test_list = [bool(self.my_stat),
+                        bool(self.trendgroup),
+                        bool(self.target),
+                        len(self.var_weight_list)==len(self.target)]
+
+        return np.product([vartest for vartest in vart_test_list])
 
     def get_trends(self,data_df,trend_col_name):
         """
