@@ -465,12 +465,21 @@ function roleTable(data, var_types, samples, possibleRoles, isCounts, roles,
 															function(d){return checked_vars.includes(d.value)})
 							}	
 							if (i==7) {
-								var select = d3.select(this).append('input')
-															.attr('type', 'checkbox')
-															.attr('name', 'intersection_checkbox')
-															.attr('value', d.value)
-															.property('checked', 
-															function(d){return intersection_vars.includes(d.value)})
+								var var_type = my_var_types[d.value];
+								
+								if (var_type == 'continuous') {
+									var select = d3.select(this).append('input')
+									.attr('type', 'checkbox')
+									.attr('name', 'intersection_checkbox')
+									.property('disabled', true); 
+								} else {
+									var select = d3.select(this).append('input')
+									.attr('type', 'checkbox')
+									.attr('name', 'intersection_checkbox')
+									.attr('value', d.value)
+									.property('checked', 
+									function(d){return intersection_vars.includes(d.value)});
+								}
 							}																																						
 						})
 											

@@ -171,6 +171,7 @@
                 }              
             });
 
+            // Visualize Trends button click
             $('#visualize-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#visualize-btn').val();
@@ -201,6 +202,7 @@
                 
             });
 
+            // Save button click
             $('#save-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#save-btn').val();
@@ -233,6 +235,7 @@
                 
             });  
             
+            // Compute Quantiles button click
             $('#quantiles-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#quantiles-btn').val();
@@ -308,6 +311,7 @@
                 
             }); 
 
+            // Clustering button click
             $('#clustering-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#clustering-btn').val();
@@ -381,6 +385,7 @@
                 
             }); 
             
+            // Add Intersection button click
             $('#intersection-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
                 var action = $('#intersection-btn').val();
@@ -393,6 +398,7 @@
 
                 var checked_vars = [];
 
+                // Get the current settings from quntile checkboxes for redrawing role table
                 var quantiles_checkbox = document.getElementsByName("quantiles_checkbox");
 
                 for (var i = 0; i < quantiles_checkbox.length; i++) {
@@ -401,6 +407,7 @@
                     }
                 }
 
+                // Get the current intersectional variable settings
                 var intersection_vars = [];
 
                 var intersection_checkbox = document.getElementsByName("intersection_checkbox");
@@ -413,7 +420,7 @@
 
                 form_data.append('intersection_vars', intersection_vars);     
                 
-                var user_cutoffs = $('#tuple_lens').val();
+                var tuple_lens = $('#tuple_lens').val();
                 form_data.append('tuple_lens', tuple_lens);
 
                 $.ajax({
@@ -434,6 +441,7 @@
                         var possibleRoles = data.possible_roles;
                         var weighting_vars = data.weighting_vars;
 
+                        // redraw role table
                         roleTable(var_names, var_types, samples, possibleRoles, isCounts, roles, 
                                 weighting_vars, checked_vars, intersection_vars);      
                         
@@ -503,7 +511,7 @@
                     </tr>
                     <tr class = "paramtr">
                         <td class="param">            
-                            <input name="tuple_lens" type="text" id="tuple_lens" placeholder="Default: 2">
+                            <input name="tuple_lens" type="text" id="tuple_lens" style = "width: 192px;" title="e.g., 3 or 2,3" placeholder="Number of Variables per Intersection">
                         </td>
                         <td class="param">            
                             <button id="intersection-btn" type="button" value="intersection">Add Intersection</button>

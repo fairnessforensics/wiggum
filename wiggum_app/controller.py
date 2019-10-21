@@ -139,7 +139,7 @@ def main():
             checked_vars = checked_vars.split(",")
             
             if checked_vars:
-                tuple_lens = request.form['tuple_lens']
+                tuple_lens = request.form['tuple_lens'].strip()
                 if tuple_lens != '':
                     tuple_lens = [int(t) for t in tuple_lens.split(',')]
                     labeled_df_setup.add_intersectional(checked_vars, tuple_lens)
