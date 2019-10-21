@@ -228,7 +228,7 @@ class _TrendDetectors():
 
         # condense and merge all trends with subgroup trends
         subgroup_trends = pd.concat(subgroup_trends, sort=True)
-        all_trends = pd.concat(all_trends, sort=True))
+        all_trends = pd.concat(all_trends, sort=True)
         new_res = pd.merge(subgroup_trends,all_trends)
 
         # remove rows where a trend is undefined
@@ -242,7 +242,7 @@ class _TrendDetectors():
         else:
 
             # print('appending ',len(new_res), ' to ',len(self.result_df))
-            self.result_df = pd.concat([self.result_df,new_res], sort=True))
+            self.result_df = pd.concat([self.result_df,new_res], sort=True)
         # ,on=['feat1','feat2'], how='left
 
 
