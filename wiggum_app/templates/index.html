@@ -187,6 +187,8 @@
                 var trend_types = getSelectValues(trend_type_selection);
                 form_data.append('trend_types', trend_types);
 
+                var errFlag = false;
+
                 $.ajax({
                     type: 'POST',
                     url: '/',
@@ -196,10 +198,15 @@
                     cache: false,
                     processData: false,
                     success: function(data) {
-                        
+                        if (data == 'no_computable_trend') {
+                            errFlag = true;
+                            alert("Current data description yeilds no results for selected trends. Try selecting more trend types or changing variable roles.")
+                        }
                     },
                 });
-                
+                if (errFlag) {
+                    return false;
+                }
             });
 
             // Save button click
