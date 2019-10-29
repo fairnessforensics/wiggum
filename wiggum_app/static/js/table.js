@@ -117,7 +117,7 @@ function tabulate(data, action) {
 									function(d){ return feat2_selected.includes(d); });
 			}	
 			// group_feat
-			if (i==2) {
+			if (i==5) {
 				if (action == 'page_load') {
 					group_feat_options = d3.map(data, function(d){return d.group_feat;}).keys();
 				} 
@@ -136,7 +136,7 @@ function tabulate(data, action) {
 									function(d){ return group_feat_selected.includes(d); });
 			}	
 			// subgroup
-			if (i==3) {
+			if (i==4) {
 				if (action == 'page_load') {
 					subgroup_options = d3.map(data, function(d){return d.subgroup;}).keys();
 				} 				
@@ -155,7 +155,7 @@ function tabulate(data, action) {
 									function(d){ return subgroup_selected.includes(d); });
 			}	
 			// subgroup_trend_strength
-			if (i==5) {
+			if (i==3) {
 				d3.select(this).append("text")
 					.attr('id', 'subgroup_trend_strength_label')
 					.style("font-size", "10px")

@@ -13,8 +13,9 @@ function updateDistanceHeatmapContainer(dataAll) {
 		data = dataAll[key];
 		heatmapMatrix = jsonto2darray(data.heatmap);
 
-		if (data.trend_type == 'lin_reg') {
-			groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
+		groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
+
+		if (data.trend_type == 'lin_reg') {	
 			
 			var labels = [];
 			for (var rowkey in data.heatmap) {
@@ -36,12 +37,11 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 		} else if (data.trend_type == 'rank_trend') {
 			var pushFlag = true;
-			var rowLabels = [];
-			var colLabels = [];
-			var preData = data.heatmap;
-
-			for (var rowkey in preData) {
-				row = preData[rowkey];
+			rowLabels = [];
+			colLabels = [];
+			
+			for (var rowkey in data.heatmap) {
+				row = data.heatmap[rowkey];
 				for (var colKey in row) {
 					if (pushFlag) {
 						colLabels.push(colKey);
@@ -52,24 +52,9 @@ function updateDistanceHeatmapContainer(dataAll) {
 				rowLabels.push(rowkey);
 			}
 
-			matrix_data = UpdateRateMatrixFormat(heatmapMatrix, 
-
-
-												rateColKeys, 
-												rateRowVars[i], 
-												explanaryAttrs_current[index_explanary], 
-												rateMatrixIndex, 
-												protectedAttr_current, 
-												weightingAttr, 
-												targetAttr, 
-												target_var_type, 
-												rateColLabels[i], 
-
-
-												data.trend_type, 
-
-
-												slopeKey);
+			matrix_data = UpdateRankTrendMatrixFormat(
+								heatmapMatrix, rowLabels, colLabels, 
+								groupInfo,data.trend_type);
 		}
 
 		distanceMatrixHeatmap({
@@ -98,11 +83,11 @@ var clickHeatmapMatrixCell = function() {
 
 function updateDetailView() {
 	var d = this.datum();
-
+	console.log(d);
 	if (d.trend_type == 'lin_reg') {
 		updateScatter(d);
 	} else if (d.trend_type == 'rank_trend') {
-		prepareDetail(d);
+		updateRankChart(d);
 	}
 }
 
@@ -125,31 +110,6 @@ function distanceMatrixHeatmap(options) {
 		throw new Error('Please pass data');
 	}
 
-	var data = [];
-	var index = 0;
-	var rowLabelsData = [];
-	var colLabelsData = [];
-/*
-	for (var rowkey in preData) {
-		row = preData[rowkey];
-		data[index] = [];
-		for (var colKey in row) {
-			var singleObj = {};
-
-			singleObj['rowKey'] = rowkey;
-			singleObj['colKey'] = colKey;
-			singleObj['value'] = row[colKey];
-			data[index].push(singleObj);
-
-			if (index == 0) {
-				colLabelsData.push(colKey);
-			}
-		}
-
-		rowLabelsData.push(rowkey);
-		index++;
-	}
-*/
 	//var heatmapColor = d3.scale.linear().domain([0, 1]).range(["beige", "red"]);
 	var heatmapColors = ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081"];
 	//var heatmapColors = ["#ccebc5","#a8ddb5","#7bccc4","#2b8cbe","#084081"];
