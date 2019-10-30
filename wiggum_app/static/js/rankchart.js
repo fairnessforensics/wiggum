@@ -14,17 +14,18 @@ function updateRankChart(d) {
 	updateTabulate(vars_table);
 
 	// Rank chart
+	// highlighted subgroup
 	var filteredData = tableRecords.filter(function (e) {
 		return e.trend_type == d.trend_type && 
 				e.feat1 == d.targetAttr && 
 				e.feat2 == d.protectedAttr &&  
-				e.group_feat == d.categoryAttr;
-				//&& e.subgroup == d.category;
+				e.group_feat == d.categoryAttr &&
+				e.subgroup == d.category;
 	});
 
 	var parsedData = [];
 
-	// aggregate trend
+	// highlighted aggregate trend
 	var agg_trend = filteredData[0]['agg_trend'];
 	agg_trend.forEach(function(d, i){
 		var singleObj = {};
@@ -34,8 +35,27 @@ function updateRankChart(d) {
 		parsedData.push(singleObj);  
 	});
 
-	// subgroup trend
-	filteredData.forEach(function(d) {
+	// highlighted subgroup trend
+	var subgroup_trend = filteredData[0]['subgroup_trend'];
+	var highlight_subgroup = filteredData[0]['subgroup'];
+	subgroup_trend.forEach(function(d, i){
+		var singleObj = {};
+		singleObj['protected_value'] = d;
+		singleObj['subgroup'] = highlight_subgroup;
+		singleObj['rank'] = i+1;
+		parsedData.push(singleObj);  
+	});
+
+	// other subgroup trend
+	var otherSubgroupData = tableRecords.filter(function (e) {
+		return e.trend_type == d.trend_type && 
+				e.feat1 == d.targetAttr && 
+				e.feat2 == d.protectedAttr &&  
+				e.group_feat == d.categoryAttr &&
+				e.subgroup != d.category;
+	});
+
+	otherSubgroupData.forEach(function(d) {
 		var subgroup_trend = d['subgroup_trend'];
 		var subgroup = d['subgroup'];
 		subgroup_trend.forEach(function(d, i){
@@ -48,8 +68,13 @@ function updateRankChart(d) {
 	});
 
 	d3.select("#rankchart").selectAll('svg').remove();
-	console.log(parsedData);
+
 	DrawRankChart(parsedData);
+
+	// highlight aggregate
+	d3.selectAll('.node-aggregate').transition().style('opacity', 0.9);
+	// highlight subgroup, and replace spaces with '_' 
+	d3.selectAll('.node-' + highlight_subgroup.replace(/ /g, '_')).transition().style('opacity', 0.9);
 
 }
 
@@ -65,11 +90,19 @@ function DrawRankChart(data) {
    
 	var width = 460,
 		height = 360;
-	 
+	
+	//Redraw for zoom
+	function redraw() {
+		svg.attr("transform",
+			"translate(" + d3.event.translate + ")"
+			+ " scale(" + d3.event.scale + ")");	
+	}
+
 	var svg = d3.select("div#rankchart").append("svg")
 					.attr("width", width + margin.left + margin.right)
 					.attr("height", height + margin.top + margin.bottom)
-					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+					.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
+					.append("g");
 
 	// Scales
 	var x = d3.scale.ordinal()
@@ -131,12 +164,25 @@ function DrawRankChart(data) {
 			.x(function(d) { return x(d['subgroup']); })
 			.y(function(d) { return y(d['rank']); });
 
+		// Highlight lines data containing the first two elements
+		var highlight_line_data = lineData.slice(0, 2);
 		svg.append("path")
-			.datum(lineData)
+			.datum(highlight_line_data)
 			.attr("fill", "none")
-			//.attr("stroke", "#cccccc")
 			.attr("stroke", function(d) { return color(protected_value); })					
 			.attr("d", function(d) { return line(d)})
+			.attr("stroke-width", 3)
+			.style("opacity", 0.9);
+
+		// Other line data	
+		var other_line_data = lineData.slice(1);			
+		svg.append("path")
+			.datum(other_line_data)
+			.attr("fill", "none")
+			.attr("stroke", function(d) { return color(protected_value); })					
+			.attr("d", function(d) { return line(d)})
+			.attr("stroke-width", 3)
+			.style("opacity", 0.2);			
 	});	
 
 	// Nodes
@@ -144,12 +190,13 @@ function DrawRankChart(data) {
 		.selectAll("circle")
 		.data(data)
 		.enter().append("circle")
-			.attr("class", "end-circle")
-			.attr("cx", function(d) { return x(d['subgroup']); })
-			.attr("cy", function(d) { return y(d['rank']); })
-			.attr("r", 6)
-			.attr("fill", function(d) { return color(d['protected_value']); })			
-			.style("opacity", 0.9);
+		// replace spaces with '_'
+		.attr("class", function(d) { return "node-" + d['subgroup'].replace(/ /g, '_') })
+		.attr("cx", function(d) { return x(d['subgroup']); })
+		.attr("cy", function(d) { return y(d['rank']); })
+		.attr("r", 6)
+		.attr("fill", function(d) { return color(d['protected_value']); })			
+		.style("opacity", 0.2);
 			  
 }
 
