@@ -200,14 +200,15 @@ function DrawRankChart(data) {
 			  
 }
 
-
-
 /**
  * Prepare rank trend matrix information for interaction with rank chart
  *
- * @param matrix - .
- * @param trend_type - .
- * @returns none.
+ * @param matrix - distance matrix.
+ * @param rowLabels - feat1 used for row labels.
+ * @param colLabels - feat2 used for columns labels.
+ * @param category - groupfeat and subgroup.
+ * @param trend_type - trend type.
+ * @returns matrix - containing information for cells.
  */
 var UpdateRankTrendMatrixFormat = function(matrix, rowLabels, colLabels, groupInfo, trend_type) {
 

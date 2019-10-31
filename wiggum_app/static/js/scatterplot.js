@@ -573,13 +573,35 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 	return matrix;
 };
 
-
 /**
- * Interact with matrix cell when clicking
+ * Prepare linear regression trend matrix information for interaction with scatterplot
  *
- * @param none.
- * @returns none.
+ * @param matrix - distance matrix.
+ * @param rowLabels - feat1 used for row labels.
+ * @param colLabels - feat2 used for columns labels.
+ * @param category - groupfeat and subgroup.
+ * @param trend_type - trend type.
+ * @returns matrix - containing information for cells.
  */
+var UpdateLinearRegressionMatrixFormat = function(matrix, rowLabels, colLabels, category, trend_type) {
+
+	matrix.forEach(function(row, i) {
+		row.forEach(function(cell, j) {
+		
+			matrix[i][j] = {
+					rowVar: rowLabels[i],
+					colVar: colLabels[j],
+					value: cell,
+					categoryAttr: category.groupby,
+					category: category.value,
+					trend_type: trend_type
+				};
+		});
+	});
+
+	return matrix;
+};
+
 var clickMatrixCell = function() {
 	var allsvg = d3.select(container);
 

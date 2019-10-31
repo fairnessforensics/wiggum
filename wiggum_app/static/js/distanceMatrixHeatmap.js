@@ -17,21 +17,30 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 		if (data.trend_type == 'lin_reg') {	
 			
-			var labels = [];
+			rowLabels = [];
+			colLabels = [];
+
+			// get rows' labels
 			for (var rowkey in data.heatmap) {
-				labels.push(rowkey);
+				rowLabels.push(rowkey);
 			}
 
-			matrix_data = UpdateMatrixFormat(heatmapMatrix, labels, groupInfo, data.trend_type);
+			// get columns' lables
+			var first_row = data.heatmap[Object.keys(data.heatmap)[0]];
+			for (var colkey in first_row) {
+				colLabels.push(colkey);
+			}
 
-			rowLabels = labels;
-			colLabels = labels;
+			matrix_data = UpdateLinearRegressionMatrixFormat(heatmapMatrix, rowLabels, 
+													colLabels, groupInfo, data.trend_type);
 
 			if (createScatterPlotFlag) {
 				// Scatter plot
 				catAttrs = data.group_feat;
-				conAttrs = labels;
-				createScatterplot(csvData, labels);
+				conAttrs = [];
+				conAttrs.push(rowLabels[0]);
+				conAttrs.push(colLabels[0]);				
+				createScatterplot(csvData);
 				createScatterPlotFlag = false;
 			}
 
@@ -83,7 +92,7 @@ var clickHeatmapMatrixCell = function() {
 
 function updateDetailView() {
 	var d = this.datum();
-	console.log(d);
+
 	if (d.trend_type == 'lin_reg') {
 		updateScatter(d);
 	} else if (d.trend_type == 'rank_trend') {
