@@ -14,7 +14,8 @@ stat_comp = {
     'tpr': lambda c: c['TP']/(c['TP'] + c['FN']),
     'tnr': lambda c: c['TN']/(c['TN'] + c['FP']),
     'fdr': lambda c: c['FP']/(c['TP'] + c['FP']),
-    'fnr': lambda c: c['FN']/(c['TP'] + c['FP']),
+    'fpr': lambda c: c['FP']/(c['TN'] + c['FP']),
+    'fnr': lambda c: c['FN']/(c['TP'] + c['FN']),
     'f1': lambda c: 2*c['TP']/(2*c['TP']+c['FP']+c['FN'])}
 
 class BinClassStats():
@@ -57,12 +58,15 @@ class BinClassStats():
                     if not(k in confusion.keys()):
                         confusion[k] = 0
 
-                # TODO: fix this
-                strength = 1
+                # 0 if N <=10
+                # appraoches 1 as N->inf
+                N = sum(confusion)
+                strength = 1-1/np.log10(max(N,10))
 
-                # quality is absolute value of r_val (corelation coefficient)
-                classification_stats.append([g,p,
-                                stat_comp[self.my_stat](confusion),
+                cur_stat = stat_comp[self.my_stat](confusion)
+
+
+                classification_stats.append([g,p,cur_stat,
                                             groupby_lev, strength])
 
         #save as df
@@ -85,8 +89,10 @@ class BinClassStats():
 
     def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
         """
+        distance for confusion matrix stats is
 
         """
 
-        #
-        return np.abs(1 - row[col_a]/row[col_b])
+        # use np.divide to catch divide by 0 error
+        # ratio = np.divide(row[col_a]/row[col_b],where =row[col_b]>0)
+        return np.abs(row[col_a] - row[col_b])

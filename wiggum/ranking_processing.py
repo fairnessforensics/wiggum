@@ -156,7 +156,7 @@ class _ResultDataFrame():
         return self.result_df
 
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
-                            subgroup= None,trend_type=None):
+                            subgroup= None,subgroup2= None,trend_type=None):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -199,13 +199,18 @@ class _ResultDataFrame():
         else:
             sg_rows = True
 
+        if subgroup2:
+            sg_rows2 = pd.Series([sg in subgroup2 for sg in self.result_df.subgroup2])
+        else:
+            sg_rows2 = True
+
         if trend_type:
             tt_rows = pd.Series([tt in trend_type for tt in self.result_df.trend_type])
         else:
             tt_rows = True
 
         # take the intersection
-        target_row = f1_rows & f2_rows & gf_rows & sg_rows & tt_rows
+        target_row = f1_rows & f2_rows & gf_rows & sg_rows & tt_rows & sg_rows2
         # to index by a series, it must have the same index as the datafram
         target_row.index = self.result_df.index
         # return that row

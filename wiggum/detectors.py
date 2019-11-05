@@ -315,10 +315,14 @@ class _TrendDetectors():
                 # append
                 subgroup_trends.append(curgroup_corr)
 
+        print(subgroup_trends[0].columns)
+
         # merge together
-        lgroup = pd.concat(subgroup_trends,axis=0,sort=True).reset_index()
+        lgroup = pd.concat(subgroup_trends,axis=0,sort=True).reset_index().drop(columns = ['index'])
         # make a copy and rename them to 2
         rgroup = lgroup.copy()
+        print(lgroup.columns)
+        print(len(lgroup))
         # TODO: unhardcode this
         rgroup.rename(columns={'subgroup_trend':'subgroup_trend2',
                             'subgroup_trend_strength':'subgroup_trend_strength2',
@@ -326,11 +330,20 @@ class _TrendDetectors():
         # merge back together
         pairwise_df = pd.merge(lgroup,rgroup)
         # TODO remove when subgroup is the same
+        print(len(pairwise_df))
 
+        # when they're equal they're the same and when greater they're opposite alphabetical
+        # order, by keepoing only alphabetical order subgroup,subgroup2 pairs we keep only
+        # unique combinations
+        print(pairwise_df.columns)
+        pairwise_df.drop(pairwise_df[pairwise_df['subgroup']>=pairwise_df['subgroup2']].index,
+                            inplace=True)
+        print(len(pairwise_df))
         # remove rows where a trend is undefined
         pairwise_df.dropna(subset=['subgroup_trend','subgroup_trend2'],
                                 axis=0,inplace=True)
 
+        print(len(pairwise_df))
         pairwise_df[result_df_type_col_name] = 'pairwise'
 
         if self.result_df.empty or replace:
