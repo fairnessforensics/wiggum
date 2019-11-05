@@ -51,11 +51,13 @@ function updateDistanceHeatmapContainer(dataAll) {
 			
 			for (var rowkey in data.heatmap) {
 				row = data.heatmap[rowkey];
-				for (var colKey in row) {
-					if (pushFlag) {
+
+				// Using the first row to set the columns' labels
+				if (pushFlag) {
+					for (var colKey in row) {
 						colLabels.push(colKey);
-						pushFlag =  false;
 					}
+					pushFlag =  false;
 				}
 		
 				rowLabels.push(rowkey);

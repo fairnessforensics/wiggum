@@ -74,7 +74,7 @@ function updateRankChart(d) {
 	// highlight aggregate
 	d3.selectAll('.node-aggregate').transition().style('opacity', 0.9);
 	// highlight subgroup, and replace spaces with '_' 
-	d3.selectAll('.node-' + highlight_subgroup.replace(/ /g, '_')).transition().style('opacity', 0.9);
+	d3.selectAll('.node-' + highlight_subgroup.toString().replace(/ /g, '_')).transition().style('opacity', 0.9);
 
 }
 
@@ -191,7 +191,7 @@ function DrawRankChart(data) {
 		.data(data)
 		.enter().append("circle")
 		// replace spaces with '_'
-		.attr("class", function(d) { return "node-" + d['subgroup'].replace(/ /g, '_') })
+		.attr("class", function(d) { return "node-" + d['subgroup'].toString().replace(/ /g, '_') })
 		.attr("cx", function(d) { return x(d['subgroup']); })
 		.attr("cy", function(d) { return y(d['rank']); })
 		.attr("r", 6)
