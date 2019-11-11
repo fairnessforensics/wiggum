@@ -93,6 +93,12 @@ def test_basic_load_df():
     labeled_df.get_subgroup_trends_1lev([rankobj,linreg_obj])
     labeled_df.get_pairwise_trends_1lev([rankobj,linreg_obj])
 
+    # confirm that rankobj trends trend_precompute has the right columns
+    sel_trend = '_'.join([rankobj.name,'agg_trend','search_conducted_rate',
+                        'driver_gender'])
+
+    for reqcol in ['stat','max','min','count']:
+        assert reqcol in labeled_df.trend_list[1].trend_precompute[sel_trend].columns
     # These  two methods give the same, the string based version allows for simple access to default setting but passing a trend object would allow for overriding defaults and creating more custom subests of trends.
 
     labeled_df.add_distance(row_wise = True)
