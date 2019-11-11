@@ -167,16 +167,28 @@ def main():
             meta = request.form['metaList']
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
-            global user_trends
+            global trend_list
             user_trends = request.form['trend_types']
             user_trends = user_trends.split(",")
+
+            trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
+
+            # check trends computable
+            trend_computability = [t.is_computable(labeled_df_setup) for t in trend_list]
+
+            # no trends can compute
+            if sum(trend_computability) == 0:
+                return 'no_computable_trend'
+
+            # drop any specific trends that cannot compute
+            if sum(trend_computability) < len(user_trends):
+                trend_list = [t for t,c in zip(user_trends, trend_computability) if c]
 
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
         if action == 'page_load':
             if labeled_df_setup.result_df.empty:
-                trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
 
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 

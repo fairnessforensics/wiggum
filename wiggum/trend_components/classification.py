@@ -18,6 +18,39 @@ stat_comp = {
     'f1': lambda c: 2*c['TP']/(2*c['TP']+c['FP']+c['FN'])}
 
 class BinClassStats():
+    '''
+    class of trend for computing classification statistics from confusion matrix compoents
+    based on teh comparison of values from two columns of the data
+    '''
+
+    def is_computable(self,labeled_df=None):
+        """
+        check if this trend can be computed based on data and metadata available
+
+        Parameters
+        ----------
+        self : Trend
+            a trend object with a set_vars Parameters
+        labeled_df : LabeledDataFrame {None} (optional)
+            data to use if trend is not already configured
+
+
+        Returns
+        -------
+        computable : bool
+            True if requirements of get_trends are filled
+
+        See also:
+        get_trends() for description of how this trend computes and
+        """
+        if not( self.set_vars):
+            self.get_trend_vars(labeled_df)
+
+        vart_test_list = [bool(self.groundtruth),
+                        bool(self.prediction),
+                        self.my_stat in stat_comp.keys()]
+
+        return np.product([vartest for vartest in vart_test_list])
 
     def get_trends(self,data_df,trend_col_name):
         """
@@ -25,9 +58,35 @@ class BinClassStats():
         truth, requires a precompute step to augment the data with row-wise
         labels for speed
 
-        returns result df with rows for accuracy (acc), true positive
-        rate (tpr), positive predictive value (ppr), and true negative
-        rate (tnr)
+
+
+        Parameters
+        ----------
+        data_df : DataFrame or DataFrameGroupBy
+            data to compute trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get trend functions. for each
+        groundtruth and prediction pair there must be an accuracy column named like
+        groundtruthvar_predictionvar_acc.
+        trend_col_name : {'subgroup_trend','agg_trend'}
+            which type of trend is to be computed
+
+        Required properties
+        --------------------
+        name : string
+            used in the trend_type column of result_df and by viz
+        groundtruth : string or list of strings
+            variable(s) to be used as ground truth in precomputing the confusion matrix and
+        prediction :  string or list of strings
+        my_stat : string
+            must be one of the keys of wg.trend_components.stat_comp
+
+
+        Returns
+        -------
+        reg_df : DataFrame
+            returns result df with rows for accuracy (acc), true positive
+            rate (tpr), positive predictive value (ppr), and true negative
+            rate (tnr)
         """
         # look for columns named as pairs with _acc
 

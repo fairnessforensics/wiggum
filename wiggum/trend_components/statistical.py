@@ -6,6 +6,33 @@ import scipy.stats as stats
 
 class CorrelationSignTrend():
 
+    def is_computable(self,labeled_df=None):
+        """
+        check if this trend can be computed based on data and metadata available
+
+        Parameters
+        ----------
+        self : Trend
+            a trend object with a set_vars Parameters
+        labeled_df : LabeledDataFrame {None} (optional)
+            data to use if trend is not already configured
+
+
+        Returns
+        -------
+        computable : bool
+            True if requirements of get_trends are filled
+
+        See also:
+        get_trends() for description of how this trend computes and
+        """
+        if not( self.set_vars):
+            self.get_trend_vars(labeled_df)
+
+        vart_test_list = [len(self.regression_vars)>=2,
+                        bool(self.corrtype)]
+
+        return np.product([vartest for vartest in vart_test_list])
 
     ############################################################################
     # trend computation functions
@@ -131,6 +158,33 @@ class CorrelationSignTrend():
 
 class CorrelationTrend():
 
+    def is_computable(self,labeled_df=None):
+        """
+        check if this trend can be computed based on data and metadata available
+
+        Parameters
+        ----------
+        self : Trend
+            a trend object with a set_vars Parameters
+        labeled_df : LabeledDataFrame {None} (optional)
+            data to use if trend is not already configured
+
+
+        Returns
+        -------
+        computable : bool
+            True if requirements of get_trends are filled
+
+        See also:
+        get_trends() for description of how this trend computes and
+        """
+        if not( self.set_vars):
+            self.get_trend_vars(labeled_df)
+
+        vart_test_list = [len(self.regression_vars)>=2,
+                        bool(self.corrtype)]
+
+        return np.product([vartest for vartest in vart_test_list])
 
     ############################################################################
     # trend computation functions

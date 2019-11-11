@@ -66,10 +66,13 @@ def test_basic_load_df():
 
     corrobj = wg.All_Pearson()
     corrobj.get_trend_vars(labeled_df)
+    corrobj.is_computable()
 
 
     rankobj = wg.Mean_Rank_Trend()
+    rankobj.is_computable(labeled_df)
     linreg_obj = wg.All_Linear_Trend()
+    linreg_obj.is_computable(labeled_df)
 
 
     # # Computing Trends on a LabeledDataFrame

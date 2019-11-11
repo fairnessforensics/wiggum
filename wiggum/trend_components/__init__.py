@@ -10,7 +10,7 @@ from .regression import LinearRegression
 
 from .statistical import CorrelationTrend, CorrelationSignTrend
 
-from .classification import BinClassStats
+from .classification import BinClassStats, stat_comp
 
 
 
