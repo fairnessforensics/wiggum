@@ -2,17 +2,19 @@
 Getting Started
 ================
 
-Toward scalable, interactive detection of Simpson's Paradox.
+Simpson's Paradox Inspired Fairness Forensics
 
-Published in:
- - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`_ to appear
+Prior version published in:
+ - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`
+ - [Docs available separately](https://fairnessforensics.github.io/detect_simpsons_paradox/)
+
 
 
 To use the package, download (or clone) and:
 
 .. code-block:: bash
 
-  cd DetectSimpsonParadox/
+  cd wiggum/
   pip install .
 
 To use the package in python, after installed:
@@ -21,12 +23,12 @@ To use the package in python, after installed:
 
   import wiggum as wg
 
-Installing makes the flask app for interactive vizualization
+Installing makes the flask app for interactive visualization
 in browser available as a command line tool. To run the app:
 
 .. code-block:: bash
 
-  wiggum_app-app
+  wiggum_-app
 
 
 

@@ -1,12 +1,19 @@
 API Reference
 =============
 
-Detection Code
+Wiggum
 
-.. automodule:: detect_simpsons_paradox
+.. automodule:: wiggum.trend_components
    :members:
 
-Data Generation and preparation
+.. autoclass:: LabeledDataFrame
+   :members:
 
-.. automodule:: sp_data_util
+
+Wiggum App: interactive visualization
+
+The app is flask powered and includes both python and javascript to power the
+compuation and visualization.
+
+.. automodule:: wiggum_app.controller
       :members:
