@@ -68,7 +68,7 @@ class StatBinRankTrend():
             statistic to compute, must be compatible with DataFrame.apply,
             have the interface (self,df,statfeat,weightfeat) and return a Series
             with 'stat', 'max', 'min' values defining the statistic and a
-            confidence interval
+            confidence interval and 'count' defining the power of the computation
         trendgroup : list of strings
             list of variable names to be ranked (and used for grouping in this
             method)

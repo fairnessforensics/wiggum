@@ -148,6 +148,8 @@ def w_median(df,mcol,wcol):
     """
     compute the median or median with replication according to weights, gives a
     confidence interval specified by the middle 50%
+     compatible with DataFrame.apply() and get_trends functions in
+     wiggum.trend_components.categorical
 
     Parameters
     ----------
@@ -155,28 +157,42 @@ def w_median(df,mcol,wcol):
         passed as the source of apply, the data to extract columns from for
         computing a weighted average
     mcol : string
-        name of column in df to take the average of
+        name of column in df to take the median of
     wcol : string
         name of column in df to use for weighting
 
     Returns
     -------
-    wmed : float
+    stat_data : pandas Series
+        with 'stat', 'max', 'min' values defining the statistic and a
+        confidence interval
+    stat : float
         median of df[avcol] weighted row wise by df[wcol]
+    max : float
+        mean + std to be used for upper limit of confidence interval
+    min : float
+        mean - std
 
     """
     if pd.isna(wcol):
         wmed ,upper,lower = np.quantile(df[mcol],[.5,.25,.75])
+
+        count = n_df[avcol].count()
     else:
         reps = [int(n) for n in df[wcol].values]
         reps_mcol = np.repeat(df[mcol].values,reps)
         wmed,upper,lower =np.quantile( reps_mcol,[.5,.25,.75])
-    return pd.Series([wmed ,upper,lower],index=['stat','max','min'])
+        count = n_df[wcol].sum()
+
+    return pd.Series([wmed ,upper,lower,count],
+                index=['stat','max','min','count'])
 
 
 def w_avg(df,avcol,wcol):
     """
-    commpute a weighted average through DataFrame.apply()
+    commpute a weighted average and use the std to define confidence interval
+     compatible with DataFrame.apply() and get_trends functions in
+     wiggum.trend_components.categorical
 
     Parameters
     ----------
@@ -190,24 +206,37 @@ def w_avg(df,avcol,wcol):
 
     Returns
     -------
-    wmean : float
+    stat_data : pandas Series
+        with 'stat', 'max', 'min' values defining the statistic and a
+        confidence interval and 'count' defining the power of the computation
+    stat : float
         mean of df[avcol] weighted row wise by df[wcol]
+    max : float
+        mean + std to be used for upper limit of confidence interval
+    min : float
+        mean - std
+    count : int
+        sum wcol
     """
     n_df = df.dropna(axis=0,subset=[avcol])
     if len(n_df):
         if pd.isna(wcol):
             wmean = n_df[avcol].mean()
             std = n_df[avcol].std()
+            count = n_df[avcol].count()
         else:
             wmean = np.average(n_df[avcol],weights =n_df[wcol])
             # np.sum(df[avcol]*df[wcol])/np.sum(df[wcol])
             var =  np.average((n_df[avcol]-wmean)**2, weights=n_df[wcol])
             std = np.sqrt(var)
+            count = n_df[wcol].sum()
     else:
         wmean =0.0
         std = 0.0
+        count =0
 
-    return pd.Series([wmean ,wmean+std,wmean-std],index=['stat','max','min'])
+    return pd.Series([wmean ,wmean+std,wmean-std,count],
+            index=['stat','max','min','count'])
 
 
 
