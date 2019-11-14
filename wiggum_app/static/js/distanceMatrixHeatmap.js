@@ -98,7 +98,18 @@ function updateDetailView() {
 	if (d.trend_type == 'lin_reg') {
 		updateScatter(d);
 	} else if (d.trend_type == 'rank_trend') {
-		updateRankChart(d);
+
+		$.ajax({
+			type: 'POST',
+			url: '/',
+			data: {'action' : "detail_ranktrend", 'feat1': d.targetAttr, 
+						'feat2': d.protectedAttr, 'group_feat': d.categoryAttr},     
+			success: function(data) {
+				updateRankChart(d);
+				updateParallelCoordinates(data, d);
+			},
+		});
+
 	}
 }
 
@@ -122,10 +133,11 @@ function distanceMatrixHeatmap(options) {
 	}
 
 	//var heatmapColor = d3.scale.linear().domain([0, 1]).range(["beige", "red"]);
-	var heatmapColors = ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081"];
+	//var heatmapColors = ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081"];
+	var heatmapColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
 	//var heatmapColors = ["#ccebc5","#a8ddb5","#7bccc4","#2b8cbe","#084081"];
-	var heatmapColorScale = d3.scale.quantile()
-							.domain([-2, 2])
+	var heatmapColorScale = d3.scale.quantize()
+							.domain([0, 1])
 							.range(heatmapColors);
 
 	var numrows = data.length;
@@ -281,11 +293,14 @@ function distanceMatrixHeatmap(options) {
  */
 function DrawHeatmapLegend() {
 
-	var heatmapColors = ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081"];
+	//var heatmapColors = ["#f7fcf0","#e0f3db","#ccebc5","#a8ddb5","#7bccc4","#4eb3d3","#2b8cbe","#0868ac","#084081","#082281"];
+	var heatmapColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
+
 	//var heatmapColors = ["#ccebc5","#a8ddb5","#7bccc4","#2b8cbe","#084081"];
-	var heatmapColorScale = d3.scale.quantile()
-							.domain([-2, 2])
-							.range(heatmapColors);
+
+    var heatmapColorScale = d3.scale.quantize()
+									.domain([0, 1])
+									.range(heatmapColors);
 
 	var margin = {top: 30, right: 50, bottom: 120, left: 90},
 		width = 100,
@@ -298,20 +313,16 @@ function DrawHeatmapLegend() {
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 
-	var legend = svg.selectAll(".legend")
-		.data([0].concat(heatmapColorScale.quantiles()), function(d) {return d;})
-		.enter().append("g")
-		.attr("class", "legend");
-	
-	legend.append("rect")
-		.attr("x", 20)
-		.attr("y", function(d, i){ return 30 * i;})
-		.attr("width", 20)
-		.attr("height", 30)
-		.style("fill", function(d, i) {return heatmapColors[i]; });
+	var colorLegend = d3.legend.color()
+								.labelFormat(d3.format(".1f"))
+								.scale(heatmapColorScale)
+								.shapePadding(5)
+								.shapeWidth(50)
+								.shapeHeight(20)
+								.labelOffset(12);
+		
+	svg.append("g")
+		.attr("transform", "translate(-20, 0)")
+		.call(colorLegend);
 
-	legend.append("text")
-		.text(function(d) {return d.toString().substr(0,4);})
-		.attr("x", 50)
-		.attr("y", function(d, i){ return 30 *i + 5;});
 }

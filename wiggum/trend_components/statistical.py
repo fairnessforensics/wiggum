@@ -95,7 +95,14 @@ class CorrelationSignTrend():
                 triu_feat_indices = triu_indices
 
             # compute correlations, only store vlaues from upper right triangle
-            trend_name = '_'.join([self.name , trend_col_name])
+            # if groupby add subgroup info
+            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                group_feat = data_df.count().index.name
+                subgroup = list(data_df.groups.keys())*n_triu_values
+                trend_name = '_'.join([self.name , trend_col_name, group_feat, subgroup])
+            else: 
+                trend_name = '_'.join([self.name , trend_col_name])
+
             corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
             corr_triu = corr_mat.values[triu_indices]
 
@@ -247,7 +254,14 @@ class CorrelationTrend():
                 triu_feat_indices = triu_indices
 
             # compute correlations, only store vlaues from upper right triangle
-            trend_name = '_'.join([self.name , trend_col_name])
+            # if groupby add subgroup info
+            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                group_feat = data_df.count().index.name
+                subgroup = list(data_df.groups.keys())*n_triu_values
+                trend_name = '_'.join([self.name , trend_col_name, group_feat, subgroup])
+            else: 
+                trend_name = '_'.join([self.name , trend_col_name])
+
             corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
             corr_triu = corr_mat.values[triu_indices]
 

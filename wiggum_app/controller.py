@@ -212,6 +212,17 @@ def main():
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
                             df = df)
 
+        # visualize.html rank trend's cells clicked
+        if action == 'detail_ranktrend':
+            feat1 = request.form['feat1']
+            feat2 = request.form['feat2']
+            group_feat = request.form['group_feat']
+
+            rank_trend_detail = models.getRankTrendDetail(labeled_df_setup, 
+                                                            feat1, feat2, group_feat)
+
+            return jsonify(rank_trend_detail.reset_index().to_dict(orient='records'))
+
         # visualize.html 'Filter' button clicked
         if action == 'filter':
             filter_object = request.form['filter_object']

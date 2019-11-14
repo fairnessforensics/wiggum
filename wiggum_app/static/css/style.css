@@ -321,3 +321,14 @@ div.tooltip {
     border-color: white;
     top: 200px;
 }
+
+#rankchart2 {
+    display: block;
+    position: absolute;
+    background: white;
+    right: 120px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: white;
+    top: 30px;
+}

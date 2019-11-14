@@ -508,6 +508,53 @@ def getDistanceHeatmapDict(labeled_df):
 
     return distance_heatmap_dict_list
 
+def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
+    """
+    Extract stats for rank trend detail view.
+
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        LabeledDataFrame    
+    feat1 : str
+        a variable that will have feat1 information    
+    feat2 : str
+        a variable that will have feat2 information    
+    group_feat : str
+        a variable that will have group_feat information                            
+    Returns
+    --------
+    detail_df: dataframe
+    """
+
+    # trend dictionary
+    trend_idx_dict = {cur_trend.name: i for i, cur_trend in enumerate(labeled_df.trend_list)} 
+    # get index for rank trend
+    rank_trend_idx = trend_idx_dict.get("rank_trend")
+
+    trend_precompute = labeled_df.trend_list[rank_trend_idx].trend_precompute
+
+    # aggregate' stats
+    sel_agg_trend = '_'.join(['rank_trend', 'agg_trend', feat1, feat2])
+
+    # create a new DataFrame for detail view
+    detail_df = pd.DataFrame()
+
+    # aggregate's stats
+    detail_df['aggregate'] = trend_precompute[sel_agg_trend].stat
+
+    # subgroups' stats
+    sel_subgroup_trend = '_'.join(['rank_trend', 'subgroup_trend', feat1, feat2, group_feat])
+
+    for key in trend_precompute:
+        if key.startswith(sel_subgroup_trend):
+            # get value of the last segment after '-'
+            # subgroup' name can't have '_', otherwise partial subgroup name will be extracted
+            subgroup = key.split('_')[-1]
+            detail_df[subgroup] = trend_precompute[key].stat
+
+    return detail_df
+
 def getResultDict(labeled_df, result_df, filter_subgroup= None):
     """
     Get Result Dictitonary

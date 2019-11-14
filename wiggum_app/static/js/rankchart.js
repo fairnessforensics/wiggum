@@ -67,7 +67,7 @@ function updateRankChart(d) {
 		});
 	});
 
-	d3.select("#rankchart").selectAll('svg').remove();
+	d3.select("#rankchart2").selectAll('svg').remove();
 
 	DrawRankChart(parsedData);
 
@@ -86,10 +86,12 @@ function updateRankChart(d) {
  */
 function DrawRankChart(data) {
 
-	var margin = {top: 50, right: 10, bottom: 50, left: 10};
+	//var margin = {top: 50, right: 10, bottom: 50, left: 10};
+	var margin = {top: 50, right: 10, bottom: 10, left: 10};
    
 	var width = 460,
-		height = 360;
+//		height = 360;
+		height = 160;
 	
 	//Redraw for zoom
 	function redraw() {
@@ -98,7 +100,7 @@ function DrawRankChart(data) {
 			+ " scale(" + d3.event.scale + ")");	
 	}
 
-	var svg = d3.select("div#rankchart").append("svg")
+	var svg = d3.select("div#rankchart2").append("svg")
 					.attr("width", width + margin.left + margin.right)
 					.attr("height", height + margin.top + margin.bottom)
 					.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
