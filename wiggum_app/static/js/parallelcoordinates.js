@@ -19,12 +19,21 @@ function DrawParallelCoordinates(data, vars) {
 		width = 480 - margin.left - margin.right,
 		height = 400 - margin.top - margin.bottom;
   
+	//Redraw for zoom
+	function redraw() {
+		svg.attr("transform",
+			"translate(" + d3.event.translate + ")"
+			+ " scale(" + d3.event.scale + ")");	
+	}
+
 	var svg = d3.select("#rankchart")
 				.append("svg")
 				.attr("width", width + margin.left + margin.right)
 				.attr("height", height + margin.top + margin.bottom)
+				.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
 				.append("g")
 				.attr("transform","translate(" + margin.left + "," + margin.top + ")");
+
   
 	var color = d3.scale.category10();					
   

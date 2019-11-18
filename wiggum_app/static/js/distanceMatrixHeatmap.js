@@ -105,7 +105,7 @@ function updateDetailView() {
 			data: {'action' : "detail_ranktrend", 'feat1': d.targetAttr, 
 						'feat2': d.protectedAttr, 'group_feat': d.categoryAttr},     
 			success: function(data) {
-				updateRankChart(d);
+				//updateRankChart(d);
 				updateParallelCoordinates(data, d);
 			},
 		});
