@@ -36,13 +36,26 @@ function DrawParallelCoordinates(data, vars) {
 			dimensions.push(key);
 		}
 	}
-  
+
 	var y = {}
 	for (i in dimensions) {
 		name = dimensions[i]
+
 		y[name] = d3.scale.linear()
-					.domain( [0,1] ) 
+					//.domain(d3.extent(data, function(d) { return +d[name]; }))
+					.domain(d3.extent(
+						function(array, names){
+						   var res = [];
+						   array.forEach(function(item){
+							  names.forEach(function(name){
+								 res = res.concat(item[name]);
+							  });
+						   });
+						   return(res);
+						}(data, dimensions)
+					 ))
 					.range([height, 0])
+
 	}
   
 	x = d3.scale.ordinal()
