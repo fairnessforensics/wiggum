@@ -38,24 +38,26 @@ function DrawParallelCoordinates(data, vars) {
 	}
 
 	var y = {}
+
+	// Get all values to set y-axe's sacle
+	var all_values = function(array, names){
+		var res = [];
+		array.forEach(function(item){
+		   names.forEach(function(name){
+			  res = res.concat(item[name]);
+		   });
+		});
+		return(res);
+	}(data, dimensions)
+
 	for (i in dimensions) {
 		name = dimensions[i]
 
+		// y-axe's scale
 		y[name] = d3.scale.linear()
 					//.domain(d3.extent(data, function(d) { return +d[name]; }))
-					.domain(d3.extent(
-						function(array, names){
-						   var res = [];
-						   array.forEach(function(item){
-							  names.forEach(function(name){
-								 res = res.concat(item[name]);
-							  });
-						   });
-						   return(res);
-						}(data, dimensions)
-					 ))
+					.domain(d3.extent(all_values))
 					.range([height, 0])
-
 	}
   
 	x = d3.scale.ordinal()
