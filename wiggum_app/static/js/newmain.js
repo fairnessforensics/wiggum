@@ -175,6 +175,13 @@ function drawGraphTable(data, action) {
 	});                             
 }
 
+/**
+ * Draw distance matrix heatmap
+ *
+ * @param data - distance heatmap matrices.
+ * @param action - action.
+ * @returns none.
+ */
 function drawDistanceMatrixHeatmap(data, action) {
 	
 	csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));

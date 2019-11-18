@@ -1,3 +1,10 @@
+/**
+ * Draw Rank Chart
+ *
+ * @param data - rank trend's detail data.
+ * @param vars - clicked cell's information.
+ * @returns none.
+ */
 function updateParallelCoordinates(data, vars) {
 
 	// Remove previous chart
@@ -11,7 +18,8 @@ function updateParallelCoordinates(data, vars) {
 /**
  * Draw Rank Chart
  *
- * @param data - .
+ * @param data - rank trend's detail data.
+ * @param vars - clicked cell's information.
  * @returns none.
  */
 function DrawParallelCoordinates(data, vars) {

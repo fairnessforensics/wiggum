@@ -82,6 +82,12 @@ function updateDistanceHeatmapContainer(dataAll) {
 		.on("click", clickHeatmapMatrixCell);	
 }
 
+/**
+ * Click heatmap matrix cell event
+ *
+ * @param none.
+ * @returns none.
+ */
 var clickHeatmapMatrixCell = function() {
 	var allsvg = d3.select(container);
 
@@ -92,6 +98,12 @@ var clickHeatmapMatrixCell = function() {
 	if (clickFlg) { clickFlg.call(updateDetailView); }
 };
 
+/**
+ * Update detail view
+ *
+ * @param none.
+ * @returns none.
+ */
 function updateDetailView() {
 	var d = this.datum();
 
