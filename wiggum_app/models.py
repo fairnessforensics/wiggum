@@ -525,6 +525,9 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
     Returns
     --------
     detail_df: dataframe
+        detail stats
+    count_df: dataframe
+        detail counts
     """
 
     # trend dictionary
@@ -540,8 +543,13 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
     # create a new DataFrame for detail view
     detail_df = pd.DataFrame()
 
+    # create a new DataFrame for counts
+    count_df = pd.DataFrame()
+
     # aggregate's stats
     detail_df['aggregate'] = trend_precompute[sel_agg_trend].stat
+    # aggregate's count
+    count_df['aggregate'] = trend_precompute[sel_agg_trend]['count']
 
     # subgroups' stats
     sel_subgroup_trend = '_'.join(['rank_trend', 'subgroup_trend', feat1, feat2, group_feat])
@@ -552,8 +560,13 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
             # subgroup' name can't have '_', otherwise partial subgroup name will be extracted
             subgroup = key.split('_')[-1]
             detail_df[subgroup] = trend_precompute[key].stat
+            count_df[subgroup] = trend_precompute[key]['count']
 
-    return detail_df
+    # transform count_df for bar charts
+    count_df = count_df.stack().unstack(0)
+    count_df.index.name = 'subgroup'
+    
+    return detail_df, count_df
 
 def getResultDict(labeled_df, result_df, filter_subgroup= None):
     """

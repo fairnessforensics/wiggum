@@ -267,7 +267,7 @@ function sortByKey(array, key) {
     });
 }
 
-function DrawGroupedBarChart(options) {
+function DrawGroupedBarChart_old(options) {
     
     var csvdata = options.data;
     var protectedAttr = options.protectedAttr;
@@ -407,4 +407,86 @@ function highlightBar(i) {
     d3.selectAll('.gbc').transition().style('opacity', 0.2);
     d3.selectAll('.pic-' + (i*2+1)).transition().style('opacity', 1);
     d3.selectAll('.pic-' + (i*2+2)).transition().style('opacity', 1);
+}
+
+/**
+ * Draw Bar Chart
+ *
+ * @param data - counts' data.
+ * @param vars - clicked cell's information.
+ * @returns none.
+ */
+function DrawGroupedBarChart(data, vars) {
+    
+    var margin = {top: 20, right: 0, bottom: 5, left: 30},
+    width = 480 - margin.left - margin.right,
+    height = 100 - margin.top - margin.bottom;
+
+    var x0 = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
+
+    var x1 = d3.scale.ordinal();
+
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .ticks(5)
+        .orient("left");
+
+	//Redraw for zoom
+	function redraw() {
+		svg.attr("transform",
+			"translate(" + d3.event.translate + ")"
+			+ " scale(" + d3.event.scale + ")");	
+	}
+
+    var svg = d3.select("#groupedbarchart").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // Rearrange the order: 1. aggregate 2. selected subgroup
+    var dimensions = ["aggregate", vars.category.toString()];
+
+	for (var row in data) {
+		if (data[row].subgroup != "aggregate" && data[row].subgroup!=vars.category.toString()) {
+			dimensions.push(data[row].subgroup);
+		}
+	}
+
+    var keys = d3.keys(data[0]).filter(function(key) { return key !== 'subgroup'; });
+
+    x0.domain(dimensions);
+    //x0.domain(data.map(function(d) { return d.subgroup; }));
+    x1.domain(keys).rangeRoundBands([0, x0.rangeBand()*3/4]);
+    y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
+    
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("y", -9)
+        .attr("x", -12)
+        .style("text-anchor", "middle")
+        .text("Count");
+  
+    var state = svg.selectAll(".state")
+        .data(data)
+        .enter().append("g")
+        .attr("class", "g")
+        .attr("transform", function(d) { return "translate(" + x0(d.subgroup) + ",0)"; });
+
+    state.selectAll("rect")
+        .data(function(d) {return keys.map(function(key) { return {key: key, value: d[key]}; }); })
+        .enter().append("rect")
+        .attr("width", x1.rangeBand())
+        .attr("x", function(d) { return x1(d.key); })
+        .attr("y", function(d) { return y(d.value); })
+        .attr("height", function(d) { return height - y(d.value); })
+        .style("fill", function(d) { return color_detail_ranktrend(d.key); });
+
 }
