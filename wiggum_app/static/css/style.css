@@ -115,9 +115,9 @@ path.link {
 
 #groupedbarchart {
     display: block;
-    position: fixed;
-    right: 120px;
-    top: 800px;
+    position: absolute;
+    right: 140px;
+    top: 90px;
 }
 
 line.slope-line4all{
@@ -309,4 +309,26 @@ div.tooltip {
     position: absolute;
     top: 30px;
     margin-left: 660px;
+}
+
+#rankchart {
+    display: block;
+    position: absolute;
+    background: white;
+    right: 100px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: white;
+    top: 190px;
+}
+
+#rankchart2 {
+    display: block;
+    position: absolute;
+    background: white;
+    right: 120px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: white;
+    top: 30px;
 }

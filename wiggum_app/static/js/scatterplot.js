@@ -573,13 +573,35 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 	return matrix;
 };
 
-
 /**
- * Interact with matrix cell when clicking
+ * Prepare linear regression trend matrix information for interaction with scatterplot
  *
- * @param none.
- * @returns none.
+ * @param matrix - distance matrix.
+ * @param rowLabels - feat1 used for row labels.
+ * @param colLabels - feat2 used for columns labels.
+ * @param category - groupfeat and subgroup.
+ * @param trend_type - trend type.
+ * @returns matrix - containing information for cells.
  */
+var UpdateLinearRegressionMatrixFormat = function(matrix, rowLabels, colLabels, category, trend_type) {
+
+	matrix.forEach(function(row, i) {
+		row.forEach(function(cell, j) {
+		
+			matrix[i][j] = {
+					rowVar: rowLabels[i],
+					colVar: colLabels[j],
+					value: cell,
+					categoryAttr: category.groupby,
+					category: category.value,
+					trend_type: trend_type
+				};
+		});
+	});
+
+	return matrix;
+};
+
 var clickMatrixCell = function() {
 	var allsvg = d3.select(container);
 
@@ -596,13 +618,20 @@ var clickMatrixCell = function() {
  * @param none.
  * @returns none.
  */
-function updateScatter() {
-	var d = this.datum();
+function updateScatter(data) {
+	var d;
+	if (typeof data !== 'undefined') {
+		d = data;
+	} else {
+		d = this.datum();
+	}
+
 	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
 		categoryAttr: d.categoryAttr, category: d.category, trend_type: d.trend_type};
 
 	// updateVars used for same axis range
 	updateVars = vars;	
+
 	updateScatterplot(csvData, vars);
 	updateTabulate(vars);
 	highlightSubgroup(vars.category);
@@ -618,4 +647,3 @@ function highlightSubgroup(subgroup) {
 	d3.selectAll('.elm').transition().style('opacity', 0.2);
 	d3.selectAll('.sel-' + subgroup).transition().style('opacity', 1);
 }
-

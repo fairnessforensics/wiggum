@@ -467,6 +467,107 @@ def updateMetaData(labeled_df, meta):
 
     return labeled_df
 
+def getDistanceHeatmapDict(labeled_df):
+    """
+    Generate Distance Heatmap Dictitonary List for overview 
+    by grouping the results and extracting distances from result table.
+
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        LabeledDataFrame    
+    Returns
+    --------
+    distance_heatmap_dict_list: Distance Heatmap Dictitonary List formatted for use in visualization
+    """
+
+    distance_heatmap_dict_list = []
+
+    trend_type_list = pd.unique(labeled_df.result_df['trend_type'])
+
+    for trend_type in trend_type_list:
+        # iterate over the groupby variables
+        for gby in pd.unique(labeled_df.result_df['group_feat']):
+            # groupby the values of the curent groupby varialbe
+            cgby = labeled_df.get_trend_rows(group_feat=gby, trend_type=trend_type).groupby('subgroup')
+
+            # iterate over the values of the groupby
+            for gby_lev,df in cgby:
+                distance_heatmap_dict = {}
+                heatmap = df.pivot(index='feat1', columns='feat2', values='distance')
+
+                # replace Nan to 99
+                heatmap.fillna(99, inplace=True)
+
+                distance_heatmap_dict = {'trend_type' : trend_type,
+                            'group_feat': gby,
+                            'subgroup': gby_lev,
+                            'heatmap':heatmap.to_dict('index')}
+
+                distance_heatmap_dict_list.append(distance_heatmap_dict)
+
+    return distance_heatmap_dict_list
+
+def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
+    """
+    Extract stats for rank trend detail view.
+
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        LabeledDataFrame    
+    feat1 : str
+        a variable that will have feat1 information    
+    feat2 : str
+        a variable that will have feat2 information    
+    group_feat : str
+        a variable that will have group_feat information                            
+    Returns
+    --------
+    detail_df: dataframe
+        detail stats
+    count_df: dataframe
+        detail counts
+    """
+
+    # trend dictionary
+    trend_idx_dict = {cur_trend.name: i for i, cur_trend in enumerate(labeled_df.trend_list)} 
+    # get index for rank trend
+    rank_trend_idx = trend_idx_dict.get("rank_trend")
+
+    trend_precompute = labeled_df.trend_list[rank_trend_idx].trend_precompute
+
+    # aggregate' stats
+    sel_agg_trend = '_'.join(['rank_trend', 'agg_trend', feat1, feat2])
+
+    # create a new DataFrame for detail view
+    detail_df = pd.DataFrame()
+
+    # create a new DataFrame for counts
+    count_df = pd.DataFrame()
+
+    # aggregate's stats
+    detail_df['aggregate'] = trend_precompute[sel_agg_trend].stat
+    # aggregate's count
+    count_df['aggregate'] = trend_precompute[sel_agg_trend]['count']
+
+    # subgroups' stats
+    sel_subgroup_trend = '_'.join(['rank_trend', 'subgroup_trend', feat1, feat2, group_feat])
+
+    for key in trend_precompute:
+        if key.startswith(sel_subgroup_trend):
+            # get value of the last segment after '-'
+            # subgroup' name can't have '_', otherwise partial subgroup name will be extracted
+            subgroup = key.split('_')[-1]
+            detail_df[subgroup] = trend_precompute[key].stat
+            count_df[subgroup] = trend_precompute[key]['count']
+
+    # transform count_df for bar charts
+    count_df = count_df.stack().unstack(0)
+    count_df.index.name = 'subgroup'
+    
+    return detail_df, count_df
+
 def getResultDict(labeled_df, result_df, filter_subgroup= None):
     """
     Get Result Dictitonary

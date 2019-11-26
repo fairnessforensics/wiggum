@@ -307,13 +307,6 @@ function updateRateSPContainer(slopeKey) {
 
 		// <-------------------------------------
 
-		// rate SP matrix for all
-		//var rateMatrix = getRateMatrixAll(csvData, groupingAttrs[i], groupingAttrs[j]);
-		//var rateTrendMatrixAll = getRateTrendMatrixAll(rateMatrix);
-		// rate SP matrix for subgroups
-		//var rateMatrixGroups = getRateMatrixSub(csvData, groupingAttrs[i], groupingAttrs[j]);
-		//var rateTrendMatrixSub = getRateTrendMatrixSub(rateMatrixGroups);
-
 		var bivariateMatrix = rateBivariateMatrix(rateTrendMatrixAll[index], rateTrendMatrixSub[i]);
 
 		var subgroupLabel = protectedAttr_current + ' - ' + explanaryAttrs_current[index_explanary];
@@ -513,6 +506,12 @@ var UpdateLegendMatrixFormat = function(matrix, vars, category) {
 	return matrix;
 };
 
+/**
+ * Draw slider for changing the range
+ *
+ * @param none.
+ * @returns none.
+ */
 function DrawSlider(){		
 	// Draw slider
 	var sliderWidth = 120;
@@ -572,6 +571,12 @@ function DrawSlider(){
 	});
 }
 
+/**
+ * Draw bivariate matrix legend
+ *
+ * @param none.
+ * @returns none.
+ */
 function DrawLegend() {
 
 	var margin = {top: 63, right: 50, bottom: 120, left: 63},
@@ -888,6 +893,12 @@ function DrawLegend() {
 	key.selectAll(".legendCell").on("dblclick",doubleClickLegend);	
 }
 
+/**
+ * Double click legend cell event
+ *
+ * @param none.
+ * @returns none.
+ */
 function doubleClickLegend(){	
 	var legendsvg = d3.select("#legend");
 	legendsvg.selectAll(".legendCell").classed("clicked", false);
@@ -898,6 +909,12 @@ function doubleClickLegend(){
 
 };
 
+/**
+ * Click legend cell event
+ *
+ * @param none.
+ * @returns none.
+ */
 function clickLegendCell(){	
 	var legendsvg = d3.select("#legend");
 	legendsvg.selectAll(".legendCell").classed("clicked", false);
@@ -905,6 +922,12 @@ function clickLegendCell(){
 	if (clickFlg) { clickFlg.call(updateCorrelationMatrix); }
 };
 
+/**
+ * Update correlation matrix
+ *
+ * @param none.
+ * @returns none.
+ */
 function updateCorrelationMatrix() {
 	var d = this.datum();
 	legendValue = d.value;

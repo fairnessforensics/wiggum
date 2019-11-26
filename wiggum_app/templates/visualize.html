@@ -6,7 +6,7 @@
 	<title>Wiggum: Viz</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
-
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.13.0/d3-legend.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <script>
@@ -169,17 +169,20 @@
 
                                 // Draw Legend
                                 d3.select("#legend").selectAll('svg').remove();
-                                DrawLegend();
+                                //DrawLegend();
 
                                 // Initial legend click value
                                 legendValue = -1;
 
-                                drawGraphTable(data, 'page_load');
+                                //drawGraphTable(data, 'page_load');
+
+                                DrawHeatmapLegend();
+                                drawDistanceMatrixHeatmap(data, 'page_load');
 
                                 if (rankTrendLegendFlg == true) {
                                     // redraw legend for rank_trend
-                                    d3.select("#legend").selectAll('svg').remove();
-                                    DrawLegend();
+                                    //d3.select("#legend").selectAll('svg').remove();
+                                    //DrawLegend();
                                 }
                             }
 
@@ -892,7 +895,8 @@
     <div style="display:none; float:left" id="scatterplot"></div>
     <div id="slopegraph"></div>
     <div id="groupedbarchart"></div>
-
+    <div id="rankchart"></div>
+    <div id="rankchart2"></div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/newmain.js') }}"></script>
 
@@ -907,6 +911,9 @@
     <script src="{{ url_for('static', filename='js/table.js') }}"></script>
     <script src="{{ url_for('static', filename='js/rankingView.js') }}"></script>    
     <script src="{{ url_for('static', filename='js/circularProcess.js') }}"></script>        
+    <script src="{{ url_for('static', filename='js/distanceMatrixHeatmap.js') }}"></script>    
+    <script src="{{ url_for('static', filename='js/rankchart.js') }}"></script>     
+    <script src="{{ url_for('static', filename='js/parallelcoordinates.js') }}"></script>       
     </form>
 
 </body>

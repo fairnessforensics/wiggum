@@ -96,6 +96,7 @@ class CorrelationSignTrend():
 
             # compute correlations, only store vlaues from upper right triangle
             trend_name = '_'.join([self.name , trend_col_name])
+
             corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
             corr_triu = corr_mat.values[triu_indices]
 
@@ -248,6 +249,7 @@ class CorrelationTrend():
 
             # compute correlations, only store vlaues from upper right triangle
             trend_name = '_'.join([self.name , trend_col_name])
+
             corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
             corr_triu = corr_mat.values[triu_indices]
 

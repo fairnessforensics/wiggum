@@ -124,7 +124,14 @@ class StatBinRankTrend():
                 comparison_sign = sign_map[stat_df[alpha1] < stat_df[alpha2]]
 
                 # save detailed precompute
-                trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
+                # if groupby add subgroup info
+                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                    group_feat = data_df.count().index.name
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat, 
+                                            group_feat, str(groupby_lev)])
+                else:
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
+
                 self.trend_precompute[trend_name] = stat_df
 
 
@@ -291,7 +298,14 @@ class StatRankTrend():
                 stat_df.sort_values('stat',inplace=True)
 
                 # save detailed precompute
-                trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
+                # if groupby add subgroup info
+                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                    group_feat = data_df.count().index.name
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat, 
+                                            group_feat, str(groupby_lev)])
+                else:
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
+                
                 self.trend_precompute[trend_name] = stat_df
 
                 # extract for result_df

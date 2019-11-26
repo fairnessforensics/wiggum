@@ -189,7 +189,6 @@ def main():
         # initial for visualize.html page
         if action == 'page_load':
             if labeled_df_setup.result_df.empty:
-
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 
                 if labeled_df_setup.result_df.empty:
@@ -198,10 +197,35 @@ def main():
                 # add distances
                 labeled_df_setup.add_distance()
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            #result_dict_dict = {}
+            #result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup)
 
-            return jsonify(result_dict_dict)
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
+            #return jsonify(result_dict_dict)
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = labeled_df_setup.result_df.to_json(orient='records'),
+                            df = df)
+
+        # visualize.html rank trend's cells clicked
+        if action == 'detail_ranktrend':
+            feat1 = request.form['feat1']
+            feat2 = request.form['feat2']
+            group_feat = request.form['group_feat']
+
+            rank_trend_detail, rank_trend_count = models.getRankTrendDetail(labeled_df_setup, 
+                                                            feat1, feat2, group_feat)
+
+            # covert row label to string to avoid jsonify error, e.g., department: 1
+            rank_trend_count = rank_trend_count.rename(columns=lambda x: str(x))
+
+            #return jsonify(rank_trend_detail.reset_index().to_dict(orient='records'))
+            return jsonify(rank_trend_detail = rank_trend_detail.reset_index().to_dict(orient='records'), 
+                            rank_trend_count = rank_trend_count.reset_index().to_dict(orient='records'))
 
         # visualize.html 'Filter' button clicked
         if action == 'filter':
