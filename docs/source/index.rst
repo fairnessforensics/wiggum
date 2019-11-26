@@ -10,10 +10,10 @@ Wiggum Documentation
    :maxdepth: 1
    :caption: Contents:
 
-   API
    user_manual
    app_structure
    trend_objects
+   API
 
 .. toctree::
    :maxdepth: 1
