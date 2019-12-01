@@ -15,11 +15,17 @@ component parts that are used to compose complete trend objects through
 inheritence. We use Mixins in python to build complete trends. A complete,
 usable trend object should be organized as follows.
 
-There are three types of mixins and available Mixin classes are acessible in
-`wg.trend_components.baseTrendMixin_list`,
-`wg.trend_components.varTypeMixin_list`, and
-`wg.trend_components.trendCommputeMixin_list`
+There are three types of mixins and available Mixin classes are accessible in
 
+::
+
+  wg.trend_components.baseTrendMixin_list`
+  wg.trend_components.varTypeMixin_list`
+  wg.trend_components.trendCommputeMixin_list
+
+
+
+A complete trend will look like:
 
 .. code-block:: python
    :emphasize-lines: 1
@@ -188,16 +194,11 @@ Second, it allows for a given trend computation may use different types of varia
 Third, the use of additional class properties enables further modification of the computation, for example ranking by mean or median or computing Pearson versus Spearman correlation.
 We provide a single baseTrend that defines a constructor shared across all trend objects.
 
+.. code-block:: python
 
-\begin{minipage}[c]{0.95\columnwidth}
-\begin{lstlisting}[language=Python,
-                   label={fig:exmapleTrend},
-                   columns={fullflexible},
-                   frame = single,
-                   caption={Example of a trend class definition using the base class, \texttt{trend}; trendComputeMixin, \texttt{statRankTrend}; and varTypeMixin, \texttt{weightedRank}. The class property \texttt{my\_stat} allows further customization of the \texttt{statRankTrend}, for example we also have a median\_rank\_trend.}]
-class mean_rank_trend(statRankTrend,
-                      weightedRank,
-                      trend):
+  class mean_rank_trend(statRankTrend,
+                    weightedRank,
+                    trend):
     name = 'rank_trend' # required class property
     # trend specific class variable
     my_stat = lambda self,d,m,w : weighted_avg(d,m,w)
@@ -207,11 +208,6 @@ class mean_rank_trend(statRankTrend,
 
 
 
-
-% TODO: make two column
-\input{tab_trendComputeMixin.tex}
-
-
 The trendComputeMixins pair the trend calculation and the distance calculations, we provide 5, described in Table~\ref{tab:trendcomputemixin}.
 For the distance between linear trends, Wiggum uses a normalization of the angle between the lines fit the whole data set and the current partition.
 The normalization step creates a distance in $[0,1]$ that is always positive valued.
@@ -219,19 +215,21 @@ This normalization makes the distance comparable to the 0/1 loss distance used i
 We choose to make $d=1$ for a right angle  and $d=0$ for parallel lines, whether vertical or horizontal.
 
 
-\begin{align}
+.. math::
+
    d = \normangle(t_a,t_s) = \frac{2}{\pi} \left(\left|\tan^{-1}(t_a) - \tan^{-1}(t_s)\right|\% \frac{\pi}{2}\right) \label{eq:normangle}
-\end{align}
-% \[\]
+
 
 where $\%$ is the modulo operator and $t_a,t_s$ are slopes.
 For multi-valued ranking trends, we rely on Kendall's $\tau$ based permutation distance for distance and strength.
 The distance is the Kendall's Tau distance between the aggregate and subgroup trend lists.
 The strength is the Kendall's tau similarity between the element-wise sorted list and the trend-sorted list.
 
-\begin{align}
+.. math::
+
     \tau(a,b) &= \frac{P - Q}{\sqrt{(P + Q + T)(P+Q + U)}}
-\end{align}
+
+
 
 where $P$ is the number of concordant pairs, $Q$ is the number of discordant pairs, $T$ is the number of ties only in $a$  and U is the number of pairs only in $b$.
 For example, in the case of two groups if $t_a = [M,F]$ and $t_s = [F,M]$, we get $P=0$, $Q=2$, $T=0$, $U=0$ and find $\tau = - 1$ and the distance is $1$, so it's the same as the 0/1 loss on the comparison.
