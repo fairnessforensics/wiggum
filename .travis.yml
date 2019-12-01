@@ -12,6 +12,7 @@ script:
   - pytest
   # - python tests/wiggum_test_script.py
   # Use Sphinx to make the html docs
+  - cd docs
   - make html
 # save info to speed up builds
 cache: pip
