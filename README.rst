@@ -5,12 +5,12 @@
 Getting Started
 ================
 
+Simpson's Paradox Inspired Fairness Forensics
 
+Prior version published in:
+ - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`
+ - [Docs available separately](https://fairnessforensics.github.io/detect_simpsons_paradox/)
 
-This project greatly extends a prior work that was previously published in
-`FLAIRS 31 <http://www.flairs-31.info/program>`_   and can be found separately
-`in its own repository <https://github.com/fairnessforensics/detect_simpsons_paradox>`_
-and `documentation <https://fairnessforensics.github.io/detect_simpsons_paradox/>`_
 
 
 
