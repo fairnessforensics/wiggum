@@ -27,7 +27,7 @@ Wiggum Documentation
 .. include:: ../../README.rst
 
 
-.. include:: ./organization.rst
+.. include:: ./docs_overview.rst
 
 
 Indices and tables

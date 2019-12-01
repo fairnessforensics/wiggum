@@ -1,4 +1,4 @@
-User Manual for Interactive Visualization
+User Manual for Wiggum App
 ==========================================
 
 
@@ -11,9 +11,9 @@ and to augment the data.
 Loading data
 ^^^^^^^^^^^^^
 
-First, you have to load a data set. You may load data as a .csv file or from a
-folder that was created by wiggum app that contains the data, metadata, and results
-from a prior analysis. 
+The first step to using Wiggum is to load a dataset. You may load data as a .csv file or from a
+folder that was created by Wiggum that contains the data, metadata, and results
+from a prior analysis.
 
 #. Click “Choose File”: select a data file from your local disk.
 #. Select upload
@@ -24,9 +24,25 @@ from a prior analysis.
 Setting Meta data
 ^^^^^^^^^^^^^^^^^^
 
+Wiggum requires that you set meta data
 
 Data Augmentation
 ^^^^^^^^^^^^^^^^^^
+
+Choosing Trends
+^^^^^^^^^^^^^^^^^
+
+
+Saving
+^^^^^^^
+
+You can save the meta data and the data together by entering a project name and clicking save.
+For more information on saving see the ::ref:`feature_save` page.
+
+
+
+
+
 
 
 Data Visualization
