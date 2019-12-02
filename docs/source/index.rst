@@ -19,7 +19,7 @@ Wiggum Documentation
    :maxdepth: 1
    :caption: Original Paper:
 
-   /notebooks/simple_simpsons_paradox_intro.ipynb
+.. comment this out, for test: /notebooks/simple_simpsons_paradox_intro.ipynb
 
 
 
