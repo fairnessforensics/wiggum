@@ -1,0 +1,5 @@
+variable,dtype,var_type,role,isCount,weighting_var
+department,int64,categorical,"['groupby', 'trend']",,
+gender,object,categorical,"['groupby', 'trend']",,
+decision,int64,binary,trend,,
+race,object,categorical,"['groupby', 'trend']",,

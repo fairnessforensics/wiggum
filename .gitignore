@@ -1,0 +1,15 @@
+# ignore built versions of docs
+/docs/html/
+/docs/doctrees/
+
+# ignore notebook checkpoints
+research_notebooks/.ipynb_checkpoints
+docs/source/notebooks/.ipynb_checkpoints
+
+# ignore compiled stuff
+*.pyc
+
+env/
+
+#binaries
+*.DS_Store
