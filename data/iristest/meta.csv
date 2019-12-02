@@ -1,6 +1,0 @@
-variable,dtype,var_type,role,isCount,weighting_var
-sepal length,float64,continuous,['trend'],False,
-sepal width,float64,continuous,['trend'],False,
-petal length,float64,continuous,['trend'],False,
-petal width,float64,continuous,['trend'],False,
-class,object,categorical,"['groupby', 'trend']",False,

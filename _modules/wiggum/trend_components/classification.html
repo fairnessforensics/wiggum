@@ -1,0 +1,246 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>wiggum.trend_components.classification &#8212; Wiggum 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../index.html">Table Of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_manual.html">User Manual for Wiggum App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../app_structure.html">App Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../trend_objects.html">Trend objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API.html">API Reference</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for wiggum.trend_components.classification</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">itertools</span> <span class="k">as</span> <span class="nn">itert</span>
+
+
+
+<span class="n">stat_comp</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;acc&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;TN&#39;</span><span class="p">])</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+    <span class="s1">&#39;err&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FN&#39;</span><span class="p">])</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">c</span><span class="p">),</span>
+    <span class="s1">&#39;ppv&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]),</span>
+    <span class="s1">&#39;tpr&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FN&#39;</span><span class="p">]),</span>
+    <span class="s1">&#39;tnr&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;TN&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TN&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]),</span>
+    <span class="s1">&#39;fdr&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]),</span>
+    <span class="s1">&#39;fpr&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TN&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]),</span>
+    <span class="s1">&#39;fnr&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FN&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span><span class="p">[</span><span class="s1">&#39;FN&#39;</span><span class="p">]),</span>
+    <span class="s1">&#39;f1&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;FP&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">c</span><span class="p">[</span><span class="s1">&#39;FN&#39;</span><span class="p">])}</span>
+
+<div class="viewcode-block" id="BinClassStats"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinClassStats">[docs]</a><span class="k">class</span> <span class="nc">BinClassStats</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    class of trend for computing classification statistics from confusion matrix compoents</span>
+<span class="sd">    based on teh comparison of values from two columns of the data</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="BinClassStats.is_computable"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinClassStats.is_computable">[docs]</a>    <span class="k">def</span> <span class="nf">is_computable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check if this trend can be computed based on data and metadata available</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        self : Trend</span>
+<span class="sd">            a trend object with a set_vars Parameters</span>
+<span class="sd">        labeled_df : LabeledDataFrame {None} (optional)</span>
+<span class="sd">            data to use if trend is not already configured</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        computable : bool</span>
+<span class="sd">            True if requirements of get_trends are filled</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">        get_trends() for description of how this trend computes and</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_trend_vars</span><span class="p">(</span><span class="n">labeled_df</span><span class="p">)</span>
+
+        <span class="n">vart_test_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groundtruth</span><span class="p">),</span>
+                        <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prediction</span><span class="p">),</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">my_stat</span> <span class="ow">in</span> <span class="n">stat_comp</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="n">vartest</span> <span class="k">for</span> <span class="n">vartest</span> <span class="ow">in</span> <span class="n">vart_test_list</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="BinClassStats.get_trends"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinClassStats.get_trends">[docs]</a>    <span class="k">def</span> <span class="nf">get_trends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data_df</span><span class="p">,</span><span class="n">trend_col_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute a trend between two variables that are prediction and ground</span>
+<span class="sd">        truth, requires a precompute step to augment the data with row-wise</span>
+<span class="sd">        labels for speed</span>
+
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_df : DataFrame or DataFrameGroupBy</span>
+<span class="sd">            data to compute trends on, may be a whole, unmodified DataFrame or</span>
+<span class="sd">        a grouped DataFrame as passed by LabeledDataFrame get trend functions. for each</span>
+<span class="sd">        groundtruth and prediction pair there must be an accuracy column named like</span>
+<span class="sd">        groundtruthvar_predictionvar_acc.</span>
+<span class="sd">        trend_col_name : {&#39;subgroup_trend&#39;,&#39;agg_trend&#39;}</span>
+<span class="sd">            which type of trend is to be computed</span>
+
+<span class="sd">        Required properties</span>
+<span class="sd">        --------------------</span>
+<span class="sd">        name : string</span>
+<span class="sd">            used in the trend_type column of result_df and by viz</span>
+<span class="sd">        groundtruth : string or list of strings</span>
+<span class="sd">            variable(s) to be used as ground truth in precomputing the confusion matrix and</span>
+<span class="sd">        prediction :  string or list of strings</span>
+<span class="sd">        my_stat : string</span>
+<span class="sd">            must be one of the keys of wg.trend_components.stat_comp</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reg_df : DataFrame</span>
+<span class="sd">            returns result df with rows for accuracy (acc), true positive</span>
+<span class="sd">            rate (tpr), positive predictive value (ppr), and true negative</span>
+<span class="sd">            rate (tnr)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># look for columns named as pairs with _acc</span>
+
+
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">):</span>
+
+            <span class="c1"># make it tupe-like so that the loop can work</span>
+            <span class="n">data_df</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">data_df</span><span class="p">)]</span>
+
+        <span class="n">classification_stats</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">groupby_lev</span><span class="p">,</span><span class="n">df</span> <span class="ow">in</span> <span class="n">data_df</span><span class="p">:</span>
+
+            <span class="c1"># var_pairs must be list of tuples or iterator</span>
+            <span class="k">for</span> <span class="n">g</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="n">itert</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groundtruth</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">prediction</span><span class="p">):</span>
+                <span class="n">cur_col</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">g</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="s1">&#39;acc&#39;</span><span class="p">])</span>
+                <span class="c1"># compute each stat</span>
+                <span class="n">confusion</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">cur_col</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+
+                <span class="c1"># acc = (confusion[&#39;TP&#39;] + confusion[&#39;TN&#39;])/sum(confusion)</span>
+                <span class="c1"># tpr = confusion[&#39;TP&#39;]/(confusion[&#39;TP&#39;] + confusion[&#39;FN&#39;])</span>
+                <span class="c1"># ppv = confusion[&#39;TP&#39;]/(confusion[&#39;TP&#39;] + confusion[&#39;FP&#39;])</span>
+                <span class="c1"># tnr = confusion[&#39;TN&#39;]/(confusion[&#39;TN&#39;] + confusion[&#39;FN&#39;])</span>
+
+                <span class="c1"># add values that are not there</span>
+                <span class="n">req_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">,</span><span class="s1">&#39;TN&#39;</span><span class="p">,</span><span class="s1">&#39;FP&#39;</span><span class="p">,</span><span class="s1">&#39;FN&#39;</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">req_keys</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">k</span> <span class="ow">in</span> <span class="n">confusion</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                        <span class="n">confusion</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="c1"># 0 if N &lt;=10</span>
+                <span class="c1"># appraoches 1 as N-&gt;inf</span>
+                <span class="n">N</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">confusion</span><span class="p">)</span>
+                <span class="n">strength</span> <span class="o">=</span> <span class="mi">1</span><span class="o">-</span><span class="mi">1</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">N</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+
+                <span class="n">cur_stat</span> <span class="o">=</span> <span class="n">stat_comp</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">my_stat</span><span class="p">](</span><span class="n">confusion</span><span class="p">)</span>
+
+
+                <span class="n">classification_stats</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">g</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">cur_stat</span><span class="p">,</span>
+                                            <span class="n">groupby_lev</span><span class="p">,</span> <span class="n">strength</span><span class="p">])</span>
+
+        <span class="c1">#save as df</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">classification_stats</span><span class="p">,</span>
+                                                <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+                                                <span class="n">trend_col_name</span><span class="p">,</span><span class="s1">&#39;subgroup&#39;</span><span class="p">,</span>
+                                                <span class="n">trend_col_name</span><span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">])</span>
+            <span class="c1">#same for all</span>
+            <span class="n">reg_df</span><span class="p">[</span><span class="s1">&#39;group_feat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">classification_stats</span><span class="p">,</span>
+                                            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+                                                    <span class="n">trend_col_name</span><span class="p">,</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span>
+                                                    <span class="n">trend_col_name</span><span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">])</span>
+            <span class="n">reg_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">reg_df</span><span class="p">[</span><span class="s1">&#39;trend_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="n">reg_df</span></div>
+
+<div class="viewcode-block" id="BinClassStats.get_distance"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinClassStats.get_distance">[docs]</a>    <span class="k">def</span> <span class="nf">get_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">col_a</span><span class="o">=</span><span class="s1">&#39;subgroup_trend&#39;</span><span class="p">,</span><span class="n">col_b</span><span class="o">=</span><span class="s1">&#39;agg_trend&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        distance for confusion matrix stats is</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># use np.divide to catch divide by 0 error</span>
+        <span class="c1"># ratio = np.divide(row[col_a]/row[col_b],where =row[col_b]&gt;0)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col_a</span><span class="p">]</span> <span class="o">-</span> <span class="n">row</span><span class="p">[</span><span class="n">col_b</span><span class="p">])</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

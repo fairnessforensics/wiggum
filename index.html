@@ -1,0 +1,190 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Wiggum Documentation &#8212; Wiggum 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Manual for Wiggum App" href="user_manual.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="#">Table Of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_manual.html">User Manual for Wiggum App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trend_objects.html">Trend objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="user_manual.html" title="next chapter">User Manual for Wiggum App</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="wiggum-documentation">
+<h1>Wiggum Documentation<a class="headerlink" href="#wiggum-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_manual.html">User Manual for Wiggum App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trend_objects.html">Trend objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<p><em>Simpson’s Paradox Inspired Fairness Forensics</em></p>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>Simpson’s Paradox Inspired Fairness Forensics</p>
+<dl class="docutils">
+<dt>Prior version published in:</dt>
+<dd><ul class="first last simple">
+<li><a class="reference external" href="http://www.flairs-31.info/program">FLAIRS 31</a>  <cite>paper &lt;../dsp_paper.pdf&gt;</cite></li>
+<li>[Docs available separately](<a class="reference external" href="https://fairnessforensics.github.io/detect_simpsons_paradox/">https://fairnessforensics.github.io/detect_simpsons_paradox/</a>)</li>
+</ul>
+</dd>
+</dl>
+<p>To use the Wiggum, download (or clone) and:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> wiggum/
+pip install .
+</pre></div>
+</div>
+<p>See the documentation site for examples and to reproduce the paper results.</p>
+<p>To use the package in python, after installed:</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">wiggum</span> <span class="kn">as</span> <span class="nn">wg</span>
+</pre></div>
+</div>
+<p>Installing makes the flask app for interactive visualization
+in browser available as a command line tool. To run the app:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wiggum_-app
+</pre></div>
+</div>
+</div>
+<div class="section" id="development">
+<h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
+<p>To compile docs, sphinx and some extensions are required, all are included in
+<cite>requirements.txt</cite> and can be installed with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
+</pre></div>
+</div>
+<p>then</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> docs/
+make html
+</pre></div>
+</div>
+<p>To reinstall after changes</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install --upgrade .
+</pre></div>
+</div>
+<p>When updating the package and working in a notebook, the notebook’s kernel will
+need to be restarted to get the updates, if they’re done outside of the notebook.</p>
+<p>(only needed in development or after upgrade)</p>
+</div>
+<div class="section" id="documentation-overview">
+<h1>Documentation Overview<a class="headerlink" href="#documentation-overview" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-to-fairness-forensics">
+<h2>How to Fairness Forensics<a class="headerlink" href="#how-to-fairness-forensics" title="Permalink to this headline">¶</a></h2>
+<p>How to conduct a fairness forensics investigation with Wiggum:</p>
+<p>via app</p>
+<p>via packages</p>
+</div>
+<div class="section" id="example-investigations-and-case-studies">
+<h2>Example Investigations and Case Studies<a class="headerlink" href="#example-investigations-and-case-studies" title="Permalink to this headline">¶</a></h2>
+<p>Example code fairness forensics investigations</p>
+</div>
+<div class="section" id="reproducible-science">
+<h2>Reproducible Science<a class="headerlink" href="#reproducible-science" title="Permalink to this headline">¶</a></h2>
+<p>How to reproduce our paper experimental results</p>
+</div>
+<div class="section" id="extending-and-contributing-to-wiggum">
+<h2>Extending and Contributing to Wiggum<a class="headerlink" href="#extending-and-contributing-to-wiggum" title="Permalink to this headline">¶</a></h2>
+<p>Basic dev setup</p>
+<p>How to ext</p>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

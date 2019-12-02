@@ -1,6 +1,0 @@
-variable,dtype,var_type,role,isCount,weighting_var
-year,int64,ordinal,trend,,
-jurisdiction,object,categorical,ignore,,
-race_ethnicity,object,categorical,"['groupby', 'trend']",,
-average_scale_score,float64,continuous,trend,,
-test_format,object,categorical,groupby,,

@@ -1,2 +1,0 @@
-recursive-include wiggum_app/templates *
-recursive-include wiggum_app/static *
