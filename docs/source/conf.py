@@ -59,8 +59,8 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = 'Detecting Simpson\'s Paradox'
-copyright = '2018, Chenguang Xu, Sarah M Brown, Christan E Grant'
+project = 'Wiggum'
+copyright = '2019, Chenguang Xu, Sarah M Brown, Christan E Grant'
 author = 'Chenguang Xu, Sarah M Brown, Christan E Grant'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -117,7 +117,7 @@ html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'DetectingSimpsonsParadoxdoc'
+htmlhelp_basename = 'wiggumdoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -154,7 +154,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'detectingsimpsonsparadox', 'Detecting Simpson\'s Paradox Documentation',
+    (master_doc, 'wiggum', 'Wiggum Documentation',
      [author], 1)
 ]
 
@@ -165,8 +165,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'DetectingSimpsonsParadox', 'Detecting Simpson\'s Paradox Documentation',
-     author, 'DetectingSimpsonsParadox', 'One line description of project.',
+    (master_doc, 'Wiggum', 'Wiggum Documentation',
+     author, 'Wiggum', 'Wimpson\'s Paradox Inspired Fairness Forensics',
      'Miscellaneous'),
 ]
 

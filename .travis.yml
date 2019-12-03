@@ -7,9 +7,26 @@ python:
 install:
   - pip install .
   - pip install -r requirements.txt
+addons:
+  apt_packages:
+    - pandoc
 # command to run tests
 script:
   - pytest
   # - python tests/wiggum_test_script.py
+  # Use Sphinx to make the html docs
+  - cd docs
+  - make html
 # save info to speed up builds
 cache: pip
+# Tell Travis CI to copy the documentation to the gh-pages branch of
+# your GitHub repository.
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN  # Set in travis-ci.org dashboard, marked secure
+  keep-history: true
+  on:
+    branch: docs_update_wiggum
+  local_dir: docs/html/
+  target_branch: gh-pages

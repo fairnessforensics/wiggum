@@ -1,10 +1,15 @@
+.. _project_org:
+
 Project Organization
 ====================
 
 
  - docs/source/ sphinx-based documentation for the project (can be md or rst)
  - docs/source/notebooks/ notebooks to be compiled in the documentation
- - notebooks/  a collection of research notes in jupyter notebooks related to the project
- - sp_data_util/ code that generates, downloads, and preprocesses data and generates synthetic data
- - detect_simpsons_paradox/ main module of tools for detecting Simpson's paradox
+ - research_notebooks/  a collection of research notes in Jupyter notebooks
+    related to the project
+ - wiggum/ main module of tools for computing trends for Simpson's paradox inspired
+ fairness forensics
+ - wiggum_app/ flask application for fairness forensics in browser
  - data/ data for experiments, for reproducibility
+ - tests/ scripts to test Wiggum (currently, only functionality, not correctness)
