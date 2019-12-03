@@ -8,13 +8,14 @@ Getting Started
 Simpson's Paradox Inspired Fairness Forensics
 
 Prior version published in:
- - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`
- - [Docs available separately](https://fairnessforensics.github.io/detect_simpsons_paradox/)
+ - `FLAIRS 31 <http://www.flairs-31.info/program>`_  `paper <../dsp_paper.pdf>`_
+ - `Docs available separately <https://fairnessforensics.github.io/detect_simpsons_paradox/>`_
 
 
 
 
-To use the Wiggum, download (or clone) and:
+To use the Wiggum, download (or clone) from the
+`GitHub Repo <https://github.com/fairnessforensics/wiggum>`_ and:
 
 .. code-block:: bash
 
@@ -34,15 +35,21 @@ in browser available as a command line tool. To run the app:
 
 .. code-block:: bash
 
-  wiggum_-app
+  wiggum-app
 
 
 
 Development
 ============
 
-To compile docs, sphinx and some extensions are required, all are included in
-`requirements.txt` and can be installed with
+We also provide a docker file.
+
+FIXME
+
+
+To run in the same environment as developed or to compile docs, sphinx and
+some extensions are required, all are included in `requirements.txt` and can be
+ installed with:
 
 .. code-block:: bash
 
