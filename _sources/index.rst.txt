@@ -10,16 +10,11 @@ Wiggum Documentation
    :maxdepth: 1
    :caption: Contents:
 
-   user_manual
+   /notebooks/simple_simpsons_paradox_intro.ipynb
+   app_user_manual
+   API
    app_structure
    trend_objects
-   API
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Original Paper:
-
-   /notebooks/simple_simpsons_paradox_intro.ipynb
 
 
 * this documentation site is under active development*
