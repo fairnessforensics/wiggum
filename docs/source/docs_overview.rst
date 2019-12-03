@@ -1,33 +1,47 @@
+.. _docs_organization:
+
 Documentation Overview
 ========================
 
+
+This page is under active development.
 
 How to Fairness Forensics
 -------------------------
 
 How to conduct a fairness forensics investigation with Wiggum:
 
-via app
+* With the Wiggum app: :ref:`user_manual`_
+* With the Wiggum package in a Jupyter Notebook:
 
-via packages
 
 Example Investigations and Case Studies
 -----------------------------------------
 
-Example code fairness forensics investigations
+Example code excerpts for small tasks
+* TBD
+
+Case studies of fairness forensics investigations:
+* Iris data
+* SOPP data
+* Propbulica COMPAS Data
 
 
 
 Reproducible Science
 ----------------------
 
-How to reproduce our paper experimental results
+to reproduce our paper experimental results
 
 
 
 Extending and Contributing to Wiggum
 -------------------------------------
 
-Basic dev setup
+We provide the following detailed documentation if you want to contribute to
+Wiggum or exte4nd it for your own use.
 
-How to ext
+* Basic dev setup:
+* How to add new trends
+* How to extend the app
+* Contributors Guide:

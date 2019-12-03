@@ -1,3 +1,5 @@
+.. _trend_objects:
+
 Trend objects
 ==============
 
@@ -15,7 +17,7 @@ component parts that are used to compose complete trend objects through
 inheritence. We use Mixins in python to build complete trends. A complete,
 usable trend object should be organized as follows.
 
-There are three types of mixins and available Mixin classes are acessible in
+There are three types of mixins and available Mixin classes are accessible in
 `wg.trend_components.baseTrendMixin_list`,
 `wg.trend_components.varTypeMixin_list`, and
 `wg.trend_components.trendCommputeMixin_list`

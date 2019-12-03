@@ -1,5 +1,20 @@
+.. _app_user_manual:
+
+
+
 User Manual for Wiggum App
 ==========================================
+
+Once wiggum is installed via pip, the Flask app is a command line tool. To
+launch the Flask app from the command line, type :
+
+.. bash
+  wiggum-app
+
+
+This will start the server on http://127.0.0.1:5000/ from the current working directory.
+Currently, launching from any location can create issues with loading files, so
+the app should be launched from the code directory.
 
 
 Data Preparation
@@ -37,7 +52,7 @@ Saving
 ^^^^^^^
 
 You can save the meta data and the data together by entering a project name and clicking save.
-For more information on saving see the ::ref:`feature_save` page.
+For more information on saving see the :ref:`feature_save` page.
 
 
 
