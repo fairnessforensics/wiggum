@@ -1,3 +1,5 @@
+.. _project_org:
+
 Project Organization
 ====================
 
@@ -10,8 +12,4 @@ Project Organization
  fairness forensics
  - wiggum_app/ flask application for fairness forensics in browser
  - data/ data for experiments, for reproducibility
-
-Documentation Organization
-===========================
-
-We provide the following documentation
+ - tests/ scripts to test Wiggum (currently, only functionality, not correctness)

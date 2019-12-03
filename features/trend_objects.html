@@ -30,10 +30,12 @@
 <h3><a href="../index.html">Table Of Contents</a></h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../app_structure.html">App Outline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../trend_objects.html">Trend objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../API.html">API Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Original Paper:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
@@ -70,7 +72,7 @@
           <div class="body" role="main">
             
   <div class="section" id="trend-objects">
-<h1>Trend objects<a class="headerlink" href="#trend-objects" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Trend objects<a class="headerlink" href="#trend-objects" title="Permalink to this headline">¶</a></h1>
 <p>Trend objects are passed to <cite>LabeledDataFrame.get_subgroup_trends_1lev</cite> or another trend
 computation method of <cite>LabeledDataFrame</cite>.  These functions store them in the
 data structure in a property <cite>trend_list</cite>.</p>
@@ -81,7 +83,7 @@ components easy.</p>
 component parts that are used to compose complete trend objects through
 inheritence. We use Mixins in python to build complete trends. A complete,
 usable trend object should be organized as follows.</p>
-<p>There are three types of mixins and available Mixin classes are acessible in
+<p>There are three types of mixins and available Mixin classes are accessible in
 <cite>wg.trend_components.baseTrendMixin_list</cite>,
 <cite>wg.trend_components.varTypeMixin_list</cite>, and
 <cite>wg.trend_components.trendCommputeMixin_list</cite></p>
@@ -258,7 +260,7 @@ For example, in the case of two groups if $t_a = [M,F]$ and $t_s = [F,M]$, we ge
 In the case of three levels of $x_2$, however is the advantage, for $t_a = [B,H,W]$ and $t_s = [B,W,H]$, we get a distance of .333, matching lists are always 0 and complete reversal is always 1.
 To extend this to compute trend strength, we sort the $x_2$ column of the dataset(or partition) by $x_1$ to create $ell_a$ and repeat each element of $t_x$ in accordance with its representation in the data so that $ell_b$ is the same length as $ell_a$, then the strength is $|tau(ell_a,ell_b)|$.
 This is analogous to the use of the magnitude of Pearson correlation coefficient for strength of linear regression trends.</p>
-<p>The <a href="#id1"><span class="problematic" id="id2">`</span></a>varTypeMixin`s define how to select variables for each required parameter of the trend calculation functions, that is which variables form the data set take on the roles of $x_1$, $x_2$, and $w$.
+<p>The <a href="#id2"><span class="problematic" id="id3">`</span></a>varTypeMixin`s define how to select variables for each required parameter of the trend calculation functions, that is which variables form the data set take on the roles of $x_1$, $x_2$, and $w$.
 These functions use the meta data from the user that defines a variable type(binary, categorical, continuous, ordinal) and a role (trend or group-by). Variable usage under default settings for the two categories of trends(ranking and continuous) are defined in Table~ref{tab:variableuse}.</p>
 <p>input{tab_variable_role.tex}</p>
 <p>subsection{Ranking and Detection}</p>

@@ -19,8 +19,10 @@ Wiggum Documentation
    :maxdepth: 1
    :caption: Original Paper:
 
-.. comment this out, for test: /notebooks/simple_simpsons_paradox_intro.ipynb
+   /notebooks/simple_simpsons_paradox_intro.ipynb
 
+
+* this documentation site is under active development*
 
 
 .. instead of keeping this info in two places, set it to show at github and here

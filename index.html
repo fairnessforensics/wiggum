@@ -16,7 +16,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="User Manual for Wiggum App" href="user_manual.html" />
+    <link rel="next" title="App Outline" href="app_structure.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,16 +31,18 @@
 <h3><a href="#">Table Of Contents</a></h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trend_objects.html">Trend objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Original Paper:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="user_manual.html" title="next chapter">User Manual for Wiggum App</a></li>
+      <li>Next: <a href="app_structure.html" title="next chapter">App Outline</a></li>
   </ul></li>
 </ul>
 </div>
@@ -76,14 +78,19 @@
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trend_objects.html">Trend objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Original Paper:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
+</ul>
 </div>
+<ul class="simple">
+<li>this documentation site is under active development*</li>
+</ul>
 <p><em>Simpson’s Paradox Inspired Fairness Forensics</em></p>
 </div>
 <div class="section" id="getting-started">
@@ -92,12 +99,13 @@
 <dl class="docutils">
 <dt>Prior version published in:</dt>
 <dd><ul class="first last simple">
-<li><a class="reference external" href="http://www.flairs-31.info/program">FLAIRS 31</a>  <cite>paper &lt;../dsp_paper.pdf&gt;</cite></li>
-<li>[Docs available separately](<a class="reference external" href="https://fairnessforensics.github.io/detect_simpsons_paradox/">https://fairnessforensics.github.io/detect_simpsons_paradox/</a>)</li>
+<li><a class="reference external" href="http://www.flairs-31.info/program">FLAIRS 31</a>  <a class="reference external" href="../dsp_paper.pdf">paper</a></li>
+<li><a class="reference external" href="https://fairnessforensics.github.io/detect_simpsons_paradox/">Docs available separately</a></li>
 </ul>
 </dd>
 </dl>
-<p>To use the Wiggum, download (or clone) and:</p>
+<p>To use the Wiggum, download (or clone) from the
+<a class="reference external" href="https://github.com/fairnessforensics/wiggum">GitHub Repo</a> and:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> wiggum/
 pip install .
 </pre></div>
@@ -109,14 +117,18 @@ pip install .
 </div>
 <p>Installing makes the flask app for interactive visualization
 in browser available as a command line tool. To run the app:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wiggum_-app
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wiggum-app
 </pre></div>
 </div>
 </div>
 <div class="section" id="development">
 <h1>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h1>
-<p>To compile docs, sphinx and some extensions are required, all are included in
-<cite>requirements.txt</cite> and can be installed with</p>
+<p>We also provide a docker file.</p>
+<p>FIXME</p>
+<p>To run in the same environment as developed or to compile docs, sphinx and
+some extensions are required, all are included in <cite>requirements.txt</cite> and can be</p>
+<blockquote>
+<div>installed with:</div></blockquote>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
 </pre></div>
 </div>
@@ -134,25 +146,39 @@ need to be restarted to get the updates, if they’re done outside of the notebo
 <p>(only needed in development or after upgrade)</p>
 </div>
 <div class="section" id="documentation-overview">
-<h1>Documentation Overview<a class="headerlink" href="#documentation-overview" title="Permalink to this headline">¶</a></h1>
+<span id="docs-organization"></span><h1>Documentation Overview<a class="headerlink" href="#documentation-overview" title="Permalink to this headline">¶</a></h1>
+<p>This page is under active development.</p>
 <div class="section" id="how-to-fairness-forensics">
 <h2>How to Fairness Forensics<a class="headerlink" href="#how-to-fairness-forensics" title="Permalink to this headline">¶</a></h2>
 <p>How to conduct a fairness forensics investigation with Wiggum:</p>
-<p>via app</p>
-<p>via packages</p>
+<ul class="simple">
+<li>With the Wiggum app: <a href="#id1"><span class="problematic" id="id2">:ref:`user_manual`_</span></a></li>
+<li>With the Wiggum package in a Jupyter Notebook:</li>
+</ul>
 </div>
 <div class="section" id="example-investigations-and-case-studies">
 <h2>Example Investigations and Case Studies<a class="headerlink" href="#example-investigations-and-case-studies" title="Permalink to this headline">¶</a></h2>
-<p>Example code fairness forensics investigations</p>
+<p>Example code excerpts for small tasks
+* TBD</p>
+<p>Case studies of fairness forensics investigations:
+* Iris data
+* SOPP data
+* Propbulica COMPAS Data</p>
 </div>
 <div class="section" id="reproducible-science">
 <h2>Reproducible Science<a class="headerlink" href="#reproducible-science" title="Permalink to this headline">¶</a></h2>
-<p>How to reproduce our paper experimental results</p>
+<p>to reproduce our paper experimental results</p>
 </div>
 <div class="section" id="extending-and-contributing-to-wiggum">
 <h2>Extending and Contributing to Wiggum<a class="headerlink" href="#extending-and-contributing-to-wiggum" title="Permalink to this headline">¶</a></h2>
-<p>Basic dev setup</p>
-<p>How to ext</p>
+<p>We provide the following detailed documentation if you want to contribute to
+Wiggum or exte4nd it for your own use.</p>
+<ul class="simple">
+<li>Basic dev setup:</li>
+<li>How to add new trends</li>
+<li>How to extend the app</li>
+<li>Contributors Guide:</li>
+</ul>
 </div>
 </div>
 <div class="section" id="indices-and-tables">

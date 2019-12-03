@@ -16,8 +16,6 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="App Outline" href="app_structure.html" />
-    <link rel="prev" title="Wiggum Documentation" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,25 +29,25 @@
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Table Of Contents</a></h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">User Manual for Wiggum App</a></li>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trend_objects.html">Trend objects</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Original Paper:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Wiggum Documentation</a></li>
-      <li>Next: <a href="app_structure.html" title="next chapter">App Outline</a></li>
   </ul></li>
 </ul>
 </div>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="_sources/user_manual.rst.txt"
+      <li><a href="_sources/app_user_manual.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -74,7 +72,12 @@
           <div class="body" role="main">
             
   <div class="section" id="user-manual-for-wiggum-app">
-<h1>User Manual for Wiggum App<a class="headerlink" href="#user-manual-for-wiggum-app" title="Permalink to this headline">¶</a></h1>
+<span id="app-user-manual"></span><h1>User Manual for Wiggum App<a class="headerlink" href="#user-manual-for-wiggum-app" title="Permalink to this headline">¶</a></h1>
+<p>Once wiggum is installed via pip, the Flask app is a command line tool. To
+launch the Flask app from the command line, type :</p>
+<p>This will start the server on <a class="reference external" href="http://127.0.0.1:5000/">http://127.0.0.1:5000/</a> from the current working directory.
+Currently, launching from any location can create issues with loading files, so
+the app should be launched from the code directory.</p>
 <div class="section" id="data-preparation">
 <h2>Data Preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h2>
 <p>The data preparation page of Wiggum app is the place to load the data, set metadata
@@ -103,7 +106,7 @@ from a prior analysis.</p>
 <div class="section" id="saving">
 <h3>Saving<a class="headerlink" href="#saving" title="Permalink to this headline">¶</a></h3>
 <p>You can save the meta data and the data together by entering a project name and clicking save.
-For more information on saving see the :<a class="reference internal" href="features/saving.html#feature-save"><span class="std std-ref">Saving Wiggum Results</span></a> page.</p>
+For more information on saving see the <a class="reference internal" href="features/saving.html#feature-save"><span class="std std-ref">Saving Wiggum Results</span></a> page.</p>
 </div>
 </div>
 <div class="section" id="data-visualization">
@@ -142,7 +145,7 @@ For more information on saving see the :<a class="reference internal" href="feat
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
-      <a href="_sources/user_manual.rst.txt"
+      <a href="_sources/app_user_manual.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
