@@ -443,8 +443,8 @@ function DrawGroupedBarChart(data, vars) {
 	}
 
     var svg = d3.select("#groupedbarchart").append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 480 100")		
         .call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");

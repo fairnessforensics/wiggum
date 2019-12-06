@@ -162,11 +162,14 @@ function distanceMatrixHeatmap(options) {
 			+ " scale(" + d3.event.scale + ")");	
 	}	
 
-	var svg = d3.select(container).append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-		.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
-		.append("g");
+	var svg = d3.select(container)
+				.append("div")	
+				.classed("svg-container", true) 
+				.append("svg")
+				.attr("viewBox", "0 0 300 300")	
+				.classed("svg-content-responsive", true)
+				.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
+				.append("g");
 
 	var distanceMatrixPlot = svg.append("g")
 		.attr("id", "distanceMatrixPlot")
@@ -320,8 +323,8 @@ function DrawHeatmapLegend() {
 
 	var svg = d3.select("#legend")
 				.append("svg")
-				.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)
+				.attr("preserveAspectRatio", "xMinYMin meet")
+				.attr("viewBox", "0 0 300 310")					
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 

@@ -24,40 +24,44 @@
 }
 
 #container {
-    width: 630px;
+    width: 50%;
     display: block;
     background: white;
-    margin-left: 300px;
-    margin-top: -150px;
-    height: 660px;
-    max-height: 660px;    
+    height: 70%;
+    max-height: 70%;
     overflow-y: scroll;
 }
 
-/* with user input parameter for ranking
-#container {
-    width: 630px;
-    display: block;
-    background: white;
-    margin-left: 260px;
-    margin-top: 60px;
-    height: 560px;
-    max-height: 560px;    
-    overflow-y: scroll;
-}
-*/
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 33%;
+    padding-bottom: 24%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+  }
+  .svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+  }
 
 #legend {
-    width: 230px;
+    width: 17%;    
+    height: 42%;
+    margin-left: 3%;   
     display: block;
     background: white;
     position: absolute;
 }
 
 #controlbuttons {
+    width: 15%;    
+    height: 20%;
     position: absolute;
-    margin-left: 40px;    
-    margin-top: 360px;   
+    margin-left: 5%;   
+    margin-top: 20%; 
 }
 
 #ranking {
@@ -67,11 +71,11 @@
 }
 
 #scatterplot {
-    display: block;
+    display: inline-block;
     background: white;
     position: absolute;
-    margin-left: 90px;    
-    margin-top: 10px;      
+    width: 30%;       
+    margin-top: 6%;      
 }
 
 #tree {
@@ -83,9 +87,21 @@
 
 .center {
     margin: auto;
+    width: 100%;
+    height: 100%;
+    border: 3px solid #ffffff;
+    padding: 0px;
+}
+
+.index_center {
+    margin: auto;
     width: 1300px;
     border: 3px solid #ffffff;
     padding: 10px;
+}
+
+html, form {
+    height: 100%;
 }
 
 path.link {
@@ -111,13 +127,6 @@ path.link {
     position: absolute;
     right: 240px;
     top: 200px;
-}
-
-#groupedbarchart {
-    display: block;
-    position: absolute;
-    right: 140px;
-    top: 90px;
 }
 
 line.slope-line4all{
@@ -188,19 +197,25 @@ line.slope-line4all{
     left: 500px;
 }
 
+.vis_row {
+    height: 70%;
+    width: 20%;
+    float: left;
+}
+
 .row {
     height: 160px;
 }
 
 #table {
-    width: 1200px;
+    width: 90%;
     display: block;
     background: white;
-    margin-left: 100px;
-    margin-top: 20px;
-    height: 272px;
-    max-height: 272px;    
-    overflow-y: scroll;    
+    margin-left: 3%;
+    margin-top: 30px;
+    height: 23%;
+    max-height: 23%;    
+    overflow-y: scroll;   
 }
 
 table {
@@ -279,7 +294,7 @@ table {
 }
 
 #roleSelection {
-    width: 200px;
+    width: 100%;
     margin-left: 10px;
     margin-top: 60px;
     margin-bottom: 10px;
@@ -311,15 +326,24 @@ div.tooltip {
     margin-left: 660px;
 }
 
+#groupedbarchart {
+    display: inline-block;
+    position: absolute;
+    width: 30%;  
+    margin-top: 4.5%;
+}
+
 #rankchart {
-    display: block;
+    display: inline-block;
     position: absolute;
     background: white;
-    right: 100px;
     border-style: solid;
     border-width: 2px;
     border-color: white;
-    top: 190px;
+    width: 28%;    
+    height: 50%;
+    margin-left: 2%;  
+    margin-top: 10.5%;
 }
 
 #rankchart2 {

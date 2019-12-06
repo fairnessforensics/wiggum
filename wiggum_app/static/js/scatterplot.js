@@ -49,7 +49,11 @@ var yAxis = d3.svg.axis()
  * @returns none.
  */
 var updateScatterplot = function(data, vars) {
+
 	d3.select("#scatterplot").style("display", "inline-block");
+	d3.select("#rankchart").style("display", "none");
+	d3.select("#groupedbarchart").style("display", "none");
+
 	d3.select("#slopegraph").selectAll('svg').remove();
     d3.select('#slopeLabel').select("text").remove();
 
@@ -271,8 +275,8 @@ function createScatterplot(data) {
 
 	scatterplot = d3.select("div#scatterplot")
 					.append("svg")
-					.attr("width", width + margin.left + margin.right)
-					.attr("height", height + margin.top + margin.bottom)									
+					.attr("preserveAspectRatio", "xMinYMin meet")
+					.attr("viewBox", "0 0 480 450")								
 					.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	// axis range selection
