@@ -17,7 +17,7 @@ WORKDIR /usr/src/app
 
 # Copy python code to /user/src/app
 COPY requirements.txt /usr/src/app/
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+RUN python3 -m pip install --ignore-installed --no-cache-dir -r requirements.txt
 COPY . /usr/src/app
 
 EXPOSE 5000
