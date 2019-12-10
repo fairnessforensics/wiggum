@@ -39,6 +39,9 @@
     padding-bottom: 24%; /* aspect ratio */
     vertical-align: top;
     overflow: hidden;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #C0C0C0;
   }
   .svg-content-responsive {
     display: inline-block;
@@ -208,7 +211,7 @@ line.slope-line4all{
 }
 
 #table {
-    width: 50%;
+    width: 78%;
     display: block;
     background: white;
     margin-left: 20%;
@@ -223,9 +226,6 @@ table {
     box-shadow: 1px 1px 10px rgba(0,0,0,0.5);
     border-collapse: collapse;
     border-spacing: 0;
-  }
-  table {
-    margin: auto;
   }
 
   table, td, th {

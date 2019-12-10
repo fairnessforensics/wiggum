@@ -133,7 +133,7 @@ function updateDetailView() {
  */
 function distanceMatrixHeatmap(options) {
 
-	var margin = {top: 93, right: 20, bottom: 30, left: 93},
+	var margin = {top: 93, right: 20, bottom: 30, left: 133},
 	    width = 90,
 	    height = 90,
 	    data = options.data,
@@ -237,8 +237,8 @@ function distanceMatrixHeatmap(options) {
 			.text(targetAttr);	
 
 	distanceMatrixPlot.append("text")
-			.attr("x", -(width/2))             
-			.attr("y", -(height)+15)
+			.attr("x", -(width/2))              			  
+			.attr("y", -height-margin.bottom+5)
 			.attr("text-anchor", "middle")  
 			.attr("transform", "rotate(-90)")
 			.style("font-size", "15px") 
@@ -246,7 +246,7 @@ function distanceMatrixHeatmap(options) {
 
 	distanceMatrixPlot.append("text")
 			.attr("x", (width / 2))             
-			.attr("y", -60)
+			.attr("y", -margin.top+10)
 			.attr("text-anchor", "middle")  
 			.style("font-size", "15px") 
 			.text("feat2");	
