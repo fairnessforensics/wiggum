@@ -10,6 +10,10 @@ var color_detail_ranktrend;
  */
 function updateParallelCoordinates(data, vars) {
 
+	d3.select("#scatterplot").style("display", "none");
+	d3.select("#rankchart").style("display", "inline-block");
+	d3.select("#groupedbarchart").style("display", "inline-block");
+
 	// Remove previous chart
 	d3.select("#rankchart").selectAll('svg').remove();
 	
@@ -44,8 +48,8 @@ function DrawParallelCoordinates(data, vars) {
 
 	var svg = d3.select("#rankchart")
 				.append("svg")
-				.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)
+				.attr("preserveAspectRatio", "xMinYMin meet")
+				.attr("viewBox", "0 0 480 400")				
 				.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
 				.append("g")
 				.attr("transform","translate(" + margin.left + "," + margin.top + ")");

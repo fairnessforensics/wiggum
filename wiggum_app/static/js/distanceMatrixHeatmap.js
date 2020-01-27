@@ -133,7 +133,7 @@ function updateDetailView() {
  */
 function distanceMatrixHeatmap(options) {
 
-	var margin = {top: 93, right: 20, bottom: 30, left: 93},
+	var margin = {top: 93, right: 20, bottom: 30, left: 133},
 	    width = 90,
 	    height = 90,
 	    data = options.data,
@@ -162,11 +162,14 @@ function distanceMatrixHeatmap(options) {
 			+ " scale(" + d3.event.scale + ")");	
 	}	
 
-	var svg = d3.select(container).append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-		.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
-		.append("g");
+	var svg = d3.select(container)
+				.append("div")	
+				.classed("svg-container", true) 
+				.append("svg")
+				.attr("viewBox", "0 0 300 300")	
+				.classed("svg-content-responsive", true)
+				.call(zm = d3.behavior.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
+				.append("g");
 
 	var distanceMatrixPlot = svg.append("g")
 		.attr("id", "distanceMatrixPlot")
@@ -234,8 +237,8 @@ function distanceMatrixHeatmap(options) {
 			.text(targetAttr);	
 
 	distanceMatrixPlot.append("text")
-			.attr("x", -(width/2))             
-			.attr("y", -(height)+15)
+			.attr("x", -(width/2))              			  
+			.attr("y", -height-margin.bottom+5)
 			.attr("text-anchor", "middle")  
 			.attr("transform", "rotate(-90)")
 			.style("font-size", "15px") 
@@ -243,7 +246,7 @@ function distanceMatrixHeatmap(options) {
 
 	distanceMatrixPlot.append("text")
 			.attr("x", (width / 2))             
-			.attr("y", -60)
+			.attr("y", -margin.top+10)
 			.attr("text-anchor", "middle")  
 			.style("font-size", "15px") 
 			.text("feat2");	
@@ -320,8 +323,8 @@ function DrawHeatmapLegend() {
 
 	var svg = d3.select("#legend")
 				.append("svg")
-				.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)
+				.attr("preserveAspectRatio", "xMinYMin meet")
+				.attr("viewBox", "0 0 300 310")					
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 
