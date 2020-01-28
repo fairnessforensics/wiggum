@@ -22,7 +22,7 @@ old_result_map = {'feat1':'independent','feat2':'dependent'}
 from .detectors import RESULT_DF_HEADER, _TrendDetectors
 from .data_augmentation import _AugmentedData
 from .ranking_processing import _ResultDataFrame
-
+from .auditing_reporting import _AuditReporting
 
 
 
@@ -131,7 +131,7 @@ def update_old_roles(row):
 
 
 
-class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
+class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditReporting):
     """
     this is the object
 
@@ -274,6 +274,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
 
 
+<<<<<<< HEAD
     def correct_trend_value_datatypes(self):
         # build mapper
         trend_type_type_map = {t.name:t.get_trend_value_type()
@@ -296,6 +297,8 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         self.result_df = pd.concat(result_df_parts,axis=0)
         # reshuffled column order back to original
         self.result_df = self.result_df[original_cols]
+=======
+>>>>>>> annotation functionality
 
     def count_compress_binary(self,retain_var_list, compress_var_list):
         """
