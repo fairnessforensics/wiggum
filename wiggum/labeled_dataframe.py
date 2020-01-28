@@ -22,7 +22,7 @@ old_result_map = {'feat1':'independent','feat2':'dependent'}
 from .detectors import RESULT_DF_HEADER, _TrendDetectors
 from .data_augmentation import _AugmentedData
 from .ranking_processing import _ResultDataFrame
-
+from .auditing_reporting import _AuditReporting
 
 
 
@@ -131,7 +131,7 @@ def update_old_roles(row):
 
 
 
-class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
+class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditReporting):
     """
     this is the object
 
@@ -229,74 +229,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
 
 
-    def get_trend_by_name(self,trend_name):
-        '''
-        '''
-        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
-        return self.trend_list[trend_dict[trend_name]]
-
-    def get_trend_display_name(self,trend_res_name):
-        '''
-        get a trend's diplay name from the name tha appears in result_df_parts
-
-        Parameters
-        -----------
-        trend_res_name : strings
-            name that appears in result_df
-        '''
-        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
-        return self.trend_list[trend_dict[trend_res_name]].display_name
-
-    def get_overview_legend_type(self,trend_res_name):
-        '''
-        get a trend's overview legend type from the name that appears in
-         result_df_parts
-
-        Parameters
-        -----------
-        trend_res_name : strings
-            name that appears in result_df
-        '''
-        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
-        return self.trend_list[trend_dict[trend_res_name]].overview_legend
-
-    def get_detail_view_type(self,trend_res_name):
-        '''
-        get a trend's overview legend type from the name that appears in
-         result_df_parts
-
-        Parameters
-        -----------
-        trend_res_name : strings
-            name that appears in result_df
-        '''
-        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
-        return self.trend_list[trend_dict[trend_res_name]].detail_view
-
-
-
-    def correct_trend_value_datatypes(self):
-        # build mapper
-        trend_type_type_map = {t.name:t.get_trend_value_type()
-                                            for t in self.trend_list}
-
-        # save original column order
-        original_cols = self.result_df.columns
-        result_df_parts = []
-        # figure out which trend columns are present
-        used_trend_cols = [tc for tc in trend_cols if tc in original_cols]
-
-
-        # split into groups, cast types, add trend name column back
-        for tt,df in self.result_df.groupby('trend_type'):
-            df[used_trend_cols] = df[used_trend_cols].astype(trend_type_type_map[tt],copy=False)
-            df['trend_type'] = tt
-            result_df_parts.append(df)
-
-        # concatenate parts back into one df
-        self.result_df = pd.concat(result_df_parts,axis=0)
-        # reshuffled column order back to original
-        self.result_df = self.result_df[original_cols]
 
     def count_compress_binary(self,retain_var_list, compress_var_list):
         """
