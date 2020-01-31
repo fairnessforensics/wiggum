@@ -234,7 +234,7 @@ class _TrendDetectors():
         # remove rows where a trend is undefined
         new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
 
-        new_res[result_df_type_col_name] = 'aggregate-subgroup'
+        #new_res[result_df_type_col_name] = 'aggregate-subgroup'
 
         if self.result_df.empty or replace:
             # print('replacing',self.result_df.empty,replace)
