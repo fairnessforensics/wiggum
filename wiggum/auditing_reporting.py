@@ -81,4 +81,26 @@ class _AuditReporting():
 
         return filt_df
 
-    
+    def get_report_table(self,report_col,report_values):
+        """
+        generate a df that can be used for tables
+        """
+
+        return self.result_df[self.result_df[report_col] in report_values]
+
+    def detect_annotate():
+
+        get_SP_rows
+
+    def save_report_table(self,report_col,report_values,filename):
+        # call above and then save to csv
+
+
+    def result_df_stat_summary(self):
+        """
+        generate and save to file(s) summary statistics on the results
+        """
+
+        # generate state tables and save each individually
+
+        # generate narrative for a text file summary
