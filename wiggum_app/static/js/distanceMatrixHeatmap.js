@@ -7,6 +7,8 @@
 function updateDistanceHeatmapContainer(dataAll) {
 
 	d3.select("#container").selectAll('svg').remove();
+	d3.select("#container").selectAll('div').remove();
+
 	var createScatterPlotFlag = true;
 
 	for (var key in dataAll){

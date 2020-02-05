@@ -64,9 +64,7 @@
                         url: '/',
                         data: {'action':'filter', 'filter_object': filter_object},                               
                         success: function(data) {
-                            server_data = data;
-                          
-                            drawGraphTable(data);
+                            drawDistanceMatrixHeatmap(data);
                         }
                     })
         }
@@ -77,9 +75,7 @@
                         url: '/',
                         data: {'action':'reset'},                               
                         success: function(data) {
-                            server_data = data;
-       
-                            drawGraphTable(data);
+                            drawDistanceMatrixHeatmap(data);
                         }
                     })
         }     
@@ -96,20 +92,18 @@
 
             filter_object = JSON.stringify(filter_object);
 
-            var threshold = legendAdjustValue;
-
             var agg_strength_threshold = document.getElementById("agg_trend_strength_slider").value;
             var sg_strength_threshold = document.getElementById("subgroup_trend_strength_slider").value;
+            var distance_threshold = document.getElementById("distance_slider").value;
 
             $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'detect', 'filter_object': filter_object, 'threshold': threshold, 
+                        data: {'action':'detect', 'filter_object': filter_object, 'distance_threshold': distance_threshold, 
                                 'agg_strength_threshold': agg_strength_threshold, 'sg_strength_threshold': sg_strength_threshold},                               
                         success: function(data) {
-                            server_data = data;
- 
-                            drawGraphTable(data, 'detect');
+
+                            drawDistanceMatrixHeatmap(data, 'detect');
                         }
                     })
         }   
@@ -125,9 +119,8 @@
                         url: '/',
                         data: {'action':'rank', 'agg_type': agg_type, 'view_score': view_score},                               
                         success: function(data) {
-                            server_data = data;
-      
-                            drawGraphTable(data);
+
+                            drawDistanceMatrixHeatmap(data);
                         }
                     })
         }         
@@ -175,6 +168,11 @@
                                 legendValue = -1;
 
                                 //drawGraphTable(data, 'page_load');
+
+                                // set the default threshold
+                                subgroup_trend_strength = data.default_threshold.subgroup_trend_strength;
+                                agg_trend_strength = data.default_threshold.agg_trend_strength;
+                                distance = data.default_threshold.distance;
 
                                 DrawHeatmapLegend();
                                 drawDistanceMatrixHeatmap(data, 'page_load');

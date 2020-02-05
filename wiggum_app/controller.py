@@ -196,20 +196,19 @@ def main():
 
                 # add distances
                 labeled_df_setup.add_distance()
-
-            #result_dict_dict = {}
-            #result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
             
             # Generate distance heatmaps
-            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup)
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
+            default_threshold = wg.trend_quality_sp
+
             #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
-                            df = df)
+                            df = df, default_threshold = default_threshold)
 
         # visualize.html rank trend's cells clicked
         if action == 'detail_ranktrend':
@@ -235,22 +234,35 @@ def main():
             filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
                                 group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                 trend_type =filter_object['trend_type'])
+            
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(filter_result)
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, filter_result, filter_object['subgroup'])
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
 
-            return jsonify(result_dict_dict)
+            #return jsonify(result_dict_dict)
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = filter_result.to_json(orient='records'),
+                            df = df)
+
 
         # visualize.html 'Reset' button clicked
         if action == 'reset':
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
 
-            return jsonify(result_dict_dict)
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
+            #return jsonify(result_dict_dict)
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = labeled_df_setup.result_df.to_json(orient='records'),
+                            df = df)
 
         # visualize.html 'Detect' button clicked
         if action == 'detect':
-            threshold = float(request.form['threshold'])
+            distance_threshold = float(request.form['distance_threshold'])
             sg_strength_threshold = float(request.form['sg_strength_threshold'])
             agg_strength_threshold = float(request.form['agg_strength_threshold'])
 
@@ -262,15 +274,20 @@ def main():
                 # Default to detect all trend types from result_df
                 trend_filter = list(pd.unique(labeled_df_setup.result_df['trend_type']))
 
-            sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_strength':agg_strength_threshold,
+            sp_filter = {'name':'SP', 'distance':distance_threshold, 'agg_trend_strength':agg_strength_threshold,
                 'subgroup_trend_strength':sg_strength_threshold,'trend_type':trend_filter}
 
             detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, detect_result)
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(detect_result)
 
-            return jsonify(result_dict_dict)
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = detect_result.to_json(orient='records'),
+                            df = df)
 
         # visualize.html 'Detect' button clicked
         if action == 'rank':
@@ -286,10 +303,15 @@ def main():
                 rank_param = agg_type + '_view_' + view_score
                 rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, rank_result)
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(rank_result)
 
-            return jsonify(result_dict_dict)
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = rank_result.to_json(orient='records'),
+                            df = df)
 
         spType = request.form['sptype']
 

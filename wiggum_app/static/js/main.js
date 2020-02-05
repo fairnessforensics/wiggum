@@ -51,8 +51,9 @@ var feat2_selected = [];
 var group_feat_selected = [];
 var subgroup_selected = [];
 var trend_type_selected = [];
-var subgrou_trend_strength = 0;
+var subgroup_trend_strength = 0;
 var agg_trend_strength = 0;
+var distance = 0;
 var rankTrendLegendFlg = true;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
