@@ -98,8 +98,11 @@ class _TrendDetectors():
 
     def get_SP_rows(self,thresh=None,inplace=False,replace=False):
         """
-        return a list of tuples of the rows of the dataset that have at least one
-        occurence of SP.
+        return a DataFrame (a subset of result_df) of the results that have
+        at have strenght and distance above the specified thresholds.
+
+        Classic SP can be recovered by using the Binary_Mean_Rank_Trend or
+        Binary_Pearson_Trend trends and passing default values to this function
 
         Parameters
         -----------
@@ -108,9 +111,12 @@ class _TrendDetectors():
             prespecified dictionary if dict, must include 'name' field (which
             will be used as the column name for storing the detections)
         inplace : Boolean
-            replace the result_df with what is found
+            replace the result_df with what is found NOTE: this will lose all
+            trends that are below threshold and to recover them they will have
+            to be recomputed. 
         replace : Boolean
-            replace the column with the given name by a new computation
+            replace the column with the name defined by the threshold values
+            by a new computation
 
         Returns
         ---------
