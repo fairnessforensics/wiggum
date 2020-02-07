@@ -566,6 +566,9 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
     count_df = count_df.stack().unstack(0)
     count_df.index.name = 'subgroup'
     
+    detail_df.fillna(0, inplace=True)
+    count_df.fillna(0, inplace=True)
+
     return detail_df, count_df
 
 def getResultDict(labeled_df, result_df, filter_subgroup= None):
