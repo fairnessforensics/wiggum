@@ -17,7 +17,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 		groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
 
-		if (data.trend_type == 'lin_reg') {	
+		if (data.trend_type == 'pearson_corr' || data.trend_type == 'lin_reg') {	
 			
 			rowLabels = [];
 			colLabels = [];
@@ -109,7 +109,7 @@ var clickHeatmapMatrixCell = function() {
 function updateDetailView() {
 	var d = this.datum();
 
-	if (d.trend_type == 'lin_reg') {
+	if (d.trend_type == 'pearson_corr' || d.trend_type == 'lin_reg') {
 		updateScatter(d);
 	} else if (d.trend_type == 'rank_trend') {
 
