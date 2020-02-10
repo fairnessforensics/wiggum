@@ -116,8 +116,17 @@
                         success: function(data) {
 
                             drawDistanceMatrixHeatmap(data, 'detect');
+
+                            // reset the options for the view score selector after detecting
+                            var optionData = ['distance', 'SP'];
+
+                            var select = d3.select("#view_score_selector");
+                            var options = select.selectAll('option')
+                                                .data(optionData).enter()
+                                                .append('option')
+                                                .text(function(d){return d;});
                         }
-                    })
+                })                                              
         }   
         
         function rank_button() {

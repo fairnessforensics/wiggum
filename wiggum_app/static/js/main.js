@@ -104,6 +104,35 @@ d3.select("#controlbuttons").append("button")
 							.text("Reset")
 							.attr("onclick", "reset_button()");		
 
+// agg type selector	
+// add options
+var optionData = ['mean', 'min', 'max', 'sum'];
+var select = d3.select("#ranking").append('select')
+							.attr('id','agg_type_selector');
+var options = select.selectAll('option')
+					.data(optionData).enter()
+					.append('option')
+					.text(function(d){return d;});
+
+// View Score Selector	
+// view options
+//var optionData = ['distance', 'SP'];
+var optionData = ['distance'];
+var select = d3.select("#ranking").append('select')
+							.attr('id','view_score_selector');
+var options = select.selectAll('option')
+					.data(optionData).enter()
+					.append('option')
+					.text(function(d){return d;});
+
+// rank button
+d3.select("#ranking").append("button")
+					.attr("id", "rank-btn")
+					.attr("type", "button")
+					.attr("value", "rank")
+					.text("Rank")
+					.attr("onclick", "rank_button()"); 	
+
 d3.select("#controlbuttons").append('br');
 d3.select("#controlbuttons").append('br');			
 d3.select("#controlbuttons").append('br');		

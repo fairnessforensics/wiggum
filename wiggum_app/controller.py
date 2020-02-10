@@ -24,11 +24,13 @@ def main():
         global labeled_df_setup
         
         # store filter parameters
+        global filter_flag
         global filter_object
         
         if action == 'folder_open':
 
-            # initial filter_ojbect
+            # initial filter flag and filter object
+            filter_flag = False
             filter_object = {}
 
             folder = request.form['folder']
@@ -50,7 +52,8 @@ def main():
         # index.html 'Open' button clicked for data file
         if action == 'open':
 
-            # initial filter_ojbect
+            # initial filter flag and filter object
+            filter_flag = False
             filter_object = {}
 
             file = request.files.get('file')
@@ -251,6 +254,9 @@ def main():
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
+            # set filter flag
+            filter_flag = True
+
             #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = filter_result.to_json(orient='records'),
@@ -265,7 +271,10 @@ def main():
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
-            # clean the filter dict
+            # set filter flag to False
+            filter_flag = False
+
+            # clean filter object
             filter_object.clear()
 
             #return jsonify(result_dict_dict)
@@ -290,16 +299,16 @@ def main():
             sp_filter = {'name':'SP', 'distance':distance_threshold, 'agg_trend_strength':agg_strength_threshold,
                 'subgroup_trend_strength':sg_strength_threshold,'trend_type':trend_filter}
 
-            # check if filter_object is empty
-            if filter_object:
-                # not empty, pass filter parameter
+            # check if filter flag is True
+            if filter_flag:
+                # filtered, pass filter parameter
                 detect_result = labeled_df_setup.get_SP_rows(sp_filter,
                                     feat1=filter_object['feat1'],feat2=filter_object['feat2'],
                                     group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                     trend_type =filter_object['trend_type'],
                                     replace=True)
             else:
-                # filter_object is empty
+                # not filter
                 detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)            
 
             # Generate distance heatmaps
@@ -319,12 +328,12 @@ def main():
             view_score = request.form['view_score']
 
             labeled_df_setup.add_view_score(view_score,agg_type=agg_type,colored=False)
-
             rank_param = agg_type + '_view_' + view_score
             rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
 
-            # if filter_object is not empty, filtering the rank result
-            if filter_object:            
+            # if filter_flag is True, filtering the rank result
+            if filter_flag:
+
                 rank_result = labeled_df_setup.get_trend_rows(
                                     feat1=filter_object['feat1'],feat2=filter_object['feat2'],
                                     group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
