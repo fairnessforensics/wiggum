@@ -246,6 +246,9 @@ class _ResultDataFrame():
 
         return self.result_df
 
+    def rank_as_discovered(self):
+        self.result_df.sort_values(by='index')
+        return self.result_df
 
 
     def count_sp_views(self, sp_col = 'SP',colored= False, portions =False,
