@@ -64,7 +64,13 @@
                         url: '/',
                         data: {'action':'filter', 'filter_object': filter_object},                               
                         success: function(data) {
-                            drawDistanceMatrixHeatmap(data);
+                            // Check if result table is empty
+                            console.log(data.result_df);
+                            if (data.result_df == "[]") {
+                                alert("No results for filtering.")
+                            } else {
+                                drawDistanceMatrixHeatmap(data);
+                            }
                         }
                     })
         }
@@ -115,16 +121,22 @@
                                 'agg_strength_threshold': agg_strength_threshold, 'sg_strength_threshold': sg_strength_threshold},                               
                         success: function(data) {
 
-                            drawDistanceMatrixHeatmap(data, 'detect');
+                            // Check if result table is empty
+                            if (data.result_df == "[]") {
+                                alert("No results for selected strength or distance.")
+                            } else {
 
-                            // reset the options for the view score selector after detecting
-                            var optionData = ['distance', 'SP'];
+                                drawDistanceMatrixHeatmap(data, 'detect');
 
-                            var select = d3.select("#view_score_selector");
-                            var options = select.selectAll('option')
-                                                .data(optionData).enter()
-                                                .append('option')
-                                                .text(function(d){return d;});
+                                // reset the options for the view score selector after detecting
+                                var optionData = ['distance', 'SP'];
+
+                                var select = d3.select("#view_score_selector");
+                                var options = select.selectAll('option')
+                                                    .data(optionData).enter()
+                                                    .append('option')
+                                                    .text(function(d){return d;});
+                            }
                         }
                 })                                              
         }   
@@ -140,8 +152,12 @@
                         url: '/',
                         data: {'action':'rank', 'agg_type': agg_type, 'view_score': view_score},                               
                         success: function(data) {
-
-                            drawDistanceMatrixHeatmap(data);
+                            // Check if result table is empty
+                            if (data.result_df == "[]") {
+                                alert("No results for ranking.")
+                            } else {
+                                drawDistanceMatrixHeatmap(data);
+                            }
                         }
                     })
         }         
