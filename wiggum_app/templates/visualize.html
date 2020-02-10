@@ -76,6 +76,13 @@
                         data: {'action':'reset'},                               
                         success: function(data) {
                             drawDistanceMatrixHeatmap(data);
+
+                            // unselect the menu selections
+                            clearSelected("feat1_selector");
+                            clearSelected("feat2_selector");
+                            clearSelected("group_feat_selector");
+                            clearSelected("subgroup_selector");
+                            clearSelected("trend_type_selector");
                         }
                     })
         }     
