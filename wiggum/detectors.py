@@ -96,10 +96,14 @@ class _TrendDetectors():
 
         return get_views(sp_df,colored)
 
-    def get_SP_rows(self,thresh=None,inplace=False,replace=False):
+    def get_SP_rows(self,thresh=None,inplace=False,replace=False,
+                            feat1 = None,feat2 = None,group_feat= None,
+                            subgroup= None,subgroup2= None,trend_type=None):
         """
-        return a list of tuples of the rows of the dataset that have at least one
-        occurence of SP.
+        return a dataframe of  rows of the results that have at least one
+        occurence of SP as defined by thresh, possibly filtered rows
+        meet provided criteria for all columns (and operator) and any one of the listed
+        values for each column (or operator)
 
         Parameters
         -----------
@@ -111,6 +115,14 @@ class _TrendDetectors():
             replace the result_df with what is found
         replace : Boolean
             replace the column with the given name by a new computation
+        feat1 : str, list, or  None
+            trend variable name or None to include all if filtered
+        feat2 : str, list, or  None
+            trend variable name or None to include all if filtered
+        group_feat : str, list, or  None
+            groupoby variable name or None to include all if filtered
+        subgroup : str, list, or  None
+            value of groupby_feat or or None to include all if filtered
 
         Returns
         ---------
@@ -145,7 +157,16 @@ class _TrendDetectors():
 
 
         # always filter result and return
-        sp_df = self.result_df[self.result_df[col_name]]
+
+        if  not(feat1  or feat2  or group_feat or subgroup or
+                subgroup2 or trend_type):
+                # filter only by detection col
+            sp_df = self.result_df[self.result_df[col_name]]
+        else:
+            # filter by detection and column values
+            filt_idx = self.get_trend_rows(feat1 ,feat2, group_feat, subgroup,
+                                subgroup2, trend_type,'index')
+            sp_df = self.result_df[self.result_df[col_name] & filt_idx]
 
         # overwrite if inplace
         if inplace:
