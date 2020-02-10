@@ -22,8 +22,14 @@ def main():
         action = request.form['action']
 
         global labeled_df_setup
-
+        
+        # store filter parameters
+        global filter_object
+        
         if action == 'folder_open':
+
+            # initial filter_ojbect
+            filter_object = {}
 
             folder = request.form['folder']
 
@@ -43,6 +49,10 @@ def main():
 
         # index.html 'Open' button clicked for data file
         if action == 'open':
+
+            # initial filter_ojbect
+            filter_object = {}
+
             file = request.files.get('file')
             #global df
             df = pd.read_csv(file)
@@ -255,6 +265,9 @@ def main():
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
+            # clean the filter dict
+            filter_object.clear()
+
             #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
@@ -277,7 +290,17 @@ def main():
             sp_filter = {'name':'SP', 'distance':distance_threshold, 'agg_trend_strength':agg_strength_threshold,
                 'subgroup_trend_strength':sg_strength_threshold,'trend_type':trend_filter}
 
-            detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)
+            # check if filter_object is empty
+            if filter_object:
+                # not empty, pass filter parameter
+                detect_result = labeled_df_setup.get_SP_rows(sp_filter,
+                                    feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+                                    group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
+                                    trend_type =filter_object['trend_type'],
+                                    replace=True)
+            else:
+                # filter_object is empty
+                detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)            
 
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(detect_result)
@@ -289,19 +312,23 @@ def main():
                             result_df = detect_result.to_json(orient='records'),
                             df = df)
 
-        # visualize.html 'Detect' button clicked
+        # visualize.html 'Rank' button clicked
         if action == 'rank':
 
             agg_type = request.form['agg_type']
             view_score = request.form['view_score']
 
-            if view_score == 'distance':
-                rank_result = labeled_df_setup.rank_occurences_by_view(ascending=False)
-            else:
-                labeled_df_setup.add_view_score(view_score,agg_type=agg_type,colored=False)
+            labeled_df_setup.add_view_score(view_score,agg_type=agg_type,colored=False)
 
-                rank_param = agg_type + '_view_' + view_score
-                rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
+            rank_param = agg_type + '_view_' + view_score
+            rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
+
+            # if filter_object is not empty, filtering the rank result
+            if filter_object:            
+                rank_result = labeled_df_setup.get_trend_rows(
+                                    feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+                                    group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
+                                    trend_type =filter_object['trend_type'])
 
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(rank_result)

@@ -222,7 +222,7 @@ class _ResultDataFrame():
         filtered_df = self.result_df[target_row]
         return_per_type ={'df':filtered_df,
                          'index':target_row,
-                         'tuple':target_row,filtered_df}
+                         'tuple':(target_row,filtered_df)}
 
         return return_per_type[returntype]
 

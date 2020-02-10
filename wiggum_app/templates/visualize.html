@@ -75,6 +75,11 @@
                         url: '/',
                         data: {'action':'reset'},                               
                         success: function(data) {
+                            // clear for threshold
+                            subgroup_trend_strength = subgroup_trend_strength_default;
+                            agg_trend_strength = agg_trend_strength_default;
+                            distance = distance_default;
+
                             drawDistanceMatrixHeatmap(data);
 
                             // unselect the menu selections
@@ -82,7 +87,7 @@
                             clearSelected("feat2_selector");
                             clearSelected("group_feat_selector");
                             clearSelected("subgroup_selector");
-                            clearSelected("trend_type_selector");
+                            clearSelected("trend_type_selector"); 
                         }
                     })
         }     
@@ -180,6 +185,11 @@
                                 subgroup_trend_strength = data.default_threshold.subgroup_trend_strength;
                                 agg_trend_strength = data.default_threshold.agg_trend_strength;
                                 distance = data.default_threshold.distance;
+
+                                // save the default values for reset
+                                subgroup_trend_strength_default = data.default_threshold.subgroup_trend_strength;
+                                agg_trend_strength_default = data.default_threshold.agg_trend_strength;
+                                distance_default = data.default_threshold.distance;
 
                                 DrawHeatmapLegend();
                                 drawDistanceMatrixHeatmap(data, 'page_load');
