@@ -69,7 +69,7 @@ class _TrendDetectors():
     """
 
 
-    def get_SP_views(self,thresh=0, colored=False):
+    def get_SP_views(self,filter_thresh=0, colored=False):
         """
         return a list of tuples of the views of the dataset that have at least one
         occurence of SP. Assumes no views are listed in in opposite orders
@@ -91,7 +91,7 @@ class _TrendDetectors():
         """
 
         # filter
-        sp_df = self.get_SP_rows(thresh)
+        sp_df = self.get_SP_rows(filter_thresh)
 
 
         return get_views(sp_df,colored)
