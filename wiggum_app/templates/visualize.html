@@ -144,13 +144,13 @@
         function rank_button() {
             var agg_type_selector = document.getElementById("agg_type_selector");
             agg_type = agg_type_selector.options[agg_type_selector.selectedIndex].value;
-            var view_score_selector = document.getElementById("view_score_selector");
-            view_score = view_score_selector.options[view_score_selector.selectedIndex].value;   
+            var score_col_selector = document.getElementById("score_col_selector");
+            score_col = score_col_selector.options[score_col_selector.selectedIndex].value;   
 
             $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'rank', 'agg_type': agg_type, 'view_score': view_score},                               
+                        data: {'action':'rank', 'agg_type': agg_type, 'score_col': score_col},                               
                         success: function(data) {
                             // Check if result table is empty
                             if (data.result_df == "[]") {

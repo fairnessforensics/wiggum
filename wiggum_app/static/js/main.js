@@ -119,7 +119,7 @@ var options = select.selectAll('option')
 //var optionData = ['distance', 'SP'];
 var optionData = ['distance'];
 var select = d3.select("#ranking").append('select')
-							.attr('id','view_score_selector');
+							.attr('id','score_col_selector');
 var options = select.selectAll('option')
 					.data(optionData).enter()
 					.append('option')

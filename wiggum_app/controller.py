@@ -325,11 +325,16 @@ def main():
         if action == 'rank':
 
             agg_type = request.form['agg_type']
-            view_score = request.form['view_score']
+            score_col = request.form['score_col']
 
-            labeled_df_setup.add_view_score(view_score,agg_type=agg_type,colored=False)
-            rank_param = agg_type + '_view_' + view_score
-            rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
+            view_score = agg_type + '_view_' + score_col
+
+            # check if view score exists
+            if not(view_score in labeled_df_setup.result_df.columns):
+                # not exist, then add view score
+                labeled_df_setup.add_view_score(score_col,agg_type=agg_type,colored=False)
+
+            rank_result = labeled_df_setup.rank_occurences_by_view(view_score,score_col)
 
             # if filter_flag is True, filtering the rank result
             if filter_flag:
