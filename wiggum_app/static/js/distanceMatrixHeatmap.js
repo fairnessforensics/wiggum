@@ -111,6 +111,12 @@ function updateDetailView() {
 
 	if (d.trend_type == 'pearson_corr' || d.trend_type == 'lin_reg') {
 		updateScatter(d);
+
+		// highlight in result table
+		var vars_table = { x: d.rowVar, y: d.colVar, categoryAttr: d.categoryAttr, 
+			category: d.category, trend_type:d.trend_type };		
+
+		updateTabulate(vars_table);
 	} else if (d.trend_type == 'rank_trend') {
 
 		$.ajax({
@@ -123,6 +129,12 @@ function updateDetailView() {
 				updateParallelCoordinates(data, d);
 			},
 		});
+
+		// highlight in result table
+		var vars_table = { x: d.targetAttr, y: d.protectedAttr, categoryAttr: d.categoryAttr, 
+			category: d.category, trend_type:d.trend_type };		
+
+		updateTabulate(vars_table);
 
 	}
 }
