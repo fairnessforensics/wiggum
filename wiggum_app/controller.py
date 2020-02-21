@@ -26,6 +26,9 @@ def main():
         # store filter parameters
         global filter_flag
         global filter_object
+
+        # store project name
+        global project_name
         
         if action == 'folder_open':
 
@@ -34,6 +37,9 @@ def main():
             filter_object = {}
 
             folder = request.form['folder']
+
+            # set folder name to project name
+            project_name = folder
 
             folder = 'data/' + folder
             labeled_df_setup = wg.LabeledDataFrame(folder)
@@ -55,6 +61,9 @@ def main():
             # initial filter flag and filter object
             filter_flag = False
             filter_object = {}
+
+            # initial project name
+            project_name = ""
 
             file = request.files.get('file')
             #global df
@@ -221,7 +230,7 @@ def main():
             #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
-                            df = df, default_threshold = default_threshold)
+                            df = df, default_threshold = default_threshold, project_name = project_name)
 
         # visualize.html rank trend's cells clicked
         if action == 'detail_ranktrend':
