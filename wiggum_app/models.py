@@ -483,15 +483,13 @@ def getDistanceHeatmapDict(df):
 
     distance_heatmap_dict_list = []
 
-    for trend_type, trend_df in df.groupby('trend_type'):
-        # iterate over the groupby variables
-        for gby, gby_trend_df in trend_df.groupby('group_feat'):
-        #for gby in pd.unique(labeled_df.result_df['group_feat']):
-            # groupby the values of the curent groupby varialbe
-            #cgby = labeled_df.get_trend_rows(group_feat=gby, trend_type=trend_type).groupby('subgroup')
-            cgby = gby_trend_df.groupby('subgroup')
-            # iterate over the values of the groupby
+    for trend_type, trend_df in df.groupby(['trend_type'], sort=False):
 
+        # iterate over the GroupFeat variables
+        for gby, gby_trend_df in trend_df.groupby('group_feat'):
+            # groupby the subgroups
+            cgby = gby_trend_df.groupby('subgroup')
+            # iterate over the values of the subgroups
             for gby_lev,df in cgby:
                 distance_heatmap_dict = {}
                 heatmap = df.pivot(index='feat1', columns='feat2', values='distance')
