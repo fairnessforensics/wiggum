@@ -336,7 +336,8 @@ function DrawHeatmapLegend() {
 								.shapePadding(5)
 								.shapeWidth(50)
 								.shapeHeight(20)
-								.labelOffset(12);
+								.labelOffset(12)
+								.ascending(true);
 		
 	svg.append("g")
 		.attr("transform", "translate(-20, 0)")
