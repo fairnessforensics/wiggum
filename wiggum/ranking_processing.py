@@ -156,8 +156,7 @@ class _ResultDataFrame():
         return self.result_df
 
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
-                            subgroup= None,subgroup2= None,trend_type=None,
-                            returntype='df'):
+                            subgroup= None,subgroup2= None,trend_type=None):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -173,8 +172,6 @@ class _ResultDataFrame():
             groupoby variable name or None to include all
         subgroup : str, list, or  None
             value of groupby_feat or or None to include all
-        returntype : {'df', 'index', 'tuple'}
-            format to return resutls in
         """
         # get the rows for each specified value,
         #  or set to True to include all values for each None
@@ -218,14 +215,7 @@ class _ResultDataFrame():
         target_row.index = self.result_df.index
         # return that row
         print(sum(target_row), ' total rows meet the criteria')
-
-        filtered_df = self.result_df[target_row]
-        return_per_type ={'df':filtered_df,
-                         'index':target_row,
-                         'tuple':(target_row,filtered_df)}
-
-        return return_per_type[returntype]
-
+        return self.result_df[target_row]
 
 
     def rank_weighted(self,cols_list,weights,name =None):
@@ -256,9 +246,6 @@ class _ResultDataFrame():
 
         return self.result_df
 
-    def rank_as_discovered(self):
-        self.result_df.sort_values(by='index')
-        return self.result_df
 
 
     def count_sp_views(self, sp_col = 'SP',colored= False, portions =False,

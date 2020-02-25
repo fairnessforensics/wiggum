@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.markers as mk
 import matplotlib.pylab as plt
 import itertools
+import json
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 possible_roles = ['groupby','trend','prediction','groundtruth','ignore']
@@ -25,6 +26,7 @@ from .ranking_processing import _ResultDataFrame
 meta_csv = 'meta.csv'
 result_csv = 'result_df.csv'
 data_csv = 'df.csv'
+trend_json = 'trends.json'
 
 
 def check_meta(row,meta_val,meta_type):
@@ -128,12 +130,14 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             string must be a filename of a csv to load
         """
         # check if re-opening a saved labeled_df
+        self.trend_list = []
 
         if type(data) == str and os.path.isdir(data) and meta ==None and results ==None:
             # if so, make all strings of filepaths
             meta = os.path.join(data,meta_csv)
             results = os.path.join(data,result_csv)
             data = os.path.join(data,data_csv)
+            trends = os.path.join(data,trend_json)
 
         # set data
         if type(data) is  pd.core.frame.DataFrame:
@@ -167,7 +171,12 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         else:
             self.result_df = pd.read_csv(results)
 
-        self.trend_list = []
+        # if result_df not empty then load trend_list
+        if len(self.result_df) >0:
+            with open(trends, 'r') as tjson:
+                self.trend_list = json.load(tjson)
+
+
 
 
     def count_compress_binary(self,retain_var_list, compress_var_list):
@@ -416,6 +425,14 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
         data_file = os.path.join(dirname,data_csv)
         self.df.to_csv(data_file,index=False)
+
+
+    def save_all(self,dirname):
+        self.to_csvs(dirname)
+
+        trend_file = os.path.join(dirname,trend_json)
+        with open(trend_file, 'w') as fp:
+            json.dump(self.trend_list, fp, indent=4)
 
 
     def __repr__(self):
