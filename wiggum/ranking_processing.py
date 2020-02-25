@@ -156,7 +156,8 @@ class _ResultDataFrame():
         return self.result_df
 
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
-                            subgroup= None,subgroup2= None,trend_type=None):
+                            subgroup= None,subgroup2= None,trend_type=None,
+                            inplace=False):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -215,6 +216,10 @@ class _ResultDataFrame():
         target_row.index = self.result_df.index
         # return that row
         print(sum(target_row), ' total rows meet the criteria')
+
+        if inplace:
+            self.result_df = self.result_df[target_row]
+
         return self.result_df[target_row]
 
 
