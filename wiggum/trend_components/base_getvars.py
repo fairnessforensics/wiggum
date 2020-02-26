@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from io import StringIO
 
 class Trend():
     """
@@ -33,6 +34,13 @@ class Trend():
 
         """
         return row['distance'] > thresh
+
+    def load(self,content_dict):
+        self.__dict__.update(content_dict)
+
+        # reformat csv-d tables to dataframes
+        self.trend_precompute = {st:pd.read_csv(StringIO(pc))
+                                    for st,pc in self.trend_precompute.items()}
 
 
 ################################################################################

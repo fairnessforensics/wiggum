@@ -7,6 +7,7 @@ import matplotlib.markers as mk
 import matplotlib.pylab as plt
 import itertools
 import json
+from pydoc import locate
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 possible_roles = ['groupby','trend','prediction','groundtruth','ignore']
@@ -136,8 +137,8 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             # if so, make all strings of filepaths
             meta = os.path.join(data,meta_csv)
             results = os.path.join(data,result_csv)
-            data = os.path.join(data,data_csv)
             trends = os.path.join(data,trend_json)
+            data = os.path.join(data,data_csv)
 
         # set data
         if type(data) is  pd.core.frame.DataFrame:
@@ -157,6 +158,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.meta_df = meta
         elif type(meta) is str:
             self.meta_df = pd.read_csv(meta,index_col='variable')
+            self.meta_df.index.name = 'variable'
             # handle lists
             self.meta_df['role'] = [var.replace("'",'').replace("[",'').replace("]",'').replace(",",'').split()
                       for var in self.meta_df['role']]
@@ -174,7 +176,13 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         # if result_df not empty then load trend_list
         if len(self.result_df) >0:
             with open(trends, 'r') as tjson:
-                self.trend_list = json.load(tjson)
+                trend_content = json.load(tjson)
+
+            # initialize trend objects by looking up type and calling init
+            self.trend_list = [locate(c['type'])()
+                                        for t,c in trend_content.items()]
+            # iterate and call load
+            [ct.load(trend_content[ct.name]['content']) for ct in self.trend_list]
 
 
 
@@ -430,9 +438,21 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def save_all(self,dirname):
         self.to_csvs(dirname)
 
+        # cast the type to string and otrim <class ''> off the ends
+        # serialize the rest as a dictionary
+        trend_dict = {ct.name:{'type':str(type(ct))[8:-2], 'content':ct.__dict__}
+                            for ct in self.trend_list}
+
+        # overwrite the tren precompute dictionary Data frames with csvs
+        for n in trend_dict.keys():
+            trend_dict[n]['content']['trend_precompute'] = {t:df.to_csv(index=False) for t,df in
+                                                       trend_dict[n]['content']['trend_precompute'].items()}
+
+        # file name standardly
         trend_file = os.path.join(dirname,trend_json)
+        # dump serialize trend list to json
         with open(trend_file, 'w') as fp:
-            json.dump(self.trend_list, fp, indent=4)
+            json.dump(trend_dict, fp, indent=4)
 
 
     def __repr__(self):
