@@ -37,6 +37,7 @@ class _AugmentedData():
         new_vars = [var for var in data_vars if not(var in meta_vars)]
         # create a new DataFrame withthe right index and columns
         new_vars_df = pd.DataFrame(index = new_vars, columns = META_COLUMNS)
+        new_vars_df.index.name = 'variable'
 
         # set all meta info, all will be the same because they're cluster assignments
         new_vars_df['dtype'] = self.df[new_vars].dtypes
