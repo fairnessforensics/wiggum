@@ -165,14 +165,21 @@ class _ResultDataFrame():
 
         Parameters
         -----------
-        feat1 : str, list, or  None
+        feat1 : str, list, or  {None}
             trend variable name or None to include all
-        feat2 : str, list, or  None
+        feat2 : str, list, or  {None}
             trend variable name or None to include all
-        group_feat : str, list, or  None
+        group_feat : str, list, or  {None}
             groupoby variable name or None to include all
-        subgroup : str, list, or  None
-            value of groupby_feat or or None to include all
+        subgroup : str, list, or  {None}
+            value of groupby_feat or  None to include all
+        subgroup2 : str, list or {None}
+            value of groupby_feat or  None to include all
+        trend_type: str, list or {None}
+            name of a trend  None to include all
+        inplace : boolean {False}
+            if True the filtering is done in place and the result df is changed
+            in the object
         """
         # get the rows for each specified value,
         #  or set to True to include all values for each None

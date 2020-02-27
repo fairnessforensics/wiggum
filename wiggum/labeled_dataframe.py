@@ -181,7 +181,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             # initialize trend objects by looking up type and calling init
             self.trend_list = [locate(c['type'])()
                                         for t,c in trend_content.items()]
-            # iterate and call load
+            # iterate and call load to add the content
             [ct.load(trend_content[ct.name]['content']) for ct in self.trend_list]
 
 
@@ -421,6 +421,11 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def to_csvs(self,dirname):
         """
         write out info as csvs to the same directory
+
+        Parameters
+        ----------
+        dirname : string
+            directory where the three csvs will be saved
         """
         if not(os.path.isdir(dirname)):
             os.mkdir(dirname)
@@ -434,8 +439,23 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         data_file = os.path.join(dirname,data_csv)
         self.df.to_csv(data_file,index=False)
 
+        return True
+
 
     def save_all(self,dirname):
+        """
+        save result_df, data, and metadata to .csv files and the trend list to a
+        json file. Serializes the trend_list into a dictionary with the names as
+        keys and the value a dictionary with keys type and content.  The type
+        field has the type cast to a string and the content is a dictionary of
+        all of the parameters with the trend precompute DataFrames serialized
+        into csv strings
+
+        Parameters
+        ----------
+        dirname : string
+            directory where the three csvs will be saved
+        """
         self.to_csvs(dirname)
 
         # cast the type to string and otrim <class ''> off the ends
@@ -453,6 +473,8 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         # dump serialize trend list to json
         with open(trend_file, 'w') as fp:
             json.dump(trend_dict, fp, indent=4)
+
+        return True
 
 
     def __repr__(self):

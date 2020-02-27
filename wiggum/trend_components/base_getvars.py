@@ -26,21 +26,54 @@ class Trend():
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
 
-            return self
+        return self
 
     def is_SP(self,row,thresh):
         """
-        default is if it's above a threshold
+        default is if it's above a threshold, operates rowwise and can be
+        applied to a DataFrame with the apply method
+
+        Parameters
+        -----------
+        row : pd.series
+            row of a result df to apply the threshold to
+        thresh : float scalar
+            threshold to compare the distance to
+
+        Returns
+        -------
+        boolean value if the distance is over the threshold
+
 
         """
         return row['distance'] > thresh
 
     def load(self,content_dict):
+        '''
+        load a trend  from a dictionary of the content
+
+        Parameters
+        ----------
+        content_dict : Dictionary
+            the dictionary that results from saving a trend object via the
+        trend.__dict__ output
+
+        Returns
+        -------
+        self : a trend object
+            with all of the parameters set according to the dictionary
+        '''
+        # take the dictionary and load it to the properties of the object
         self.__dict__.update(content_dict)
 
-        # reformat csv-d tables to dataframes
+        # reformat csv-ified tables to dataframes
+        #   iterate over the key, value pairs in the precompute Dictionary
+        #   keep the keys and convert the strings to a buffer then read them
+        #   into a dataframe
         self.trend_precompute = {st:pd.read_csv(StringIO(pc))
                                     for st,pc in self.trend_precompute.items()}
+
+        return self
 
 
 ################################################################################
