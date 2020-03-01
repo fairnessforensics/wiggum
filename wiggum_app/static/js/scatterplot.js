@@ -1,5 +1,5 @@
 // draw scatter plot
-var margin = {top: 30, right: 30, bottom: 30, left: 30},
+var margin = {top: 30, right: 30, bottom: 30, left: 60},
 	width = 360,
 	height = 360;	
 
