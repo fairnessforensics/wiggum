@@ -26,7 +26,7 @@ class Trend():
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
 
-        return self
+        
 
     def is_SP(self,row,thresh):
         """
