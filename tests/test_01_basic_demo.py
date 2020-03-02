@@ -93,10 +93,6 @@ def test_basic_load_df():
     labeled_df.get_subgroup_trends_1lev([rankobj,linreg_obj])
     labeled_df.get_pairwise_trends_1lev([rankobj,linreg_obj])
 
-    # test saving all
-    labeled_df.save_all('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI_all')
-    labeled_df = wg.LabeledDataFrame('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI_all')
-
     # confirm that rankobj trends trend_precompute has the right columns
     sel_trend = '_'.join([rankobj.name,'agg_trend','search_conducted_rate',
                         'driver_gender'])
@@ -107,7 +103,11 @@ def test_basic_load_df():
 
     labeled_df.add_distance(row_wise = True)
 
+    # test saving all
+    labeled_df.save_all('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI_all')
+    labeled_df = wg.LabeledDataFrame('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI_all')
 
+    
     # So, we can use that function to filter and look at subsets of the trends based on the features, groupby, or subgroups
 
     # In[23]:
