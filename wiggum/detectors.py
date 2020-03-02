@@ -212,37 +212,44 @@ class _TrendDetectors():
         all_trends = []
         subgroup_trends = []
 
+        # precomputed trends
+        precomputed_trends = set(self.result_df['trend_type'])
+
         for cur_trend in self.trend_list:
-            cur_trend.get_trend_vars(self)
 
-            # augment the data with precomputed parts if needed
+            # only compute if the current trend is not in the result_df already
+            # or replace is true
+            if not(cur_trend.name in precomputed_trends) or replace:
+                cur_trend.get_trend_vars(self)
 
-
-            if cur_trend.preaugment == 'confusion':
-                acc_pairs = itert.product(cur_trend.groundtruth,
-                                            cur_trend.prediction)
-
-                for var_pair in acc_pairs:
-                    # TODO: only if col not there already
-                    self.add_acc(*var_pair)
+                # augment the data with precomputed parts if needed
 
 
-            # Tabulate aggregate statistics
-            agg_trends = cur_trend.get_trends(self.df,'agg_trend')
+                if cur_trend.preaugment == 'confusion':
+                    acc_pairs = itert.product(cur_trend.groundtruth,
+                                                cur_trend.prediction)
 
-            all_trends.append(agg_trends)
+                    for var_pair in acc_pairs:
+                        # TODO: only if col not there already
+                        self.add_acc(*var_pair)
 
-            # iterate over groupby attributes
-            for groupbyAttr in groupby_vars:
 
-                #condition the data
-                cur_grouping = self.df.groupby(groupbyAttr)
+                # Tabulate aggregate statistics
+                agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
-                # get subgoup trends
-                curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+                all_trends.append(agg_trends)
 
-                # append
-                subgroup_trends.append(curgroup_corr)
+                # iterate over groupby attributes
+                for groupbyAttr in groupby_vars:
+
+                    #condition the data
+                    cur_grouping = self.df.groupby(groupbyAttr)
+
+                    # get subgoup trends
+                    curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+
+                    # append
+                    subgroup_trends.append(curgroup_corr)
 
 
 
