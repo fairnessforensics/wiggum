@@ -225,7 +225,14 @@ class _ResultDataFrame():
         print(sum(target_row), ' total rows meet the criteria')
 
         if inplace:
+            # if inplace, replace the existing trend table with the filtered
             self.result_df = self.result_df[target_row]
+
+            # if inplace and trend_type was used in filtering, also filter the
+            #     trend_list
+            if trend_type:
+                self.trend_list = [trend_obj for trend_obj in self.trend_list
+                                            if trend_obj.name in trend_type]
 
         return self.result_df[target_row]
 
