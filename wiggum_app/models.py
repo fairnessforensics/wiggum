@@ -467,6 +467,49 @@ def updateMetaData(labeled_df, meta):
 
     return labeled_df
 
+def checkSameMetadata(labeled_df, meta):
+    """
+    Check if any metadata changes
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        LabeledDataFrame
+    meta : DataFrame
+        user input metadata
+    Returns
+    --------
+    checkResult : Boolean
+        check result: if same returns True, different returns False
+    """
+    meta_list =json.loads(meta)
+
+    meta_df_user = pd.DataFrame(meta_list)
+
+    # initial check result
+    checkResult = True
+
+    # rename
+    meta_df_user.rename(columns={'name': 'variable'}, inplace=True)
+    # set as index
+    meta_df_user.set_index('variable', inplace=True)
+
+    # set roles from user input
+    meta_df_user['isCount'] = meta_df_user['isCount'].replace({'Y': True, 'N': False})
+
+    # set weighting_var from user input
+    meta_df_user['weighting_var'] = meta_df_user['weighting_var'].replace('N/A', np.nan)
+    
+    # append dtype to user input metadata
+    meta_df_user['dtype'] = labeled_df.meta_df['dtype']
+
+    # check equal after sorting the columns
+    if meta_df_user.sort_index(axis=1).equals(labeled_df.meta_df.sort_index(axis=1)):
+        checkResult = True
+    else:
+        checkResult = False
+
+    return checkResult
+
 def getDistanceHeatmapDict(df):
     """
     Generate Distance Heatmap Dictitonary List for overview 
@@ -492,6 +535,7 @@ def getDistanceHeatmapDict(df):
             # iterate over the values of the subgroups
             for gby_lev,df in cgby:
                 distance_heatmap_dict = {}
+
                 heatmap = df.pivot(index='feat1', columns='feat2', values='distance')
 
                 # replace Nan to 99

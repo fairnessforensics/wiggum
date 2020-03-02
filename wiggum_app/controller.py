@@ -99,7 +99,7 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)
+            labeled_df_setup.save_all(directory)
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
@@ -180,37 +180,81 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)          
+            labeled_df_setup.save_all(directory)          
             return 'Saved'      
 
         # index.html 'Visualize' button clicked
         if action == 'visualize':
 
             meta = request.form['metaList']
+            checkResult = models.checkSameMetadata(labeled_df_setup, meta)
+
+            # check if user input metadata is same as saved metadata
+            if not(labeled_df_setup.result_df.empty) and checkResult == False: 
+                # delete result_df
+                labeled_df_setup.result_df = pd.DataFrame()
+
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
             global trend_list
+            # initial trend list
+            trend_list = []
+            miss_trends_flg = False
+            global filter_trend_list
+            filter_trend_list = []
+
             user_trends = request.form['trend_types']
             user_trends = user_trends.split(",")
 
-            trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
+            # check if the selected trend types are different from result_df
+            if not(labeled_df_setup.result_df.empty):
+                # result table is not empty, extract trend types from result table
+                #trend_list_result_df = [trend_type for trend_type, trend_df 
+                #                    in labeled_df_setup.result_df.groupby(['trend_type'])]
+                trend_list_result_df = [trend.name for trend 
+                                            in labeled_df_setup.trend_list]
 
-            # check trends computable
-            trend_computability = [t.is_computable(labeled_df_setup) for t in trend_list]
+                # delete the trend types existing in result table
+                new_user_trends = list(set(user_trends)- set(trend_list_result_df))
+                
+                # check if trend types missing from result table
+                miss_trends = list(set(trend_list_result_df)- set(user_trends))
 
-            # no trends can compute
-            if sum(trend_computability) == 0:
-                return 'no_computable_trend'
+                if len(miss_trends) > 0:
+                    filter_trend_list = list(set(trend_list_result_df)- set(miss_trends))
+                    miss_trends_flg = True
+            else:
+                new_user_trends = user_trends
 
-            # drop any specific trends that cannot compute
-            if sum(trend_computability) < len(user_trends):
-                trend_list = [t for t,c in zip(user_trends, trend_computability) if c]
+            # check user trend list
+            if len(new_user_trends) > 0:
+                trend_list = [wg.all_trend_types[trend]() for trend in new_user_trends]
+
+                # check trends computable
+                trend_computability = [t.is_computable(labeled_df_setup) for t in trend_list]
+
+                # no trends can compute
+                if sum(trend_computability) == 0:
+                    return 'no_computable_trend'
+
+                # drop any specific trends that cannot compute
+                if sum(trend_computability) < len(new_user_trends):
+                    trend_list = [t for t,c in zip(new_user_trends, trend_computability) if c]
+
+            if miss_trends_flg:
+                return 'miss_old_trend_type'
 
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
         if action == 'page_load':
-            if labeled_df_setup.result_df.empty:
+
+            # if filter trends exist, do filtering
+            if len(filter_trend_list) > 0:
+                labeled_df_setup.get_trend_rows(trend_type=filter_trend_list,inplace=True)
+
+            # check trend list
+            if len(trend_list) > 0:
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 
                 if labeled_df_setup.result_df.empty:
@@ -218,7 +262,7 @@ def main():
 
                 # add distances
                 labeled_df_setup.add_distance()
-            
+
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
 
@@ -227,7 +271,6 @@ def main():
 
             default_threshold = wg.trend_quality_sp
 
-            #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
                             df = df, default_threshold = default_threshold, project_name = project_name)
