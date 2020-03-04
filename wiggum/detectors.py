@@ -100,6 +100,7 @@ class _TrendDetectors():
                             feat1 = None,feat2 = None,group_feat= None,
                             subgroup= None,subgroup2= None,trend_type=None):
         """
+
         return a dataframe of  rows of the results that have at least one
         occurence of SP as defined by thresh, possibly filtered rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -112,7 +113,9 @@ class _TrendDetectors():
             prespecified dictionary if dict, must include 'name' field (which
             will be used as the column name for storing the detections)
         inplace : Boolean
-            replace the result_df with what is found
+            replace the result_df with what is found NOTE: this will lose all
+            trends that are below threshold and to recover them they will have
+            to be recomputed. 
         replace : Boolean
             replace the column with the given name by a new computation
         feat1 : str, list, or  None
@@ -123,6 +126,7 @@ class _TrendDetectors():
             groupoby variable name or None to include all if filtered
         subgroup : str, list, or  None
             value of groupby_feat or or None to include all if filtered
+
 
         Returns
         ---------
