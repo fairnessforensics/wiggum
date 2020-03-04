@@ -6,12 +6,14 @@ import numpy as np
 import matplotlib.markers as mk
 import matplotlib.pylab as plt
 import itertools
+import json
+from pydoc import locate
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 possible_roles = ['groupby','trend','prediction','groundtruth','ignore']
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
-
+trend_cols = [ 'subgroup_trend','subgroup_trend2', 'agg_trend']
 
 
 from .detectors import RESULT_DF_HEADER, _TrendDetectors
@@ -25,6 +27,7 @@ from .ranking_processing import _ResultDataFrame
 meta_csv = 'meta.csv'
 result_csv = 'result_df.csv'
 data_csv = 'df.csv'
+trend_json = 'trends.json'
 
 
 def check_meta(row,meta_val,meta_type):
@@ -99,6 +102,8 @@ def column_rate(df, rate_column):
 
 
 
+
+
 class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     """
     this is the object
@@ -128,11 +133,13 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             string must be a filename of a csv to load
         """
         # check if re-opening a saved labeled_df
+        self.trend_list = []
 
         if type(data) == str and os.path.isdir(data) and meta ==None and results ==None:
             # if so, make all strings of filepaths
             meta = os.path.join(data,meta_csv)
             results = os.path.join(data,result_csv)
+            trends = os.path.join(data,trend_json)
             data = os.path.join(data,data_csv)
 
         # set data
@@ -153,6 +160,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.meta_df = meta
         elif type(meta) is str:
             self.meta_df = pd.read_csv(meta,index_col='variable')
+            self.meta_df.index.name = 'variable'
             # handle lists
             self.meta_df['role'] = [var.replace("'",'').replace("[",'').replace("]",'').replace(",",'').split()
                       for var in self.meta_df['role']]
@@ -167,8 +175,46 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         else:
             self.result_df = pd.read_csv(results)
 
-        self.trend_list = []
+            # self.result_df.apply(cast_trend_value,axis=1)
 
+
+        # if result_df not empty then load trend_list and correct types
+        if len(self.result_df) >0:
+            with open(trends, 'r') as tjson:
+                trend_content = json.load(tjson)
+
+            # initialize trend objects by looking up type and calling init
+            self.trend_list = [locate(c['type'])()
+                                        for t,c in trend_content.items()]
+            # iterate and call load to add the content
+            [ct.load(trend_content[ct.name]['content']) for ct in self.trend_list]
+
+
+            self.correct_trend_value_datatypes()
+
+
+    def correct_trend_value_datatypes(self):
+        # build mapper
+        trend_type_type_map = {t.name:t.get_trend_value_type()
+                                            for t in self.trend_list}
+
+        # save original column order
+        original_cols = self.result_df.columns
+        result_df_parts = []
+        # figure out which trend columns are present
+        used_trend_cols = [tc for tc in trend_cols if tc in original_cols]
+
+
+        # split into groups, cast types, add trend name column back
+        for tt,df in self.result_df.groupby('trend_type'):
+            df[used_trend_cols] = df[used_trend_cols].astype(trend_type_type_map[tt],copy=False)
+            df['trend_type'] = tt
+            result_df_parts.append(df)
+
+        # concatenate parts back into one df
+        self.result_df = pd.concat(result_df_parts,axis=0)
+        # reshuffled column order back to original
+        self.result_df = self.result_df[original_cols]
 
     def count_compress_binary(self,retain_var_list, compress_var_list):
         """
@@ -404,6 +450,11 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def to_csvs(self,dirname):
         """
         write out info as csvs to the same directory
+
+        Parameters
+        ----------
+        dirname : string
+            directory where the three csvs will be saved
         """
         if not(os.path.isdir(dirname)):
             os.mkdir(dirname)
@@ -416,6 +467,43 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
         data_file = os.path.join(dirname,data_csv)
         self.df.to_csv(data_file,index=False)
+
+        return True
+
+
+    def save_all(self,dirname):
+        """
+        save result_df, data, and metadata to .csv files and the trend list to a
+        json file. Serializes the trend_list into a dictionary with the names as
+        keys and the value a dictionary with keys type and content.  The type
+        field has the type cast to a string and the content is a dictionary of
+        all of the parameters with the trend precompute DataFrames serialized
+        into csv strings
+
+        Parameters
+        ----------
+        dirname : string
+            directory where the three csvs will be saved
+        """
+        self.to_csvs(dirname)
+
+        # cast the type to string and otrim <class ''> off the ends
+        # serialize the rest as a dictionary
+        trend_dict = {ct.name:{'type':str(type(ct))[8:-2], 'content':ct.__dict__}
+                            for ct in self.trend_list}
+
+        # overwrite the tren precompute dictionary Data frames with csvs
+        for n in trend_dict.keys():
+            trend_dict[n]['content']['trend_precompute'] = {t:df.to_csv(index=False) for t,df in
+                                                       trend_dict[n]['content']['trend_precompute'].items()}
+
+        # file name standardly
+        trend_file = os.path.join(dirname,trend_json)
+        # dump serialize trend list to json
+        with open(trend_file, 'w') as fp:
+            json.dump(trend_dict, fp, indent=4)
+
+        return True
 
 
     def __repr__(self):

@@ -192,3 +192,17 @@ function drawDistanceMatrixHeatmap(data, action) {
 	tableRecords = JSON.parse(data.result_df)    
 	tabulate(tableRecords, action);
 }
+
+/**
+ * Unselect the menu selections
+ *
+ * @param id - id for menu selection.
+ * @returns none.
+ */
+function clearSelected(id){
+    var elements = document.getElementById(id).options;
+
+    for(var i = 0; i < elements.length; i++){
+      elements[i].selected = false;
+    }
+  }

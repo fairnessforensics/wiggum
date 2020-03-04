@@ -22,10 +22,24 @@ def main():
         action = request.form['action']
 
         global labeled_df_setup
+        
+        # store filter parameters
+        global filter_flag
+        global filter_object
 
+        # store project name
+        global project_name
+        
         if action == 'folder_open':
 
+            # initial filter flag and filter object
+            filter_flag = False
+            filter_object = {}
+
             folder = request.form['folder']
+
+            # set folder name to project name
+            project_name = folder
 
             folder = 'data/' + folder
             labeled_df_setup = wg.LabeledDataFrame(folder)
@@ -43,6 +57,14 @@ def main():
 
         # index.html 'Open' button clicked for data file
         if action == 'open':
+
+            # initial filter flag and filter object
+            filter_flag = False
+            filter_object = {}
+
+            # initial project name
+            project_name = ""
+
             file = request.files.get('file')
             #global df
             df = pd.read_csv(file)
@@ -77,7 +99,7 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)
+            labeled_df_setup.save_all(directory)
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
@@ -158,37 +180,81 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)          
+            labeled_df_setup.save_all(directory)          
             return 'Saved'      
 
         # index.html 'Visualize' button clicked
         if action == 'visualize':
 
             meta = request.form['metaList']
+            checkResult = models.checkSameMetadata(labeled_df_setup, meta)
+
+            # check if user input metadata is same as saved metadata
+            if not(labeled_df_setup.result_df.empty) and checkResult == False: 
+                # delete result_df
+                labeled_df_setup.result_df = pd.DataFrame()
+
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
             global trend_list
+            # initial trend list
+            trend_list = []
+            miss_trends_flg = False
+            global filter_trend_list
+            filter_trend_list = []
+
             user_trends = request.form['trend_types']
             user_trends = user_trends.split(",")
 
-            trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
+            # check if the selected trend types are different from result_df
+            if not(labeled_df_setup.result_df.empty):
+                # result table is not empty, extract trend types from result table
+                #trend_list_result_df = [trend_type for trend_type, trend_df 
+                #                    in labeled_df_setup.result_df.groupby(['trend_type'])]
+                trend_list_result_df = [trend.name for trend 
+                                            in labeled_df_setup.trend_list]
 
-            # check trends computable
-            trend_computability = [t.is_computable(labeled_df_setup) for t in trend_list]
+                # delete the trend types existing in result table
+                new_user_trends = list(set(user_trends)- set(trend_list_result_df))
+                
+                # check if trend types missing from result table
+                miss_trends = list(set(trend_list_result_df)- set(user_trends))
 
-            # no trends can compute
-            if sum(trend_computability) == 0:
-                return 'no_computable_trend'
+                if len(miss_trends) > 0:
+                    filter_trend_list = list(set(trend_list_result_df)- set(miss_trends))
+                    miss_trends_flg = True
+            else:
+                new_user_trends = user_trends
 
-            # drop any specific trends that cannot compute
-            if sum(trend_computability) < len(user_trends):
-                trend_list = [t for t,c in zip(user_trends, trend_computability) if c]
+            # check user trend list
+            if len(new_user_trends) > 0:
+                trend_list = [wg.all_trend_types[trend]() for trend in new_user_trends]
+
+                # check trends computable
+                trend_computability = [t.is_computable(labeled_df_setup) for t in trend_list]
+
+                # no trends can compute
+                if sum(trend_computability) == 0:
+                    return 'no_computable_trend'
+
+                # drop any specific trends that cannot compute
+                if sum(trend_computability) < len(new_user_trends):
+                    trend_list = [t for t,c in zip(new_user_trends, trend_computability) if c]
+
+            if miss_trends_flg:
+                return 'miss_old_trend_type'
 
             return redirect(url_for("visualize"))
 
         # initial for visualize.html page
         if action == 'page_load':
-            if labeled_df_setup.result_df.empty:
+
+            # if filter trends exist, do filtering
+            if len(filter_trend_list) > 0:
+                labeled_df_setup.get_trend_rows(trend_type=filter_trend_list,inplace=True)
+
+            # check trend list
+            if len(trend_list) > 0:
                 labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 
                 if labeled_df_setup.result_df.empty:
@@ -197,19 +263,17 @@ def main():
                 # add distances
                 labeled_df_setup.add_distance()
 
-            #result_dict_dict = {}
-            #result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
-            
             # Generate distance heatmaps
-            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup)
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
-            #return jsonify(result_dict_dict)
+            default_threshold = wg.trend_quality_sp
+
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
-                            df = df)
+                            df = df, default_threshold = default_threshold, project_name = project_name)
 
         # visualize.html rank trend's cells clicked
         if action == 'detail_ranktrend':
@@ -235,22 +299,44 @@ def main():
             filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
                                 group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                 trend_type =filter_object['trend_type'])
+            
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(filter_result)
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, filter_result, filter_object['subgroup'])
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
 
-            return jsonify(result_dict_dict)
+            # set filter flag
+            filter_flag = True
+
+            #return jsonify(result_dict_dict)
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = filter_result.to_json(orient='records'),
+                            df = df)
+
 
         # visualize.html 'Reset' button clicked
         if action == 'reset':
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, labeled_df_setup.result_df)
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
 
-            return jsonify(result_dict_dict)
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
+            # set filter flag to False
+            filter_flag = False
+
+            # clean filter object
+            filter_object.clear()
+
+            #return jsonify(result_dict_dict)
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = labeled_df_setup.result_df.to_json(orient='records'),
+                            df = df)
 
         # visualize.html 'Detect' button clicked
         if action == 'detect':
-            threshold = float(request.form['threshold'])
+            distance_threshold = float(request.form['distance_threshold'])
             sg_strength_threshold = float(request.form['sg_strength_threshold'])
             agg_strength_threshold = float(request.form['agg_strength_threshold'])
 
@@ -262,34 +348,63 @@ def main():
                 # Default to detect all trend types from result_df
                 trend_filter = list(pd.unique(labeled_df_setup.result_df['trend_type']))
 
-            sp_filter = {'name':'SP', 'distance':threshold, 'agg_trend_strength':agg_strength_threshold,
+            sp_filter = {'name':'SP', 'distance':distance_threshold, 'agg_trend_strength':agg_strength_threshold,
                 'subgroup_trend_strength':sg_strength_threshold,'trend_type':trend_filter}
 
-            detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)
+            # check if filter flag is True
+            if filter_flag:
+                # filtered, pass filter parameter
+                detect_result = labeled_df_setup.get_SP_rows(sp_filter,
+                                    feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+                                    group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
+                                    trend_type =filter_object['trend_type'],
+                                    replace=True)
+            else:
+                # not filter
+                detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)            
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, detect_result)
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(detect_result)
 
-            return jsonify(result_dict_dict)
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
 
-        # visualize.html 'Detect' button clicked
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = detect_result.to_json(orient='records'),
+                            df = df)
+
+        # visualize.html 'Rank' button clicked
         if action == 'rank':
 
             agg_type = request.form['agg_type']
-            view_score = request.form['view_score']
+            score_col = request.form['score_col']
 
-            if view_score == 'distance':
-                rank_result = labeled_df_setup.rank_occurences_by_view(ascending=False)
-            else:
-                labeled_df_setup.add_view_score(view_score,agg_type=agg_type,colored=False)
+            view_score = agg_type + '_view_' + score_col
 
-                rank_param = agg_type + '_view_' + view_score
-                rank_result = labeled_df_setup.rank_occurences_by_view(rank_param,view_score)
+            # check if view score exists
+            if not(view_score in labeled_df_setup.result_df.columns):
+                # not exist, then add view score
+                labeled_df_setup.add_view_score(score_col,agg_type=agg_type,colored=False)
 
-            result_dict_dict = {}
-            result_dict_dict = models.getResultDict(labeled_df_setup, rank_result)
+            rank_result = labeled_df_setup.rank_occurences_by_view(view_score,score_col)
 
-            return jsonify(result_dict_dict)
+            # if filter_flag is True, filtering the rank result
+            if filter_flag:
+
+                rank_result = labeled_df_setup.get_trend_rows(
+                                    feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+                                    group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
+                                    trend_type =filter_object['trend_type'])
+
+            # Generate distance heatmaps
+            distance_heatmap_dict = models.getDistanceHeatmapDict(rank_result)
+
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
+            return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
+                            result_df = rank_result.to_json(orient='records'),
+                            df = df)
 
         spType = request.form['sptype']
 

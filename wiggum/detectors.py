@@ -69,7 +69,7 @@ class _TrendDetectors():
     """
 
 
-    def get_SP_views(self,thresh=0, colored=False):
+    def get_SP_views(self,filter_thresh=0, colored=False):
         """
         return a list of tuples of the views of the dataset that have at least one
         occurence of SP. Assumes no views are listed in in opposite orders
@@ -91,18 +91,20 @@ class _TrendDetectors():
         """
 
         # filter
-        sp_df = self.get_SP_rows(thresh)
+        sp_df = self.get_SP_rows(filter_thresh)
 
 
         return get_views(sp_df,colored)
 
-    def get_SP_rows(self,thresh=None,inplace=False,replace=False):
+    def get_SP_rows(self,thresh=None,inplace=False,replace=False,
+                            feat1 = None,feat2 = None,group_feat= None,
+                            subgroup= None,subgroup2= None,trend_type=None):
         """
-        return a DataFrame (a subset of result_df) of the results that have
-        at have strenght and distance above the specified thresholds.
 
-        Classic SP can be recovered by using the Binary_Mean_Rank_Trend or
-        Binary_Pearson_Trend trends and passing default values to this function
+        return a dataframe of  rows of the results that have at least one
+        occurence of SP as defined by thresh, possibly filtered rows
+        meet provided criteria for all columns (and operator) and any one of the listed
+        values for each column (or operator)
 
         Parameters
         -----------
@@ -115,8 +117,16 @@ class _TrendDetectors():
             trends that are below threshold and to recover them they will have
             to be recomputed. 
         replace : Boolean
-            replace the column with the name defined by the threshold values
-            by a new computation
+            replace the column with the given name by a new computation
+        feat1 : str, list, or  None
+            trend variable name or None to include all if filtered
+        feat2 : str, list, or  None
+            trend variable name or None to include all if filtered
+        group_feat : str, list, or  None
+            groupoby variable name or None to include all if filtered
+        subgroup : str, list, or  None
+            value of groupby_feat or or None to include all if filtered
+
 
         Returns
         ---------
@@ -151,7 +161,16 @@ class _TrendDetectors():
 
 
         # always filter result and return
-        sp_df = self.result_df[self.result_df[col_name]]
+
+        if  not(feat1  or feat2  or group_feat or subgroup or
+                subgroup2 or trend_type):
+                # filter only by detection col
+            sp_df = self.result_df[self.result_df[col_name]]
+        else:
+            # filter by detection and column values
+            filt_idx = self.get_trend_rows(feat1 ,feat2, group_feat, subgroup,
+                                subgroup2, trend_type,'index')
+            sp_df = self.result_df[self.result_df[col_name] & filt_idx]
 
         # overwrite if inplace
         if inplace:
@@ -197,37 +216,44 @@ class _TrendDetectors():
         all_trends = []
         subgroup_trends = []
 
+        # precomputed trends
+        precomputed_trends = set(self.result_df['trend_type'])
+
         for cur_trend in self.trend_list:
-            cur_trend.get_trend_vars(self)
 
-            # augment the data with precomputed parts if needed
+            # only compute if the current trend is not in the result_df already
+            # or replace is true
+            if not(cur_trend.name in precomputed_trends) or replace:
+                cur_trend.get_trend_vars(self)
 
-
-            if cur_trend.preaugment == 'confusion':
-                acc_pairs = itert.product(cur_trend.groundtruth,
-                                            cur_trend.prediction)
-
-                for var_pair in acc_pairs:
-                    # TODO: only if col not there already
-                    self.add_acc(*var_pair)
+                # augment the data with precomputed parts if needed
 
 
-            # Tabulate aggregate statistics
-            agg_trends = cur_trend.get_trends(self.df,'agg_trend')
+                if cur_trend.preaugment == 'confusion':
+                    acc_pairs = itert.product(cur_trend.groundtruth,
+                                                cur_trend.prediction)
 
-            all_trends.append(agg_trends)
+                    for var_pair in acc_pairs:
+                        # TODO: only if col not there already
+                        self.add_acc(*var_pair)
 
-            # iterate over groupby attributes
-            for groupbyAttr in groupby_vars:
 
-                #condition the data
-                cur_grouping = self.df.groupby(groupbyAttr)
+                # Tabulate aggregate statistics
+                agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
-                # get subgoup trends
-                curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+                all_trends.append(agg_trends)
 
-                # append
-                subgroup_trends.append(curgroup_corr)
+                # iterate over groupby attributes
+                for groupbyAttr in groupby_vars:
+
+                    #condition the data
+                    cur_grouping = self.df.groupby(groupbyAttr)
+
+                    # get subgoup trends
+                    curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+
+                    # append
+                    subgroup_trends.append(curgroup_corr)
 
 
 

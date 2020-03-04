@@ -7,6 +7,8 @@
 function updateDistanceHeatmapContainer(dataAll) {
 
 	d3.select("#container").selectAll('svg').remove();
+	d3.select("#container").selectAll('div').remove();
+
 	var createScatterPlotFlag = true;
 
 	for (var key in dataAll){
@@ -15,7 +17,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 		groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
 
-		if (data.trend_type == 'lin_reg') {	
+		if (data.trend_type == 'pearson_corr' || data.trend_type == 'lin_reg') {	
 			
 			rowLabels = [];
 			colLabels = [];
@@ -107,8 +109,14 @@ var clickHeatmapMatrixCell = function() {
 function updateDetailView() {
 	var d = this.datum();
 
-	if (d.trend_type == 'lin_reg') {
+	if (d.trend_type == 'pearson_corr' || d.trend_type == 'lin_reg') {
 		updateScatter(d);
+
+		// highlight in result table
+		var vars_table = { x: d.rowVar, y: d.colVar, categoryAttr: d.categoryAttr, 
+			category: d.category, trend_type:d.trend_type };		
+
+		updateTabulate(vars_table);
 	} else if (d.trend_type == 'rank_trend') {
 
 		$.ajax({
@@ -121,6 +129,12 @@ function updateDetailView() {
 				updateParallelCoordinates(data, d);
 			},
 		});
+
+		// highlight in result table
+		var vars_table = { x: d.targetAttr, y: d.protectedAttr, categoryAttr: d.categoryAttr, 
+			category: d.category, trend_type:d.trend_type };		
+
+		updateTabulate(vars_table);
 
 	}
 }
@@ -334,7 +348,8 @@ function DrawHeatmapLegend() {
 								.shapePadding(5)
 								.shapeWidth(50)
 								.shapeHeight(20)
-								.labelOffset(12);
+								.labelOffset(12)
+								.ascending(true);
 		
 	svg.append("g")
 		.attr("transform", "translate(-20, 0)")

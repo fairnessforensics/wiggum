@@ -1,5 +1,5 @@
 // draw scatter plot
-var margin = {top: 30, right: 30, bottom: 30, left: 30},
+var margin = {top: 30, right: 30, bottom: 30, left: 60},
 	width = 360,
 	height = 360;	
 
@@ -272,7 +272,8 @@ function isFloat(x){
 function createScatterplot(data) {
 
 	d3.select("#scatterplot").selectAll('svg').remove();
-
+	d3.select("#scatterplot").style("display", "none");
+	
 	scatterplot = d3.select("div#scatterplot")
 					.append("svg")
 					.attr("preserveAspectRatio", "xMinYMin meet")

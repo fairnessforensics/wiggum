@@ -86,10 +86,6 @@ def test_basic_load_df():
 
 
     # Now we can use a list of objects and apply multiple trends
-
-    # In[17]:
-
-
     labeled_df.get_subgroup_trends_1lev([rankobj,linreg_obj])
     labeled_df.get_pairwise_trends_1lev([rankobj,linreg_obj])
 
@@ -101,13 +97,34 @@ def test_basic_load_df():
         assert reqcol in labeled_df.trend_list[1].trend_precompute[sel_trend].columns
     # These  two methods give the same, the string based version allows for simple access to default setting but passing a trend object would allow for overriding defaults and creating more custom subests of trends.
 
+
+
+    # test saving all
+    labeled_df.save_all('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI_all')
+    labeled_df = wg.LabeledDataFrame('data/ldf_state_hit_rate_min_cols_COCTFLILMDMAMOMTNENCOHRISCTXVTWAWI_all')
+
+    # test metadata index is correct
+    assert labeled_df.meta_df.index.name == 'variable'
+
+    ## test filtering in place (also before add distance to accelerate test time)
+
+    before_result_len = labeled_df.result_df.shape[0]
+
+    comparison_type_filter = 'aggregate-subgroup'
+    labeled_df.get_trend_rows(comparison_type=comparison_type_filter,
+                                inplace=True)
+
+    after_result_len = labeled_df.result_df.shape[0]
+    assert after_result_len < before_result_len
+
+    comparisons_after_filter = list(set(labeled_df.result_df['comparison_type']))
+    assert len(comparisons_after_filter) == 1
+    assert comparison_type_filter in comparisons_after_filter
+
+    # this is tested after reloading to confirm that types are correct
     labeled_df.add_distance(row_wise = True)
 
-
     # So, we can use that function to filter and look at subsets of the trends based on the features, groupby, or subgroups
-
-    # In[23]:
-
 
     labeled_df.get_trend_rows(feat1='year',subgroup=['Black','Hispanic'])
 

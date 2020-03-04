@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from io import StringIO
 
 class Trend():
     """
@@ -25,14 +26,54 @@ class Trend():
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
 
-            return self
+
 
     def is_SP(self,row,thresh):
         """
-        default is if it's above a threshold
+        default is if it's above a threshold, operates rowwise and can be
+        applied to a DataFrame with the apply method
+
+        Parameters
+        -----------
+        row : pd.series
+            row of a result df to apply the threshold to
+        thresh : float scalar
+            threshold to compare the distance to
+
+        Returns
+        -------
+        boolean value if the distance is over the threshold
+
 
         """
         return row['distance'] > thresh
+
+    def load(self,content_dict):
+        '''
+        load a trend  from a dictionary of the content
+
+        Parameters
+        ----------
+        content_dict : Dictionary
+            the dictionary that results from saving a trend object via the
+        trend.__dict__ output
+
+        Returns
+        -------
+        self : a trend object
+            with all of the parameters set according to the dictionary
+        '''
+        # take the dictionary and load it to the properties of the object
+        self.__dict__.update(content_dict)
+
+        # reformat csv-ified tables to dataframes
+        #   iterate over the key, value pairs in the precompute Dictionary
+        #   keep the keys and convert the strings to a buffer then read them
+        #   into a dataframe
+        self.trend_precompute = {st:pd.read_csv(StringIO(pc))
+                                    for st,pc in self.trend_precompute.items()}
+
+        return self
 
 
 ################################################################################
@@ -47,6 +88,14 @@ class OrdinalRegression():
     symmetric_vars = True
     """
     symmetric_vars = True
+    trend_value_type = float
+
+    def get_trend_value_type(self):
+        '''
+        return the type that the trend values for this trend type should be
+        '''
+        return self.trend_value_type
+
     def get_trend_vars(self,labeled_df):
         """
         set regression_vars for regression of pairs of ordinal variables, by
@@ -79,6 +128,13 @@ class ContinuousOrdinalRegression():
     symmetric_vars = True
     """
     symmetric_vars = True
+    trend_value_type = float
+
+    def get_trend_value_type(self):
+        '''
+        return the type that the trend values for this trend type should be
+        '''
+        return self.trend_value_type 
 
     def get_trend_vars(self,labeled_df):
         """
@@ -113,6 +169,13 @@ class ContinuousRegression():
     """
 
     symmetric_vars = True
+    trend_value_type = float
+
+    def get_trend_value_type(self):
+        '''
+        return the type that the trend values for this trend type should be
+        '''
+        return self.trend_value_type
 
     def get_trend_vars(self,labeled_df):
         """
@@ -247,6 +310,13 @@ class BinaryWeightedRank():
     statRank compatible varTypeMixin, for computing means of only binary valued
     variables sets stat to wg.trend_components.w_avg
     """
+    trend_value_type = str
+
+    def get_trend_value_type(self):
+        '''
+        return the type that the trend values for this trend type should be
+        '''
+        return self.trend_value_type
 
 
     def get_trend_vars(self,labeled_df):
@@ -282,6 +352,13 @@ class WeightedRank():
     """
     common parts for all continuous variable trends
     """
+    trend_value_type = str
+
+    def get_trend_value_type(self):
+        '''
+        return the type that the trend values for this trend type should be
+        '''
+        return self.trend_value_type
 
     def get_trend_vars(self,labeled_df):
         """
@@ -298,6 +375,13 @@ class PredictionClass():
     """
     for binary classification performance stats
     """
+    trend_value_type = float
+
+    def get_trend_value_type(self):
+        '''
+        return the type that the trend values for this trend type should be
+        '''
+        return self.trend_value_type
 
     def get_trend_vars(self,labeled_df):
         self.groundtruth = labeled_df.get_vars_per_role('groundtruth')

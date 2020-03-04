@@ -51,8 +51,12 @@ var feat2_selected = [];
 var group_feat_selected = [];
 var subgroup_selected = [];
 var trend_type_selected = [];
-var subgrou_trend_strength = 0;
+var subgroup_trend_strength = 0;
 var agg_trend_strength = 0;
+var distance = 0;
+var subgroup_trend_strength_default = 0;
+var agg_trend_strength_default = 0;
+var distance_default = 0;
 var rankTrendLegendFlg = true;
 
 var selectData = ["Sequential 3x3", "Diverging 3x3", "Diverging 5x5"];
@@ -99,6 +103,35 @@ d3.select("#controlbuttons").append("button")
 							.attr("value", "reset")
 							.text("Reset")
 							.attr("onclick", "reset_button()");		
+
+// agg type selector	
+// add options
+var optionData = ['mean', 'min', 'max', 'sum'];
+var select = d3.select("#ranking").append('select')
+							.attr('id','agg_type_selector');
+var options = select.selectAll('option')
+					.data(optionData).enter()
+					.append('option')
+					.text(function(d){return d;});
+
+// View Score Selector	
+// view options
+//var optionData = ['distance', 'SP'];
+var optionData = ['distance'];
+var select = d3.select("#ranking").append('select')
+							.attr('id','score_col_selector');
+var options = select.selectAll('option')
+					.data(optionData).enter()
+					.append('option')
+					.text(function(d){return d;});
+
+// rank button
+d3.select("#ranking").append("button")
+					.attr("id", "rank-btn")
+					.attr("type", "button")
+					.attr("value", "rank")
+					.text("Rank")
+					.attr("onclick", "rank_button()"); 	
 
 d3.select("#controlbuttons").append('br');
 d3.select("#controlbuttons").append('br');			

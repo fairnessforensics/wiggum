@@ -156,7 +156,8 @@ class _ResultDataFrame():
         return self.result_df
 
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
-                            subgroup= None,subgroup2= None,trend_type=None):
+                            subgroup= None,subgroup2= None,trend_type=None,
+                            comparison_type = None, inplace=False):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -164,14 +165,21 @@ class _ResultDataFrame():
 
         Parameters
         -----------
-        feat1 : str, list, or  None
+        feat1 : str, list, or  {None}
             trend variable name or None to include all
-        feat2 : str, list, or  None
+        feat2 : str, list, or  {None}
             trend variable name or None to include all
-        group_feat : str, list, or  None
+        group_feat : str, list, or  {None}
             groupoby variable name or None to include all
-        subgroup : str, list, or  None
-            value of groupby_feat or or None to include all
+        subgroup : str, list, or  {None}
+            value of groupby_feat or  None to include all
+        subgroup2 : str, list or {None}
+            value of groupby_feat or  None to include all
+        trend_type: str, list or {None}
+            name of a trend  None to include all
+        inplace : boolean {False}
+            if True the filtering is done in place and the result df is changed
+            in the object
         """
         # get the rows for each specified value,
         #  or set to True to include all values for each None
@@ -209,12 +217,28 @@ class _ResultDataFrame():
         else:
             tt_rows = True
 
+        if comparison_type:
+            tt_rows = pd.Series([tt in comparison_type for tt in self.result_df.comparison_type])
+        else:
+            tt_rows = True
+
         # take the intersection
         target_row = f1_rows & f2_rows & gf_rows & sg_rows & tt_rows & sg_rows2
         # to index by a series, it must have the same index as the datafram
         target_row.index = self.result_df.index
         # return that row
         print(sum(target_row), ' total rows meet the criteria')
+
+        if inplace:
+            # if inplace, replace the existing trend table with the filtered
+            self.result_df = self.result_df[target_row]
+
+            # if inplace and trend_type was used in filtering, also filter the
+            #     trend_list
+            if trend_type:
+                self.trend_list = [trend_obj for trend_obj in self.trend_list
+                                            if trend_obj.name in trend_type]
+
         return self.result_df[target_row]
 
 

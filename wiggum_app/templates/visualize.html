@@ -64,9 +64,13 @@
                         url: '/',
                         data: {'action':'filter', 'filter_object': filter_object},                               
                         success: function(data) {
-                            server_data = data;
-                          
-                            drawGraphTable(data);
+                            // Check if result table is empty
+                            console.log(data.result_df);
+                            if (data.result_df == "[]") {
+                                alert("No results for filtering.")
+                            } else {
+                                drawDistanceMatrixHeatmap(data);
+                            }
                         }
                     })
         }
@@ -77,9 +81,19 @@
                         url: '/',
                         data: {'action':'reset'},                               
                         success: function(data) {
-                            server_data = data;
-       
-                            drawGraphTable(data);
+                            // clear for threshold
+                            subgroup_trend_strength = subgroup_trend_strength_default;
+                            agg_trend_strength = agg_trend_strength_default;
+                            distance = distance_default;
+
+                            drawDistanceMatrixHeatmap(data);
+
+                            // unselect the menu selections
+                            clearSelected("feat1_selector");
+                            clearSelected("feat2_selector");
+                            clearSelected("group_feat_selector");
+                            clearSelected("subgroup_selector");
+                            clearSelected("trend_type_selector"); 
                         }
                     })
         }     
@@ -96,38 +110,54 @@
 
             filter_object = JSON.stringify(filter_object);
 
-            var threshold = legendAdjustValue;
-
             var agg_strength_threshold = document.getElementById("agg_trend_strength_slider").value;
             var sg_strength_threshold = document.getElementById("subgroup_trend_strength_slider").value;
+            var distance_threshold = document.getElementById("distance_slider").value;
 
             $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'detect', 'filter_object': filter_object, 'threshold': threshold, 
+                        data: {'action':'detect', 'filter_object': filter_object, 'distance_threshold': distance_threshold, 
                                 'agg_strength_threshold': agg_strength_threshold, 'sg_strength_threshold': sg_strength_threshold},                               
                         success: function(data) {
-                            server_data = data;
- 
-                            drawGraphTable(data, 'detect');
+
+                            // Check if result table is empty
+                            if (data.result_df == "[]") {
+                                alert("No results for selected strength or distance.")
+                            } else {
+
+                                drawDistanceMatrixHeatmap(data, 'detect');
+
+                                // reset the options for the view score selector after detecting
+                                var optionData = ['distance', 'SP'];
+
+                                var select = d3.select("#view_score_selector");
+                                var options = select.selectAll('option')
+                                                    .data(optionData).enter()
+                                                    .append('option')
+                                                    .text(function(d){return d;});
+                            }
                         }
-                    })
+                })                                              
         }   
         
         function rank_button() {
             var agg_type_selector = document.getElementById("agg_type_selector");
             agg_type = agg_type_selector.options[agg_type_selector.selectedIndex].value;
-            var view_score_selector = document.getElementById("view_score_selector");
-            view_score = view_score_selector.options[view_score_selector.selectedIndex].value;   
+            var score_col_selector = document.getElementById("score_col_selector");
+            score_col = score_col_selector.options[score_col_selector.selectedIndex].value;   
 
             $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'rank', 'agg_type': agg_type, 'view_score': view_score},                               
+                        data: {'action':'rank', 'agg_type': agg_type, 'score_col': score_col},                               
                         success: function(data) {
-                            server_data = data;
-      
-                            drawGraphTable(data);
+                            // Check if result table is empty
+                            if (data.result_df == "[]") {
+                                alert("No results for ranking.")
+                            } else {
+                                drawDistanceMatrixHeatmap(data);
+                            }
                         }
                     })
         }         
@@ -159,7 +189,7 @@
                         data: {'action':'page_load'},
                         success: function(data){
                             if (data == 'no_result') {
-                                alert("Current data description yeilds no results for selected trends. Try selecting more trend types or changing variable roles.")
+                                alert("Current data description yields no results for selected trends. Try selecting more trend types or changing variable roles.")
                                 document.location.href="/";  
                             } else {
                                 server_data = data;
@@ -175,6 +205,19 @@
                                 legendValue = -1;
 
                                 //drawGraphTable(data, 'page_load');
+
+                                // set the default threshold
+                                subgroup_trend_strength = data.default_threshold.subgroup_trend_strength;
+                                agg_trend_strength = data.default_threshold.agg_trend_strength;
+                                distance = data.default_threshold.distance;
+
+                                // save the default values for reset
+                                subgroup_trend_strength_default = data.default_threshold.subgroup_trend_strength;
+                                agg_trend_strength_default = data.default_threshold.agg_trend_strength;
+                                distance_default = data.default_threshold.distance;
+
+                                // set project name
+                                $('#projectName').val(data.project_name);
 
                                 DrawHeatmapLegend();
                                 drawDistanceMatrixHeatmap(data, 'page_load');

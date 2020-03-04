@@ -467,14 +467,57 @@ def updateMetaData(labeled_df, meta):
 
     return labeled_df
 
-def getDistanceHeatmapDict(labeled_df):
+def checkSameMetadata(labeled_df, meta):
+    """
+    Check if any metadata changes
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        LabeledDataFrame
+    meta : DataFrame
+        user input metadata
+    Returns
+    --------
+    checkResult : Boolean
+        check result: if same returns True, different returns False
+    """
+    meta_list =json.loads(meta)
+
+    meta_df_user = pd.DataFrame(meta_list)
+
+    # initial check result
+    checkResult = True
+
+    # rename
+    meta_df_user.rename(columns={'name': 'variable'}, inplace=True)
+    # set as index
+    meta_df_user.set_index('variable', inplace=True)
+
+    # set roles from user input
+    meta_df_user['isCount'] = meta_df_user['isCount'].replace({'Y': True, 'N': False})
+
+    # set weighting_var from user input
+    meta_df_user['weighting_var'] = meta_df_user['weighting_var'].replace('N/A', np.nan)
+    
+    # append dtype to user input metadata
+    meta_df_user['dtype'] = labeled_df.meta_df['dtype']
+
+    # check equal after sorting the columns
+    if meta_df_user.sort_index(axis=1).equals(labeled_df.meta_df.sort_index(axis=1)):
+        checkResult = True
+    else:
+        checkResult = False
+
+    return checkResult
+
+def getDistanceHeatmapDict(df):
     """
     Generate Distance Heatmap Dictitonary List for overview 
     by grouping the results and extracting distances from result table.
 
     Parameters
     -----------
-    labeled_df : DataFrame
+    df : DataFrame
         LabeledDataFrame    
     Returns
     --------
@@ -483,17 +526,16 @@ def getDistanceHeatmapDict(labeled_df):
 
     distance_heatmap_dict_list = []
 
-    trend_type_list = pd.unique(labeled_df.result_df['trend_type'])
+    for trend_type, trend_df in df.groupby(['trend_type'], sort=False):
 
-    for trend_type in trend_type_list:
-        # iterate over the groupby variables
-        for gby in pd.unique(labeled_df.result_df['group_feat']):
-            # groupby the values of the curent groupby varialbe
-            cgby = labeled_df.get_trend_rows(group_feat=gby, trend_type=trend_type).groupby('subgroup')
-
-            # iterate over the values of the groupby
+        # iterate over the GroupFeat variables
+        for gby, gby_trend_df in trend_df.groupby('group_feat'):
+            # groupby the subgroups
+            cgby = gby_trend_df.groupby('subgroup')
+            # iterate over the values of the subgroups
             for gby_lev,df in cgby:
                 distance_heatmap_dict = {}
+
                 heatmap = df.pivot(index='feat1', columns='feat2', values='distance')
 
                 # replace Nan to 99
@@ -566,6 +608,9 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
     count_df = count_df.stack().unstack(0)
     count_df.index.name = 'subgroup'
     
+    detail_df.fillna(0, inplace=True)
+    count_df.fillna(0, inplace=True)
+
     return detail_df, count_df
 
 def getResultDict(labeled_df, result_df, filter_subgroup= None):

@@ -17,38 +17,6 @@ function tabulate(data, action) {
 
 	var columns = Object.keys(data[0]);
 
-	if (action == 'detect') {
-		d3.select("#agg_type_selector").remove();		
-		// add rank option
-		var optionData = ['mean', 'min', 'max', 'sum'];
-		var select = d3.select("#ranking").append('select')
-									.attr('id','agg_type_selector');
-		var options = select.selectAll('option')
-							.data(optionData).enter()
-							.append('option')
-							.text(function(d){return d;});
-
-		d3.select("#view_score_selector").remove();			
-		// view option
-		var optionData = ['distance', 'SP'];
-		var select = d3.select("#ranking").append('select')
-									.attr('id','view_score_selector');
-		var options = select.selectAll('option')
-							.data(optionData).enter()
-							.append('option')
-							.text(function(d){return d;});
-	
-		d3.select("#rank-btn").remove();	
-		// rank button
-		d3.select("#ranking").append("button")
-							.attr("id", "rank-btn")
-							.attr("type", "button")
-							.attr("value", "rank")
-							.text("Rank")
-							.attr("onclick", "rank_button()"); 	
-	}
-
-
 	// append the header row
 	var thead = table.append('thead').append('tr')
 	  .selectAll('th')
@@ -117,7 +85,7 @@ function tabulate(data, action) {
 									function(d){ return feat2_selected.includes(d); });
 			}	
 			// group_feat
-			if (i==5) {
+			if (i==2) {
 				if (action == 'page_load') {
 					group_feat_options = d3.map(data, function(d){return d.group_feat;}).keys();
 				} 
@@ -136,7 +104,7 @@ function tabulate(data, action) {
 									function(d){ return group_feat_selected.includes(d); });
 			}	
 			// subgroup
-			if (i==4) {
+			if (i==3) {
 				if (action == 'page_load') {
 					subgroup_options = d3.map(data, function(d){return d.subgroup;}).keys();
 				} 				
@@ -155,12 +123,12 @@ function tabulate(data, action) {
 									function(d){ return subgroup_selected.includes(d); });
 			}	
 			// subgroup_trend_strength
-			if (i==3) {
+			if (i==5) {
 				d3.select(this).append("text")
 					.attr('id', 'subgroup_trend_strength_label')
 					.style("font-size", "10px")
 					.style("color", "black")
-					.text(subgrou_trend_strength);
+					.text(subgroup_trend_strength);
 				d3.select(this).append('br');
 				d3.select(this).append('input')
 								.attr('type', 'range')
@@ -169,7 +137,7 @@ function tabulate(data, action) {
 								.attr('min', '0')
 								.attr('max', '1')
 								.attr('step', '0.01')
-								.attr('value', subgrou_trend_strength)
+								.attr('value', subgroup_trend_strength)
 								.on("input", function() {
 									updateLabel(this.value, '#subgroup_trend_strength_label');
 								});
@@ -212,7 +180,28 @@ function tabulate(data, action) {
 								.on("input", function() {
 									updateLabel(this.value, '#agg_trend_strength_label');
 								});
-			}												
+			}	
+			
+			// distance
+			if (i==10) {
+				d3.select(this).append("text")
+					.attr('id', 'distance_label')
+					.style("font-size", "10px")
+					.style("color", "black")
+					.text(distance);
+				d3.select(this).append('br');
+				d3.select(this).append('input')
+								.attr('type', 'range')
+								.attr('id', 'distance_slider')
+								.style('width', '100px')
+								.attr('min', '0')
+								.attr('max', '1')
+								.attr('step', '0.01')
+								.attr('value', distance)
+								.on("input", function() {
+									updateLabel(this.value, '#distance_label');
+								});
+			}				
 	})
 	;
 
@@ -255,8 +244,10 @@ function updateLabel(value, id) {
 
 	if (id == '#agg_trend_strength_label') {
 		agg_trend_strength = value;
+	} else if (id == '#subgroup_trend_strength_label'){
+		subgroup_trend_strength = value;
 	} else {
-		subgrou_trend_strength = value;
+		distance = value;
 	}
 }
 
