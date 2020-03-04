@@ -110,15 +110,16 @@ def test_basic_load_df():
 
     before_result_len = labeled_df.result_df.shape[0]
 
-
-    labeled_df.get_trend_rows(comparison_type='aggregate-subgroup',inplace=True)
+    comparison_type_filter = 'aggregate-subgroup'
+    labeled_df.get_trend_rows(comparison_type=comparison_type_filter,
+                                inplace=True)
 
     after_result_len = labeled_df.result_df.shape[0]
     assert after_result_len < before_result_len
 
     comparisons_after_filter = list(set(labeled_df.result_df['comparison_type']))
     assert len(comparisons_after_filter) == 1
-    assert 'subgroup-aggregate' in comparisons_after_filter
+    assert comparison_type_filter in comparisons_after_filter
 
     # this is tested after reloading to confirm that types are correct
     labeled_df.add_distance(row_wise = True)
