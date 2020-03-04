@@ -162,7 +162,7 @@ var updateScatterplot = function(data, vars) {
 		lines.enter().append('line')
 						.attr({
 							class: function (d) { 
-								return 's-line elm ' + 'sel-' + d.key;} 
+								return 's-line elm ' + 'sel-' + d.key.toString().replace(/[& ]/g, '_');} 
 						})			
 						.attr("x1", function(d) { return x(d.values.ptA.x); })
 						.attr("y1", function(d) { return y(d.values.ptA.y); })
@@ -650,5 +650,5 @@ function updateScatter(data) {
  */
 function highlightSubgroup(subgroup) {
 	d3.selectAll('.elm').transition().style('opacity', 0.2);
-	d3.selectAll('.sel-' + subgroup).transition().style('opacity', 1);
+	d3.selectAll('.sel-' + subgroup.toString().replace(/[& ]/g, '_')).transition().style('opacity', 1);
 }
