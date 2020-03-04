@@ -157,7 +157,7 @@ class _ResultDataFrame():
 
     def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
                             subgroup= None,subgroup2= None,trend_type=None,
-                            inplace=False):
+                            comparison_type = None, inplace=False):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -214,6 +214,11 @@ class _ResultDataFrame():
 
         if trend_type:
             tt_rows = pd.Series([tt in trend_type for tt in self.result_df.trend_type])
+        else:
+            tt_rows = True
+
+        if comparison_type:
+            tt_rows = pd.Series([tt in comparison_type for tt in self.result_df.comparison_type])
         else:
             tt_rows = True
 
