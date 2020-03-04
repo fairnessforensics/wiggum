@@ -111,7 +111,7 @@ def test_basic_load_df():
     before_result_len = labeled_df.result_df.shape[0]
 
 
-    labeled_df.get_trend_rows(comparison_type='subgroup-aggregate',inplace=True)
+    labeled_df.get_trend_rows(comparison_type='aggregate-subgroup',inplace=True)
 
     after_result_len = labeled_df.result_df.shape[0]
     assert after_result_len < before_result_len
