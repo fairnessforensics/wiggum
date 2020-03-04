@@ -198,6 +198,16 @@
                     cache: false,
                     processData: false,
                     success: function(data) {
+                        // Check missing trend type from result table
+                        if (data == 'miss_old_trend_type') {
+                            var result = confirm("Do you really want to delete the trend types already in result talbe?");
+                            if (result == true) {
+                                // do nothing, redirect to vis page
+                            } else {
+                                errFlag = true;
+                            }
+                        }
+                        // Check computable trend
                         if (data == 'no_computable_trend') {
                             errFlag = true;
                             alert("Current data description yields no results for selected trends. Try selecting more trend types or changing variable roles.")
