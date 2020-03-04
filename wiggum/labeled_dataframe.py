@@ -13,7 +13,7 @@ META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 possible_roles = ['groupby','trend','prediction','groundtruth','ignore']
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
-
+trend_cols = [ 'subgroup_trend','subgroup_trend2', 'agg_trend']
 
 
 from .detectors import RESULT_DF_HEADER, _TrendDetectors
@@ -102,6 +102,8 @@ def column_rate(df, rate_column):
 
 
 
+
+
 class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     """
     this is the object
@@ -173,7 +175,10 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         else:
             self.result_df = pd.read_csv(results)
 
-        # if result_df not empty then load trend_list
+            # self.result_df.apply(cast_trend_value,axis=1)
+
+
+        # if result_df not empty then load trend_list and correct types
         if len(self.result_df) >0:
             with open(trends, 'r') as tjson:
                 trend_content = json.load(tjson)
@@ -185,7 +190,31 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             [ct.load(trend_content[ct.name]['content']) for ct in self.trend_list]
 
 
+            self.correct_trend_value_datatypes()
 
+
+    def correct_trend_value_datatypes(self):
+        # build mapper
+        trend_type_type_map = {t.name:t.get_trend_value_type()
+                                            for t in self.trend_list}
+
+        # save original column order
+        original_cols = self.result_df.columns
+        result_df_parts = []
+        # figure out which trend columns are present
+        used_trend_cols = [tc for tc in trend_cols if tc in original_cols]
+
+
+        # split into groups, cast types, add trend name column back
+        for tt,df in self.result_df.groupby('trend_type'):
+            df[used_trend_cols] = df[used_trend_cols].astype(trend_type_type_map[tt],copy=False)
+            df['trend_type'] = tt
+            result_df_parts.append(df)
+
+        # concatenate parts back into one df
+        self.result_df = pd.concat(result_df_parts,axis=0)
+        # reshuffled column order back to original
+        self.result_df = self.result_df[original_cols]
 
     def count_compress_binary(self,retain_var_list, compress_var_list):
         """
