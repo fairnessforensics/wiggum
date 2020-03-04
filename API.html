@@ -105,14 +105,68 @@ overloaded to define a different constructor.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.Trend.is_SP" title="wiggum.trend_components.Trend.is_SP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_SP</span></code></a>(row,&nbsp;thresh)</td>
-<td>default is if it’s above a threshold</td>
+<td>default is if it’s above a threshold, operates rowwise and can be applied to a DataFrame with the apply method</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.Trend.load" title="wiggum.trend_components.Trend.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(content_dict)</td>
+<td>load a trend  from a dictionary of the content</td>
 </tr>
 </tbody>
 </table>
 <dl class="method">
 <dt id="wiggum.trend_components.Trend.is_SP">
 <code class="descname">is_SP</code><span class="sig-paren">(</span><em>row</em>, <em>thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.is_SP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.is_SP" title="Permalink to this definition">¶</a></dt>
-<dd><p>default is if it’s above a threshold</p>
+<dd><p>default is if it’s above a threshold, operates rowwise and can be
+applied to a DataFrame with the apply method</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>row</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.series</span></dt>
+<dd><p class="first last">row of a result df to apply the threshold to</p>
+</dd>
+<dt><strong>thresh</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float scalar</span></dt>
+<dd><p class="first last">threshold to compare the distance to</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>boolean value if the distance is over the threshold</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wiggum.trend_components.Trend.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>content_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>load a trend  from a dictionary of the content</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>content_dict</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Dictionary</span></dt>
+<dd><p class="first last">the dictionary that results from saving a trend object via the</p>
+</dd>
+<dt><strong>trend.__dict__ output</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a trend object</span></dt>
+<dd><p class="first last">with all of the parameters set according to the dictionary</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -129,11 +183,23 @@ symmetric_vars = True</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.OrdinalRegression.get_trend_vars" title="wiggum.trend_components.OrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.OrdinalRegression.get_trend_value_type" title="wiggum.trend_components.OrdinalRegression.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</td>
+<td>return the type that the trend values for this trend type should be</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.OrdinalRegression.get_trend_vars" title="wiggum.trend_components.OrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
 <td>set regression_vars for regression of pairs of ordinal variables, by assigning regression_vars as an instance property</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.OrdinalRegression.trend_value_type" title="wiggum.trend_components.OrdinalRegression.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="wiggum.trend_components.OrdinalRegression.get_trend_value_type">
+<code class="descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#OrdinalRegression.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.OrdinalRegression.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type that the trend values for this trend type should be</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wiggum.trend_components.OrdinalRegression.get_trend_vars">
 <code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#OrdinalRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.OrdinalRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
@@ -162,6 +228,12 @@ assigning regression_vars as an instance property</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wiggum.trend_components.OrdinalRegression.trend_value_type">
+<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.OrdinalRegression.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p>
 </dd></dl>
 
 </dd></dl>
@@ -228,11 +300,23 @@ symmetric_vars = True</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars" title="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_value_type" title="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</td>
+<td>return the type that the trend values for this trend type should be</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars" title="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
 <td>set regression_vars for regression of pairs of ordinal and continuous trend variables, by assigning regression_vars as an instance property</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousOrdinalRegression.trend_value_type" title="wiggum.trend_components.ContinuousOrdinalRegression.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_value_type">
+<code class="descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousOrdinalRegression.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type that the trend values for this trend type should be</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars">
 <code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousOrdinalRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
@@ -264,6 +348,12 @@ continuous</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="wiggum.trend_components.ContinuousOrdinalRegression.trend_value_type">
+<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.ContinuousOrdinalRegression.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -278,11 +368,23 @@ sets list formatted regression_vars and symmetric_vars = True</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousRegression.get_trend_vars" title="wiggum.trend_components.ContinuousRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousRegression.get_trend_value_type" title="wiggum.trend_components.ContinuousRegression.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</td>
+<td>return the type that the trend values for this trend type should be</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousRegression.get_trend_vars" title="wiggum.trend_components.ContinuousRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
 <td>set regression_vars for regression of pairs of  continuous trend variables, by assigning regression_vars as an instance property</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousRegression.trend_value_type" title="wiggum.trend_components.ContinuousRegression.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="wiggum.trend_components.ContinuousRegression.get_trend_value_type">
+<code class="descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousRegression.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousRegression.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type that the trend values for this trend type should be</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wiggum.trend_components.ContinuousRegression.get_trend_vars">
 <code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
@@ -314,6 +416,12 @@ continuous</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="wiggum.trend_components.ContinuousRegression.trend_value_type">
+<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.ContinuousRegression.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -328,11 +436,23 @@ variables sets stat to wg.trend_components.w_avg</p>
 <col width="90%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_vars" title="wiggum.trend_components.BinaryWeightedRank.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_value_type" title="wiggum.trend_components.BinaryWeightedRank.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</td>
+<td>return the type that the trend values for this trend type should be</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_vars" title="wiggum.trend_components.BinaryWeightedRank.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
 <td>set target, trendgroup, and var_weight_list for computing rank trends</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.trend_value_type" title="wiggum.trend_components.BinaryWeightedRank.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></td>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="wiggum.trend_components.BinaryWeightedRank.get_trend_value_type">
+<code class="descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#BinaryWeightedRank.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type that the trend values for this trend type should be</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="wiggum.trend_components.BinaryWeightedRank.get_trend_vars">
 <code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#BinaryWeightedRank.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_vars" title="Permalink to this definition">¶</a></dt>
@@ -360,6 +480,12 @@ continuous</p>
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="wiggum.trend_components.BinaryWeightedRank.trend_value_type">
+<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -367,6 +493,20 @@ continuous</p>
 <em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">WeightedRank</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#WeightedRank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.WeightedRank" title="Permalink to this definition">¶</a></dt>
 <dd><p>common parts for all continuous variable trends</p>
 <p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.WeightedRank.get_trend_value_type" title="wiggum.trend_components.WeightedRank.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</td>
+<td>return the type that the trend values for this trend type should be</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.WeightedRank.trend_value_type" title="wiggum.trend_components.WeightedRank.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></td>
+</tr>
+</tbody>
+</table>
 <table border="1" class="docutils">
 <colgroup>
 <col width="64%" />
@@ -379,9 +519,21 @@ continuous</p>
 </tbody>
 </table>
 <dl class="method">
+<dt id="wiggum.trend_components.WeightedRank.get_trend_value_type">
+<code class="descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#WeightedRank.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.WeightedRank.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type that the trend values for this trend type should be</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="wiggum.trend_components.WeightedRank.get_trend_vars">
 <code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#WeightedRank.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.WeightedRank.get_trend_vars" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="attribute">
+<dt id="wiggum.trend_components.WeightedRank.trend_value_type">
+<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.WeightedRank.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p>
+</dd></dl>
 
 </dd></dl>
 
@@ -613,6 +765,20 @@ rate (tnr)</p>
 <em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">PredictionClass</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#PredictionClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.PredictionClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>for binary classification performance stats</p>
 <p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.PredictionClass.get_trend_value_type" title="wiggum.trend_components.PredictionClass.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</td>
+<td>return the type that the trend values for this trend type should be</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.PredictionClass.trend_value_type" title="wiggum.trend_components.PredictionClass.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
+<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
+</tr>
+</tbody>
+</table>
 <table border="1" class="docutils">
 <colgroup>
 <col width="64%" />
@@ -624,6 +790,18 @@ rate (tnr)</p>
 </tr>
 </tbody>
 </table>
+<dl class="method">
+<dt id="wiggum.trend_components.PredictionClass.get_trend_value_type">
+<code class="descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#PredictionClass.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.PredictionClass.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type that the trend values for this trend type should be</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wiggum.trend_components.PredictionClass.trend_value_type">
+<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.PredictionClass.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">

@@ -67,6 +67,7 @@
   <h1>Source code for wiggum.trend_components.base_getvars</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
 
 <div class="viewcode-block" id="Trend"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.Trend">[docs]</a><span class="k">class</span> <span class="nc">Trend</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -92,14 +93,54 @@
         <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">labeled_df</span><span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_trend_vars</span><span class="p">(</span><span class="n">labeled_df</span><span class="p">)</span>
 
-            <span class="k">return</span> <span class="bp">self</span>
+
 
 <div class="viewcode-block" id="Trend.is_SP"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.Trend.is_SP">[docs]</a>    <span class="k">def</span> <span class="nf">is_SP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">thresh</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        default is if it&#39;s above a threshold</span>
+<span class="sd">        default is if it&#39;s above a threshold, operates rowwise and can be</span>
+<span class="sd">        applied to a DataFrame with the apply method</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        row : pd.series</span>
+<span class="sd">            row of a result df to apply the threshold to</span>
+<span class="sd">        thresh : float scalar</span>
+<span class="sd">            threshold to compare the distance to</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        boolean value if the distance is over the threshold</span>
+
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;distance&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span></div></div>
+        <span class="k">return</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;distance&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span></div>
+
+<div class="viewcode-block" id="Trend.load"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.Trend.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">content_dict</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        load a trend  from a dictionary of the content</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        content_dict : Dictionary</span>
+<span class="sd">            the dictionary that results from saving a trend object via the</span>
+<span class="sd">        trend.__dict__ output</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : a trend object</span>
+<span class="sd">            with all of the parameters set according to the dictionary</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># take the dictionary and load it to the properties of the object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">content_dict</span><span class="p">)</span>
+
+        <span class="c1"># reformat csv-ified tables to dataframes</span>
+        <span class="c1">#   iterate over the key, value pairs in the precompute Dictionary</span>
+        <span class="c1">#   keep the keys and convert the strings to a buffer then read them</span>
+        <span class="c1">#   into a dataframe</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trend_precompute</span> <span class="o">=</span> <span class="p">{</span><span class="n">st</span><span class="p">:</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">StringIO</span><span class="p">(</span><span class="n">pc</span><span class="p">))</span>
+                                    <span class="k">for</span> <span class="n">st</span><span class="p">,</span><span class="n">pc</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_precompute</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div></div>
 
 
 <span class="c1">################################################################################</span>
@@ -114,6 +155,14 @@
 <span class="sd">    symmetric_vars = True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
+
+<div class="viewcode-block" id="OrdinalRegression.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.OrdinalRegression.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        return the type that the trend values for this trend type should be</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
+
 <div class="viewcode-block" id="OrdinalRegression.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.OrdinalRegression.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        set regression_vars for regression of pairs of ordinal variables, by</span>
@@ -146,6 +195,13 @@
 <span class="sd">    symmetric_vars = True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
+
+<div class="viewcode-block" id="ContinuousOrdinalRegression.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        return the type that the trend values for this trend type should be</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span> </div>
 
 <div class="viewcode-block" id="ContinuousOrdinalRegression.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -180,6 +236,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
+
+<div class="viewcode-block" id="ContinuousRegression.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousRegression.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        return the type that the trend values for this trend type should be</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
 <div class="viewcode-block" id="ContinuousRegression.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousRegression.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -314,6 +377,13 @@
 <span class="sd">    statRank compatible varTypeMixin, for computing means of only binary valued</span>
 <span class="sd">    variables sets stat to wg.trend_components.w_avg</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="BinaryWeightedRank.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinaryWeightedRank.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        return the type that the trend values for this trend type should be</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
 
 <div class="viewcode-block" id="BinaryWeightedRank.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinaryWeightedRank.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
@@ -349,6 +419,13 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    common parts for all continuous variable trends</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">str</span>
+
+<div class="viewcode-block" id="WeightedRank.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.WeightedRank.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        return the type that the trend values for this trend type should be</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
 <div class="viewcode-block" id="WeightedRank.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.WeightedRank.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -365,6 +442,13 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    for binary classification performance stats</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
+
+<div class="viewcode-block" id="PredictionClass.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.PredictionClass.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        return the type that the trend values for this trend type should be</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
     <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">groundtruth</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_role</span><span class="p">(</span><span class="s1">&#39;groundtruth&#39;</span><span class="p">)</span>
