@@ -5,6 +5,9 @@ var margin = {top: 30, right: 30, bottom: 30, left: 60},
 
 var scatterplot;
 
+// regular expression for invalid characters
+re_invalid_ch = /[~!@$%^&*()+=,.';:"?><{}`#\\/|\[\]]/g
+
 /**
  * Draw frame
  *
@@ -162,7 +165,8 @@ var updateScatterplot = function(data, vars) {
 		lines.enter().append('line')
 						.attr({
 							class: function (d) { 
-								return 's-line elm ' + 'sel-' + d.key.toString().replace(/[& ]/g, '_');} 
+								return 's-line elm ' + 'sel-' 
+								+ d.key.toString().replace(re_invalid_ch, '\$&').replace(/ /g, '_');} 
 						})			
 						.attr("x1", function(d) { return x(d.values.ptA.x); })
 						.attr("y1", function(d) { return y(d.values.ptA.y); })
@@ -650,5 +654,7 @@ function updateScatter(data) {
  */
 function highlightSubgroup(subgroup) {
 	d3.selectAll('.elm').transition().style('opacity', 0.2);
-	d3.selectAll('.sel-' + subgroup.toString().replace(/[& ]/g, '_')).transition().style('opacity', 1);
+	re_invalid_ch = /[~!@$%^&*()+=,.';:"?><{}`#\\/|\[\]]/g
+	d3.selectAll('.sel-' + 
+	subgroup.toString().replace(re_invalid_ch, '\\$&').replace(/ /g, '_')).transition().style('opacity', 1);
 }
