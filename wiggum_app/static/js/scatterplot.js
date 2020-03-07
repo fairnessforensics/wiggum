@@ -27,22 +27,7 @@ var drawFrame = function() {
 
 };	
 
-var x = d3.scale.linear()
-	.range([0, width]);
-
-var y = d3.scale.linear()
-    .range([height, 0]);
-
 var color = d3.scale.category10();
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-	.orient("bottom");
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-	.orient("left");
-
 
 /**
  * Update Scatterplot
@@ -52,6 +37,20 @@ var yAxis = d3.svg.axis()
  * @returns none.
  */
 var updateScatterplot = function(data, vars) {
+
+	var x = d3.scale.linear()
+		.range([0, width]);
+
+	var y = d3.scale.linear()
+		.range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+	
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
 
 	d3.select("#scatterplot").style("display", "inline-block");
 	d3.select("#rankchart").style("display", "none");
@@ -274,6 +273,20 @@ function isFloat(x){
  * @returns none.
  */
 function createScatterplot(data) {
+
+	var x = d3.scale.linear()
+		.range([0, width]);
+
+	var y = d3.scale.linear()
+		.range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+	
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
 
 	d3.select("#scatterplot").selectAll('svg').remove();
 	d3.select("#scatterplot").style("display", "none");
