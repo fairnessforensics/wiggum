@@ -5,6 +5,9 @@ var margin = {top: 30, right: 30, bottom: 30, left: 60},
 
 var scatterplot;
 
+// regular expression for checking invalid characters in the class name for a line
+re_invalid_ch = /[~!@$%^&*()+=,.';:"?><{}`#\\/|\[\]]/g
+
 /**
  * Draw frame
  *
@@ -24,22 +27,7 @@ var drawFrame = function() {
 
 };	
 
-var x = d3.scale.linear()
-	.range([0, width]);
-
-var y = d3.scale.linear()
-    .range([height, 0]);
-
 var color = d3.scale.category10();
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-	.orient("bottom");
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-	.orient("left");
-
 
 /**
  * Update Scatterplot
@@ -49,6 +37,20 @@ var yAxis = d3.svg.axis()
  * @returns none.
  */
 var updateScatterplot = function(data, vars) {
+
+	var x = d3.scale.linear()
+		.range([0, width]);
+
+	var y = d3.scale.linear()
+		.range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+	
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
 
 	d3.select("#scatterplot").style("display", "inline-block");
 	d3.select("#rankchart").style("display", "none");
@@ -162,7 +164,8 @@ var updateScatterplot = function(data, vars) {
 		lines.enter().append('line')
 						.attr({
 							class: function (d) { 
-								return 's-line elm ' + 'sel-' + d.key;} 
+								return 's-line elm ' + 'sel-' 
+								+ d.key.toString().replace(re_invalid_ch, '\$&').replace(/ /g, '_');} 
 						})			
 						.attr("x1", function(d) { return x(d.values.ptA.x); })
 						.attr("y1", function(d) { return y(d.values.ptA.y); })
@@ -270,6 +273,20 @@ function isFloat(x){
  * @returns none.
  */
 function createScatterplot(data) {
+
+	var x = d3.scale.linear()
+		.range([0, width]);
+
+	var y = d3.scale.linear()
+		.range([height, 0]);
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+	
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
 
 	d3.select("#scatterplot").selectAll('svg').remove();
 	d3.select("#scatterplot").style("display", "none");
@@ -650,5 +667,7 @@ function updateScatter(data) {
  */
 function highlightSubgroup(subgroup) {
 	d3.selectAll('.elm').transition().style('opacity', 0.2);
-	d3.selectAll('.sel-' + subgroup).transition().style('opacity', 1);
+	re_invalid_ch = /[~!@$%^&*()+=,.';:"?><{}`#\\/|\[\]]/g
+	d3.selectAll('.sel-' + 
+	subgroup.toString().replace(re_invalid_ch, '\\$&').replace(/ /g, '_')).transition().style('opacity', 1);
 }

@@ -203,6 +203,11 @@ def main():
             global filter_trend_list
             filter_trend_list = []
 
+            # redirect flag for checking if page is relaod or redirect
+            # if redirect, flas sets to True; if reload, flag sets to False
+            global redirect_flag
+            redirect_flag = True 
+
             user_trends = request.form['trend_types']
             user_trends = user_trends.split(",")
 
@@ -248,20 +253,25 @@ def main():
 
         # initial for visualize.html page
         if action == 'page_load':
+            # check if page is reload or not
+            # if page is reload, skip trend computation
+            if redirect_flag:
+                # if redirect, set redirct_flag to False
+                redirect_flag = False
 
-            # if filter trends exist, do filtering
-            if len(filter_trend_list) > 0:
-                labeled_df_setup.get_trend_rows(trend_type=filter_trend_list,inplace=True)
+                # if filter trends exist, do filtering
+                if len(filter_trend_list) > 0:
+                    labeled_df_setup.get_trend_rows(trend_type=filter_trend_list,inplace=True)
 
-            # check trend list
-            if len(trend_list) > 0:
-                labeled_df_setup.get_subgroup_trends_1lev(trend_list)
+                # check trend list
+                if len(trend_list) > 0:
+                    labeled_df_setup.get_subgroup_trends_1lev(trend_list)
 
-                if labeled_df_setup.result_df.empty:
-                    return 'no_result'
+                    if labeled_df_setup.result_df.empty:
+                        return 'no_result'
 
-                # add distances
-                labeled_df_setup.add_distance()
+                    # add distances
+                    labeled_df_setup.add_distance()
 
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
