@@ -5,7 +5,7 @@ var margin = {top: 30, right: 30, bottom: 30, left: 60},
 
 var scatterplot;
 
-// regular expression for invalid characters
+// regular expression for checking invalid characters in the class name for a line
 re_invalid_ch = /[~!@$%^&*()+=,.';:"?><{}`#\\/|\[\]]/g
 
 /**

@@ -203,7 +203,8 @@ def main():
             global filter_trend_list
             filter_trend_list = []
 
-            # redirect flag
+            # redirect flag for checking if page is relaod or redirect
+            # if redirect, flas sets to True; if reload, flag sets to False
             global redirect_flag
             redirect_flag = True 
 
@@ -253,10 +254,11 @@ def main():
         # initial for visualize.html page
         if action == 'page_load':
             # check if page is reload or not
+            # if page is reload, skip trend computation
             if redirect_flag:
                 # if redirect, set redirct_flag to False
                 redirect_flag = False
-                
+
                 # if filter trends exist, do filtering
                 if len(filter_trend_list) > 0:
                     labeled_df_setup.get_trend_rows(trend_type=filter_trend_list,inplace=True)
