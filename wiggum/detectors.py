@@ -115,7 +115,7 @@ class _TrendDetectors():
         inplace : Boolean
             replace the result_df with what is found NOTE: this will lose all
             trends that are below threshold and to recover them they will have
-            to be recomputed. 
+            to be recomputed.
         replace : Boolean
             replace the column with the given name by a new computation
         feat1 : str, list, or  None
@@ -197,7 +197,7 @@ class _TrendDetectors():
 
         """
         data_df = self.df
-        groupby_vars = self.get_vars_per_role('groupby')
+        groupby_vars = self.get_vars_per_role('splitby')
 
 
         if type(trend_types[0]) is str:
@@ -298,7 +298,7 @@ class _TrendDetectors():
 
         """
         data_df = self.df
-        groupby_vars = self.get_vars_per_role('groupby')
+        groupby_vars = self.get_vars_per_role('splitby')
 
 
         if type(trend_types[0]) is str:
@@ -403,7 +403,7 @@ class _TrendDetectors():
         """
 
         data_df = self.df
-        groupby_vars = self.get_vars_per_role('groupby')
+        groupby_vars = self.get_vars_per_role('splitby')
 
 
         if type(trend_types[0]) is str:
