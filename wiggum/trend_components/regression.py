@@ -125,13 +125,13 @@ class LinearRegression():
 
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-            reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = slopes, columns = ['independent','dependent',
                                                 trend_col_name,'subgroup',
                                                 trend_col_name+'_strength'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
-            reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = slopes, columns = ['independent','dependent',
                                                     trend_col_name,'empty',
                                                     trend_col_name+'_strength'])
             reg_df.drop('empty',axis=1,inplace=True)

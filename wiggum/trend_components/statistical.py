@@ -117,13 +117,13 @@ class CorrelationSignTrend():
                                         self.regression_vars[y],sign,np.abs(val)]
                                         for x,y,sign,val in zip(*triu_feat_indices,
                                                     sign_labels,corr_triu)],
-                        columns = ['feat1','feat2',trend_col_name,
+                        columns = ['independent','dependent',trend_col_name,
                                                     trend_col_name+'_strength'])
                                                 # trend is sign, qual is corr
 
         else:
             n_triu_values = 0
-            reg_df = pd.DataFrame(columns = ['feat1','feat2',trend_col_name])
+            reg_df = pd.DataFrame(columns = ['independent','dependent',trend_col_name])
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
@@ -266,13 +266,13 @@ class CorrelationTrend():
             reg_df = pd.DataFrame(data=[[self.regression_vars[x],
                                     self.regression_vars[y],val,np.abs(val)]
                                         for x,y,val in zip(*triu_feat_indices,corr_triu)],
-                        columns = ['feat1','feat2',trend_col_name,trend_col_name+'_strength'])
+                        columns = ['independent','dependent',trend_col_name,trend_col_name+'_strength'])
 
             # quality here is the absolute value of the trend value
 
         else:
             n_triu_values = 0
-            reg_df = pd.DataFrame(columns = ['feat1','feat2',trend_col_name])
+            reg_df = pd.DataFrame(columns = ['independent','dependent',trend_col_name])
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:

@@ -17,6 +17,7 @@ old_roles_map = {'groupby':'splitby','trend':['independent','dependent']}
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
 trend_cols = [ 'subgroup_trend','subgroup_trend2', 'agg_trend']
 
+old_result_map = {'feat1':'independent','feat2':'dependent'}
 
 from .detectors import RESULT_DF_HEADER, _TrendDetectors
 from .data_augmentation import _AugmentedData
@@ -129,6 +130,7 @@ def update_old_roles(row):
 
 
 
+
 class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     """
     this is the object
@@ -200,6 +202,10 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.result_df = results(self)
         else:
             self.result_df = pd.read_csv(results)
+
+        # fix heading
+        if 'feat1' in self.result_df.columns:
+            self.result_df.rename(columns=old_result_map)
 
             # self.result_df.apply(cast_trend_value,axis=1)
 
