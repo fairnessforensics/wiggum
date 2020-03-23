@@ -10,7 +10,9 @@ import json
 from pydoc import locate
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
-possible_roles = ['groupby','trend','prediction','groundtruth','ignore']
+possible_roles = ['independent','dependent','splitby','prediction',
+                'groundtruth','ignore']
+old_roles_map = {'groupby':'splitby','trend':['independent','dependent']}
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
 trend_cols = [ 'subgroup_trend','subgroup_trend2', 'agg_trend']
@@ -100,7 +102,30 @@ def column_rate(df, rate_column):
 
     return df_ct
 
+def string_to_list(var):
+    '''
+    undo str(list_var)
+    '''
+    # remove the puncation
+    var = var.replace("'",'').replace("[",'').replace("]",'').replace(",",'')
+    # return after splitting
+    return var.split()
 
+
+def update_old_roles(row):
+    '''
+    correct old roles if needed, to be used with apply
+    '''
+    var_in = row['role']
+    var_out = []
+
+    for var in var_in:
+        if not(var in possible_roles):
+            var_out.append(old_roles_map[var])
+        else:
+            var_out.append(var)
+
+    return var_out
 
 
 
@@ -162,8 +187,9 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.meta_df = pd.read_csv(meta,index_col='variable')
             self.meta_df.index.name = 'variable'
             # handle lists
-            self.meta_df['role'] = [var.replace("'",'').replace("[",'').replace("]",'').replace(",",'').split()
-                      for var in self.meta_df['role']]
+            self.meta_df['role'] = [ string_to_list(var)
+                                        for var in self.meta_df['role']]
+            self.meta_df['role'] = self.meta_df.apply(update_old_roles, axis=1)
             self.meta_df['isCount'] = self.meta_df['isCount'].replace(np.nan, False)
 
         # initialize result_df
@@ -191,6 +217,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
 
             self.correct_trend_value_datatypes()
+
 
 
     def correct_trend_value_datatypes(self):
