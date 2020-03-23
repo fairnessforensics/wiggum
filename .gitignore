@@ -13,3 +13,5 @@ env/
 
 #binaries
 *.DS_Store
+
+.cache
