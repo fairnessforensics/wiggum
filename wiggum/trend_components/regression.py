@@ -6,7 +6,9 @@ from .base_getvars import  w_avg
 import warnings
 
 class LinearRegression():
-
+    '''
+    '''
+    overview_legend = 'continuous'
 
     def is_computable(self,labeled_df=None):
         """

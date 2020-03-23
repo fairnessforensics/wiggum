@@ -23,6 +23,7 @@ class BinClassStats():
     class of trend for computing classification statistics from confusion matrix compoents
     based on teh comparison of values from two columns of the data
     '''
+    overview_legend = 'continuous'
 
     def is_computable(self,labeled_df=None):
         """

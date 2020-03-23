@@ -5,6 +5,11 @@ import scipy.stats as stats
 
 
 class CorrelationSignTrend():
+    '''
+    trends that are based on a correlation of type that is specified as a
+    property and computes a binary comparison of the signs as a distance
+    '''
+    overview_legend = 'binary'
 
     def is_computable(self,labeled_df=None):
         """
@@ -158,6 +163,7 @@ class CorrelationSignTrend():
 
 
 class CorrelationTrend():
+    overview_legend = 'binary'
 
     def is_computable(self,labeled_df=None):
         """
