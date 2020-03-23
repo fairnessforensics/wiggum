@@ -127,7 +127,7 @@ class StatBinRankTrend():
                 # if groupby add subgroup info
                 if type(data_df) is pd.core.groupby.DataFrameGroupBy:
                     group_feat = data_df.count().index.name
-                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat, 
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
                                             group_feat, str(groupby_lev)])
                 else:
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
@@ -301,11 +301,11 @@ class StatRankTrend():
                 # if groupby add subgroup info
                 if type(data_df) is pd.core.groupby.DataFrameGroupBy:
                     group_feat = data_df.count().index.name
-                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat, 
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
                                             group_feat, str(groupby_lev)])
                 else:
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
-                
+
                 self.trend_precompute[trend_name] = stat_df
 
                 # extract for result_df
@@ -414,7 +414,8 @@ class StatRankTrend():
         a_vals = list(row[col_a])
         b_vals = list(row[col_b])
         # set(sum) gives nonrepeating union of lists
-        all_vals = set(a_vals + b_vals)
+        # sorting ensures that the numeric map is consistent across calls
+        all_vals = sorted(set(a_vals + b_vals))
         # make numeric dict
         trend_numeric_map = {val:i for i,val in enumerate(all_vals)}
 
