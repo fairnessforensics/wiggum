@@ -20,26 +20,68 @@ the app should be launched from the code directory.
 Data Preparation
 ------------------
 
-The data preparation page of Wiggum app is the place to load the data, set metadata
+The data preparation page of Wiggum app is the place to load the data, set metadata,
 and to augment the data.
 
 Loading data
 ^^^^^^^^^^^^^
 
-The first step to using Wiggum is to load a dataset. You may load data as a .csv file or from a
+The first step to using Wiggum is to load a dataset. You may load data as a .csv file or load from a
 folder that was created by Wiggum that contains the data, metadata, and results
 from a prior analysis.
 
-#. Click “Choose File”: select a data file from your local disk.
-#. Select upload
-#. accept.
+Uploading a .csv
+*****************
 
+#. Click “Choose File” in the upper left corner of the page, then select a data file from your local disk.
+#. Select "Upload". The data will now appear in a metadata table below.
 
+Load from a prior analysis
+***************************
 
-Setting Meta data
-^^^^^^^^^^^^^^^^^^
+#. Click "Choose Files" in the upper left corner of page, then select a folder created by Wiggum from a prior analysis.
+#. Select "Upload". The data will appear in a metadata table below with your previous metadata selections.
 
-Wiggum requires that you set meta data
+Setting Metadata
+^^^^^^^^^^^^^^^^^
+
+Wiggum requires that you set labels for each column or variable in your data. This will be done once data has been loaded. The user must set the variable type, the variable role, and if applicable, whether to use the variable as a weighting variable.
+
+Setting Variable Type
+**********************
+There are four different possible variable types. Wiggum will provide its initial suggestion for variable types based on certain characteristics, but the user is free to change them. 
+#. Binary
+	- Binary variables for Wiggum are for values that are only true/false, so use them for boolean variables. For other variables that may only have two values, but are not true/false, label them as categorical.
+#. Ordinal
+	- Ordinal variables are those that require an order, like years.
+#. Categorical
+	- Categorical variables are those that have qualitative values based on some characteristic, such as eye color, gender, or type.
+#. Continuous
+	- Continuous variables are values that are doubles, floats, or integers. These are usually numeric values.
+
+Setting Variable Roles
+***********************
+There are five different possible roles for a variable.
+#. Groupby
+	- Groupby's are generally categories that the user wants to group by, such as categorical or ordinal variables.
+	- Common examples are gender, race, or age group. 
+#. Trend
+	- Trend variables are the variables that trends will be calculated from, thus they are generally continuous variables. 
+#. Prediction
+#. Groundtruth
+#. Ignore
+	- Ignore variables are those that the user does not want to consider for calculations or visualization. These can be variables that are irrelevant in consideration of the mix effect, or variables that the user wants to use as a weighting variable.
+
+Other Metadata Settings
+************************
+#. isCount
+	- isCount can be used for ignore variables. It is most useful whenever you have a population variable, or a 'count' variable, that you want
+	to use as a weight for certain categories or trend variables. In order to use a variable as isCount, mark the variable role as 'ignore' then select 'Y' for isCount.
+#. weighting_var
+	- In order to utilize an ignore, isCount variable properly, it must be set as the weighting_var, or weighting variable, for at least one other variable in the metadata table.
+	The weighting_var can be set to any variable in the table, but is best utilized if it is an ignore, isCount variable.
+
+Need example from gender pay gap dataset or voting data
 
 Data Augmentation
 ^^^^^^^^^^^^^^^^^^
@@ -50,13 +92,8 @@ Choosing Trends
 
 Saving
 ^^^^^^^
-
 You can save the meta data and the data together by entering a project name and clicking save.
 For more information on saving see the :ref:`feature_save` page.
-
-
-
-
 
 
 
@@ -75,7 +112,7 @@ Ranking
 ^^^^^^^^^
 
 
-#. Choosde columns
+#. Choose columns
 #. Press rank button
 
 Detecting
