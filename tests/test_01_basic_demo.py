@@ -14,14 +14,14 @@ def test_basic_load_df():
 
     # For this, we'll manually set these, but in the vizualization tool you can also set these with drop down menus
 
-    roles = {'state':['trend','groupby'], 'year':'trend', 'driver_gender':['trend','groupby'],
-             'driver_race':['trend','groupby'],
+    roles = {'state':['independent','groupby'], 'year':'independent', 'driver_gender':['independent','groupby'],
+             'driver_race':['independent','groupby'],
            'decriminalization':['groupby'], 'medical':['groupby'],
              'recreational':['groupby'], 'no_reforms':['groupby'],
            'search_conducted_false':'ignore', 'search_conducted_true':'ignore',
-           'search_conducted_rate':'trend', 'contraband_found_false':'ignore',
-           'contraband_found_true':'ignore', 'contraband_found_rate':'trend', 'hit_false':'ignore',
-           'hit_true':'ignore', 'hit_rate':'trend', 'num_stops':'trend'}
+           'search_conducted_rate':'dependent', 'contraband_found_false':'ignore',
+           'contraband_found_true':'ignore', 'contraband_found_rate':'dependent', 'hit_false':'ignore',
+           'hit_true':'ignore', 'hit_rate':'dependent', 'num_stops':'dependent'}
     is_count = {'state':False, 'year':False, 'driver_gender':False, 'driver_race':False,
            'decriminalization':False, 'medical':False, 'recreational':False, 'no_reforms':False,
            'search_conducted_false':True, 'search_conducted_true':True,
