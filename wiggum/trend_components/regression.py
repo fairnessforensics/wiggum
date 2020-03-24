@@ -112,7 +112,7 @@ class LinearRegression():
 
                     if np.sum(pd.isna([iw,dw])) == 2:
                         # both weights are NaNs
-                        slope, i, r_val, p_val, e = stats.linregress(df[i],df[d])
+                        slope, b, r_val, p_val, e = stats.linregress(df[i],df[d])
                     elif iw==dw or (not(pd.isna(dw)) and pd.isna(iw)):
                         # weights are the same or only dependent has weights
                         weights =  np.sqrt(df[dw])
@@ -127,6 +127,12 @@ class LinearRegression():
                         slope = np.NaN
                         r_val = np.NaN
                         warnings.warn('cannot compute with two different weights')
+                    else:
+                        # don't know what to do i this case
+                        # both have weights, throw error
+                        slope = np.NaN
+                        r_val = np.NaN
+                        warnings.warn('cannot compute')
 
                     # quality is absolute value of r_val (corelation coefficient)
                     slopes.append([i,d,slope,groupby_lev,np.abs(r_val)])
