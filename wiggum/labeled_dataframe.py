@@ -225,6 +225,52 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
             self.correct_trend_value_datatypes()
 
+            self.trend_dict = [t.name:i for i,t in enumerate(self.trend_list)]
+
+    def get_trend_by_name(self,trend_name):
+        '''
+        '''
+        trend_dict = [t.name:i for i,t in enumerate(self.trend_list)]
+        return self.trend_list[trend_dict[trend_name]]
+
+    def get_trend_display_name(self,trend_res_name):
+        '''
+        get a trend's diplay name from the name tha appears in result_df_parts
+
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = [t.name:i for i,t in enumerate(self.trend_list)]
+        return self.trend_list[trend_dict[trend_res_name]].display_name
+
+    def get_overview_legend_type(self,trend_res_name):
+        '''
+        get a trend's overview legend type from the name that appears in
+         result_df_parts
+
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = [t.name:i for i,t in enumerate(self.trend_list)]
+        return self.trend_list[trend_dict[trend_res_name]].overview_legend
+
+    def get_detail_view_type(self,trend_res_name):
+        '''
+        get a trend's overview legend type from the name that appears in
+         result_df_parts
+
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = [t.name:i for i,t in enumerate(self.trend_list)]
+        return self.trend_list[trend_dict[trend_res_name]].detail_view
+        detail_view
 
 
     def correct_trend_value_datatypes(self):
