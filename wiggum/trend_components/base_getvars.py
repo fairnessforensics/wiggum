@@ -175,6 +175,11 @@ class ContinuousOrdinalRegression():
                                                     ['continuous','ordinal'])
         dep_vars = labeled_df.get_vars_per_roletype('dependent',
                                                     ['continuous','ordinal'])
+        # if the lists are the same, then symmetric
+        dep_indep = [d in indep_vars for d in dep_vars]
+        if np.product(dep_indep):
+            self.symmetric_vars = True
+
 
         # use iterator to compute pairs
         reg_var_iterator = itertools.product(indep_vars,dep_vars)
@@ -229,6 +234,12 @@ class ContinuousRegression():
         indep_vars = labeled_df.get_vars_per_roletype('independent', 'continuous')
         dep_vars = labeled_df.get_vars_per_roletype('dependent','continuous')
 
+        # if the lists are the same, then symmetric
+        dep_indep = [d in indep_vars for d in dep_vars]
+        if np.product(dep_indep):
+            self.symmetric_vars = True
+
+        
         # use iterator to compute pairs
         reg_var_iterator = itertools.product(indep_vars,dep_vars)
         # transform to list of tuples so that is computable works
