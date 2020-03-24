@@ -7,13 +7,13 @@ import itertools as itert
 
 RESULT_DF_HEADER_old = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
 
-RESULT_DF_HEADER = ['feat1','feat2','trend_type','group_feat', 'agg_trend',
+RESULT_DF_HEADER = ['independent','dependent','trend_type','group_feat', 'agg_trend',
                     'subgroup','subgroup_trend']
 
-RESULT_DF_HEADER_PAIRWISE = ['feat1','feat2','trend_type','group_feat',
+RESULT_DF_HEADER_PAIRWISE = ['independent','dependent','trend_type','group_feat',
                     'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
 
-RESULT_DF_HEADER_ALL = ['feat1','feat2','trend_type','group_feat', 'agg_trend',
+RESULT_DF_HEADER_ALL = ['independent','dependent','trend_type','group_feat', 'agg_trend',
                     'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
 
 #also in ranking_processing
@@ -46,14 +46,14 @@ def get_views(result_df,colored=False):
     """
     # get all the views in a zip iterator
     if colored:
-        views_per_occurence = zip(result_df.feat1.values,
-                                    result_df.feat2.values,
-                                    result_df.group_feat.values)
+        views_per_occurence = zip(result_df['independent'].values,
+                            result_df['dependent'].values,
+                                    result_df['group_feat'].values)
         views_unique = set([(a,b,c) for a,b,c in views_per_occurence])
     else:
         # uncolored (no grouping var)
-        views_per_occurence = zip(result_df.feat1.values,
-                                 result_df.feat2.values)
+        views_per_occurence = zip(result_df['independent'].values,
+                                 result_df['dependent'].values)
         # iterate over pairs to make list, get unique by type casting to a set
         views_unique = set([(a,b) for a,b in views_per_occurence])
 
@@ -97,7 +97,7 @@ class _TrendDetectors():
         return get_views(sp_df,colored)
 
     def get_SP_rows(self,thresh=None,inplace=False,replace=False,
-                            feat1 = None,feat2 = None,group_feat= None,
+                            independent = None,dependent = None,group_feat= None,
                             subgroup= None,subgroup2= None,trend_type=None):
         """
 
@@ -118,9 +118,9 @@ class _TrendDetectors():
             to be recomputed.
         replace : Boolean
             replace the column with the given name by a new computation
-        feat1 : str, list, or  None
+        independent : str, list, or  None
             trend variable name or None to include all if filtered
-        feat2 : str, list, or  None
+        dependent : str, list, or  None
             trend variable name or None to include all if filtered
         group_feat : str, list, or  None
             groupoby variable name or None to include all if filtered
@@ -162,13 +162,13 @@ class _TrendDetectors():
 
         # always filter result and return
 
-        if  not(feat1  or feat2  or group_feat or subgroup or
+        if  not(independent  or dependent  or group_feat or subgroup or
                 subgroup2 or trend_type):
                 # filter only by detection col
             sp_df = self.result_df[self.result_df[col_name]]
         else:
             # filter by detection and column values
-            filt_idx = self.get_trend_rows(feat1 ,feat2, group_feat, subgroup,
+            filt_idx = self.get_trend_rows(independent ,dependent, group_feat, subgroup,
                                 subgroup2, trend_type,'index')
             sp_df = self.result_df[self.result_df[col_name] & filt_idx]
 
@@ -275,7 +275,7 @@ class _TrendDetectors():
 
             # print('appending ',len(new_res), ' to ',len(self.result_df))
             self.result_df = pd.concat([self.result_df,new_res], sort=True)
-        # ,on=['feat1','feat2'], how='left
+        # ,on=['independent','dependent'], how='left
 
 
 
@@ -386,7 +386,7 @@ class _TrendDetectors():
 
             self.result_df = pd.concat([self.result_df,pairwise_df],axis = 0,
                                     sort=True)
-        # ,on=['feat1','feat2'], how='left
+        # ,on=['independent','dependent'], how='left
 
 
         return self.result_df
@@ -446,7 +446,7 @@ class _TrendDetectors():
         all_trends = pd.concat(all_trends, sort=True)
         subgroup_trends = pd.concat(subgroup_trends, sort=True)
         result_df = pd.merge(subgroup_trends,all_trends)
-        # ,on=['feat1','feat2'], how='left
+        # ,on=['independent','dependent'], how='left
 
         return result_df
 
@@ -608,15 +608,15 @@ def detect_simpsons_paradox(data_df,
             if reverse_list:
                 # Retrieve attribute information from all_corr_df
                 all_corr_info = [all_corr_df.loc[i].values for i in index_list]
-                temp_df = pd.DataFrame(data=all_corr_info,columns=['agg_trend','feat1','feat2'])
+                temp_df = pd.DataFrame(data=all_corr_info,columns=['agg_trend','independent','dependent'])
 
                 # # Convert index from float to int
-                temp_df.feat1 = temp_df.feat1.astype(int)
-                temp_df.feat2 = temp_df.feat2.astype(int)
+                temp_df['independent'] = temp_df['independent'].astype(int)
+                temp_df['dependent'] = temp_df['dependent'].astype(int)
                 # Convert indices to attribute names for readabiity
-                temp_df.feat1 = temp_df.feat1.replace({i:a for i, a in
+                temp_df['independent'] = temp_df['independent'].replace({i:a for i, a in
                                             enumerate(regression_vars)})
-                temp_df.feat2 = temp_df.feat2.replace({i:a for i, a in
+                temp_df['dependent'] = temp_df['dependent'].replace({i:a for i, a in
                                             enumerate(regression_vars)})
 
                 temp_df['subgroup_trend'] = reverse_list

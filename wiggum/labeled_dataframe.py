@@ -204,7 +204,8 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.result_df = pd.read_csv(results)
 
         # fix heading
-        if 'feat1' in self.result_df.columns:
+        cur_cols = self.result_df.columns
+        if ('feat1' in cur_cols) or 'feat2' in cur_cols:
             self.result_df.rename(columns=old_result_map)
 
             # self.result_df.apply(cast_trend_value,axis=1)
