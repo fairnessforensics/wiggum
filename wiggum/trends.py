@@ -12,42 +12,42 @@ from .trend_components import *
 class Binary_Accuracy_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'acc'
     name = 'binary_acc'
-    display_name = 'Classifcation Accuracy'
+    display_name = 'Classification Accuracy'
 
 class Binary_Error_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'err'
     name = 'binary_err'
-    display_name = 'Classifcation Error'
+    display_name = 'Classification Error'
 
 class Binary_TPR_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'tpr'
     name = 'binary_tpr'
-    display_name = 'Classifcation True Positive Rate'
+    display_name = 'Classification True Positive Rate'
 
 class Binary_PPV_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'ppv'
     name = 'binary_ppv'
-    display_name = 'Classifcation Positive Predictive Value'
+    display_name = 'Classification Positive Predictive Value'
 
 class Binary_TNR_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'tnr'
     name = 'binary_tnr'
-    display_name = 'Classifcation True Negative Rate'
+    display_name = 'Classification True Negative Rate'
 
 class Binary_FDR_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'fdr'
     name = 'binary_fdr'
-    display_name = 'Classifcation False Discovery Rate'
+    display_name = 'Classification False Discovery Rate'
 
 class Binary_FNR_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'fnr'
     name = 'binary_fnr'
-    display_name = 'Classifcation False Negative Rate'
+    display_name = 'Classification False Negative Rate'
 
 class Binary_F1_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'f1'
     name = 'binary_f1'
-    display_name = 'Classifcation F_1'
+    display_name = 'Classification F_1'
 
 class Mean_Rank_Trend(StatRankTrend,WeightedRank,Trend):
     my_stat = lambda self, d,m,w : w_avg(d,m,w )
