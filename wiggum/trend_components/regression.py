@@ -82,38 +82,44 @@ class LinearRegression():
                 data_df = [('',data_df)]
 
 
-            # zip vars and weights together
-            w_reg_vars = list( zip(self.regression_vars,  self.var_weight_list))
 
-            # sort so that vars with no weight are first then after combinations
-            #  all with aw not nan will be the ones with two weights
-            nasort = {True: lambda v:'000000000',False: lambda v: str(v)}
-            w_reg_vars.sort(key=lambda x: nasort[pd.isna(x[1])](x[1]))
+            # expand into all combinations if symmetric
+            if self.symmetric_vars:
+                # zip vars and weights together before pairing
+                w_reg_vars = list( zip(self.regression_vars,  self.var_weight_list))
+                # sort so that vars with no weight are first then after combinations
+                #  all with aw not nan will be the ones with two weights
+                nasort = {True: lambda v:'000000000',False: lambda v: str(v)}
+                w_reg_vars.sort(key=lambda x: nasort[pd.isna(x[1])](x[1]))
+                # convert iterator into list of tuples so that it can be reused
+                # within the loop below
+                var_pairs = [(a,b) for a,b in itertools.combinations(w_reg_vars,2)]
+            else:
+                # else assume lists of tuples were passed and reshuffle
+                var_pairs =  [((i,iw),(d,dw)) for (i,d),(iw,dw) in
+                            zip(self.regression_vars,  self.var_weight_list)]
+
+
 
             for groupby_lev,df in data_df:
-                # expand into all combinations if symmetric
-                if self.symmetric_vars:
-                    var_pairs = itertools.combinations(w_reg_vars,2)
-                else:
-                    # else assume list of tuples was passed
-                    var_pairs = w_reg_vars
+
 
                 # var_pairs must be list of tuples or iterator
-                for (a,aw),(b,bw) in var_pairs:
+                for (i,iw),(d,dw) in var_pairs:
                     # compute each slope
 
-                    if np.sum(pd.isna([aw,bw])) == 2:
+                    if np.sum(pd.isna([iw,dw])) == 2:
                         # both weights are NaNs
-                        slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
-                    elif aw==bw or (not(pd.isna(bw)) and pd.isna(aw)):
-                        # weights are the same or only bw has a weights
-                        weights =  np.sqrt(df[bw])
-                        i, slope = np.polyfit(df[a],df[b],1, w = df[bw])
+                        slope, i, r_val, p_val, e = stats.linregress(df[i],df[d])
+                    elif aw==bw or (not(pd.isna(dw)) and pd.isna(iw)):
+                        # weights are the same or only dependent has weights
+                        weights =  np.sqrt(df[dw])
+                        i, slope = np.polyfit(df[i],df[d],1, w = df[dw])
                         # compute weighted correlation coefficient
-                        r_val = np.average((df[a]-np.average(df[a]))*
-                                  (df[b]- np.average(df[b], weights = df[bw])),
-                                weights = df[bw])
-                    elif np.sum(pd.isna([aw,bw])) == 0:
+                        r_val = np.average((df[i]-np.average(df[i]))*
+                                  (df[d]- np.average(df[d], weights = df[dw])),
+                                weights = df[dw])
+                    elif np.sum(pd.isna([iw,dw])) == 0:
                         # don't know what to do i this case
                         # both have weights, throw error
                         slope = np.NaN
@@ -121,7 +127,7 @@ class LinearRegression():
                         warnings.warn('cannot compute with two different weights')
 
                     # quality is absolute value of r_val (corelation coefficient)
-                    slopes.append([a,b,slope,groupby_lev,np.abs(r_val)])
+                    slopes.append([i,d,slope,groupby_lev,np.abs(r_val)])
 
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:

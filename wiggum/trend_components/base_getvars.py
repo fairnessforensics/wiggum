@@ -124,7 +124,10 @@ class OrdinalRegression():
         # transform to list of tuples so that is computable works
         self.regression_vars = [(i,d) for i,d in reg_var_iterator]
 
-        self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
+        indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
+        dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
+        weight_vars_iterator = itertools.product(indep_vars_w, dep_vars_w)
+        self.var_weight_list = [(iw,dw) for iw,dw in weight_vars_iterator]
 
         self.set_vars = True
         return self.regression_vars
@@ -173,7 +176,11 @@ class ContinuousOrdinalRegression():
         # transform to list of tuples so that is computable works
         self.regression_vars = [(i,d) for i,d in reg_var_iterator]
 
-        self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
+        indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
+        dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
+        weight_vars_iterator = itertools.product(indep_vars_w, dep_vars_w)
+        self.var_weight_list = [(iw,dw) for iw,dw in weight_vars_iterator]
+
 
         self.set_vars = True
         return self.regression_vars
@@ -222,8 +229,11 @@ class ContinuousRegression():
         # transform to list of tuples so that is computable works
         self.regression_vars = [(i,d) for i,d in reg_var_iterator]
 
-        self.var_weight_list = labeled_df.get_weightcol_per_var(self.regression_vars)
-
+        indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
+        dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
+        weight_vars_iterator = itertools.product(indep_vars_w, dep_vars_w)
+        self.var_weight_list = [(iw,dw) for iw,dw in weight_vars_iterator]
+        
         self.set_vars = True
         return self.regression_vars
 
