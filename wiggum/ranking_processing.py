@@ -155,7 +155,7 @@ class _ResultDataFrame():
 
         return self.result_df
 
-    def get_trend_rows(self,indep = None,dep = None,group_feat= None,
+    def get_trend_rows(self,independent = None,dependent = None,group_feat= None,
                             subgroup= None,subgroup2= None,trend_type=None,
                             comparison_type = None, inplace=False):
         """
@@ -186,14 +186,14 @@ class _ResultDataFrame():
         # must be series for &ing and index to work
         # TODO: is there a faster way that does not depend on pd.Series?
 
-        if indep:
-            iv_rows = pd.Series([iv in indep for iv in self.result_df['independent']])
+        if independent:
+            iv_rows = pd.Series([iv in independent for iv in self.result_df['independent']])
             # self.result_df.independent ==independent
         else:
             iv_rows = True
 
-        if dep:
-            dv_rows = pd.Series([dv in dep for dv in self.result_df['dependent']])
+        if dependent:
+            dv_rows = pd.Series([dv in dependent for dv in self.result_df['dependent']])
         else:
             dv_rows = True
 
