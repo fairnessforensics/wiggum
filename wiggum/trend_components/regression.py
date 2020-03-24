@@ -94,10 +94,12 @@ class LinearRegression():
                 # convert iterator into list of tuples so that it can be reused
                 # within the loop below
                 var_pairs = [(a,b) for a,b in itertools.combinations(w_reg_vars,2)]
+                print('built var pairs by combinations')
             else:
                 # else assume lists of tuples were passed and reshuffle
                 var_pairs =  [((i,iw),(d,dw)) for (i,d),(iw,dw) in
                             zip(self.regression_vars,  self.var_weight_list)]
+                print('built var pairs by zip')
 
 
 
@@ -111,10 +113,10 @@ class LinearRegression():
                     if np.sum(pd.isna([iw,dw])) == 2:
                         # both weights are NaNs
                         slope, i, r_val, p_val, e = stats.linregress(df[i],df[d])
-                    elif aw==bw or (not(pd.isna(dw)) and pd.isna(iw)):
+                    elif iw==dw or (not(pd.isna(dw)) and pd.isna(iw)):
                         # weights are the same or only dependent has weights
                         weights =  np.sqrt(df[dw])
-                        i, slope = np.polyfit(df[i],df[d],1, w = df[dw])
+                        b, slope = np.polyfit(df[i],df[d],1, w = df[dw])
                         # compute weighted correlation coefficient
                         r_val = np.average((df[i]-np.average(df[i]))*
                                   (df[d]- np.average(df[d], weights = df[dw])),
