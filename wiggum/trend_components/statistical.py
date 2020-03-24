@@ -225,63 +225,97 @@ class CorrelationTrend():
             partial result_df, multiple can be merged together to form
             a complete result_df
         """
+        # recover a single list from the independent and dependent vars
+        indep, dep = zip(*self.regression_vars)
+        corr_var_list = list(set(indep))
+        corr_var_list.extend(list(set(dep)))
 
         # get locations of upper right triangle of a correlation matrix for this
         # many values
-        num_vars = len(self.regression_vars)
+        num_vars = len(corr_var_list)
         triu_indices_0 = np.triu_indices(num_vars,k=1)
 
         if num_vars > 0:
-
-            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-
-                # append for all groups if groupby instead of single DataFrame
-                # construct a list of the upper triangle of the submatrices per group
-                num_groups = len(data_df.groups)
-                # need to increment this many values
-                n_triu_values = len(triu_indices_0[0])
-                # the incides are stored, row, colum, only the rows get incremented
-                # increment by [0, num_vars, numvars*2, ...]
-                increments_r = [i*num_vars for i in range(num_groups)]*(n_triu_values)
-                # ad the increment amounts to the row values, keep the col values
-                triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
-                                                triu_indices_0[1].repeat(num_groups))
-                triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
-                                                triu_indices_0[1].repeat(num_groups))
-            else:
-                # if not a groupby then the original is correct, use that
-                triu_indices = triu_indices_0
-                triu_feat_indices = triu_indices
-
-            # compute correlations, only store vlaues from upper right triangle
+            # name of the current trend
             trend_name = '_'.join([self.name , trend_col_name])
-
-            corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
-            corr_triu = corr_mat.values[triu_indices]
-
+            # compute correlations
+            corr_mat = data_df[corr_var_list].corr(method=self.corrtype)
+            print(corr_mat)
+            # store the correlation matrix for later use
             self.trend_precompute[trend_name] = corr_mat
 
+            # -----------------------------------------------------------------
+            #  process into trend table
+            if self.symmetric_vars:
+                # if symmetric take upper right triangle
+                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
 
-            # create dataframe with rows, att1 label, attr2 label, correlation
-            reg_df = pd.DataFrame(data=[[self.regression_vars[x],
-                                    self.regression_vars[y],val,np.abs(val)]
-                                        for x,y,val in zip(*triu_feat_indices,corr_triu)],
-                        columns = ['independent','dependent',trend_col_name,trend_col_name+'_strength'])
+                    # append for all groups if groupby instead of single DataFrame
+                    # construct a list of the upper triangle of the submatrices per group
+                    num_groups = len(data_df.groups)
+                    # need to increment this many values
+                    n_triu_values = len(triu_indices_0[0])
+                    # the incides are stored, row, colum, only the rows get incremented
+                    # increment by [0, num_vars, numvars*2, ...]
+                    increments_r = [i*num_vars for i in range(num_groups)]*(n_triu_values)
+                    # ad the increment amounts to the row values, keep the col values
+                    triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
+                                                    triu_indices_0[1].repeat(num_groups))
+                    triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
+                                                    triu_indices_0[1].repeat(num_groups))
+                else:
+                    # if not a groupby then the original is correct, use that
+                    triu_indices = triu_indices_0
+                    triu_feat_indices = triu_indices
 
-            # quality here is the absolute value of the trend value
+                # only store vlaues from upper right triangle
+                corr_triu = corr_mat.values[triu_indices]
+
+                # create dataframe with rows, att1 label, attr2 label, correlation
+                reg_df = pd.DataFrame(data=[[corr_var_list[x],corr_var_list[y],
+                                val,np.abs(val)]
+                            for x,y,val in zip(*triu_feat_indices,corr_triu)],
+                columns = ['independent','dependent',trend_col_name,
+                                                trend_col_name+'_strength'])
+
+            else:
+                # if not symmetric pull vars from the tuple list
+                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                    corr_target_vals = []
+                    groupby_vars = list(data_df.groups.keys())
+
+                    corr_target_vals = [(i,d, corr_mat[i][g][d],g) for (i,d),g in
+                                        zip(self.regression_vars,groupby_vars)]
+                    # construct dataframe
+                    reg_df = pd.DataFrame(data=[[i,d,v,np.abs(v),g] for i,d,v,g in corr_target_vals],
+                            columns = ['independent','dependent',trend_col_name,
+                                        trend_col_name+'_strength','subgroup'])
+                else:
+                    corr_target_vals = [(i,d, corr_mat[i][d]) for i,d in self.regression_vars]
+                    # construct dataframe
+                    reg_df = pd.DataFrame(data=[[i,d,v,np.abs(v)] for i,d,v in corr_target_vals],
+                            columns = ['independent','dependent',trend_col_name,
+                                        trend_col_name+'_strength'])
+                # strength here is the absolute value of the trend value
+
+
+            # if groupby add subgroup indicator columns
+            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                #same for all
+                reg_df['group_feat'] = data_df.count().index.name
+
+                # repeat the values each the number of time sfor the size of the triu
+                if self.symmetric_vars:
+                    reg_df['subgroup'] = list(data_df.groups.keys())*n_triu_values
+            reg_df['trend_type'] = self.name
 
         else:
             n_triu_values = 0
             reg_df = pd.DataFrame(columns = ['independent','dependent',trend_col_name])
 
-        # if groupby add subgroup indicator columns
-        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-            #same for all
-            reg_df['group_feat'] = data_df.count().index.name
-            # repeat the values each the number of time sfor the size of the triu
-            reg_df['subgroup'] = list(data_df.groups.keys())*n_triu_values
 
-        reg_df['trend_type'] = self.name
+
+
 
         return reg_df
 
