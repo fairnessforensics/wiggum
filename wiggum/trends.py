@@ -68,11 +68,9 @@ class Kendall_Correlation(CorrelationTrend,ContinuousRegression,Trend):
     corrtype = 'kendall'
 
 class Linear_Trend(LinearRegression,ContinuousRegression,Trend):
-    symmetric_vars = True
     name = 'lin_reg'
 
 class All_Linear_Trend(LinearRegression,ContinuousOrdinalRegression,Trend):
-    symmetric_vars = True
     name = 'lin_reg'
 
 class Binary_Pearson_Trend(CorrelationSignTrend,ContinuousRegression,Trend):
