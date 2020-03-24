@@ -94,12 +94,12 @@ class LinearRegression():
                 # convert iterator into list of tuples so that it can be reused
                 # within the loop below
                 var_pairs = [(a,b) for a,b in itertools.combinations(w_reg_vars,2)]
-                print('built var pairs by combinations')
+
             else:
                 # else assume lists of tuples were passed and reshuffle
                 var_pairs =  [((i,iw),(d,dw)) for (i,d),(iw,dw) in
                             zip(self.regression_vars,  self.var_weight_list)]
-                print('built var pairs by zip')
+
 
 
 
