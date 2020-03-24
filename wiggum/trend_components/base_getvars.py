@@ -119,6 +119,11 @@ class OrdinalRegression():
         indep_vars = labeled_df.get_vars_per_roletype('independent', 'ordinal')
         dep_vars = labeled_df.get_vars_per_roletype('dependent','ordinal')
 
+        # if the lists are the same, then symmetric
+        dep_indep = [d in indep_vars for d in dep_vars]
+        if np.product(dep_indep):
+            self.symmetric_vars = True
+
         # use iterator to compute pairs
         reg_var_iterator = itertools.product(indep_vars,dep_vars)
         # transform to list of tuples so that is computable works
@@ -233,7 +238,7 @@ class ContinuousRegression():
         dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
         weight_vars_iterator = itertools.product(indep_vars_w, dep_vars_w)
         self.var_weight_list = [(iw,dw) for iw,dw in weight_vars_iterator]
-        
+
         self.set_vars = True
         return self.regression_vars
 
