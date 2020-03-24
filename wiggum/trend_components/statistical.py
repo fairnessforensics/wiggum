@@ -240,7 +240,6 @@ class CorrelationTrend():
             trend_name = '_'.join([self.name , trend_col_name])
             # compute correlations
             corr_mat = data_df[corr_var_list].corr(method=self.corrtype)
-            print(corr_mat)
             # store the correlation matrix for later use
             self.trend_precompute[trend_name] = corr_mat
 
