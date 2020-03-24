@@ -225,7 +225,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
             self.correct_trend_value_datatypes()
 
-            self.trend_dict = [t.name:i for i,t in enumerate(self.trend_list)]
+            
 
     def get_trend_by_name(self,trend_name):
         '''
