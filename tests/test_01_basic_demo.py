@@ -126,7 +126,7 @@ def test_basic_load_df():
 
     # So, we can use that function to filter and look at subsets of the trends based on the features, groupby, or subgroups
 
-    labeled_df.get_trend_rows(feat1='year',subgroup=['Black','Hispanic'])
+    labeled_df.get_trend_rows(independent='year',subgroup=['Black','Hispanic'])
 
 
     # In[24]:
