@@ -10,6 +10,8 @@ function updateDistanceHeatmapContainer(dataAll) {
 	d3.select("#container").selectAll('div').remove();
 
 	var createScatterPlotFlag = true;
+	// temp trend type used to store the previous trend type
+	var tempTrendType = "";
 
 	for (var key in dataAll){
 		data = dataAll[key];
@@ -68,6 +70,12 @@ function updateDistanceHeatmapContainer(dataAll) {
 			matrix_data = UpdateRankTrendMatrixFormat(
 								heatmapMatrix, rowLabels, colLabels, 
 								groupInfo,data.trend_type);
+		}
+
+		// if a new trend type, draw the title for new trend type 
+		if (data.trend_type != tempTrendType) {
+			drawTrendTypeTitle(data.trend_type);
+			tempTrendType = data.trend_type;
 		}
 
 		distanceMatrixHeatmap({
@@ -354,5 +362,46 @@ function DrawHeatmapLegend() {
 	svg.append("g")
 		.attr("transform", "translate(-20, 0)")
 		.call(colorLegend);
+
+	// Append N/A cell for legend
+	svg.append("rect")
+		.attr("x", 0)
+		.attr("y", 260)
+		.attr("width", 50)
+		.attr("height", 20)
+		.style("fill", '#808080')
+		.attr("transform", "translate(-20, 0)");
+
+	svg.append("text")
+		.attr("x", 55)
+		.attr("y", 275)
+		.attr("text-anchor", "middle")  
+		.style("font-size", "15px") 
+		.text("N/A");
+
+}
+
+/**
+ * Draw trend type title
+ *
+ * @param trendType - Trend type.
+ * @returns none.
+ */
+function drawTrendTypeTitle(trendType) {
+	var margin = {top: 15, left: 5};
+	
+	var svg = d3.select(container)
+				.append("div")	
+				.classed("svg-trendtype-title", true)	
+				.append("svg")	
+				.attr("height", 30)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	svg.append("text")          
+		.attr("y", 10)
+		.attr("text-anchor", "left")  
+		.style("font-size", "20px") 
+		.text(trendType);					
 
 }
