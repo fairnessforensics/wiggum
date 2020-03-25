@@ -230,6 +230,8 @@ class CorrelationTrend():
         corr_var_list = list(set(indep))
         corr_var_list.extend(list(set(dep)))
 
+        corr_var_list = list(set(corr_var_list))
+
         # get locations of upper right triangle of a correlation matrix for this
         # many values
         num_vars = len(corr_var_list)
