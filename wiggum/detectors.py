@@ -213,8 +213,8 @@ class _TrendDetectors():
             self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
 
         # create empty lists
-        all_trends = []
-        subgroup_trends = []
+        all_agg_trends_list = []
+        subgroup_trends_list = []
 
         # precomputed trends
         precomputed_trends = set(self.result_df['trend_type'])
@@ -226,7 +226,7 @@ class _TrendDetectors():
             if not(cur_trend.name in precomputed_trends) or replace:
                 cur_trend.get_trend_vars(self)
 
-                # augment the data with precomputed parts if needed
+                # augment the data with if needed
 
 
                 if cur_trend.preaugment == 'confusion':
@@ -241,7 +241,7 @@ class _TrendDetectors():
                 # Tabulate aggregate statistics
                 agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
-                all_trends.append(agg_trends)
+                all_agg_trends_list.append(agg_trends)
 
                 # iterate over groupby attributes
                 for groupbyAttr in groupby_vars:
@@ -250,18 +250,18 @@ class _TrendDetectors():
                     cur_grouping = self.df.groupby(groupbyAttr)
 
                     # get subgoup trends
-                    curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+                    curgroup_trend_df = cur_trend.get_trends(cur_grouping,'subgroup_trend')
 
                     # append
-                    subgroup_trends.append(curgroup_corr)
+                    subgroup_trends_list.append(curgroup_trend_df)
 
 
 
 
         # condense and merge all trends with subgroup trends
-        subgroup_trends = pd.concat(subgroup_trends, sort=True)
-        all_trends = pd.concat(all_trends, sort=True)
-        new_res = pd.merge(subgroup_trends,all_trends)
+        subgroup_trends_df = pd.concat(subgroup_trends_list, sort=True)
+        all_agg_trends = pd.concat(all_agg_trends_list, sort=True)
+        new_res = pd.merge(subgroup_trends_df,all_agg_trends)
 
         # remove rows where a trend is undefined
         new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
