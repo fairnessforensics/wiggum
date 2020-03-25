@@ -143,7 +143,7 @@ class StatBinRankTrend():
                 totrange = stat_df.iloc[1]['max']-stat_df.iloc[0]['min']
                 interval_overlap_qual = overlap/totrange
                 # create row
-                rank_res.append([statfeat,rankfeat,comparison_sign,interval_overlap_qual,
+                rank_res.append([rankfeat,statfeat,comparison_sign,interval_overlap_qual,
                                         groupby_lev])
 
 
@@ -376,7 +376,7 @@ class StatRankTrend():
                 tau_qual = np.abs(np.round(tau,4))
 
                 # create row
-                rank_res.append([statfeat,rankfeat,ordered_rank_feat,tau_qual,
+                rank_res.append([rankfeat,statfeat,ordered_rank_feat,tau_qual,
                                         groupby_lev])
 
 
