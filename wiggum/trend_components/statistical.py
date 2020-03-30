@@ -286,7 +286,7 @@ class CorrelationTrend():
                     groupby_vars = list(data_df.groups.keys())
 
                     corr_target_vals = [(i,d, corr_mat[i][g][d],g) for (i,d),g in
-                                        zip(self.regression_vars,groupby_vars)]
+                                        itertools.product(self.regression_vars,groupby_vars)]
                     # construct dataframe
                     reg_df = pd.DataFrame(data=[[i,d,v,np.abs(v),g] for i,d,v,g in corr_target_vals],
                             columns = ['independent','dependent',trend_col_name,
