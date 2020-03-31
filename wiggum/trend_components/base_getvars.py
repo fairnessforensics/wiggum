@@ -127,7 +127,7 @@ class OrdinalRegression():
         # use iterator to compute pairs
         reg_var_iterator = itertools.product(indep_vars,dep_vars)
         # transform to list of tuples so that is computable works
-        self.regression_vars = [(i,d) for i,d in reg_var_iterator if i==d]
+        self.regression_vars = [(i,d) for i,d in reg_var_iterator if not(i==d)]
 
         indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
         dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
@@ -184,7 +184,7 @@ class ContinuousOrdinalRegression():
         # use iterator to compute pairs
         reg_var_iterator = itertools.product(indep_vars,dep_vars)
         # transform to list of tuples so that is computable works
-        self.regression_vars = [(i,d) for i,d in reg_var_iterator if i==d]
+        self.regression_vars = [(i,d) for i,d in reg_var_iterator if not(i==d)]
 
         indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
         dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
@@ -243,7 +243,7 @@ class ContinuousRegression():
         # use iterator to compute pairs
         reg_var_iterator = itertools.product(indep_vars,dep_vars)
         # transform to list of tuples so that is computable works
-        self.regression_vars = [(i,d) for i,d in reg_var_iterator if i==d]
+        self.regression_vars = [(i,d) for i,d in reg_var_iterator if not(i==d)]
 
         indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
         dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)

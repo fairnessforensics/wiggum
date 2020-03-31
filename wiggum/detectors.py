@@ -255,18 +255,17 @@ class _TrendDetectors():
                     # append
                     subgroup_trends_list.append(curgroup_trend_df)
 
+        # if any trends were computed, mrege them together
+        if subgroup_trends_list:
+            # condense and merge all trends with subgroup trends
+            subgroup_trends_df = pd.concat(subgroup_trends_list, sort=True)
+            all_agg_trends = pd.concat(all_agg_trends_list, sort=True)
+            new_res = pd.merge(subgroup_trends_df,all_agg_trends)
 
+            # remove rows where a trend is undefined
+            new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
 
-
-        # condense and merge all trends with subgroup trends
-        subgroup_trends_df = pd.concat(subgroup_trends_list, sort=True)
-        all_agg_trends = pd.concat(all_agg_trends_list, sort=True)
-        new_res = pd.merge(subgroup_trends_df,all_agg_trends)
-
-        # remove rows where a trend is undefined
-        new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
-
-        new_res[result_df_type_col_name] = 'aggregate-subgroup'
+            new_res[result_df_type_col_name] = 'aggregate-subgroup'
 
         if self.result_df.empty or replace:
             # print('replacing',self.result_df.empty,replace)

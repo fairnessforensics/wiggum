@@ -78,48 +78,66 @@ class CorrelationSignTrend():
         triu_indices_0 = np.triu_indices(num_vars,k=1)
 
         if num_vars > 0:
+            if self.symmetric_vars:
+                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
 
-            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                    # append for all groups if groupby instead of single DataFrame
+                    # construct a list of the upper triangle of the submatrices per group
+                    num_groups = len(data_df.groups)
+                    # need to increment this many values
+                    n_triu_values = len(triu_indices_0[0])
+                    # the incides are stored, row, colum, only the rows get incremented
+                    # increment by [0, num_vars, numvars*2, ...]
+                    increments_r = [i*num_vars for i in range(num_groups)]*(n_triu_values)
+                    # ad the increment amounts to the row values, keep the col values
+                    triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
+                                                    triu_indices_0[1].repeat(num_groups))
+                    triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
+                                                    triu_indices_0[1].repeat(num_groups))
+                else:
+                    # if not a groupby then the original is correct, use that
+                    triu_indices = triu_indices_0
+                    triu_feat_indices = triu_indices
 
-                # append for all groups if groupby instead of single DataFrame
-                # construct a list of the upper triangle of the submatrices per group
-                num_groups = len(data_df.groups)
-                # need to increment this many values
-                n_triu_values = len(triu_indices_0[0])
-                # the incides are stored, row, colum, only the rows get incremented
-                # increment by [0, num_vars, numvars*2, ...]
-                increments_r = [i*num_vars for i in range(num_groups)]*(n_triu_values)
-                # ad the increment amounts to the row values, keep the col values
-                triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
-                                                triu_indices_0[1].repeat(num_groups))
-                triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
-                                                triu_indices_0[1].repeat(num_groups))
+                # compute correlations, only store vlaues from upper right triangle
+                trend_name = '_'.join([self.name , trend_col_name])
+
+                corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
+                corr_triu = corr_mat.values[triu_indices]
+
+                # get sign and convert to label
+                sign_map = {1:'positive', -1:'negative'}
+                sign_labels = [sign_map[np.sign(corr)] for corr in corr_triu]
+
+                self.trend_precompute[trend_name] = corr_mat
+
+
+                # create dataframe with rows, att1 label, attr2 label, correlation
+                reg_df = pd.DataFrame(data=[[self.regression_vars[x],
+                                            self.regression_vars[y],sign,np.abs(val)]
+                                            for x,y,sign,val in zip(*triu_feat_indices,
+                                                        sign_labels,corr_triu)],
+                            columns = ['independent','dependent',trend_col_name,
+                                                        trend_col_name+'_strength'])
+                                                    # trend is sign, qual is corr
             else:
-                # if not a groupby then the original is correct, use that
-                triu_indices = triu_indices_0
-                triu_feat_indices = triu_indices
+                # if not symmetric pull vars from the tuple list
+                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                    corr_target_vals = []
+                    groupby_vars = list(data_df.groups.keys())
 
-            # compute correlations, only store vlaues from upper right triangle
-            trend_name = '_'.join([self.name , trend_col_name])
-
-            corr_mat = data_df[self.regression_vars].corr(method=self.corrtype)
-            corr_triu = corr_mat.values[triu_indices]
-
-            # get sign and convert to label
-            sign_map = {1:'positive', -1:'negative'}
-            sign_labels = [sign_map[np.sign(corr)] for corr in corr_triu]
-
-            self.trend_precompute[trend_name] = corr_mat
-
-
-            # create dataframe with rows, att1 label, attr2 label, correlation
-            reg_df = pd.DataFrame(data=[[self.regression_vars[x],
-                                        self.regression_vars[y],sign,np.abs(val)]
-                                        for x,y,sign,val in zip(*triu_feat_indices,
-                                                    sign_labels,corr_triu)],
-                        columns = ['independent','dependent',trend_col_name,
-                                                    trend_col_name+'_strength'])
-                                                # trend is sign, qual is corr
+                    corr_target_vals = [(i,d, np.sign(corr_mat[i][g][d]),g) for (i,d),g in
+                                        itertools.product(self.regression_vars,groupby_vars)]
+                    # construct dataframe
+                    reg_df = pd.DataFrame(data=[[i,d,v,np.abs(v),g] for i,d,v,g in corr_target_vals],
+                            columns = ['independent','dependent',trend_col_name,
+                                        trend_col_name+'_strength','subgroup'])
+                else:
+                    corr_target_vals = [(i,d, np.sign(corr_mat[i][d])) for i,d in self.regression_vars]
+                    # construct dataframe
+                    reg_df = pd.DataFrame(data=[[i,d,v,np.abs(v)] for i,d,v in corr_target_vals],
+                            columns = ['independent','dependent',trend_col_name,
+                                        trend_col_name+'_strength'])
 
         else:
             n_triu_values = 0
