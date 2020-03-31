@@ -34,7 +34,6 @@ class LinearRegression():
             self.get_trend_vars(labeled_df)
 
         vart_test_list = [len(self.regression_vars)>=2,
-                        bool(self.symmetric_vars),
                     len(self.var_weight_list)==len(self.regression_vars)]
 
         return np.product([vartest for vartest in vart_test_list])
