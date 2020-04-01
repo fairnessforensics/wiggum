@@ -27,7 +27,11 @@ class Trend():
         if not(labeled_df== None):
             self.get_trend_vars(labeled_df)
 
-
+    def get_trend_value_type(self):
+        '''
+        return the type that the trend values for this trend type should be
+        '''
+        return self.trend_value_type
 
     def is_SP(self,row,thresh):
         """
@@ -82,21 +86,44 @@ class Trend():
 ################################################################################
 # these parts can be mixed together to create full final classes that are used
 # for importing and only those are revealed in
+class Regression():
+    '''
+    common functions for all regression,
+    '''
 
-class OrdinalRegression():
-    """
-    regression compatible varTypeMixin, sets list formatted regression_vars and
-    symmetric_vars = True
-    """
     symmetric_vars = False
     trend_value_type = float
     detail_view = 'scatter'
 
-    def get_trend_value_type(self):
+    def set_weights_regression(self,labeled_df,i_type,d_type):
         '''
-        return the type that the trend values for this trend type should be
         '''
-        return self.trend_value_type
+        indep_vars = labeled_df.get_vars_per_roletype('independent', i_type)
+        dep_vars = labeled_df.get_vars_per_roletype('dependent', d_type)
+        # if the lists are the same, then symmetric
+        dep_indep = [d in indep_vars for d in dep_vars]
+        if np.product(dep_indep):
+            self.symmetric_vars = True
+        # use iterator to compute pairs
+        reg_var_iterator = itertools.product(indep_vars,dep_vars)
+        # transform to list of tuples so that is computable works
+        self.regression_vars = [(i,d) for i,d in reg_var_iterator if not(i==d)]
+
+        # get the weights for the final set of regression vars & cast to tuple
+        weights = lambda vars: tuple(labeled_df.get_weightcol_per_var(vars))
+
+        self.var_weight_list = [weights([i,d]) for i,d in self.regression_vars]
+
+        return True
+
+
+
+class OrdinalRegression(Regression):
+    """
+    regression compatible varTypeMixin, sets list formatted regression_vars and
+    symmetric_vars = True
+    """
+
 
     def get_trend_vars(self,labeled_df):
         """
@@ -116,42 +143,17 @@ class OrdinalRegression():
         var_weight_list : list of strings
             list of variables to be used as weights for each regression_vars
         """
-        indep_vars = labeled_df.get_vars_per_roletype('independent', 'ordinal')
-        dep_vars = labeled_df.get_vars_per_roletype('dependent','ordinal')
 
-        # if the lists are the same, then symmetric
-        dep_indep = [d in indep_vars for d in dep_vars]
-        if np.product(dep_indep):
-            self.symmetric_vars = True
-
-        # use iterator to compute pairs
-        reg_var_iterator = itertools.product(indep_vars,dep_vars)
-        # transform to list of tuples so that is computable works
-        self.regression_vars = [(i,d) for i,d in reg_var_iterator if not(i==d)]
-
-        indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
-        dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
-        weight_vars_iterator = itertools.product(indep_vars_w, dep_vars_w)
-        self.var_weight_list = [(iw,dw) for iw,dw in weight_vars_iterator]
-
-        self.set_vars = True
+        self.set_vars = self.set_weights_regression(labeled_df,'ordinal','ordinal')
         return self.regression_vars
 
 
-class ContinuousOrdinalRegression():
+class ContinuousOrdinalRegression(Regression):
     """
     regression compatible varTypeMixin, sets list formatted regression_vars and
-    symmetric_vars = True
+    uses continuous dependent vars and ordinal independent
     """
-    symmetric_vars = False
-    trend_value_type = float
-    detail_view = 'scatter'
 
-    def get_trend_value_type(self):
-        '''
-        return the type that the trend values for this trend type should be
-        '''
-        return self.trend_value_type
 
     def get_trend_vars(self,labeled_df):
         """
@@ -171,45 +173,18 @@ class ContinuousOrdinalRegression():
         var_weight_list : list of strings
             list of variables to be used as weights for each regression_vars
         """
-        indep_vars = labeled_df.get_vars_per_roletype('independent',
-                                                    ['continuous','ordinal'])
-        dep_vars = labeled_df.get_vars_per_roletype('dependent',
-                                                    ['continuous','ordinal'])
-        # if the lists are the same, then symmetric
-        dep_indep = [d in indep_vars for d in dep_vars]
-        if np.product(dep_indep):
-            self.symmetric_vars = True
 
-
-        # use iterator to compute pairs
-        reg_var_iterator = itertools.product(indep_vars,dep_vars)
-        # transform to list of tuples so that is computable works
-        self.regression_vars = [(i,d) for i,d in reg_var_iterator if not(i==d)]
-
-        # get weights only for remaining
-        get_weight = lambda vars: labeled_df.get_weightcol_per_var(vars)
-        self.var_weight_list = [tuple(get_weight([i,d])) for i,d in
-                                            self.regression_vars]
-
-
-        self.set_vars = True
+        # use common regression function to set, returns true if it works
+        self.set_vars = self.set_weights_regression(labeled_df,
+                                                    'ordinal','continuous')
         return self.regression_vars
 
-class ContinuousRegression():
+class ContinuousRegression(Regression):
     """
     regression compatible varTypeMixin, for working with continuous variables
     sets list formatted regression_vars and symmetric_vars = True
     """
 
-    symmetric_vars = False
-    trend_value_type = float
-    detail_view = 'scatter'
-
-    def get_trend_value_type(self):
-        '''
-        return the type that the trend values for this trend type should be
-        '''
-        return self.trend_value_type
 
     def get_trend_vars(self,labeled_df):
         """
@@ -231,26 +206,9 @@ class ContinuousRegression():
 
 
         """
-        indep_vars = labeled_df.get_vars_per_roletype('independent', 'continuous')
-        dep_vars = labeled_df.get_vars_per_roletype('dependent','continuous')
-
-        # if the lists are the same, then symmetric
-        dep_indep = [d in indep_vars for d in dep_vars]
-        if np.product(dep_indep):
-            self.symmetric_vars = True
-
-
-        # use iterator to compute pairs
-        reg_var_iterator = itertools.product(indep_vars,dep_vars)
-        # transform to list of tuples so that is computable works
-        self.regression_vars = [(i,d) for i,d in reg_var_iterator if not(i==d)]
-
-        indep_vars_w = labeled_df.get_weightcol_per_var(indep_vars)
-        dep_vars_w = labeled_df.get_weightcol_per_var(dep_vars)
-        weight_vars_iterator = itertools.product(indep_vars_w, dep_vars_w)
-        self.var_weight_list = [(iw,dw) for iw,dw in weight_vars_iterator]
-
-        self.set_vars = True
+        # use common regression function to set, returns true if it works
+        self.set_vars = self.set_weights_regression(labeled_df,
+                                                'continuous','continuous')
         return self.regression_vars
 
 
@@ -360,13 +318,6 @@ class BinaryWeightedRank():
     trend_value_type = str
     detail_view = 'rank'
 
-    def get_trend_value_type(self):
-        '''
-        return the type that the trend values for this trend type should be
-        '''
-        return self.trend_value_type
-
-
     def get_trend_vars(self,labeled_df):
         """
         set target, trendgroup, and var_weight_list for computing rank trends
@@ -403,13 +354,6 @@ class WeightedRank():
     trend_value_type = str
     detail_view = 'rank'
 
-
-    def get_trend_value_type(self):
-        '''
-        return the type that the trend values for this trend type should be
-        '''
-        return self.trend_value_type
-
     def get_trend_vars(self,labeled_df):
         """
         """
@@ -426,12 +370,6 @@ class PredictionClass():
     for binary classification performance stats
     """
     trend_value_type = float
-
-    def get_trend_value_type(self):
-        '''
-        return the type that the trend values for this trend type should be
-        '''
-        return self.trend_value_type
 
     def get_trend_vars(self,labeled_df):
         self.groundtruth = labeled_df.get_vars_per_role('groundtruth')
