@@ -176,7 +176,7 @@ class ContinuousOrdinalRegression(Regression):
 
         # use common regression function to set, returns true if it works
         self.set_vars = self.set_weights_regression(labeled_df,
-                                                    'ordinal','continuous')
+                            ['ordinal','continuous'],['ordinal','continuous'])
         return self.regression_vars
 
 class ContinuousRegression(Regression):
