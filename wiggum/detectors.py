@@ -256,7 +256,7 @@ class _TrendDetectors():
                     subgroup_trends_list.append(curgroup_trend_df)
 
         # if any trends were computed, mrege them together
-        if subgroup_trends_list:
+        if subgroup_trends_list or all_agg_trends_list:
             # condense and merge all trends with subgroup trends
             subgroup_trends_df = pd.concat(subgroup_trends_list, sort=True)
             all_agg_trends = pd.concat(all_agg_trends_list, sort=True)
@@ -267,13 +267,13 @@ class _TrendDetectors():
 
             new_res[result_df_type_col_name] = 'aggregate-subgroup'
 
-        if self.result_df.empty or replace:
-            # print('replacing',self.result_df.empty,replace)
-            self.result_df = new_res
-        else:
+            if self.result_df.empty or replace:
+                # print('replacing',self.result_df.empty,replace)
+                self.result_df = new_res
+            else:
 
-            # print('appending ',len(new_res), ' to ',len(self.result_df))
-            self.result_df = pd.concat([self.result_df,new_res], sort=True)
+                # print('appending ',len(new_res), ' to ',len(self.result_df))
+                self.result_df = pd.concat([self.result_df,new_res], sort=True)
         # ,on=['independent','dependent'], how='left
 
 
