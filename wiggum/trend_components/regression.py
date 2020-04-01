@@ -83,7 +83,7 @@ class LinearRegression():
 
 
             # expand into all combinations if symmetric
-            if self.symmetric_vars:
+            if not(type(self.regression_vars[0])== tuple):
                 # zip vars and weights together before pairing
                 w_reg_vars = list( zip(self.regression_vars,  self.var_weight_list))
                 # sort so that vars with no weight are first then after combinations
