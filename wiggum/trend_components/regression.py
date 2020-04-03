@@ -13,6 +13,8 @@ class LinearRegression():
     def is_computable(self,labeled_df=None):
         """
         check if this trend can be computed based on data and metadata available
+        this requires that the regression vars be a list of tuple or list of
+        length at least 2.
 
         Parameters
         ----------
@@ -34,7 +36,7 @@ class LinearRegression():
             self.get_trend_vars(labeled_df)
 
         regssion_vars_tuple = type(self.regression_vars[0]) ==tuple
-        regression_vars_len = len(self.regression_vars)>2
+        regression_vars_len = len(self.regression_vars)>=2
         vart_test_list = [regssion_vars_tuple or regression_vars_len,
                     len(self.var_weight_list)==len(self.regression_vars)]
 
