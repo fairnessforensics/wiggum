@@ -11,6 +11,7 @@ class StatBinRankTrend():
     quality based on the ratio and the distance is 0/1 loss
 
     """
+    overview_legend = 'binary'
 
 
     def is_computable(self,labeled_df=None):
@@ -127,7 +128,7 @@ class StatBinRankTrend():
                 # if groupby add subgroup info
                 if type(data_df) is pd.core.groupby.DataFrameGroupBy:
                     group_feat = data_df.count().index.name
-                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat, 
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
                                             group_feat, str(groupby_lev)])
                 else:
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
@@ -142,20 +143,20 @@ class StatBinRankTrend():
                 totrange = stat_df.iloc[1]['max']-stat_df.iloc[0]['min']
                 interval_overlap_qual = overlap/totrange
                 # create row
-                rank_res.append([statfeat,rankfeat,comparison_sign,interval_overlap_qual,
+                rank_res.append([rankfeat,statfeat,comparison_sign,interval_overlap_qual,
                                         groupby_lev])
 
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,
                                                     trend_col_name +'_strength',
                                                     'subgroup'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
-            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,
                                                     trend_col_name +'_strength',
                                                     'empty'])
@@ -196,7 +197,11 @@ class StatRankTrend():
     quality based on the trend vs actual kendall tau distance and the distance
     in subgroup vs aggregtae is 1-tau
 
+    the distances are a continuous value
+
     """
+    overview_legend = 'continuous'
+
     def is_computable(self,labeled_df=None):
         """
         check if this trend can be computed based on data and metadata available
@@ -301,11 +306,11 @@ class StatRankTrend():
                 # if groupby add subgroup info
                 if type(data_df) is pd.core.groupby.DataFrameGroupBy:
                     group_feat = data_df.count().index.name
-                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat, 
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
                                             group_feat, str(groupby_lev)])
                 else:
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
-                
+
                 self.trend_precompute[trend_name] = stat_df
 
                 # extract for result_df
@@ -371,20 +376,20 @@ class StatRankTrend():
                 tau_qual = np.abs(np.round(tau,4))
 
                 # create row
-                rank_res.append([statfeat,rankfeat,ordered_rank_feat,tau_qual,
+                rank_res.append([rankfeat,statfeat,ordered_rank_feat,tau_qual,
                                         groupby_lev])
 
 
         # if groupby add subgroup indicator columns
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,
                                                     trend_col_name +'_strength',
                                                     'subgroup'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
-            reg_df = pd.DataFrame(data = rank_res, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,
                                                     trend_col_name +'_strength',
                                                     'empty'])

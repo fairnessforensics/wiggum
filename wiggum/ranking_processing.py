@@ -96,10 +96,10 @@ class _ResultDataFrame():
         # determine which vars to merge on
         if colored:
             view_name = 'coloredview'
-            view_vars = ['feat1','feat2','group_feat']
+            view_vars = ['independent','dependent','group_feat']
         else:
             view_name = 'view'
-            view_vars = ['feat1','feat2']
+            view_vars = ['independent','dependent']
 
         # aggregation type: sum or mean of the scores, how to combine the
         view_score = {'sum': lambda df: df.groupby(by=view_vars)[score_col].sum(),
@@ -133,7 +133,7 @@ class _ResultDataFrame():
             generaed from detect_simpsons_paradox
         design_list_tuples : list of tuples
             a list of the attributes with designed in SP. in the form
-            [(feat1,feat2,group_feat),...]
+            [(independent,dependent,group_feat),...]
 
         Returns
         --------
@@ -144,7 +144,7 @@ class _ResultDataFrame():
         des = []
 
         # create a list of the rows with the designed in cases
-        for i,r in enumerate(self.result_df[['feat1','feat2','group_feat']].values):
+        for i,r in enumerate(self.result_df[['independent','dependent','group_feat']].values):
             if tuple(r) in design_list_tuples:
                 des.append(i)
 
@@ -155,7 +155,7 @@ class _ResultDataFrame():
 
         return self.result_df
 
-    def get_trend_rows(self,feat1 = None,feat2 = None,group_feat= None,
+    def get_trend_rows(self,independent = None,dependent = None,group_feat= None,
                             subgroup= None,subgroup2= None,trend_type=None,
                             comparison_type = None, inplace=False):
         """
@@ -165,9 +165,9 @@ class _ResultDataFrame():
 
         Parameters
         -----------
-        feat1 : str, list, or  {None}
+        indep : str, list, or  {None}
             trend variable name or None to include all
-        feat2 : str, list, or  {None}
+        dependent : str, list, or  {None}
             trend variable name or None to include all
         group_feat : str, list, or  {None}
             groupoby variable name or None to include all
@@ -186,44 +186,44 @@ class _ResultDataFrame():
         # must be series for &ing and index to work
         # TODO: is there a faster way that does not depend on pd.Series?
 
-        if feat1:
-            f1_rows = pd.Series([f1 in feat1 for f1 in self.result_df.feat1])
-            # self.result_df.feat1 ==feat1
+        if independent:
+            iv_rows = pd.Series([iv in independent for iv in self.result_df['independent']])
+            # self.result_df.independent ==independent
         else:
-            f1_rows = True
+            iv_rows = True
 
-        if feat2:
-            f2_rows = pd.Series([f2 in feat2 for f2 in self.result_df.feat2])
+        if dependent:
+            dv_rows = pd.Series([dv in dependent for dv in self.result_df['dependent']])
         else:
-            f2_rows = True
+            dv_rows = True
 
         if group_feat:
-            gf_rows = pd.Series([gf in group_feat for gf in self.result_df.group_feat])
+            gf_rows = pd.Series([gf in group_feat for gf in self.result_df['group_feat']])
         else:
             gf_rows = True
 
         if subgroup:
-            sg_rows = pd.Series([sg in subgroup for sg in self.result_df.subgroup])
+            sg_rows = pd.Series([sg in subgroup for sg in self.result_df['subgroup']])
         else:
             sg_rows = True
 
         if subgroup2:
-            sg_rows2 = pd.Series([sg in subgroup2 for sg in self.result_df.subgroup2])
+            sg_rows2 = pd.Series([sg in subgroup2 for sg in self.result_df['subgroup2']])
         else:
             sg_rows2 = True
 
         if trend_type:
-            tt_rows = pd.Series([tt in trend_type for tt in self.result_df.trend_type])
+            tt_rows = pd.Series([tt in trend_type for tt in self.result_df['trend_type']])
         else:
             tt_rows = True
 
         if comparison_type:
-            tt_rows = pd.Series([tt in comparison_type for tt in self.result_df.comparison_type])
+            tt_rows = pd.Series([tt in comparison_type for tt in self.result_df['comparison_type']])
         else:
             tt_rows = True
 
         # take the intersection
-        target_row = f1_rows & f2_rows & gf_rows & sg_rows & tt_rows & sg_rows2
+        target_row = iv_rows & dv_rows & gf_rows & sg_rows & tt_rows & sg_rows2
         # to index by a series, it must have the same index as the datafram
         target_row.index = self.result_df.index
         # return that row
@@ -300,8 +300,8 @@ class _ResultDataFrame():
             counts per view
         """
         # TODO: should these be constants available module wide?
-        uncolored_view_vars = ['feat1','feat2']
-        colored_view_vars = ['feat1','feat2', 'group_feat']
+        uncolored_view_vars = ['independent','dependent']
+        colored_view_vars = ['independent','dependent', 'group_feat']
 
         # determine which vars to groupby
         if colored or portions:
@@ -367,8 +367,8 @@ class _ResultDataFrame():
         occurence_score : string [None]
             column for occurence_score, if none, distance
         colored : Boolean [False]
-            views defined by feat1, feat2, and group_feat if True, otherwise
-            views defined by feat1 and feat2
+            views defined by independent, dependent, and group_feat if True, otherwise
+            views defined by independent and dependent
         ascending : Boolean [False]
             sort order passed to sort_values
         """

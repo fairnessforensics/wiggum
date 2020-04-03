@@ -10,11 +10,14 @@ import json
 from pydoc import locate
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
-possible_roles = ['groupby','trend','prediction','groundtruth','ignore']
+possible_roles = ['independent','dependent','splitby','prediction',
+                'groundtruth','ignore']
+old_roles_map = {'groupby':'splitby','trend':['independent','dependent']}
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']
 trend_cols = [ 'subgroup_trend','subgroup_trend2', 'agg_trend']
 
+old_result_map = {'feat1':'independent','feat2':'dependent'}
 
 from .detectors import RESULT_DF_HEADER, _TrendDetectors
 from .data_augmentation import _AugmentedData
@@ -100,6 +103,30 @@ def column_rate(df, rate_column):
 
     return df_ct
 
+def string_to_list(var):
+    '''
+    undo str(list_var)
+    '''
+    # remove the puncation
+    var = var.replace("'",'').replace("[",'').replace("]",'').replace(",",'')
+    # return after splitting
+    return var.split()
+
+
+def update_old_roles(row):
+    '''
+    correct old roles if needed, to be used with apply
+    '''
+    var_in = row['role']
+    var_out = []
+
+    for var in var_in:
+        if not(var in possible_roles):
+            var_out.append(old_roles_map[var])
+        else:
+            var_out.append(var)
+
+    return var_out
 
 
 
@@ -162,8 +189,9 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.meta_df = pd.read_csv(meta,index_col='variable')
             self.meta_df.index.name = 'variable'
             # handle lists
-            self.meta_df['role'] = [var.replace("'",'').replace("[",'').replace("]",'').replace(",",'').split()
-                      for var in self.meta_df['role']]
+            self.meta_df['role'] = [ string_to_list(var)
+                                        for var in self.meta_df['role']]
+            self.meta_df['role'] = self.meta_df.apply(update_old_roles, axis=1)
             self.meta_df['isCount'] = self.meta_df['isCount'].replace(np.nan, False)
 
         # initialize result_df
@@ -174,6 +202,11 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.result_df = results(self)
         else:
             self.result_df = pd.read_csv(results)
+
+        # fix heading
+        cur_cols = self.result_df.columns
+        if ('feat1' in cur_cols) or 'feat2' in cur_cols:
+            self.result_df.rename(columns=old_result_map)
 
             # self.result_df.apply(cast_trend_value,axis=1)
 
@@ -191,6 +224,53 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
 
             self.correct_trend_value_datatypes()
+
+            
+
+    def get_trend_by_name(self,trend_name):
+        '''
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_name]]
+
+    def get_trend_display_name(self,trend_res_name):
+        '''
+        get a trend's diplay name from the name tha appears in result_df_parts
+
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_res_name]].display_name
+
+    def get_overview_legend_type(self,trend_res_name):
+        '''
+        get a trend's overview legend type from the name that appears in
+         result_df_parts
+
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_res_name]].overview_legend
+
+    def get_detail_view_type(self,trend_res_name):
+        '''
+        get a trend's overview legend type from the name that appears in
+         result_df_parts
+
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_res_name]].detail_view
+
 
 
     def correct_trend_value_datatypes(self):

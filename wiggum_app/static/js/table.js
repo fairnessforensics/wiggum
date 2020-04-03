@@ -46,46 +46,46 @@ function tabulate(data, action) {
 	  .append('th')
 	  .attr("class", "filterrow")
   	  .each(function(d,i) {
-			// feat1
+			// dependent
 			if (i==0) {
 				if (action == 'page_load') {
-					feat1_options = d3.map(data, function(d){return d.feat1;}).keys();
+					dependent_options = d3.map(data, function(d){return d.dependent;}).keys();
 				} 
 	
 				var select = d3.select(this).append('select')
-											.attr('id','feat1_selector')					
+											.attr('id','dependent_selector')					
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(feat1_options).enter()
+									.data(dependent_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
 									.text(function(d){return d;})
 									.property("selected", 
-									function(d){ return feat1_selected.includes(d); });
+									function(d){ return dependent_selected.includes(d); });
 			}	
-			// feat2
-			if (i==1) {
+			// independent
+			if (i==2) {
 				if (action == 'page_load') {
-					feat2_options = d3.map(data, function(d){return d.feat2;}).keys();
+					independent_options = d3.map(data, function(d){return d.independent;}).keys();
 				} 			
 
 				var select = d3.select(this).append('select')
-											.attr('id','feat2_selector')					
+											.attr('id','independent_selector')					
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(feat2_options).enter()
+									.data(independent_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
 									.text(function(d){return d;})
 									.property("selected", 
-									function(d){ return feat2_selected.includes(d); });
+									function(d){ return independent_selected.includes(d); });
 			}	
 			// group_feat
-			if (i==2) {
+			if (i==1) {
 				if (action == 'page_load') {
 					group_feat_options = d3.map(data, function(d){return d.group_feat;}).keys();
 				} 
@@ -211,10 +211,10 @@ function tabulate(data, action) {
 	  .data(data)
 	  .enter()
 		.append('tr')
-		.attr("row", function(d) { return d.trend_type + "_"+ d.feat1+"_"+d.feat2+"_"+d.group_feat+"_"+d.subgroup; })
+		.attr("row", function(d) { return d.trend_type + "_"+ d.dependent+"_"+d.independent+"_"+d.group_feat+"_"+d.subgroup; })
 		.attr("class", "tablerow")
 		.on("click", function(d, i) {
-			var vars = {x: d.feat1, y: d.feat2, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_type};
+			var vars = {x: d.independent, y: d.dependent, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_type};
 			return interactBivariateMatrix(vars, i); });
 
 	// create a cell in each row for each column

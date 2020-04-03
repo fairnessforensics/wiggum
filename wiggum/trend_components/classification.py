@@ -23,6 +23,7 @@ class BinClassStats():
     class of trend for computing classification statistics from confusion matrix compoents
     based on teh comparison of values from two columns of the data
     '''
+    overview_legend = 'continuous'
 
     def is_computable(self,labeled_df=None):
         """
@@ -131,14 +132,14 @@ class BinClassStats():
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = classification_stats,
-                                                columns = ['feat1','feat2',
+                                                columns = ['independent','dependent',
                                                 trend_col_name,'subgroup',
                                                 trend_col_name+'_strength'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = classification_stats,
-                                            columns = ['feat1','feat2',
+                                            columns = ['independent','dependent',
                                                     trend_col_name,'empty',
                                                     trend_col_name+'_strength'])
             reg_df.drop('empty',axis=1,inplace=True)

@@ -533,7 +533,7 @@ function calcLinear(data, x, y, minX, maxX){
  * Update matrix format
  *
  * @param matrix - matrix used for formatting.
- * @param vars - containing feat1, feat2 info.
+ * @param vars - containing independent, dependent info.
  * @param category - groupby info.
  * @param trend_type - trend type.
  * @returns none.
@@ -573,12 +573,12 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 				if (!isEmpty(autoDetectResult)) {
 					var len = Object.keys(autoDetectResult.agg_trend).length
 					for (var k = 0; k < len; k++){
-						if ((autoDetectResult.feat1[k] == vars[i] &&
-							autoDetectResult.feat2[k] == vars[j] &&
+						if ((autoDetectResult.independent[k] == vars[i] &&
+							autoDetectResult.dependent[k] == vars[j] &&
 							autoDetectResult.group_feat[k] == category.groupby &&
 							autoDetectResult.subgroup[k] == category.value) ||
-							(autoDetectResult.feat1[k] == vars[j] &&
-								autoDetectResult.feat2[k] == vars[i] &&
+							(autoDetectResult.independent[k] == vars[j] &&
+								autoDetectResult.dependent[k] == vars[i] &&
 								autoDetectResult.group_feat[k] == category.groupby &&
 								autoDetectResult.subgroup[k] == category.value)
 							) {
@@ -599,8 +599,8 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
  * Prepare linear regression trend matrix information for interaction with scatterplot
  *
  * @param matrix - distance matrix.
- * @param rowLabels - feat1 used for row labels.
- * @param colLabels - feat2 used for columns labels.
+ * @param rowLabels - independent used for row labels.
+ * @param colLabels - dependent used for columns labels.
  * @param category - groupfeat and subgroup.
  * @param trend_type - trend type.
  * @returns matrix - containing information for cells.

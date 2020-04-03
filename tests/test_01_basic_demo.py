@@ -14,14 +14,14 @@ def test_basic_load_df():
 
     # For this, we'll manually set these, but in the vizualization tool you can also set these with drop down menus
 
-    roles = {'state':['trend','groupby'], 'year':'trend', 'driver_gender':['trend','groupby'],
-             'driver_race':['trend','groupby'],
+    roles = {'state':['independent','groupby'], 'year':'independent', 'driver_gender':['independent','groupby'],
+             'driver_race':['independent','groupby'],
            'decriminalization':['groupby'], 'medical':['groupby'],
              'recreational':['groupby'], 'no_reforms':['groupby'],
            'search_conducted_false':'ignore', 'search_conducted_true':'ignore',
-           'search_conducted_rate':'trend', 'contraband_found_false':'ignore',
-           'contraband_found_true':'ignore', 'contraband_found_rate':'trend', 'hit_false':'ignore',
-           'hit_true':'ignore', 'hit_rate':'trend', 'num_stops':'trend'}
+           'search_conducted_rate':'dependent', 'contraband_found_false':'ignore',
+           'contraband_found_true':'ignore', 'contraband_found_rate':'dependent', 'hit_false':'ignore',
+           'hit_true':'ignore', 'hit_rate':'dependent', 'num_stops':'dependent'}
     is_count = {'state':False, 'year':False, 'driver_gender':False, 'driver_race':False,
            'decriminalization':False, 'medical':False, 'recreational':False, 'no_reforms':False,
            'search_conducted_false':True, 'search_conducted_true':True,
@@ -70,9 +70,9 @@ def test_basic_load_df():
 
 
     rankobj = wg.Mean_Rank_Trend()
-    rankobj.is_computable(labeled_df)
+    assert rankobj.is_computable(labeled_df)
     linreg_obj = wg.All_Linear_Trend()
-    linreg_obj.is_computable(labeled_df)
+    assert linreg_obj.is_computable(labeled_df)
 
 
     # # Computing Trends on a LabeledDataFrame
@@ -126,7 +126,7 @@ def test_basic_load_df():
 
     # So, we can use that function to filter and look at subsets of the trends based on the features, groupby, or subgroups
 
-    labeled_df.get_trend_rows(feat1='year',subgroup=['Black','Hispanic'])
+    labeled_df.get_trend_rows(independent='year',subgroup=['Black','Hispanic'])
 
 
     # In[24]:

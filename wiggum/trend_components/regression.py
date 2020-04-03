@@ -6,7 +6,9 @@ from .base_getvars import  w_avg
 import warnings
 
 class LinearRegression():
-
+    '''
+    '''
+    overview_legend = 'continuous'
 
     def is_computable(self,labeled_df=None):
         """
@@ -31,8 +33,9 @@ class LinearRegression():
         if not( self.set_vars):
             self.get_trend_vars(labeled_df)
 
-        vart_test_list = [len(self.regression_vars)>=2,
-                        bool(self.symmetric_vars),
+        regssion_vars_tuple = type(self.regression_vars[0]) ==tuple
+        regression_vars_len = len(self.regression_vars)>2
+        vart_test_list = [regssion_vars_tuple or regression_vars_len,
                     len(self.var_weight_list)==len(self.regression_vars)]
 
         return np.product([vartest for vartest in vart_test_list])
@@ -80,56 +83,70 @@ class LinearRegression():
                 data_df = [('',data_df)]
 
 
-            # zip vars and weights together
-            w_reg_vars = list( zip(self.regression_vars,  self.var_weight_list))
 
-            # sort so that vars with no weight are first then after combinations
-            #  all with aw not nan will be the ones with two weights
-            nasort = {True: lambda v:'000000000',False: lambda v: str(v)}
-            w_reg_vars.sort(key=lambda x: nasort[pd.isna(x[1])](x[1]))
+            # expand into all combinations if symmetric
+            if not(type(self.regression_vars[0])== tuple):
+                # zip vars and weights together before pairing
+                w_reg_vars = list( zip(self.regression_vars,  self.var_weight_list))
+                # sort so that vars with no weight are first then after combinations
+                #  all with aw not nan will be the ones with two weights
+                nasort = {True: lambda v:'000000000',False: lambda v: str(v)}
+                w_reg_vars.sort(key=lambda x: nasort[pd.isna(x[1])](x[1]))
+                # convert iterator into list of tuples so that it can be reused
+                # within the loop below
+                var_pairs = [(a,b) for a,b in itertools.combinations(w_reg_vars,2)]
+
+            else:
+                # else assume lists of tuples were passed and reshuffle
+                var_pairs =  [((i,iw),(d,dw)) for (i,d),(iw,dw) in
+                            zip(self.regression_vars,  self.var_weight_list)]
+
+
+
 
             for groupby_lev,df in data_df:
-                # expand into all combinations if symmetric
-                if self.symmetric_vars:
-                    var_pairs = itertools.combinations(w_reg_vars,2)
-                else:
-                    # else assume list of tuples was passed
-                    var_pairs = w_reg_vars
+
 
                 # var_pairs must be list of tuples or iterator
-                for (a,aw),(b,bw) in var_pairs:
+                for (i,iw),(d,dw) in var_pairs:
                     # compute each slope
 
-                    if np.sum(pd.isna([aw,bw])) == 2:
+                    if np.sum(pd.isna([iw,dw])) == 2:
                         # both weights are NaNs
-                        slope, i, r_val, p_val, e = stats.linregress(df[a],df[b])
-                    elif aw==bw or (not(pd.isna(bw)) and pd.isna(aw)):
-                        # weights are the same or only bw has a weights
-                        weights =  np.sqrt(df[bw])
-                        i, slope = np.polyfit(df[a],df[b],1, w = df[bw])
+                        slope, b, r_val, p_val, e = stats.linregress(df[i],df[d])
+                    elif iw==dw or (not(pd.isna(dw)) and pd.isna(iw)):
+                        # weights are the same or only dependent has weights
+                        weights =  np.sqrt(df[dw])
+                        b, slope = np.polyfit(df[i],df[d],1, w = df[dw])
                         # compute weighted correlation coefficient
-                        r_val = np.average((df[a]-np.average(df[a]))*
-                                  (df[b]- np.average(df[b], weights = df[bw])),
-                                weights = df[bw])
-                    elif np.sum(pd.isna([aw,bw])) == 0:
+                        r_val = np.average((df[i]-np.average(df[i]))*
+                                  (df[d]- np.average(df[d], weights = df[dw])),
+                                weights = df[dw])
+                    elif np.sum(pd.isna([iw,dw])) == 0:
                         # don't know what to do i this case
                         # both have weights, throw error
                         slope = np.NaN
                         r_val = np.NaN
                         warnings.warn('cannot compute with two different weights')
+                    else:
+                        # don't know what to do i this case
+                        # both have weights, throw error
+                        slope = np.NaN
+                        r_val = np.NaN
+                        warnings.warn('cannot compute')
 
                     # quality is absolute value of r_val (corelation coefficient)
-                    slopes.append([a,b,slope,groupby_lev,np.abs(r_val)])
+                    slopes.append([i,d,slope,groupby_lev,np.abs(r_val)])
 
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-            reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = slopes, columns = ['independent','dependent',
                                                 trend_col_name,'subgroup',
                                                 trend_col_name+'_strength'])
             #same for all
             reg_df['group_feat'] = data_df.count().index.name
         else:
-            reg_df = pd.DataFrame(data = slopes, columns = ['feat1','feat2',
+            reg_df = pd.DataFrame(data = slopes, columns = ['independent','dependent',
                                                     trend_col_name,'empty',
                                                     trend_col_name+'_strength'])
             reg_df.drop('empty',axis=1,inplace=True)

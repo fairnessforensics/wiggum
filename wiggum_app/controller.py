@@ -287,12 +287,12 @@ def main():
 
         # visualize.html rank trend's cells clicked
         if action == 'detail_ranktrend':
-            feat1 = request.form['feat1']
-            feat2 = request.form['feat2']
+            independent = request.form['independent']
+            dependent = request.form['dependent']
             group_feat = request.form['group_feat']
 
             rank_trend_detail, rank_trend_count = models.getRankTrendDetail(labeled_df_setup, 
-                                                            feat1, feat2, group_feat)
+                                                            dependent, independent, group_feat)
 
             # covert row label to string to avoid jsonify error, e.g., department: 1
             rank_trend_count = rank_trend_count.rename(columns=lambda x: str(x))
@@ -306,7 +306,8 @@ def main():
             filter_object = request.form['filter_object']
             filter_object = json.loads(filter_object, cls=Decoder)
 
-            filter_result = labeled_df_setup.get_trend_rows(feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+            filter_result = labeled_df_setup.get_trend_rows(independent=filter_object['independent'],
+                                dependent=filter_object['dependent'],
                                 group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                 trend_type =filter_object['trend_type'])
             
@@ -365,7 +366,8 @@ def main():
             if filter_flag:
                 # filtered, pass filter parameter
                 detect_result = labeled_df_setup.get_SP_rows(sp_filter,
-                                    feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+                                    independent=filter_object['independent'],
+                                    dependent=filter_object['dependent'],
                                     group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                     trend_type =filter_object['trend_type'],
                                     replace=True)
@@ -402,7 +404,8 @@ def main():
             if filter_flag:
 
                 rank_result = labeled_df_setup.get_trend_rows(
-                                    feat1=filter_object['feat1'],feat2=filter_object['feat2'],
+                                    independent=filter_object['independent'],
+                                    dependent=filter_object['dependent'],
                                     group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                     trend_type =filter_object['trend_type'])
 
