@@ -205,7 +205,7 @@ def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_sc
     # weight for view
     result_df = wg.add_weighted(result_df,std_weights_view,name=view_weight_name)
 
-    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', view_weight_name]].drop_duplicates()
+    ranking_view_df = result_df[['independent', 'dependent', 'group_feat', view_weight_name]].drop_duplicates()
     ranking_view_df = ranking_view_df.sort_values(by=view_weight_name,ascending=False)
 
     return result_df, ranking_view_df
@@ -254,7 +254,7 @@ def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_p
     # weight for view
     result_df = wg.add_weighted(result_df,std_weights_view,name=view_weight_name)
 
-    ranking_view_df = result_df[['feat1', 'feat2', 'group_feat', view_weight_name]].drop_duplicates()
+    ranking_view_df = result_df[['independent', 'dependent', 'group_feat', view_weight_name]].drop_duplicates()
     ranking_view_df = ranking_view_df.sort_values(by=view_weight_name,ascending=False)
 
     return result_df, ranking_view_df
@@ -536,7 +536,7 @@ def getDistanceHeatmapDict(df):
             for gby_lev,df in cgby:
                 distance_heatmap_dict = {}
 
-                heatmap = df.pivot(index='feat1', columns='feat2', values='distance')
+                heatmap = df.pivot(index='dependent', columns='independent', values='distance')
 
                 # replace Nan to 99
                 heatmap.fillna(99, inplace=True)
@@ -550,7 +550,7 @@ def getDistanceHeatmapDict(df):
 
     return distance_heatmap_dict_list
 
-def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
+def getRankTrendDetail(labeled_df, dependent, independent, group_feat):
     """
     Extract stats for rank trend detail view.
 
@@ -558,10 +558,10 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
     -----------
     labeled_df : DataFrame
         LabeledDataFrame    
-    feat1 : str
-        a variable that will have feat1 information    
-    feat2 : str
-        a variable that will have feat2 information    
+    independent : str
+        a variable that will have independent information    
+    dependent : str
+        a variable that will have dependent information    
     group_feat : str
         a variable that will have group_feat information                            
     Returns
@@ -580,7 +580,7 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
     trend_precompute = labeled_df.trend_list[rank_trend_idx].trend_precompute
 
     # aggregate' stats
-    sel_agg_trend = '_'.join(['rank_trend', 'agg_trend', feat1, feat2])
+    sel_agg_trend = '_'.join(['rank_trend', 'agg_trend', dependent, independent])
 
     # create a new DataFrame for detail view
     detail_df = pd.DataFrame()
@@ -594,7 +594,7 @@ def getRankTrendDetail(labeled_df, feat1, feat2, group_feat):
     count_df['aggregate'] = trend_precompute[sel_agg_trend]['count']
 
     # subgroups' stats
-    sel_subgroup_trend = '_'.join(['rank_trend', 'subgroup_trend', feat1, feat2, group_feat])
+    sel_subgroup_trend = '_'.join(['rank_trend', 'subgroup_trend', dependent, independent, group_feat])
 
     for key in trend_precompute:
         if key.startswith(sel_subgroup_trend):
@@ -648,9 +648,9 @@ def getResultDict(labeled_df, result_df, filter_subgroup= None):
             # Constructing the data for visualization
             # Regression
             pearson_corr_df = result_df.loc[result_df['trend_type'] == 'pearson_corr']
-            feat1_vars = list(pd.unique(pearson_corr_df['feat1']))
-            feat2_vars = list(pd.unique(pearson_corr_df['feat2']))
-            regression_vars = feat1_vars + feat2_vars
+            independent_vars = list(pd.unique(pearson_corr_df['independent']))
+            dependent_vars = list(pd.unique(pearson_corr_df['dependent']))
+            regression_vars = independent_vars + dependent_vars
 
             regression_vars = list(dict.fromkeys(regression_vars))
             categoricalVars = list(pd.unique(pearson_corr_df['group_feat']))
@@ -676,13 +676,13 @@ def getResultDict(labeled_df, result_df, filter_subgroup= None):
 
         elif trend_type == 'rank_trend':
             rank_trend_df = result_df.loc[result_df['trend_type'] == 'rank_trend']
-            targetAttr_list = pd.unique(rank_trend_df['feat1'])
+            targetAttr_list = pd.unique(rank_trend_df['independent'])
 
             for targetAttr in targetAttr_list:
                 current_df =  result_df
-                current_df = current_df.loc[(current_df['feat1'] == targetAttr) & (current_df['trend_type'] == 'rank_trend')]
+                current_df = current_df.loc[(current_df['independent'] == targetAttr) & (current_df['trend_type'] == 'rank_trend')]
 
-                protectedAttrs = pd.unique(current_df['feat2'])
+                protectedAttrs = pd.unique(current_df['dependent'])
                 groupbyAttrs = pd.unique(current_df['group_feat'])
 
                 if pd.notna(labeled_df.meta_df['weighting_var'][targetAttr]):

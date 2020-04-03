@@ -122,8 +122,8 @@ function updateDetailView() {
 		$.ajax({
 			type: 'POST',
 			url: '/',
-			data: {'action' : "detail_ranktrend", 'feat1': d.targetAttr, 
-						'feat2': d.protectedAttr, 'group_feat': d.categoryAttr},     
+			data: {'action' : "detail_ranktrend", 'dependent': d.targetAttr, 
+						'independent': d.protectedAttr, 'group_feat': d.categoryAttr},     
 			success: function(data) {
 				//updateRankChart(d);
 				updateParallelCoordinates(data, d);
@@ -256,14 +256,14 @@ function distanceMatrixHeatmap(options) {
 			.attr("text-anchor", "middle")  
 			.attr("transform", "rotate(-90)")
 			.style("font-size", "15px") 
-			.text("feat1");	
+			.text("dependent");	
 
 	distanceMatrixPlot.append("text")
 			.attr("x", (width / 2))             
 			.attr("y", -margin.top+10)
 			.attr("text-anchor", "middle")  
 			.style("font-size", "15px") 
-			.text("feat2");	
+			.text("independent");	
 
 	var labels = distanceMatrixPlot.append('g')
 		.attr('class', "labels");

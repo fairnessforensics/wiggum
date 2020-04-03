@@ -51,8 +51,8 @@
                                          
             setSelectedOptions();
             var filter_object =     {   
-                                        feat1: feat1_selected,
-                                        feat2: feat2_selected, 
+                                        independent: independent_selected,
+                                        dependent: dependent_selected, 
                                         group_feat: group_feat_selected,
                                         subgroup: subgroup_selected,
                                         trend_type: trend_type_selected                                                            
@@ -89,8 +89,8 @@
                             drawDistanceMatrixHeatmap(data);
 
                             // unselect the menu selections
-                            clearSelected("feat1_selector");
-                            clearSelected("feat2_selector");
+                            clearSelected("independent_selector");
+                            clearSelected("dependent_selector");
                             clearSelected("group_feat_selector");
                             clearSelected("subgroup_selector");
                             clearSelected("trend_type_selector"); 
@@ -101,8 +101,8 @@
         function detect_button() {
             setSelectedOptions();
             var filter_object =     {   
-                                        feat1: feat1_selected,
-                                        feat2: feat2_selected, 
+                                        independent: independent_selected,
+                                        dependent: dependent_selected, 
                                         group_feat: group_feat_selected,
                                         subgroup: subgroup_selected,
                                         trend_type: trend_type_selected                                                            
@@ -335,7 +335,7 @@
                         tableRecords = JSON.parse(data.table)
                         //d3.select("#table").style("display", "inline-block");                  
 
-                        tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
+                        tableColumns = ['agg_trend', 'all_slope', 'angle', 'independent', 'dependent', 'group_feat', 
                                 'subgroup', 'subgroup_slope', 'subgroup_trend',
                                 angle_key, subgroup_slope_key, subgroup_trend_key, individual_weight_name, view_weight_name];
 
@@ -417,7 +417,7 @@
                         autoDetectResult = JSON.parse(data.result)
 
                         if (autoDetectFlag == 0) {
-                            tableColumns = ['agg_trend', 'all_slope', 'angle', 'feat1', 'feat2', 'group_feat', 
+                            tableColumns = ['agg_trend', 'all_slope', 'angle', 'independent', 'dependent', 'group_feat', 
                                 'subgroup', 'subgroup_slope',subgroup_trend_key, 'SP_subgroups', 'gby_counts', 'portions',
                                 angle_key, subgroup_trend_key, individual_weight_name, view_weight_name];
                         }
