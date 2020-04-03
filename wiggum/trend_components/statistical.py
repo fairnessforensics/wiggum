@@ -208,7 +208,7 @@ class CorrelationTrend():
         if not( self.set_vars):
             self.get_trend_vars(labeled_df)
 
-        vregssion_vars_tuple = type(self.regression_vars[0]) ==tuple
+        regssion_vars_tuple = type(self.regression_vars[0]) ==tuple
         regression_vars_len = len(self.regression_vars)>2
         vart_test_list = [regssion_vars_tuple or regression_vars_len,
                         bool(self.corrtype)]
