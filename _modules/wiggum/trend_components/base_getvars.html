@@ -67,6 +67,7 @@
   <h1>Source code for wiggum.trend_components.base_getvars</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
 
 <div class="viewcode-block" id="Trend"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.Trend">[docs]</a><span class="k">class</span> <span class="nc">Trend</span><span class="p">():</span>
@@ -93,7 +94,11 @@
         <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">labeled_df</span><span class="o">==</span> <span class="kc">None</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_trend_vars</span><span class="p">(</span><span class="n">labeled_df</span><span class="p">)</span>
 
-
+<div class="viewcode-block" id="Trend.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.Trend.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        return the type that the trend values for this trend type should be</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
 <div class="viewcode-block" id="Trend.is_SP"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.Trend.is_SP">[docs]</a>    <span class="k">def</span> <span class="nf">is_SP</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">thresh</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -148,20 +153,44 @@
 <span class="c1">################################################################################</span>
 <span class="c1"># these parts can be mixed together to create full final classes that are used</span>
 <span class="c1"># for importing and only those are revealed in</span>
+<span class="k">class</span> <span class="nc">Regression</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    common functions for all regression,</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
-<div class="viewcode-block" id="OrdinalRegression"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.OrdinalRegression">[docs]</a><span class="k">class</span> <span class="nc">OrdinalRegression</span><span class="p">():</span>
+    <span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
+    <span class="n">detail_view</span> <span class="o">=</span> <span class="s1">&#39;scatter&#39;</span>
+
+    <span class="k">def</span> <span class="nf">set_weights_regression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">,</span><span class="n">i_type</span><span class="p">,</span><span class="n">d_type</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">indep_vars</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span> <span class="n">i_type</span><span class="p">)</span>
+        <span class="n">dep_vars</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span> <span class="n">d_type</span><span class="p">)</span>
+        <span class="c1"># if the lists are the same, then symmetric</span>
+        <span class="n">dep_indep</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="ow">in</span> <span class="n">indep_vars</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dep_vars</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">dep_indep</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># use iterator to compute pairs</span>
+        <span class="n">reg_var_iterator</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">indep_vars</span><span class="p">,</span><span class="n">dep_vars</span><span class="p">)</span>
+        <span class="c1"># transform to list of tuples so that is computable works</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="n">reg_var_iterator</span> <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">i</span><span class="o">==</span><span class="n">d</span><span class="p">)]</span>
+
+        <span class="c1"># get the weights for the final set of regression vars &amp; cast to tuple</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="k">lambda</span> <span class="nb">vars</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">labeled_df</span><span class="o">.</span><span class="n">get_weightcol_per_var</span><span class="p">(</span><span class="nb">vars</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">weights</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+
+
+<div class="viewcode-block" id="OrdinalRegression"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.OrdinalRegression">[docs]</a><span class="k">class</span> <span class="nc">OrdinalRegression</span><span class="p">(</span><span class="n">Regression</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    regression compatible varTypeMixin, sets list formatted regression_vars and</span>
 <span class="sd">    symmetric_vars = True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
 
-<div class="viewcode-block" id="OrdinalRegression.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.OrdinalRegression.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        return the type that the trend values for this trend type should be</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
 <div class="viewcode-block" id="OrdinalRegression.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.OrdinalRegression.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -182,26 +211,16 @@
 <span class="sd">            list of variables to be used as weights for each regression_vars</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span> <span class="s1">&#39;ordinal&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_weightcol_per_var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_weights_regression</span><span class="p">(</span><span class="n">labeled_df</span><span class="p">,</span><span class="s1">&#39;ordinal&#39;</span><span class="p">,</span><span class="s1">&#39;ordinal&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span></div></div>
 
 
-<div class="viewcode-block" id="ContinuousOrdinalRegression"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousOrdinalRegression">[docs]</a><span class="k">class</span> <span class="nc">ContinuousOrdinalRegression</span><span class="p">():</span>
+<div class="viewcode-block" id="ContinuousOrdinalRegression"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousOrdinalRegression">[docs]</a><span class="k">class</span> <span class="nc">ContinuousOrdinalRegression</span><span class="p">(</span><span class="n">Regression</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    regression compatible varTypeMixin, sets list formatted regression_vars and</span>
-<span class="sd">    symmetric_vars = True</span>
+<span class="sd">    uses continuous dependent vars and ordinal independent</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
 
-<div class="viewcode-block" id="ContinuousOrdinalRegression.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        return the type that the trend values for this trend type should be</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span> </div>
 
 <div class="viewcode-block" id="ContinuousOrdinalRegression.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -222,27 +241,17 @@
 <span class="sd">            list of variables to be used as weights for each regression_vars</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span>
-                                                                    <span class="p">[</span><span class="s1">&#39;continuous&#39;</span><span class="p">,</span><span class="s1">&#39;ordinal&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_weightcol_per_var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># use common regression function to set, returns true if it works</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_weights_regression</span><span class="p">(</span><span class="n">labeled_df</span><span class="p">,</span>
+                            <span class="p">[</span><span class="s1">&#39;ordinal&#39;</span><span class="p">,</span><span class="s1">&#39;continuous&#39;</span><span class="p">],[</span><span class="s1">&#39;ordinal&#39;</span><span class="p">,</span><span class="s1">&#39;continuous&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span></div></div>
 
-<div class="viewcode-block" id="ContinuousRegression"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousRegression">[docs]</a><span class="k">class</span> <span class="nc">ContinuousRegression</span><span class="p">():</span>
+<div class="viewcode-block" id="ContinuousRegression"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousRegression">[docs]</a><span class="k">class</span> <span class="nc">ContinuousRegression</span><span class="p">(</span><span class="n">Regression</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    regression compatible varTypeMixin, for working with continuous variables</span>
 <span class="sd">    sets list formatted regression_vars and symmetric_vars = True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">symmetric_vars</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
-
-<div class="viewcode-block" id="ContinuousRegression.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousRegression.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        return the type that the trend values for this trend type should be</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
 <div class="viewcode-block" id="ContinuousRegression.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.ContinuousRegression.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -264,13 +273,9 @@
 
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span>
-                                    <span class="s1">&#39;continuous&#39;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_weightcol_per_var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># use common regression function to set, returns true if it works</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_weights_regression</span><span class="p">(</span><span class="n">labeled_df</span><span class="p">,</span>
+                                                <span class="s1">&#39;continuous&#39;</span><span class="p">,</span><span class="s1">&#39;continuous&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span></div></div>
 
 
@@ -378,13 +383,7 @@
 <span class="sd">    variables sets stat to wg.trend_components.w_avg</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">str</span>
-
-<div class="viewcode-block" id="BinaryWeightedRank.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinaryWeightedRank.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        return the type that the trend values for this trend type should be</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
-
+    <span class="n">detail_view</span> <span class="o">=</span> <span class="s1">&#39;rank&#39;</span>
 
 <div class="viewcode-block" id="BinaryWeightedRank.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinaryWeightedRank.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -402,8 +401,8 @@
 <span class="sd">            continuous</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
-        <span class="n">all_cat</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span><span class="s1">&#39;categorical&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span><span class="s1">&#39;binary&#39;</span><span class="p">)</span>
+        <span class="n">all_cat</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;categorical&#39;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">trendgroup</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">all_cat</span> <span class="k">if</span>
                                 <span class="nb">len</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labeled_df</span><span class="o">.</span><span class="n">df</span><span class="p">[</span><span class="n">var</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span>
@@ -420,20 +419,15 @@
 <span class="sd">    common parts for all continuous variable trends</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">str</span>
-
-<div class="viewcode-block" id="WeightedRank.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.WeightedRank.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        return the type that the trend values for this trend type should be</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
+    <span class="n">detail_view</span> <span class="o">=</span> <span class="s1">&#39;rank&#39;</span>
 
 <div class="viewcode-block" id="WeightedRank.get_trend_vars"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.WeightedRank.get_trend_vars">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># maybe not counts</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;trend&#39;</span><span class="p">,[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span><span class="s1">&#39;continuous&#39;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trendgroup</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;trend&#39;</span><span class="p">,</span><span class="s1">&#39;categorical&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;dependent&#39;</span><span class="p">,[</span><span class="s1">&#39;binary&#39;</span><span class="p">,</span><span class="s1">&#39;continuous&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trendgroup</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_roletype</span><span class="p">(</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;categorical&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_weightcol_per_var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">trendgroup</span></div></div>
@@ -443,12 +437,6 @@
 <span class="sd">    for binary classification performance stats</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">trend_value_type</span> <span class="o">=</span> <span class="nb">float</span>
-
-<div class="viewcode-block" id="PredictionClass.get_trend_value_type"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.PredictionClass.get_trend_value_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_trend_value_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        return the type that the trend values for this trend type should be</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trend_value_type</span></div>
 
     <span class="k">def</span> <span class="nf">get_trend_vars</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">groundtruth</span> <span class="o">=</span> <span class="n">labeled_df</span><span class="o">.</span><span class="n">get_vars_per_role</span><span class="p">(</span><span class="s1">&#39;groundtruth&#39;</span><span class="p">)</span>

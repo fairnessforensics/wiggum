@@ -90,6 +90,7 @@
 <span class="sd">    class of trend for computing classification statistics from confusion matrix compoents</span>
 <span class="sd">    based on teh comparison of values from two columns of the data</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">overview_legend</span> <span class="o">=</span> <span class="s1">&#39;continuous&#39;</span>
 
 <div class="viewcode-block" id="BinClassStats.is_computable"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.BinClassStats.is_computable">[docs]</a>    <span class="k">def</span> <span class="nf">is_computable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -198,14 +199,14 @@
         <span class="c1">#save as df</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
             <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">classification_stats</span><span class="p">,</span>
-                                                <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+                                                <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
                                                 <span class="n">trend_col_name</span><span class="p">,</span><span class="s1">&#39;subgroup&#39;</span><span class="p">,</span>
                                                 <span class="n">trend_col_name</span><span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">])</span>
             <span class="c1">#same for all</span>
             <span class="n">reg_df</span><span class="p">[</span><span class="s1">&#39;group_feat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">classification_stats</span><span class="p">,</span>
-                                            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+                                            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span><span class="p">,</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span><span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">])</span>
             <span class="n">reg_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

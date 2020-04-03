@@ -78,6 +78,7 @@
 <span class="sd">    quality based on the ratio and the distance is 0/1 loss</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">overview_legend</span> <span class="o">=</span> <span class="s1">&#39;binary&#39;</span>
 
 
 <div class="viewcode-block" id="StatBinRankTrend.is_computable"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.StatBinRankTrend.is_computable">[docs]</a>    <span class="k">def</span> <span class="nf">is_computable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -194,7 +195,7 @@
                 <span class="c1"># if groupby add subgroup info</span>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
                     <span class="n">group_feat</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
-                    <span class="n">trend_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">trend_col_name</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">,</span> 
+                    <span class="n">trend_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">trend_col_name</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">,</span>
                                             <span class="n">group_feat</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">groupby_lev</span><span class="p">)])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">trend_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">trend_col_name</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">])</span>
@@ -209,20 +210,20 @@
                 <span class="n">totrange</span> <span class="o">=</span> <span class="n">stat_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;max&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">stat_df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;min&#39;</span><span class="p">]</span>
                 <span class="n">interval_overlap_qual</span> <span class="o">=</span> <span class="n">overlap</span><span class="o">/</span><span class="n">totrange</span>
                 <span class="c1"># create row</span>
-                <span class="n">rank_res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">,</span><span class="n">comparison_sign</span><span class="p">,</span><span class="n">interval_overlap_qual</span><span class="p">,</span>
+                <span class="n">rank_res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">rankfeat</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">comparison_sign</span><span class="p">,</span><span class="n">interval_overlap_qual</span><span class="p">,</span>
                                         <span class="n">groupby_lev</span><span class="p">])</span>
 
 
         <span class="c1"># if groupby add subgroup indicator columns</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
-            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span> <span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">,</span>
                                                     <span class="s1">&#39;subgroup&#39;</span><span class="p">])</span>
             <span class="c1">#same for all</span>
             <span class="n">reg_df</span><span class="p">[</span><span class="s1">&#39;group_feat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span> <span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">,</span>
                                                     <span class="s1">&#39;empty&#39;</span><span class="p">])</span>
@@ -263,7 +264,11 @@
 <span class="sd">    quality based on the trend vs actual kendall tau distance and the distance</span>
 <span class="sd">    in subgroup vs aggregtae is 1-tau</span>
 
+<span class="sd">    the distances are a continuous value</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">overview_legend</span> <span class="o">=</span> <span class="s1">&#39;continuous&#39;</span>
+
 <div class="viewcode-block" id="StatRankTrend.is_computable"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.StatRankTrend.is_computable">[docs]</a>    <span class="k">def</span> <span class="nf">is_computable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        check if this trend can be computed based on data and metadata available</span>
@@ -368,11 +373,11 @@
                 <span class="c1"># if groupby add subgroup info</span>
                 <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
                     <span class="n">group_feat</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
-                    <span class="n">trend_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">trend_col_name</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">,</span> 
+                    <span class="n">trend_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">trend_col_name</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">,</span>
                                             <span class="n">group_feat</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">groupby_lev</span><span class="p">)])</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">trend_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">trend_col_name</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">])</span>
-                
+
                 <span class="bp">self</span><span class="o">.</span><span class="n">trend_precompute</span><span class="p">[</span><span class="n">trend_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">stat_df</span>
 
                 <span class="c1"># extract for result_df</span>
@@ -438,20 +443,20 @@
                 <span class="n">tau_qual</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
 
                 <span class="c1"># create row</span>
-                <span class="n">rank_res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">statfeat</span><span class="p">,</span><span class="n">rankfeat</span><span class="p">,</span><span class="n">ordered_rank_feat</span><span class="p">,</span><span class="n">tau_qual</span><span class="p">,</span>
+                <span class="n">rank_res</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">rankfeat</span><span class="p">,</span><span class="n">statfeat</span><span class="p">,</span><span class="n">ordered_rank_feat</span><span class="p">,</span><span class="n">tau_qual</span><span class="p">,</span>
                                         <span class="n">groupby_lev</span><span class="p">])</span>
 
 
         <span class="c1"># if groupby add subgroup indicator columns</span>
         <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
-            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span> <span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">,</span>
                                                     <span class="s1">&#39;subgroup&#39;</span><span class="p">])</span>
             <span class="c1">#same for all</span>
             <span class="n">reg_df</span><span class="p">[</span><span class="s1">&#39;group_feat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;feat1&#39;</span><span class="p">,</span><span class="s1">&#39;feat2&#39;</span><span class="p">,</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">rank_res</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span><span class="p">,</span>
                                                     <span class="n">trend_col_name</span> <span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">,</span>
                                                     <span class="s1">&#39;empty&#39;</span><span class="p">])</span>

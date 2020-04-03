@@ -1,0 +1,303 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>wiggum.trend_components.regression &#8212; Wiggum 0.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../../../index.html">Table Of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../app_user_manual.html">User Manual for Wiggum App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../API.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../app_structure.html">App Outline</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for wiggum.trend_components.regression</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">stats</span>
+<span class="kn">from</span> <span class="nn">.base_getvars</span> <span class="k">import</span>  <span class="n">w_avg</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<div class="viewcode-block" id="LinearRegression"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.LinearRegression">[docs]</a><span class="k">class</span> <span class="nc">LinearRegression</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">overview_legend</span> <span class="o">=</span> <span class="s1">&#39;continuous&#39;</span>
+
+<div class="viewcode-block" id="LinearRegression.is_computable"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.LinearRegression.is_computable">[docs]</a>    <span class="k">def</span> <span class="nf">is_computable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check if this trend can be computed based on data and metadata available</span>
+<span class="sd">        this requires that the regression vars be a list of tuple or list of</span>
+<span class="sd">        length at least 2.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        self : Trend</span>
+<span class="sd">            a trend object with a set_vars Parameters</span>
+<span class="sd">        labeled_df : LabeledDataFrame {None} (optional)</span>
+<span class="sd">            data to use if trend is not already configured</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        computable : bool</span>
+<span class="sd">            True if requirements of get_trends are filled</span>
+
+<span class="sd">        See also:</span>
+<span class="sd">        get_trends() for description of how this trend computes and</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_vars</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_trend_vars</span><span class="p">(</span><span class="n">labeled_df</span><span class="p">)</span>
+
+        <span class="n">regssion_vars_tuple</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span><span class="nb">tuple</span>
+        <span class="n">regression_vars_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">)</span><span class="o">&gt;=</span><span class="mi">2</span>
+        <span class="n">vart_test_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">regssion_vars_tuple</span> <span class="ow">or</span> <span class="n">regression_vars_len</span><span class="p">,</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">product</span><span class="p">([</span><span class="n">vartest</span> <span class="k">for</span> <span class="n">vartest</span> <span class="ow">in</span> <span class="n">vart_test_list</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="LinearRegression.get_trends"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.LinearRegression.get_trends">[docs]</a>    <span class="k">def</span> <span class="nf">get_trends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data_df</span><span class="p">,</span><span class="n">trend_col_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute a linear regressions and return a partial result_df</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_df : DataFrame or DataFrameGroupBy</span>
+<span class="sd">            data to compute trends on, may be a whole, unmodified DataFrame or</span>
+<span class="sd">        a grouped DataFrame as passed by LabeledDataFrame get trend functions</span>
+<span class="sd">        trend_col_name : {&#39;subgroup_trend&#39;,&#39;agg_trend&#39;}</span>
+<span class="sd">            which type of trend is to be computed</span>
+
+<span class="sd">        Required properties</span>
+<span class="sd">        --------------------</span>
+<span class="sd">        name : string</span>
+<span class="sd">            used in the trend_type column of result_df and by viz</span>
+<span class="sd">        regression_vars : list of strings or list of tuples</span>
+<span class="sd">            variables to compute correlations of</span>
+<span class="sd">        var_weight_list : list of strings</span>
+<span class="sd">            variables to use to weight each regression_vars</span>
+<span class="sd">        symmetric_vars : Boolean</span>
+<span class="sd">            if True, pairs of variables will be computed with</span>
+<span class="sd">            itertools.combinations, taking all unique pairs of variables in the</span>
+<span class="sd">            regression_vars list of strings, if False, regression_vars must be a</span>
+<span class="sd">            list of tuples and only those pairs will be computed</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        reg_df : DataFrame</span>
+<span class="sd">            partial result_df, multiple can be merged together to form</span>
+<span class="sd">            a complete result_df</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">slopes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># if not empty // empty lists are False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">):</span>
+
+                <span class="c1"># make it tupe-like so that the loop can work</span>
+                <span class="n">data_df</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="n">data_df</span><span class="p">)]</span>
+
+
+
+            <span class="c1"># expand into all combinations if symmetric</span>
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">==</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="c1"># zip vars and weights together before pairing</span>
+                <span class="n">w_reg_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span><span class="p">))</span>
+                <span class="c1"># sort so that vars with no weight are first then after combinations</span>
+                <span class="c1">#  all with aw not nan will be the ones with two weights</span>
+                <span class="n">nasort</span> <span class="o">=</span> <span class="p">{</span><span class="kc">True</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span><span class="s1">&#39;000000000&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">)}</span>
+                <span class="n">w_reg_vars</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">nasort</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])](</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+                <span class="c1"># convert iterator into list of tuples so that it can be reused</span>
+                <span class="c1"># within the loop below</span>
+                <span class="n">var_pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">combinations</span><span class="p">(</span><span class="n">w_reg_vars</span><span class="p">,</span><span class="mi">2</span><span class="p">)]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># else assume lists of tuples were passed and reshuffle</span>
+                <span class="n">var_pairs</span> <span class="o">=</span>  <span class="p">[((</span><span class="n">i</span><span class="p">,</span><span class="n">iw</span><span class="p">),(</span><span class="n">d</span><span class="p">,</span><span class="n">dw</span><span class="p">))</span> <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">),(</span><span class="n">iw</span><span class="p">,</span><span class="n">dw</span><span class="p">)</span> <span class="ow">in</span>
+                            <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">,</span>  <span class="bp">self</span><span class="o">.</span><span class="n">var_weight_list</span><span class="p">)]</span>
+
+
+
+
+            <span class="k">for</span> <span class="n">groupby_lev</span><span class="p">,</span><span class="n">df</span> <span class="ow">in</span> <span class="n">data_df</span><span class="p">:</span>
+
+
+                <span class="c1"># var_pairs must be list of tuples or iterator</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">iw</span><span class="p">),(</span><span class="n">d</span><span class="p">,</span><span class="n">dw</span><span class="p">)</span> <span class="ow">in</span> <span class="n">var_pairs</span><span class="p">:</span>
+                    <span class="c1"># compute each slope</span>
+
+                    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">([</span><span class="n">iw</span><span class="p">,</span><span class="n">dw</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="c1"># both weights are NaNs</span>
+                        <span class="n">slope</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">r_val</span><span class="p">,</span> <span class="n">p_val</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">iw</span><span class="o">==</span><span class="n">dw</span> <span class="ow">or</span> <span class="p">(</span><span class="ow">not</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">dw</span><span class="p">))</span> <span class="ow">and</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">iw</span><span class="p">)):</span>
+                        <span class="c1"># weights are the same or only dependent has weights</span>
+                        <span class="n">weights</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">dw</span><span class="p">])</span>
+                        <span class="n">b</span><span class="p">,</span> <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="p">],</span><span class="mi">1</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">dw</span><span class="p">])</span>
+                        <span class="c1"># compute weighted correlation coefficient</span>
+                        <span class="n">r_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">((</span><span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span><span class="o">*</span>
+                                  <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">d</span><span class="p">],</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">dw</span><span class="p">])),</span>
+                                <span class="n">weights</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">dw</span><span class="p">])</span>
+                    <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">([</span><span class="n">iw</span><span class="p">,</span><span class="n">dw</span><span class="p">]))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># don&#39;t know what to do i this case</span>
+                        <span class="c1"># both have weights, throw error</span>
+                        <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+                        <span class="n">r_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;cannot compute with two different weights&#39;</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># don&#39;t know what to do i this case</span>
+                        <span class="c1"># both have weights, throw error</span>
+                        <span class="n">slope</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+                        <span class="n">r_val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">NaN</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;cannot compute&#39;</span><span class="p">)</span>
+
+                    <span class="c1"># quality is absolute value of r_val (corelation coefficient)</span>
+                    <span class="n">slopes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">slope</span><span class="p">,</span><span class="n">groupby_lev</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">r_val</span><span class="p">)])</span>
+
+        <span class="c1">#save as df</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">slopes</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
+                                                <span class="n">trend_col_name</span><span class="p">,</span><span class="s1">&#39;subgroup&#39;</span><span class="p">,</span>
+                                                <span class="n">trend_col_name</span><span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">])</span>
+            <span class="c1">#same for all</span>
+            <span class="n">reg_df</span><span class="p">[</span><span class="s1">&#39;group_feat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_df</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="n">slopes</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span>
+                                                    <span class="n">trend_col_name</span><span class="p">,</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span>
+                                                    <span class="n">trend_col_name</span><span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">])</span>
+            <span class="n">reg_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;empty&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">reg_df</span><span class="p">[</span><span class="s1">&#39;trend_type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+
+        <span class="k">return</span> <span class="n">reg_df</span></div>
+
+
+<div class="viewcode-block" id="LinearRegression.get_distance"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.LinearRegression.get_distance">[docs]</a>    <span class="k">def</span> <span class="nf">get_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">col_a</span><span class="o">=</span><span class="s1">&#39;subgroup_trend&#39;</span><span class="p">,</span><span class="n">col_b</span><span class="o">=</span><span class="s1">&#39;agg_trend&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle</span>
+<span class="sd">        closest to the positive x axis and is always positive valued, to be used as</span>
+<span class="sd">        a distance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        row : pd.Series</span>
+<span class="sd">            row of a result_df DataFrame</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        angle : float</span>
+<span class="sd">            angle in degrees between the subgroup_trend and agg_trend, compatible with</span>
+<span class="sd">            assignment to a cell of a result_df</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># take absolute value, because the two will be in opposite directions</span>
+        <span class="c1"># relative to the angle of interest</span>
+        <span class="n">abs_angle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_distance_unnormalized</span><span class="p">(</span><span class="n">row</span><span class="p">,</span><span class="n">col_a</span><span class="p">,</span><span class="n">col_b</span><span class="p">)</span>
+
+
+        <span class="c1"># normalize so that right angle is 1 and parallel is 0</span>
+        <span class="c1"># TODO: fix error if angle is exactly np.pi/2</span>
+        <span class="n">right_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">abs_angle</span><span class="o">%</span><span class="n">right_angle</span><span class="p">)</span><span class="o">/</span><span class="n">right_angle</span></div>
+
+<div class="viewcode-block" id="LinearRegression.get_distance_unnormalized"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.LinearRegression.get_distance_unnormalized">[docs]</a>    <span class="k">def</span> <span class="nf">get_distance_unnormalized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">col_a</span><span class="o">=</span><span class="s1">&#39;subgroup_trend&#39;</span><span class="p">,</span><span class="n">col_b</span><span class="o">=</span><span class="s1">&#39;agg_trend&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle</span>
+<span class="sd">        closest to the positive x axis and is always positive valued, to be used as</span>
+<span class="sd">        a distance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        row : pd.Series</span>
+<span class="sd">            row of a result_df DataFrame</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        angle : float</span>
+<span class="sd">            angle in degrees between the subgroup_trend and agg_trend, compatible with</span>
+<span class="sd">            assignment to a cell of a result_df</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># take absolute value, because the two will be in opposite directions</span>
+        <span class="c1"># relative to the angle of interest</span>
+        <span class="n">theta_sub</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col_a</span><span class="p">])</span>
+        <span class="n">theta_all</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col_b</span><span class="p">])</span>
+
+        <span class="c1"># take difference them and convert to degrees</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">theta_all</span> <span class="o">-</span> <span class="n">theta_sub</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
