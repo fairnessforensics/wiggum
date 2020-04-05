@@ -62,11 +62,14 @@ There are four different possible variable types. Wiggum will provide its initia
 Setting Variable Roles
 ***********************
 There are five different possible roles for a variable.
-#. Groupby
-	- Groupby's are generally categories that the user wants to group by, such as categorical or ordinal variables.
+#. Splitby
+	- Groupby's are generally categories that you want to split by and analyze, such as categorical or ordinal variables.
 	- Common examples are gender, race, or age group. 
-#. Trend
-	- Trend variables are the variables that trends will be calculated from, thus they are generally continuous variables. 
+#. Independent
+	- Independent variables are those that do not depend on another variable, or one that you wish to visualize on the y-axis.
+#. Dependent
+	- Dependent variables are the variables that you wish to measure based on the independent variables.
+	- Common examples are time or other continuous variables.
 #. Prediction
 #. Groundtruth
 #. Ignore
@@ -80,14 +83,32 @@ Other Metadata Settings
 #. weighting_var
 	- In order to utilize an ignore, isCount variable properly, it must be set as the weighting_var, or weighting variable, for at least one other variable in the metadata table.
 	The weighting_var can be set to any variable in the table, but is best utilized if it is an ignore, isCount variable.
-
-Need example from gender pay gap dataset or voting data
+#. Example
 
 Data Augmentation
 ^^^^^^^^^^^^^^^^^^
 
+Data augmentation is useful for you if you want to combine certain categorical variables to analyze. In the metadata entry screen, there is a checkbox for quantiles and intersection for each variable.
+Intersection is used for categorical variables. 
+
+Checking the intersection checkbox for more than one categorical variable creates a new column in your data representing the intersection of the two variables.
+For example, if you wanted to discover trends related to a categorical combination like 'White Female', check the intersection box for the variables race and gender.
+
+
+Check the quantile box for continuous variables that you want to discretize.
+
 Choosing Trends
 ^^^^^^^^^^^^^^^^^
+There are multiple trends that you can choose from to analyze your data. 
+
+Pearson Correlation
+********************
+
+Rank Trend
+***********
+
+Linear Regression
+******************
 
 
 Saving
@@ -102,7 +123,8 @@ Data Visualization
 
 Using heatmaps to explore details
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+You can click on specific squares in the heatmaps to visualize trends. A detail view will appear in the window that highlights the trend of the square you clicked.
+Use these detailed views to explore your data. 
 
 Filtering
 ^^^^^^^^^^^^
