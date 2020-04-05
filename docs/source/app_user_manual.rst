@@ -50,6 +50,7 @@ Wiggum requires that you set labels for each column or variable in your data. Th
 Setting Variable Type
 **********************
 There are four different possible variable types. Wiggum will provide its initial suggestion for variable types based on certain characteristics, but the user is free to change them. 
+
 #. Binary
 	- Binary variables for Wiggum are for values that are only true/false, so use them for boolean variables. For other variables that may only have two values, but are not true/false, label them as categorical.
 #. Ordinal
@@ -62,6 +63,7 @@ There are four different possible variable types. Wiggum will provide its initia
 Setting Variable Roles
 ***********************
 There are five different possible roles for a variable.
+
 #. Splitby
 	- Groupby's are generally categories that you want to split by and analyze, such as categorical or ordinal variables.
 	- Common examples are gender, race, or age group. 
