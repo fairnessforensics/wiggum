@@ -24,7 +24,8 @@ To use the Wiggum, download (or clone) from the
   cd wiggum/
   pip install .
 
-See the documentation site for examples and to reproduce the paper results.
+See the [documentation site](https://fairnessforensics.github.io/wiggum/) for
+examples and to reproduce the paper results.
 
 To use the package in python, after installed:
 
