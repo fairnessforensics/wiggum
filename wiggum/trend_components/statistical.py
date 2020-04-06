@@ -3,6 +3,9 @@ import numpy as np
 import itertools
 import scipy.stats as stats
 
+groupby_name_by_type = {pd.core.groupby.DataFrameGroupBy:lambda df: df.keys,
+                                pd.core.frame.DataFrame:lambda df: None}
+
 class CorrelationBase():
     overview_legend = 'binary'
 
@@ -39,6 +42,29 @@ class CorrelationBase():
     def compute_correlation_table(self,data_df,trend_col_name):
         '''
         common code for ocmputing correlations for any correlation based trend
+
+
+        Parameters
+        ----------
+        data_df : DataFrame or DataFrameGroupBy
+            data to compute trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get trend functions
+        trend_col_name : {'subgroup_trend','agg_trend'}
+            which type of trend is to be computed
+
+        Required properties
+        --------------------
+        name : string
+            used in the trend_type column of result_df and by viz
+        regression_vars : list of strings
+            variables to compute correlations of
+        corrtype : string {'pearson','spearman','kendall'}
+            correlation type to be passed to DataFrame.corr(method=corrtype)
+
+
+        Returns
+        -------
+        corr_data : list of tuples
         '''
         # recover a single list from the independent and dependent vars
         indep, dep = zip(*self.regression_vars)
@@ -122,7 +148,14 @@ class CorrelationBase():
         reg_df : DataFrame
             dataframe created by wrapping the output of compute_correlation_table
         groupby_name : string or None
-            name for the groupby column
+            name for the groupby column or None if not a subgroup
+
+
+        Returns
+        -------
+        reg_df : DataFrame
+            data frame with added group_feat column or removed subgroup column
+        as applicable and added trend_type column
         '''
 
         # if groupby add subgroup indicator columns
@@ -184,10 +217,10 @@ class CorrelationTrend(CorrelationBase):
 
         # this will either be None or the string that is the name, depending
         # on if data_df is a groupby object or not
-        groupby_name = data_df.count().index.name
+        groupby_name = groupby_name_by_type[type(data_df)](data_df)
         # finalize the table
         reg_df = self.wrap_reg_df(reg_df,groupby_name)
-        
+
 
 
         return reg_df
@@ -262,7 +295,7 @@ class CorrelationSignTrend(CorrelationBase):
 
         # this will either be None or the string that is the name, depending
         # on if data_df is a groupby object or not
-        groupby_name = data_df.count().index.name
+        groupby_name = groupby_name_by_type[type(data_df)](data_df)
         # finalize the table
         reg_df = self.wrap_reg_df(reg_df,groupby_name)
 

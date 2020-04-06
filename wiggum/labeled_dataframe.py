@@ -174,6 +174,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             self.df = data
         elif type(data) is str:
             self.df = pd.read_csv(data)
+            self.df.index.name = ''
         elif data == None:
             self.df = pd.DataFrame()
 
@@ -203,7 +204,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         else:
             self.result_df = pd.read_csv(results)
 
-        # fix heading
+        # fix heading if reading in old file
         cur_cols = self.result_df.columns
         if ('feat1' in cur_cols) or 'feat2' in cur_cols:
             self.result_df.rename(columns=old_result_map)
@@ -211,7 +212,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             # self.result_df.apply(cast_trend_value,axis=1)
 
 
-        # if result_df not empty then load trend_list and correct types
+        # if result_df not empty then load trend_list and type objects
         if len(self.result_df) >0:
             with open(trends, 'r') as tjson:
                 trend_content = json.load(tjson)
@@ -225,7 +226,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
             self.correct_trend_value_datatypes()
 
-            
+
 
     def get_trend_by_name(self,trend_name):
         '''
