@@ -1,5 +1,5 @@
 variable,dtype,var_type,role,isCount,weighting_var
-pay,float64,continuous,['trend'],False,
-year,float64,continuous,['trend'],False,
-department,object,categorical,['groupby'],False,
-gender,object,categorical,"['groupby', 'trend']",False,
+pay,float64,continuous,['dependent'],False,
+year,float64,continuous,['independent'],False,
+department,object,categorical,"['independent', 'splitby']",False,
+gender,object,categorical,"['independent', 'splitby']",False,
