@@ -1,9 +1,11 @@
+Wiggum
+========
 
 *Simpson's Paradox Inspired Fairness Forensics*
 
 
 Getting Started
-================
+----------------
 
 Simpson's Paradox Inspired Fairness Forensics
 
