@@ -180,7 +180,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
         # initialize metadata
         if meta == None:
-            self.meta_df = pd.DataFrame(index = self.df.columns,
+            self.meta_df = pd.DataFrame(index = self.df.columns.copy(),
                                columns = META_COLUMNS)
             self.meta_df.index.name = 'variable'
             self.meta_df['dtype'] = self.df.dtypes
