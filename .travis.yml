@@ -30,7 +30,3 @@ deploy:
     branch: master
   local_dir: docs/html/ # where compiled docs are placed by sphinx, set in sphinx conf.py
   target_branch: gh-pages
-notifications:
-  slack:
-    rooms:
-	  - oudalab:hYEt5Sslpd5gb7aMfQeI6EoM#code
