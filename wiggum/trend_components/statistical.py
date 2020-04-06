@@ -124,7 +124,7 @@ class CorrelationBase():
         groupby_name : string or None
             name for the groupby column
         '''
-        
+
         # if groupby add subgroup indicator columns
         if groupby_name:
             #same for all
@@ -187,7 +187,7 @@ class CorrelationTrend(CorrelationBase):
         groupby_name = data_df.count().index.name
         # finalize the table
         reg_df = self.wrap_reg_df(reg_df,groupby_name)
-        print('\n\n df completed\n',reg_df.columns)
+        
 
 
         return reg_df
