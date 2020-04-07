@@ -7,46 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars, filter_subgroup= None):
-    """
-    Generate an array for subgroups' correlational matrix
-    Parameters
-    -----------
-    data_df : DataFrame
-        data organized in a pandas dataframe containing both categorical
-        and continuous attributes.
-    regression_vars : list
-        list of continuous attributes by name in dataframe, if None will be
-        detected by all float64 type columns in dataframe
-    groupby_vars  : list
-        list of group by attributes by name in dataframe, if None will be
-        detected by all object and int64 type columns in dataframe
-    filter_subgroup : list, or  None
-            value of groupby_feat or or None to include all
-    Returns
-    --------
-    correlationMatrixSubgroup : array
-        an array storing all subgroups' correlational matrix
-    """
-
-    correlationMatrixSubgroup = []
-    groupby_info = []
-    for groupbyAttr in groupby_vars:
-        grouped_df_corr = data_df.groupby(groupbyAttr)[regression_vars].corr()
-        groupby_value = grouped_df_corr.index.get_level_values(groupbyAttr).unique()
-
-        if filter_subgroup:
-            groupby_value = [value for value in filter_subgroup if (value in groupby_value)]
-
-        for subgroup in groupby_value:
-            subgroup_corr = grouped_df_corr.loc[subgroup]
-            correlationMatrixSubgroup.append(subgroup_corr)
-
-            groupInfo = {'groupby': groupbyAttr, 'value':subgroup}
-            groupby_info.append(groupInfo)
-
-    return correlationMatrixSubgroup, groupby_info
-
 def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold, individual_weight_name, view_weight_name):
     """
     Auto detect SP
