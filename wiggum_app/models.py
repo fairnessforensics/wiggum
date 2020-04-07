@@ -7,49 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getRatioRateAll(data_df, target_var, protected_vars, weighting_var):
-    """
-    Generate an array for the rates of the protected class before further partition
-    Parameters
-    -----------
-    data_df : DataFrame
-        data organized in a pandas dataframe containing both categorical
-        and continuous attributes.
-    target_var : str
-        a variable that will have a rate where the ranking flips
-    protected_vars  : list
-        list of protected variables
-    weighting_var : str
-        a variable that have weight
-    Returns
-    --------
-    result : array
-        an array storing the ratio of overall rates
-    """
-
-    overall_dat_all = []
-    overall_ratio_all = []
-    protectedVars = []
-
-    for protected_var in protected_vars:
-        data_df = data_df.dropna(axis=0,subset=[target_var])
-        if weighting_var == '':
-            overall_dat = data_df.groupby(protected_var)[target_var].mean()
-        else:
-            grouped = data_df.groupby(protected_var)
-            get_wavg = lambda g: np.average(g[target_var], weights=g[weighting_var])
-            overall_dat = grouped.apply(get_wavg)
-
-        overall_dat_all.append(overall_dat)
-
-        comb = list(combinations(overall_dat, 2))
-        overall_ratio = [element[0]/element[1] for element in comb]
-
-        overall_ratio_all.append(overall_ratio)
-        protectedVars.append(protected_var)
-
-    return overall_ratio_all, protectedVars, overall_dat_all
-
 def getRatioRateSub(data_df, target_var, protected_vars, groupby_vars, weighting_var):
     """
     Generate an array for the rates of the protected class after further partition
