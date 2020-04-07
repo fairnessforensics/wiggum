@@ -7,64 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getRatioRateSub(data_df, target_var, protected_vars, groupby_vars, weighting_var):
-    """
-    Generate an array for the rates of the protected class after further partition
-    Parameters
-    -----------
-    data_df : DataFrame
-        data organized in a pandas dataframe containing both categorical
-        and continuous attributes.
-    target_var : str
-        a variable that will have a rate where the ranking flips
-    protected_vars  : list
-        list of protected variables
-    grouping_vars  : list
-        list of grouping variables
-    weighting_var : str
-        a variable that have weight
-    Returns
-    --------
-    result : array
-        an array storing ratio of rates in each subgroup
-    """
-
-    partition_dat_all = []
-    partition_ratio_all = []
-
-    for protected_var in protected_vars:
-        for explanatory_var in groupby_vars:
-            if protected_var != explanatory_var:
-                data_df = data_df.dropna(axis=0,subset=[target_var])
-                if weighting_var == '':
-                    #overall_dat = data_df.groupby(protected_var)[target_var].mean()
-                    partition_dat = data_df.groupby([explanatory_var, protected_var])[target_var].mean().unstack()
-                else:
-                    grouped = data_df.groupby([explanatory_var, protected_var])
-                    get_wavg = lambda g: np.average(g[target_var], weights=g[weighting_var])
-                    partition_dat = grouped.apply(get_wavg)
-                    partition_dat = partition_dat.unstack()
-
-                partition_dat_all.append(partition_dat)
-
-                comb = list(combinations(partition_dat, 2))
-
-                partion_ratio = pd.concat([partition_dat[col[0]]/partition_dat[col[1]] for col in comb],
-                                            axis=1, keys=comb,sort=True)
-
-                #partion_ratio.columns = partion_ratio.columns.map('/'.join)
-                partion_ratio.columns.levels[0].astype(str)
-                partion_ratio.columns.levels[1].astype(str)
-                idx = partion_ratio.columns
-                partion_ratio.columns = partion_ratio.columns.set_levels(
-                                            [idx.levels[0].astype(str), idx.levels[1].astype(str)])
-
-                partion_ratio.columns = partion_ratio.columns.map('/'.join)
-
-                partition_ratio_all.append(partion_ratio)
-
-    return partition_ratio_all, partition_dat_all
-
 def getRatioStatAll(data_df, target_var, grouping_vars, isCount_var):
     """
     Generate an array for the rates of the protected class before further partition
