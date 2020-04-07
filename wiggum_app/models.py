@@ -7,24 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getCategoricalVariableName(data_df):
-    """
-    extract categorical variables' name
-
-    Parameters
-    -------------------
-    data_df: DataFrame
-
-    Returns
-    -------------------
-    list: list
-            A list has all the names for categorical variables
-
-    """
-    groupbyAttrs = data_df.select_dtypes(include=['object','int64'])
-    groupbyAttrs_labels = list(groupbyAttrs)
-    return groupbyAttrs_labels
-
 def getBinaryVariableName(data_df):
     """
     extract binary variables' name
