@@ -7,42 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getInfoTable(data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
-    """
-    Get trends infomation
-    Parameters
-    -----------
-    data_df : DataFrame
-        data organized in a pandas dataframe containing both categorical
-        and continuous attributes.
-    std_weights: nparray or list of decimal numbers
-        weights to add columns with
-    std_weights_view: nparray or list of decimal numbers
-        weights for the view to add columns with
-    view_score_param: dict of the parameter for add_view_score function
-    Returns
-    --------
-    initial_result_df : dataframe
-        a DataFrame that contains initial trend information
-    ranking_view_df : dataframe
-        a DataFrame that contains ranking information
-    """
-    # get subgroup trends' info
-    initial_result_df = wg.get_subgroup_trends_1lev(data_df,['pearson_corr'])
-
-    # add slope
-    initial_result_df = wg.add_slope_cols(data_df,initial_result_df)
-
-    # add angle
-    initial_result_df = wg.add_angle_col(initial_result_df)
-
-    # get ranking info
-    initial_result_df, ranking_view_df = getInitialRankInfo(initial_result_df,
-                                                data_df, std_weights, std_weights_view, view_score_param,
-                                                individual_weight_name, view_weight_name)
-
-    return initial_result_df, ranking_view_df
-
 def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
     """
     return a DataFrame of trends with the views ranked
