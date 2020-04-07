@@ -7,37 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def auto_detect(data_df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold, individual_weight_name, view_weight_name):
-    """
-    Auto detect SP
-    Parameters
-    -----------
-    data_df : DataFrame
-        data organized in a pandas dataframe containing both categorical
-        and continuous attributes.
-    initial_result_df : DataFrame
-        a DataFrame that contains initial trend information.
-    std_weights: nparray or list of decimal numbers
-        weights to add columns with
-    std_weights_view: nparray or list of decimal numbers
-        weights for the view to add columns with
-    view_score_param: dict of the parameter for add_view_score function
-    threshold: an argument for SP detector
-    Returns
-    --------
-    result_df : dataframe
-        a dataframe with SP info
-    """
-    # get SP rows
-    result_df = wg.get_SP_rows(initial_result_df, sp_type='SP_thresh',
-                    cols_pair = ['agg_trend','subgroup_trend'], colored=True, sp_args = threshold)
-
-    # ranking
-    result_df, ranking_view_df = getSPRankInfo(result_df, data_df, std_weights, std_weights_view,
-                                                view_score_param, individual_weight_name, view_weight_name)
-
-    return result_df, ranking_view_df
-
 def getInfoTable(data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
     """
     Get trends infomation
