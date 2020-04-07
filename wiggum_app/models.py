@@ -7,55 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getSPRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
-    """
-    return a DataFrame of trends with the views ranked for SP records
-    Parameters
-    -----------
-    results_df : DataFrame
-        results contain SP rows
-    data_df : DataFrame
-        data organized in a pandas dataframe containing both categorical
-        and continuous attributes.
-    std_weights: nparray or list of decimal numbers
-        weights to add columns with
-    std_weights_view: nparray or list of decimal numbers
-        weights for the view to add columns with
-    view_score_param: dict of the parameter for add_view_score function
-    Returns
-    --------
-    result_df : dataframe
-        a DataFrame that contains SP ranked information
-    """
-    # weight
-    result_df = wg.add_weighted(result_df,std_weights,name=individual_weight_name).sort_values(by=individual_weight_name,ascending=False)
-
-    # check if the column already exists
-    if 'SP_subgroups' in result_df.columns:
-        result_df = result_df.drop(columns=['SP_subgroups', 'gby_counts', 'portions'])
-
-    # view counts
-    colored_view_df = wg.count_sp_views(result_df, colored=True, portions=True,
-                                data_df = data_df, groupby_count=True)
-
-    result_df = wg.add_view_count(result_df, colored_view_df,colored=True)
-
-    # rank by view
-    # add view score
-    for key,val in view_score_param.items():
-        # remove the same column
-        column_name = key + "_" + val
-        result_df = result_df.drop(columns=column_name)
-        result_df = wg.add_view_score(result_df, key, val, True)
-
-    # weight for view
-    result_df = wg.add_weighted(result_df,std_weights_view,name=view_weight_name)
-
-    ranking_view_df = result_df[['independent', 'dependent', 'group_feat', view_weight_name]].drop_duplicates()
-    ranking_view_df = ranking_view_df.sort_values(by=view_weight_name,ascending=False)
-
-    return result_df, ranking_view_df
-
 def getRatioRateAll(data_df, target_var, protected_vars, weighting_var):
     """
     Generate an array for the rates of the protected class before further partition
