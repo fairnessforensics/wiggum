@@ -7,26 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getBinaryVariableName(data_df):
-    """
-    extract binary variables' name
-
-    Parameters
-    -------------------
-    data_df: DataFrame
-
-    Returns
-    -------------------
-    list: list
-            A list has all the names for binary variables
-
-    """
-    binaryAttrs = [col for col in data_df
-             if data_df[[col]].dropna().isin([0, 1]).all().values]
-
-    binaryAttrs_labels = list(binaryAttrs)
-    return binaryAttrs_labels
-
 def getSubCorrelationMatrix(data_df, regression_vars, groupby_vars, filter_subgroup= None):
     """
     Generate an array for subgroups' correlational matrix
