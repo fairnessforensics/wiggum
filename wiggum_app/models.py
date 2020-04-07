@@ -7,26 +7,6 @@ from sklearn import mixture
 import numpy as np
 import json
 
-def getContinuousVariableName(data_df):
-    """
-    extract continuous variables' name
-
-    Parameters
-    -------------------
-    data_df: DataFrame
-
-    Returns
-    -------------------
-    continuousAttrs_labels: list
-            A list has all the names for continuous variables
-
-    """
-    continuousAttrs = data_df.select_dtypes(include=['float64'])
-    continuousAttrs_labels = list(continuousAttrs)
-
-    return continuousAttrs_labels
-
-
 def getCategoricalVariableName(data_df):
     """
     extract categorical variables' name
