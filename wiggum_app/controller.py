@@ -66,7 +66,6 @@ def main():
             project_name = ""
 
             file = request.files.get('file')
-            #global df
             df = pd.read_csv(file)
 
             # Construct the csv data fitting d3.csv format
@@ -214,8 +213,6 @@ def main():
             # check if the selected trend types are different from result_df
             if not(labeled_df_setup.result_df.empty):
                 # result table is not empty, extract trend types from result table
-                #trend_list_result_df = [trend_type for trend_type, trend_df 
-                #                    in labeled_df_setup.result_df.groupby(['trend_type'])]
                 trend_list_result_df = [trend.name for trend 
                                             in labeled_df_setup.trend_list]
 
@@ -297,7 +294,6 @@ def main():
             # covert row label to string to avoid jsonify error, e.g., department: 1
             rank_trend_count = rank_trend_count.rename(columns=lambda x: str(x))
 
-            #return jsonify(rank_trend_detail.reset_index().to_dict(orient='records'))
             return jsonify(rank_trend_detail = rank_trend_detail.reset_index().to_dict(orient='records'), 
                             rank_trend_count = rank_trend_count.reset_index().to_dict(orient='records'))
 
@@ -320,7 +316,6 @@ def main():
             # set filter flag
             filter_flag = True
 
-            #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = filter_result.to_json(orient='records'),
                             df = df)
@@ -340,7 +335,6 @@ def main():
             # clean filter object
             filter_object.clear()
 
-            #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
                             df = df)
