@@ -66,7 +66,6 @@ def main():
             project_name = ""
 
             file = request.files.get('file')
-            #global df
             df = pd.read_csv(file)
 
             # Construct the csv data fitting d3.csv format
@@ -214,8 +213,6 @@ def main():
             # check if the selected trend types are different from result_df
             if not(labeled_df_setup.result_df.empty):
                 # result table is not empty, extract trend types from result table
-                #trend_list_result_df = [trend_type for trend_type, trend_df 
-                #                    in labeled_df_setup.result_df.groupby(['trend_type'])]
                 trend_list_result_df = [trend.name for trend 
                                             in labeled_df_setup.trend_list]
 
@@ -297,7 +294,6 @@ def main():
             # covert row label to string to avoid jsonify error, e.g., department: 1
             rank_trend_count = rank_trend_count.rename(columns=lambda x: str(x))
 
-            #return jsonify(rank_trend_detail.reset_index().to_dict(orient='records'))
             return jsonify(rank_trend_detail = rank_trend_detail.reset_index().to_dict(orient='records'), 
                             rank_trend_count = rank_trend_count.reset_index().to_dict(orient='records'))
 
@@ -320,7 +316,6 @@ def main():
             # set filter flag
             filter_flag = True
 
-            #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = filter_result.to_json(orient='records'),
                             df = df)
@@ -340,7 +335,6 @@ def main():
             # clean filter object
             filter_object.clear()
 
-            #return jsonify(result_dict_dict)
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
                             df = df)
@@ -418,118 +412,3 @@ def main():
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = rank_result.to_json(orient='records'),
                             df = df)
-
-        spType = request.form['sptype']
-
-        # weight for individual
-        weight_param = request.form['weight_param']
-        std_weights =json.loads(weight_param)
-
-        # weight for the view
-        weight_param_view = request.form['weight_param_view']
-        std_weights_view =json.loads(weight_param_view)
-
-        #view score parameter
-        view_score_param = request.form['view_score_param']
-        view_score_param =json.loads(view_score_param)
-
-        # weighting name
-        individual_weight_name = request.form['individual_weight_name']
-        view_weight_name = request.form['view_weight_name']
-
-        # Upload File
-        if action == 'upload':
-            # initial result
-            global initial_result_df
-
-            # Construct the csv data fitting d3.csv format
-            #csv_data = df.to_dict(orient='records')
-            #csv_data = json.dumps(csv_data, indent=2)
-
-            #isCountList = labeled_df.loc[labeled_df['isCount'] == 'Y']['name'].tolist()
-            # The logic may change
-            #if len(isCountList) > 0:
-            #    isCountAttr = isCountList[0]
-            #    spType = 'Rate2'
-
-            if spType =='Regression':
-
-                continuousVars = models.getContinuousVariableName(df)
-                regression_vars = list(continuousVars)
-
-                clusteringFlg = request.form['clustering']
-
-                # FIXME
-                #if clusteringFlg == 'true':
-                #    df = models.getClustering(df, regression_vars)
-                #    csv_data = df.to_dict(orient='records')
-                #    csv_data = json.dumps(csv_data, indent=2)
-
-                categoricalVars = models.getCategoricalVariableName(df)
-
-                # get correlation for all continuous variables
-                corrAll = labeled_df_setup.df[continuousVars].corr()
-
-                # subgroup correlation matrix
-                correlationMatrixSubgroups = []
-                correlationMatrixSubgroups, groupby_info = models.getSubCorrelationMatrix(labeled_df_setup.df, regression_vars, categoricalVars)
-
-                # generate table
-                initial_result_df, rankViewResult = models.getInfoTable(labeled_df_setup.df, std_weights, std_weights_view, view_score_param,
-                                                    individual_weight_name, view_weight_name)
-
-                return jsonify({'csv_data':csv_data,
-                                'table': initial_result_df.to_json(orient='records'),
-                                'rankViewResult': rankViewResult.to_json(orient='records'),
-                                'categoricalVars': categoricalVars,
-                                'continousVars': continuousVars,
-                                'corrAll': corrAll.to_json(),
-                                'groupby_info': groupby_info,
-                                'corrSubs': [corrSub.to_json() for corrSub in correlationMatrixSubgroups]})
-            elif spType == 'Rate':
-                targetAttr = models.getBinaryVariableName(labeled_df_setup.df)[0]
-
-                groupingAttrs =  models.getCategoricalVariableName(labeled_df_setup.df)
-                groupingAttrs.remove(targetAttr)
-
-                ratioRateAll, protectedVars, explanaryVars, rateAll = models.getRatioRateAll(labeled_df_setup.df, targetAttr, groupingAttrs)
-
-                ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, groupingAttrs)
-
-                return jsonify({'csv_data':csv_data,
-                                'protectedVars': protectedVars,
-                                'explanaryVars': explanaryVars,
-                                'targetAttr': targetAttr,
-                                'ratioRateAll':ratioRateAll,
-                                'rateAll':[eachRateAll.to_json() for eachRateAll in rateAll],
-                                'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
-                                'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
-            elif spType == 'Rate2':
-                targetAttrList = labeled_df.loc[labeled_df['role'] == 'trend']['name'].tolist()
-                targetAttr = targetAttrList[0]
-
-                groupingAttrs =  labeled_df.loc[labeled_df['role'] == 'groupby']['name'].tolist()
-
-                ratioStatAll, protectedVars, explanaryVars, statAll = models.getRatioStatAll(labeled_df_setup.df, targetAttr, groupingAttrs, isCountAttr)
-
-                ratioRateSub, rateSub = models.getRatioRateSub(labeled_df_setup.df, targetAttr, groupingAttrs)
-
-                return jsonify({'csv_data':csv_data,
-                                'protectedVars': protectedVars,
-                                'explanaryVars': explanaryVars,
-                                'targetAttr': targetAttr,
-                                'ratioRateAll':ratioStatAll,
-                                'rateAll':[eachRateAll.to_json() for eachRateAll in statAll],
-                                'ratioSubs': [ratioSub.to_json() for ratioSub in ratioRateSub],
-                                'rateSubs': [eachRateSub.to_json() for eachRateSub in rateSub]})
-
-        # Auto Detect
-        elif action == 'autodetect':
-            threshold = float(request.form['threshold'])
-
-            initial_result_df, ranking_view_df = models.auto_detect(labeled_df_setup.df, initial_result_df, std_weights, std_weights_view, view_score_param, threshold,
-                                                        individual_weight_name, view_weight_name)
-
-            return jsonify({'result': initial_result_df.to_json(),
-                            'table': initial_result_df.to_json(orient='records'),
-                            'rankViewResult': ranking_view_df.to_json(orient='records')})
