@@ -140,7 +140,8 @@ def test_basic_load_df():
     # In[25]:
 
 
-    labeled_df.get_SP_rows(thresh=.2)
+    labeled_df.get_SP_rows(thresh=.2,trend_type ='lin_reg' )
+
 
 
     # ## Detection

@@ -98,7 +98,8 @@ class _TrendDetectors():
 
     def get_SP_rows(self,thresh=None,inplace=False,replace=False,
                             independent = None,dependent = None,group_feat= None,
-                            subgroup= None,subgroup2= None,trend_type=None):
+                            subgroup= None,subgroup2= None, trend_type=None,
+                            comparison_type =None):
         """
 
         return a dataframe of  rows of the results that have at least one
@@ -126,6 +127,8 @@ class _TrendDetectors():
             groupoby variable name or None to include all if filtered
         subgroup : str, list, or  None
             value of groupby_feat or or None to include all if filtered
+        comparison_type : str, list or None
+            comparison type (pairwise or aggregate-subgroup)
 
 
         Returns
@@ -168,8 +171,13 @@ class _TrendDetectors():
             sp_df = self.result_df[self.result_df[col_name]]
         else:
             # filter by detection and column values
-            filt_idx = self.get_trend_rows(independent ,dependent, group_feat, subgroup,
-                                subgroup2, trend_type,'index')
+            filt_idx = self.get_trend_rows(independent = independent ,
+                                            dependent = dependent,
+                                            group_feat= group_feat,
+                            subgroup = subgroup,subgroup2= subgroup2,
+                            trend_type = trend_type,
+                            comparison_type = comparison_type, index=True)
+
             sp_df = self.result_df[self.result_df[col_name] & filt_idx]
 
         # overwrite if inplace
