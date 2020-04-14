@@ -157,7 +157,7 @@ class _ResultDataFrame():
 
     def get_trend_rows(self,independent = None,dependent = None,group_feat= None,
                             subgroup= None,subgroup2= None,trend_type=None,
-                            comparison_type = None, inplace=False):
+                            comparison_type = None, inplace=False, index =False):
         """
         return a row of result_df based on the specified values. returned rows
         meet provided criteria for all columns (and operator) and any one of the listed
@@ -177,9 +177,13 @@ class _ResultDataFrame():
             value of groupby_feat or  None to include all
         trend_type: str, list or {None}
             name of a trend  None to include all
+        comparison_type : str, list or None
+            comparison type (pairwise or aggregate-subgroup)
         inplace : boolean {False}
             if True the filtering is done in place and the result df is changed
             in the object
+        index : boolean {False}
+            if True return the indices else return the filtered result_df
         """
         # get the rows for each specified value,
         #  or set to True to include all values for each None
@@ -218,13 +222,14 @@ class _ResultDataFrame():
             tt_rows = True
 
         if comparison_type:
-            tt_rows = pd.Series([tt in comparison_type for tt in self.result_df['comparison_type']])
+            ct_rows = pd.Series([tt in comparison_type for tt in self.result_df['comparison_type']])
         else:
-            tt_rows = True
+            ct_rows = True
 
         # take the intersection
-        target_row = iv_rows & dv_rows & gf_rows & sg_rows & tt_rows & sg_rows2
+        target_row = iv_rows & dv_rows & gf_rows & sg_rows & tt_rows & sg_rows2 & ct_rows
         # to index by a series, it must have the same index as the datafram
+
         target_row.index = self.result_df.index
         # return that row
         print(sum(target_row), ' total rows meet the criteria')
@@ -239,7 +244,10 @@ class _ResultDataFrame():
                 self.trend_list = [trend_obj for trend_obj in self.trend_list
                                             if trend_obj.name in trend_type]
 
-        return self.result_df[target_row]
+        if index:
+            return target_row
+        else:
+            return self.result_df[target_row]
 
 
     def rank_weighted(self,cols_list,weights,name =None):
