@@ -201,7 +201,22 @@ class _TrendDetectors():
 
         return sp_df
 
+    def parse_trend_input_list(self,trend_types):
+        '''
+        turn input list into list of trend objects and append for storage
+        '''
 
+        if type(trend_types[0]) is str:
+            # instantiate objects
+            new_trends = [all_trend_types[trend]() for trend in trend_types]
+
+        else:
+            # use provided, must be instantiated
+            new_trends = trend_types
+
+        self.trend_list.extend(new_trends)
+
+        return new_trends
 
 
     def get_subgroup_trends_1lev(self,trend_types, replace=False):
@@ -222,14 +237,7 @@ class _TrendDetectors():
         data_df = self.df
         groupby_vars = self.get_vars_per_role('splitby')
 
-
-        if type(trend_types[0]) is str:
-            # instantiate objects
-            self.trend_list.extend([all_trend_types[trend]()
-                                                    for trend in trend_types])
-        else:
-            # use provided, must be instantiated
-            self.trend_list.extend(trend_types)
+        new_trends = self.parse_trend_input_list(trend_types)
 
         # prep the result df to add data to later
         if self.result_df.empty:
@@ -242,7 +250,7 @@ class _TrendDetectors():
         # precomputed trends
         precomputed_trends = set(self.result_df['trend_type'])
 
-        for cur_trend in trend_types:
+        for cur_trend in new_trends:
 
             # only compute if the current trend is not in the result_df already
             # or replace is true
@@ -299,7 +307,7 @@ class _TrendDetectors():
                                                     sort=True)
 
             # reorder columns
-            _,n_cols = self.result_df
+            _,n_cols = self.result_df.shape
             col_reorder = {N_RDFSG:RESULT_DF_HEADER,
                            N_RDFA:RESULT_DF_HEADER_ALL}
             self.result_df = self.result_df[col_reorder[n_cols]]
@@ -324,22 +332,14 @@ class _TrendDetectors():
         data_df = self.df
         groupby_vars = self.get_vars_per_role('splitby')
 
-
-        if type(trend_types[0]) is str:
-            # instantiate objects
-            self.trend_list.extend([all_trend_types[trend]()
-                                                    for trend in trend_types])
-        else:
-            # use provided, must be instantiated
-            self.trend_list.extend(trend_types)
-
+        new_trends = self.parse_trend_input_list(trend_types)
 
         # create empty lists
         all_trends = []
         subgroup_trends = []
         pairwise = []
 
-        for cur_trend in trend_types:
+        for cur_trend in new_trends:
             if not( cur_trend.set_vars):
                 cur_trend.get_trend_vars(self)
 
@@ -410,7 +410,7 @@ class _TrendDetectors():
             self.result_df = pd.concat([self.result_df,pairwise_df],axis = 0,
                                     sort=True)
         # reorder columns
-        _,n_cols = self.result_df
+        _,n_cols = self.result_df.shape
         col_reorder = {N_RDFP:RESULT_DF_HEADER_PAIRWISE,
                        N_RDFA:RESULT_DF_HEADER_ALL}
         self.result_df = self.result_df[col_reorder[n_cols]]
