@@ -107,10 +107,8 @@ class BinClassStats():
                 # compute each stat
                 confusion = df[cur_col].value_counts()
 
-                # acc = (confusion['TP'] + confusion['TN'])/sum(confusion)
-                # tpr = confusion['TP']/(confusion['TP'] + confusion['FN'])
-                # ppv = confusion['TP']/(confusion['TP'] + confusion['FP'])
-                # tnr = confusion['TN']/(confusion['TN'] + confusion['FN'])
+                trend_name = '_'.join([self.name , trend_col_name,g,p])
+                trend_precompute[trend_name] = confusion
 
                 # add values that are not there
                 req_keys = ['TP','TN','FP','FN']
