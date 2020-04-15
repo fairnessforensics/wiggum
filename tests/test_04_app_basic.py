@@ -103,7 +103,7 @@ def test_controller():
     meta += "{\"name\":\"gender\",\"var_type\":\"categorical\",\"role\":[\"independent\",\"splitby\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"}]"
 
     # action: intersection
-    intersection_vars = "department, gender"
+    intersection_vars = "department,gender"
     tuple_lens = "2"
     response = tester.post('/', data = dict(action="intersection", metaList = meta, intersection_vars = intersection_vars, tuple_lens = tuple_lens))   
     assert response.status_code == 200
