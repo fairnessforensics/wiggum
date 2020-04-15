@@ -82,7 +82,7 @@ def test_basic_load_df_wages():
 
     # Now confirm that all the files were written correctly.
 
-    assert os.listdir('data/wages_test/') == ['df.csv', 'result_df.csv', 'meta.csv']
+    assert sorted(os.listdir('data/wages_test/')) == ['df.csv', 'meta.csv', 'result_df.csv']
 
 
     # it write the three DataFrames each out to their own .csv file in that directory. If that directory exists it will overwrite without warning, if not, also creates the directory.
@@ -495,6 +495,4 @@ def test_basic_load_df_wages():
     labeled_df.add_view_score('SP_thresh0.2',agg_type='sum',colored=False)
     assert labeled_df.result_df.shape == (total_rows,20)
 
-
     labeled_df.rank_occurences_by_view('sum_view_SP_thresh0.2','SP_thresh0.2')
-    assert labeled_df.result_df.shape == (total_rows,20)
