@@ -275,14 +275,13 @@ class _TrendDetectors():
 
             new_res[result_df_type_col_name] = 'aggregate-subgroup'
 
+            # write or append depending on settings. contact in axis=0 is
+            # the pandas append
             if self.result_df.empty or replace:
-                # print('replacing',self.result_df.empty,replace)
                 self.result_df = new_res
             else:
-
-                # print('appending ',len(new_res), ' to ',len(self.result_df))
-                self.result_df = pd.concat([self.result_df,new_res], sort=True)
-        # ,on=['independent','dependent'], how='left
+                self.result_df = pd.concat([self.result_df,new_res], axis =0,
+                                                    sort=True)
 
 
 
