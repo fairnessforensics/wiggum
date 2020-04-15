@@ -287,6 +287,7 @@ class _AugmentedData():
 
         N = len(self.df)
 
+        # generate labels and index cutoff points
         cutoffs,label_list = zip(*[(int(np.round(N*q_val)),label) for
                                             label,q_val in quantiles.items()])
         # make a list

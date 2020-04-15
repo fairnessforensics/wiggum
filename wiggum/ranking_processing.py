@@ -212,7 +212,9 @@ class _ResultDataFrame():
             sg_rows = True
 
         if subgroup2:
-            sg_rows2 = pd.Series([sg in subgroup2 for sg in self.result_df['subgroup2']])
+            sg2_filt = {float: lambda sg: False,
+                        str: lambda sg: sg in subgroup2}
+            sg_rows2 = pd.Series([sg2_filt[type(sg)](sg) for sg in self.result_df['subgroup2'] ])
         else:
             sg_rows2 = True
 
@@ -222,12 +224,12 @@ class _ResultDataFrame():
             tt_rows = True
 
         if comparison_type:
-            ct_rows = pd.Series([tt in comparison_type for tt in self.result_df['comparison_type']])
+            ct_rows = pd.Series([ct in comparison_type for ct in self.result_df['comparison_type']])
         else:
             ct_rows = True
 
         # take the intersection
-        target_row = iv_rows & dv_rows & gf_rows & sg_rows & tt_rows & sg_rows2 & ct_rows
+        target_row = iv_rows & dv_rows & gf_rows & sg_rows & sg_rows2 & tt_rows & ct_rows
         # to index by a series, it must have the same index as the datafram
 
         target_row.index = self.result_df.index
