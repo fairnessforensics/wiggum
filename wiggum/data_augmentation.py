@@ -37,7 +37,7 @@ class _AugmentedData():
         new_vars = [var for var in data_vars if not(var in meta_vars)]
         # create a new DataFrame withthe right index and columns
         new_vars_df = pd.DataFrame(index = new_vars, columns = META_COLUMNS)
-        
+
 
         # set all meta info, all will be the same because they're cluster assignments
         new_vars_df['dtype'] = self.df[new_vars].dtypes
@@ -77,11 +77,12 @@ class _AugmentedData():
             vl_tuples = itertools.combinations(var_list,k)
             for cur_var_list in vl_tuples:
                 # create column name
+                cur_var_list = list(cur_var_list)
                 new_name = '_'.join(cur_var_list)
 
                 # lambda to merge the valuse fo the current columns
-                mergerow =  lambda row: '_'.join([str(v) for v in
-                                            row[list(cur_var_list)].values])
+                mergerow =  lambda row: '_'.join([str(row[i_col]) for i_col in
+                                            cur_var_list])
                 # apply and save to df
                 self.df[new_name] = self.df.apply(mergerow,axis=1)
 
@@ -260,15 +261,17 @@ class _AugmentedData():
         """
         add quantiles labeled according to quantiles dictionary provided to
         self.df with column(s) named var+quantile_name . also updates meta_df to
-        make the quantiles used only as groupby
+        make the quantiles used only as groupby.
 
         Parameters
         -----------
         var_list : list
             variable(s) to compute for
-        q : dict
+        quantiles : dict {'low':.25,'mid':.75,'high':1}
             {'name':upper_limit}, pairs to name the quantiles.  1 must be one of the
-            values
+            values default makes bottom 25% low, middle 50% mid and top 25% high.
+        quantile_name : string
+            name to append to var name to create
 
         Returns
         --------
