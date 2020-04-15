@@ -7,14 +7,29 @@ import itertools as itert
 
 RESULT_DF_HEADER_old = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
 
-RESULT_DF_HEADER = ['independent','dependent','trend_type','group_feat', 'agg_trend',
-                    'subgroup','subgroup_trend']
+RESULT_DF_HEADER = ['independent','dependent', 'group_feat',  'subgroup',
+                'agg_trend', 'agg_trend_strength',
+                'subgroup_trend','subgroup_trend_strength',
+                'trend_type', 'comparison_type']
+N_RDFSG = len(RESULT_DF_HEADER)
 
-RESULT_DF_HEADER_PAIRWISE = ['independent','dependent','trend_type','group_feat',
-                    'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
 
-RESULT_DF_HEADER_ALL = ['independent','dependent','trend_type','group_feat', 'agg_trend',
-                    'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
+RESULT_DF_HEADER_PAIRWISE = ['independent','dependent', 'group_feat',
+                'subgroup','subgroup2',
+                'subgroup_trend','subgroup_trend_strength',
+                'subgroup_trend2','subgroup_trend_strength2',
+                'trend_type', 'comparison_type']
+N_RDFP = len(RESULT_DF_HEADER_PAIRWISE)
+
+
+RESULT_DF_HEADER_ALL =['independent','dependent', 'group_feat',
+                'subgroup','subgroup2',
+                'agg_trend', 'agg_trend_strength',
+                'subgroup_trend','subgroup_trend_strength',
+                'subgroup_trend2','subgroup_trend_strength2',
+                'trend_type', 'comparison_type']
+N_RDFA = len(RESULT_DF_HEADER_ALL)
+
 
 #also in ranking_processing
 result_df_type_col_name = 'comparison_type'
@@ -227,7 +242,7 @@ class _TrendDetectors():
         # precomputed trends
         precomputed_trends = set(self.result_df['trend_type'])
 
-        for cur_trend in self.trend_list:
+        for cur_trend in trend_types:
 
             # only compute if the current trend is not in the result_df already
             # or replace is true
@@ -283,12 +298,11 @@ class _TrendDetectors():
                 self.result_df = pd.concat([self.result_df,new_res], axis =0,
                                                     sort=True)
 
-        # reorder columns
-        column_order = ['independent','dependent', 'group_feat',  'subgroup',
-                        'subgroup_trend','subgroup_trend_strength',
-                        'agg_trend', 'agg_trend_strength',
-                        'trend_type', 'comparison_type']
-        self.result_df = self.result_df[column_order]
+            # reorder columns
+            _,n_cols = self.result_df
+            col_reorder = {N_RDFSG:RESULT_DF_HEADER,
+                           N_RDFA:RESULT_DF_HEADER_ALL}
+            self.result_df = self.result_df[col_reorder[n_cols]]
         return self.result_df
 
 
@@ -325,7 +339,7 @@ class _TrendDetectors():
         subgroup_trends = []
         pairwise = []
 
-        for cur_trend in self.trend_list:
+        for cur_trend in trend_types:
             if not( cur_trend.set_vars):
                 cur_trend.get_trend_vars(self)
 
@@ -395,6 +409,11 @@ class _TrendDetectors():
         else:
             self.result_df = pd.concat([self.result_df,pairwise_df],axis = 0,
                                     sort=True)
+        # reorder columns
+        _,n_cols = self.result_df
+        col_reorder = {N_RDFP:RESULT_DF_HEADER_PAIRWISE,
+                       N_RDFA:RESULT_DF_HEADER_ALL}
+        self.result_df = self.result_df[col_reorder[n_cols]]
 
         return self.result_df
 
