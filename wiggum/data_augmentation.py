@@ -42,7 +42,7 @@ class _AugmentedData():
         # set all meta info, all will be the same because they're cluster assignments
         new_vars_df['dtype'] = self.df[new_vars].dtypes
         new_vars_df['var_type'] = 'categorical'
-        new_vars_df['role'] = 'groupby'
+        new_vars_df['role'] = 'splitby'
         new_vars_df['isCount'] = False
 
         # append new rows
