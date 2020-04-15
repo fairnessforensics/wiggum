@@ -15,3 +15,7 @@ env/
 *.DS_Store
 
 .cache
+
+# ignore output from tests
+data/wages_test
+data/wages_test_all
