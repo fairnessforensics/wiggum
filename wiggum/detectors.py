@@ -283,8 +283,12 @@ class _TrendDetectors():
                 self.result_df = pd.concat([self.result_df,new_res], axis =0,
                                                     sort=True)
 
-
-
+        # reorder columns
+        column_order = ['independent','dependent', 'group_feat',  'subgroup',
+                        'subgroup_trend','subgroup_trend_strength',
+                        'agg_trend', 'agg_trend_strength',
+                        'trend_type', 'comparison_type']
+        self.result_df = self.result_df[column_order]
         return self.result_df
 
 
