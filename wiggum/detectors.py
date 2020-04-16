@@ -7,14 +7,29 @@ import itertools as itert
 
 RESULT_DF_HEADER_old = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
 
-RESULT_DF_HEADER = ['independent','dependent','trend_type','group_feat', 'agg_trend',
-                    'subgroup','subgroup_trend']
+RESULT_DF_HEADER = ['independent','dependent', 'group_feat',  'subgroup',
+                'agg_trend', 'agg_trend_strength',
+                'subgroup_trend','subgroup_trend_strength',
+                'trend_type', 'comparison_type']
+N_RDFSG = len(RESULT_DF_HEADER)
 
-RESULT_DF_HEADER_PAIRWISE = ['independent','dependent','trend_type','group_feat',
-                    'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
 
-RESULT_DF_HEADER_ALL = ['independent','dependent','trend_type','group_feat', 'agg_trend',
-                    'subgroup','subgroup_trend','subgroup2','subgroup_trend2']
+RESULT_DF_HEADER_PAIRWISE = ['independent','dependent', 'group_feat',
+                'subgroup','subgroup2',
+                'subgroup_trend','subgroup_trend_strength',
+                'subgroup_trend2','subgroup_trend_strength2',
+                'trend_type', 'comparison_type']
+N_RDFP = len(RESULT_DF_HEADER_PAIRWISE)
+
+
+RESULT_DF_HEADER_ALL =['independent','dependent', 'group_feat',
+                'subgroup','subgroup2',
+                'agg_trend', 'agg_trend_strength',
+                'subgroup_trend','subgroup_trend_strength',
+                'subgroup_trend2','subgroup_trend_strength2',
+                'trend_type', 'comparison_type']
+N_RDFA = len(RESULT_DF_HEADER_ALL)
+
 
 #also in ranking_processing
 result_df_type_col_name = 'comparison_type'
@@ -97,9 +112,9 @@ class _TrendDetectors():
         return get_views(sp_df,colored)
 
     def get_SP_rows(self,thresh=None,inplace=False,replace=False,
-                            independent = None,dependent = None,group_feat= None,
-                            subgroup= None,subgroup2= None, trend_type=None,
-                            comparison_type =None):
+                    independent = None,dependent = None,group_feat= None,
+                    subgroup= None,subgroup2= None, trend_type=None,
+                    comparison_type =None):
         """
 
         return a dataframe of  rows of the results that have at least one
@@ -174,7 +189,7 @@ class _TrendDetectors():
             filt_idx = self.get_trend_rows(independent = independent ,
                                             dependent = dependent,
                                             group_feat= group_feat,
-                            subgroup = subgroup,subgroup2= subgroup2,
+                            subgroup = subgroup, subgroup2= subgroup2,
                             trend_type = trend_type,
                             comparison_type = comparison_type, index=True)
 
@@ -186,7 +201,22 @@ class _TrendDetectors():
 
         return sp_df
 
+    def parse_trend_input_list(self,trend_types):
+        '''
+        turn input list into list of trend objects and append for storage
+        '''
 
+        if type(trend_types[0]) is str:
+            # instantiate objects
+            new_trends = [all_trend_types[trend]() for trend in trend_types]
+
+        else:
+            # use provided, must be instantiated
+            new_trends = trend_types
+
+        self.trend_list.extend(new_trends)
+
+        return new_trends
 
 
     def get_subgroup_trends_1lev(self,trend_types, replace=False):
@@ -207,14 +237,7 @@ class _TrendDetectors():
         data_df = self.df
         groupby_vars = self.get_vars_per_role('splitby')
 
-
-        if type(trend_types[0]) is str:
-            # instantiate objects
-            self.trend_list.extend([all_trend_types[trend]()
-                                                    for trend in trend_types])
-        else:
-            # use provided, must be instantiated
-            self.trend_list.extend(trend_types)
+        new_trends = self.parse_trend_input_list(trend_types)
 
         # prep the result df to add data to later
         if self.result_df.empty:
@@ -227,7 +250,7 @@ class _TrendDetectors():
         # precomputed trends
         precomputed_trends = set(self.result_df['trend_type'])
 
-        for cur_trend in self.trend_list:
+        for cur_trend in new_trends:
 
             # only compute if the current trend is not in the result_df already
             # or replace is true
@@ -275,17 +298,19 @@ class _TrendDetectors():
 
             new_res[result_df_type_col_name] = 'aggregate-subgroup'
 
+            # write or append depending on settings. contact in axis=0 is
+            # the pandas append
             if self.result_df.empty or replace:
-                # print('replacing',self.result_df.empty,replace)
                 self.result_df = new_res
             else:
+                self.result_df = pd.concat([self.result_df,new_res], axis =0,
+                                                    sort=True)
 
-                # print('appending ',len(new_res), ' to ',len(self.result_df))
-                self.result_df = pd.concat([self.result_df,new_res], sort=True)
-        # ,on=['independent','dependent'], how='left
-
-
-
+            # reorder columns
+            _,n_cols = self.result_df.shape
+            col_reorder = {N_RDFSG:RESULT_DF_HEADER,
+                           N_RDFA:RESULT_DF_HEADER_ALL}
+            self.result_df = self.result_df[col_reorder[n_cols]]
         return self.result_df
 
 
@@ -307,22 +332,14 @@ class _TrendDetectors():
         data_df = self.df
         groupby_vars = self.get_vars_per_role('splitby')
 
-
-        if type(trend_types[0]) is str:
-            # instantiate objects
-            self.trend_list.extend([all_trend_types[trend]()
-                                                    for trend in trend_types])
-        else:
-            # use provided, must be instantiated
-            self.trend_list.extend(trend_types)
-
+        new_trends = self.parse_trend_input_list(trend_types)
 
         # create empty lists
         all_trends = []
         subgroup_trends = []
         pairwise = []
 
-        for cur_trend in self.trend_list:
+        for cur_trend in new_trends:
             if not( cur_trend.set_vars):
                 cur_trend.get_trend_vars(self)
 
@@ -355,14 +372,13 @@ class _TrendDetectors():
                 # append
                 subgroup_trends.append(curgroup_corr)
 
-        print(subgroup_trends[0].columns)
+
 
         # merge together
         lgroup = pd.concat(subgroup_trends,axis=0,sort=True).reset_index().drop(columns = ['index'])
         # make a copy and rename them to 2
         rgroup = lgroup.copy()
-        print(lgroup.columns)
-        print(len(lgroup))
+
         # TODO: unhardcode this
         rgroup.rename(columns={'subgroup_trend':'subgroup_trend2',
                             'subgroup_trend_strength':'subgroup_trend_strength2',
@@ -370,31 +386,34 @@ class _TrendDetectors():
         # merge back together
         pairwise_df = pd.merge(lgroup,rgroup)
         # TODO remove when subgroup is the same
-        print(len(pairwise_df))
+
 
         # when they're equal they're the same and when greater they're opposite alphabetical
         # order, by keepoing only alphabetical order subgroup,subgroup2 pairs we keep only
         # unique combinations
-        print(pairwise_df.columns)
+
         pairwise_df.drop(pairwise_df[pairwise_df['subgroup']>=pairwise_df['subgroup2']].index,
                             inplace=True)
-        print(len(pairwise_df))
+
         # remove rows where a trend is undefined
         pairwise_df.dropna(subset=['subgroup_trend','subgroup_trend2'],
                                 axis=0,inplace=True)
 
-        print(len(pairwise_df))
+
         pairwise_df[result_df_type_col_name] = 'pairwise'
 
+        # write or append depending on settings. contact in axis=0 is
+        # the pandas append
         if self.result_df.empty or replace:
-
             self.result_df = pairwise_df
         else:
-
             self.result_df = pd.concat([self.result_df,pairwise_df],axis = 0,
                                     sort=True)
-        # ,on=['independent','dependent'], how='left
-
+        # reorder columns
+        _,n_cols = self.result_df.shape
+        col_reorder = {N_RDFP:RESULT_DF_HEADER_PAIRWISE,
+                       N_RDFA:RESULT_DF_HEADER_ALL}
+        self.result_df = self.result_df[col_reorder[n_cols]]
 
         return self.result_df
 
