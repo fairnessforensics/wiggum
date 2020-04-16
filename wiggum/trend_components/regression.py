@@ -145,7 +145,9 @@ class LinearRegression():
                     # save
                     trend_name = '_'.join([self.name , trend_col_name,
                                                         groupby_lev,i,d])
-                    self.trend_precompute[trend_name] = [b,slope,r_val]
+                    pc_df = pd.DataFrame(data = [b,slope,r_val],
+                                    columns = ['intercept','slop','r^2'])
+                    self.trend_precompute[trend_name] = pc_df
 
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
