@@ -47,7 +47,7 @@ function tabulate(data, action) {
 	  .attr("class", "filterrow")
   	  .each(function(d,i) {
 			// dependent
-			if (i==0) {
+			if (i==1) {
 				if (action == 'page_load') {
 					dependent_options = d3.map(data, function(d){return d.dependent;}).keys();
 				} 
@@ -66,7 +66,7 @@ function tabulate(data, action) {
 									function(d){ return dependent_selected.includes(d); });
 			}	
 			// independent
-			if (i==2) {
+			if (i==0) {
 				if (action == 'page_load') {
 					independent_options = d3.map(data, function(d){return d.independent;}).keys();
 				} 			
@@ -85,7 +85,7 @@ function tabulate(data, action) {
 									function(d){ return independent_selected.includes(d); });
 			}	
 			// group_feat
-			if (i==1) {
+			if (i==2) {
 				if (action == 'page_load') {
 					group_feat_options = d3.map(data, function(d){return d.group_feat;}).keys();
 				} 
@@ -123,7 +123,7 @@ function tabulate(data, action) {
 									function(d){ return subgroup_selected.includes(d); });
 			}	
 			// subgroup_trend_strength
-			if (i==5) {
+			if (i==7) {
 				d3.select(this).append("text")
 					.attr('id', 'subgroup_trend_strength_label')
 					.style("font-size", "10px")
@@ -143,7 +143,7 @@ function tabulate(data, action) {
 								});
 			}	
 			// trend_type
-			if (i==6) {
+			if (i==8) {
 				if (action == 'page_load') {
 					trend_type_options = d3.map(data, function(d){return d.trend_type;}).keys();
 				} 					
@@ -162,7 +162,7 @@ function tabulate(data, action) {
 									function(d){ return trend_type_selected.includes(d); });
 			}	
 			// agg_trend_strength
-			if (i==8) {
+			if (i==5) {
 				d3.select(this).append("text")
 					.attr('id', 'agg_trend_strength_label')
 					.style("font-size", "10px")
