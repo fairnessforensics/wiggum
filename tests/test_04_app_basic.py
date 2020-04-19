@@ -198,7 +198,7 @@ def test_model():
     assert corr_obj.is_computable(labeled_df_setup)
     labeled_df_setup.get_subgroup_trends_1lev([corr_obj])
     labeled_df_setup.add_distance()
-    distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
+    distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, labeled_df_setup.result_df)
     assert len(distance_heatmap_dict) == 3
 
     # test getRankTrendDetail
