@@ -123,8 +123,12 @@ def getDistanceHeatmapDict(labeled_df, df):
                 # trend display name
                 trend_display_name = labeled_df.get_trend_display_name(trend_type)
 
+                # detail view type
+                detail_view_type = labeled_df.get_detail_view_type(trend_type)
+
                 distance_heatmap_dict = {'trend_type' : trend_type,
                             'trend_display_name': trend_display_name,
+                            'detail_view_type': detail_view_type,
                             'group_feat': gby,
                             'subgroup': gby_lev,
                             'heatmap':heatmap.to_dict('index')}
