@@ -19,7 +19,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 		groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
 
-		if (data.trend_type == 'pearson_corr' || data.trend_type == 'lin_reg') {	
+		if (data.detail_view_type == 'scatter') {	
 			
 			rowLabels = [];
 			colLabels = [];
@@ -36,7 +36,8 @@ function updateDistanceHeatmapContainer(dataAll) {
 			}
 
 			matrix_data = UpdateLinearRegressionMatrixFormat(heatmapMatrix, rowLabels, 
-													colLabels, groupInfo, data.trend_type);
+													colLabels, groupInfo, data.trend_type,
+													data.detail_view_type);
 
 			if (createScatterPlotFlag) {
 				// Scatter plot
@@ -48,7 +49,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 				createScatterPlotFlag = false;
 			}
 
-		} else if (data.trend_type == 'rank_trend') {
+		} else if (data.detail_view_type == 'rank') {
 			var pushFlag = true;
 			rowLabels = [];
 			colLabels = [];
@@ -69,7 +70,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 			matrix_data = UpdateRankTrendMatrixFormat(
 								heatmapMatrix, rowLabels, colLabels, 
-								groupInfo,data.trend_type);
+								groupInfo, data.trend_type, data.detail_view_type);
 		}
 
 		// if a new trend type, draw the title for new trend type 
@@ -117,7 +118,7 @@ var clickHeatmapMatrixCell = function() {
 function updateDetailView() {
 	var d = this.datum();
 
-	if (d.trend_type == 'pearson_corr' || d.trend_type == 'lin_reg') {
+	if (d.detail_view_type == 'scatter') {
 		updateScatter(d);
 
 		// highlight in result table
@@ -125,7 +126,7 @@ function updateDetailView() {
 			category: d.category, trend_type:d.trend_type };		
 
 		updateTabulate(vars_table);
-	} else if (d.trend_type == 'rank_trend') {
+	} else if (d.detail_view_type == 'rank') {
 
 		$.ajax({
 			type: 'POST',
