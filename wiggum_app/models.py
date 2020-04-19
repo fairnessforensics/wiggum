@@ -87,15 +87,17 @@ def checkSameMetadata(labeled_df, meta):
 
     return checkResult
 
-def getDistanceHeatmapDict(df):
+def getDistanceHeatmapDict(labeled_df, df):
     """
     Generate Distance Heatmap Dictitonary List for overview 
     by grouping the results and extracting distances from result table.
 
     Parameters
     -----------
+    labeled_df : DataFrame
+        LabeledDataFrame   
     df : DataFrame
-        LabeledDataFrame    
+        dataframe
     Returns
     --------
     distance_heatmap_dict_list: Distance Heatmap Dictitonary List formatted for use in visualization
@@ -118,7 +120,13 @@ def getDistanceHeatmapDict(df):
                 # replace Nan to 99
                 heatmap.fillna(99, inplace=True)
 
+                # trend display name
+                trend_display_name = labeled_df.get_trend_display_name(trend_type)
+                print(type(trend_type))
+                print(trend_display_name)
+
                 distance_heatmap_dict = {'trend_type' : trend_type,
+                            'trend_display_name': trend_display_name,
                             'group_feat': gby,
                             'subgroup': gby_lev,
                             'heatmap':heatmap.to_dict('index')}

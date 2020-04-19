@@ -271,7 +271,7 @@ def main():
                     labeled_df_setup.add_distance()
 
             # Generate distance heatmaps
-            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, labeled_df_setup.result_df)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
@@ -308,7 +308,7 @@ def main():
                                 trend_type =filter_object['trend_type'])
             
             # Generate distance heatmaps
-            distance_heatmap_dict = models.getDistanceHeatmapDict(filter_result)
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, filter_result)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
@@ -324,7 +324,7 @@ def main():
         # visualize.html 'Reset' button clicked
         if action == 'reset':
             # Generate distance heatmaps
-            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup.result_df)
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, labeled_df_setup.result_df)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
@@ -370,7 +370,7 @@ def main():
                 detect_result = labeled_df_setup.get_SP_rows(sp_filter,replace=True)            
 
             # Generate distance heatmaps
-            distance_heatmap_dict = models.getDistanceHeatmapDict(detect_result)
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, detect_result)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
@@ -404,7 +404,7 @@ def main():
                                     trend_type =filter_object['trend_type'])
 
             # Generate distance heatmaps
-            distance_heatmap_dict = models.getDistanceHeatmapDict(rank_result)
+            distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, rank_result)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
