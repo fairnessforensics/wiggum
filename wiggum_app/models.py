@@ -122,8 +122,6 @@ def getDistanceHeatmapDict(labeled_df, df):
 
                 # trend display name
                 trend_display_name = labeled_df.get_trend_display_name(trend_type)
-                print(type(trend_type))
-                print(trend_display_name)
 
                 distance_heatmap_dict = {'trend_type' : trend_type,
                             'trend_display_name': trend_display_name,
