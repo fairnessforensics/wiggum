@@ -113,6 +113,7 @@ class LinearRegression():
                 for (i,iw),(d,dw) in var_pairs:
                     # compute each slope
 
+
                     if np.sum(pd.isna([iw,dw])) == 2:
                         # both weights are NaNs
                         slope, b, r_val, p_val, e = stats.linregress(df[i],df[d])
@@ -127,18 +128,26 @@ class LinearRegression():
                     elif np.sum(pd.isna([iw,dw])) == 0:
                         # don't know what to do i this case
                         # both have weights, throw error
+                        b = np.NaN
                         slope = np.NaN
                         r_val = np.NaN
                         warnings.warn('cannot compute with two different weights')
                     else:
                         # don't know what to do i this case
                         # both have weights, throw error
+                        b = np.NaN
                         slope = np.NaN
                         r_val = np.NaN
                         warnings.warn('cannot compute')
 
                     # quality is absolute value of r_val (corelation coefficient)
                     slopes.append([i,d,slope,groupby_lev,np.abs(r_val)])
+                    # save
+                    trend_name = '_'.join([self.name , trend_col_name,
+                                                        str(groupby_lev),i,d])
+                    pc_df = pd.DataFrame(data = [[b,slope,r_val]],
+                                    columns = ['intercept','slop','r^2'])
+                    self.trend_precompute[trend_name] = pc_df
 
         #save as df
         if type(data_df) is pd.core.groupby.DataFrameGroupBy:
