@@ -144,8 +144,8 @@ class LinearRegression():
                     slopes.append([i,d,slope,groupby_lev,np.abs(r_val)])
                     # save
                     trend_name = '_'.join([self.name , trend_col_name,
-                                                        groupby_lev,i,d])
-                    pc_df = pd.DataFrame(data = [b,slope,r_val],
+                                                        str(groupby_lev),i,d])
+                    pc_df = pd.DataFrame(data = [[b,slope,r_val]],
                                     columns = ['intercept','slop','r^2'])
                     self.trend_precompute[trend_name] = pc_df
 

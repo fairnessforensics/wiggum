@@ -107,7 +107,8 @@ class BinClassStats():
                 # compute each stat
                 confusion = df[cur_col].value_counts()
 
-                trend_name = '_'.join([self.name,trend_col_name,groupby_lev,g,p])
+                trend_name = '_'.join([self.name,trend_col_name,
+                                                    str(groupby_lev),g,p])
                 self.trend_precompute[trend_name] = confusion
 
                 # add values that are not there
