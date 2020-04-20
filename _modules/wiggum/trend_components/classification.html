@@ -174,10 +174,9 @@
                 <span class="c1"># compute each stat</span>
                 <span class="n">confusion</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">cur_col</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
 
-                <span class="c1"># acc = (confusion[&#39;TP&#39;] + confusion[&#39;TN&#39;])/sum(confusion)</span>
-                <span class="c1"># tpr = confusion[&#39;TP&#39;]/(confusion[&#39;TP&#39;] + confusion[&#39;FN&#39;])</span>
-                <span class="c1"># ppv = confusion[&#39;TP&#39;]/(confusion[&#39;TP&#39;] + confusion[&#39;FP&#39;])</span>
-                <span class="c1"># tnr = confusion[&#39;TN&#39;]/(confusion[&#39;TN&#39;] + confusion[&#39;FN&#39;])</span>
+                <span class="n">trend_name</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">trend_col_name</span><span class="p">,</span>
+                                                    <span class="nb">str</span><span class="p">(</span><span class="n">groupby_lev</span><span class="p">),</span><span class="n">g</span><span class="p">,</span><span class="n">p</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">trend_precompute</span><span class="p">[</span><span class="n">trend_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">confusion</span>
 
                 <span class="c1"># add values that are not there</span>
                 <span class="n">req_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;TP&#39;</span><span class="p">,</span><span class="s1">&#39;TN&#39;</span><span class="p">,</span><span class="s1">&#39;FP&#39;</span><span class="p">,</span><span class="s1">&#39;FN&#39;</span><span class="p">]</span>
