@@ -324,6 +324,7 @@ div.tooltip {
 #trend_type_selection {
     position: absolute;
     top: 50px;
+    width: 206px;
 }
 
 #control_table {

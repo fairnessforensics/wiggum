@@ -53,6 +53,9 @@ def main():
             trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
             result_dict['trend_type_list'] = list(trend_type_list)
 
+            # get trend display names
+            result_dict['trend_display_names'] = [v().display_name for k, v in wg.all_trend_types.items()]
+
             return jsonify(result_dict)
 
         # index.html 'Open' button clicked for data file
@@ -85,10 +88,14 @@ def main():
             sample_list = []
             sample_list = labeled_df_setup.get_data_sample()
 
+            # get trend display names
+            trend_display_names = [v().display_name for k, v in wg.all_trend_types.items()]
+            print(trend_display_names)
             return jsonify({'var_types': var_types,
                             'samples': sample_list,
                             'possible_roles': wg.possible_roles, 
-                            'trend_types': list(wg.all_trend_types.keys())})
+                            'trend_types': list(wg.all_trend_types.keys()),
+                            'trend_display_names': trend_display_names})
 
         if action == 'save':
             meta = request.form['metaList']
