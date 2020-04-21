@@ -211,7 +211,7 @@ function getSelectValues(select) {
 	opt = options[i];
 
 	if (opt.selected) {
-		result.push(opt.text);
+		result.push(opt.value);
 	}
 	}
 	return result;

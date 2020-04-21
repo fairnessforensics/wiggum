@@ -137,6 +137,27 @@ def getDistanceHeatmapDict(labeled_df, df):
 
     return distance_heatmap_dict_list
 
+def addTrendDisplayName(df):
+    """
+    Add trend display name column to df.
+
+    Parameters
+    -----------
+    df : DataFrame
+        dataframe
+    Returns
+    --------
+    df: df appended trend display name
+    """
+
+    # add trend display column in result df
+    name_mapper =  {k:v().display_name for k,v in wg.all_trend_types.items()}
+
+    df['trend_name'] = df['trend_type']
+    df.replace({'trend_type': name_mapper}, inplace=True)    
+
+    return df
+
 def getRankTrendDetail(labeled_df, dependent, independent, group_feat):
     """
     Extract stats for rank trend detail view.

@@ -285,8 +285,12 @@ def main():
 
             default_threshold = wg.trend_quality_sp
 
+            # Add trend diplay name
+            result_df_temp = labeled_df_setup.result_df.copy()
+            result_df = models.addTrendDisplayName(result_df_temp)
+
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
-                            result_df = labeled_df_setup.result_df.to_json(orient='records'),
+                            result_df = result_df.to_json(orient='records'),
                             df = df, default_threshold = default_threshold, project_name = project_name)
 
         # visualize.html rank trend's cells clicked
@@ -313,7 +317,7 @@ def main():
                                 dependent=filter_object['dependent'],
                                 group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
                                 trend_type =filter_object['trend_type'])
-            
+
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, filter_result)
 
@@ -322,6 +326,9 @@ def main():
 
             # set filter flag
             filter_flag = True
+
+            # Add trend diplay name
+            filter_result = models.addTrendDisplayName(filter_result)
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = filter_result.to_json(orient='records'),
@@ -342,8 +349,12 @@ def main():
             # clean filter object
             filter_object.clear()
 
+            # Add trend diplay name
+            result_df_temp = labeled_df_setup.result_df.copy()
+            result_df = models.addTrendDisplayName(result_df_temp)
+
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
-                            result_df = labeled_df_setup.result_df.to_json(orient='records'),
+                            result_df = result_df.to_json(orient='records'),
                             df = df)
 
         # visualize.html 'Detect' button clicked
@@ -382,6 +393,9 @@ def main():
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
+            # Add trend diplay name
+            detect_result = models.addTrendDisplayName(detect_result)
+
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = detect_result.to_json(orient='records'),
                             df = df)
@@ -415,6 +429,9 @@ def main():
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
+
+            # Add trend diplay name
+            rank_result = models.addTrendDisplayName(rank_result)
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = rank_result.to_json(orient='records'),
