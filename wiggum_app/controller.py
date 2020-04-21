@@ -90,7 +90,7 @@ def main():
 
             # get trend display names
             trend_display_names = [v().display_name for k, v in wg.all_trend_types.items()]
-            print(trend_display_names)
+
             return jsonify({'var_types': var_types,
                             'samples': sample_list,
                             'possible_roles': wg.possible_roles, 
