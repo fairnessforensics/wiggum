@@ -10,6 +10,8 @@ function updateDistanceHeatmapContainer(dataAll) {
 	d3.select("#container").selectAll('div').remove();
 
 	var createScatterPlotFlag = true;
+	// temp trend type used to store the previous trend type
+	var tempTrendType = "";
 
 	for (var key in dataAll){
 		data = dataAll[key];
@@ -17,7 +19,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 		groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
 
-		if (data.trend_type == 'pearson_corr' || data.trend_type == 'lin_reg') {	
+		if (data.detail_view_type == 'scatter') {	
 			
 			rowLabels = [];
 			colLabels = [];
@@ -34,7 +36,8 @@ function updateDistanceHeatmapContainer(dataAll) {
 			}
 
 			matrix_data = UpdateLinearRegressionMatrixFormat(heatmapMatrix, rowLabels, 
-													colLabels, groupInfo, data.trend_type);
+													colLabels, groupInfo, data.trend_type,
+													data.detail_view_type);
 
 			if (createScatterPlotFlag) {
 				// Scatter plot
@@ -46,7 +49,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 				createScatterPlotFlag = false;
 			}
 
-		} else if (data.trend_type == 'rank_trend') {
+		} else if (data.detail_view_type == 'rank') {
 			var pushFlag = true;
 			rowLabels = [];
 			colLabels = [];
@@ -67,7 +70,13 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 			matrix_data = UpdateRankTrendMatrixFormat(
 								heatmapMatrix, rowLabels, colLabels, 
-								groupInfo,data.trend_type);
+								groupInfo, data.trend_type, data.detail_view_type);
+		}
+
+		// if a new trend type, draw the title for new trend type 
+		if (data.trend_type != tempTrendType) {
+			drawTrendDisplayName(data.trend_display_name);
+			tempTrendType = data.trend_type;
 		}
 
 		distanceMatrixHeatmap({
@@ -109,7 +118,7 @@ var clickHeatmapMatrixCell = function() {
 function updateDetailView() {
 	var d = this.datum();
 
-	if (d.trend_type == 'pearson_corr' || d.trend_type == 'lin_reg') {
+	if (d.detail_view_type == 'scatter') {
 		updateScatter(d);
 
 		// highlight in result table
@@ -117,7 +126,7 @@ function updateDetailView() {
 			category: d.category, trend_type:d.trend_type };		
 
 		updateTabulate(vars_table);
-	} else if (d.trend_type == 'rank_trend') {
+	} else if (d.detail_view_type == 'rank') {
 
 		$.ajax({
 			type: 'POST',
@@ -354,5 +363,46 @@ function DrawHeatmapLegend() {
 	svg.append("g")
 		.attr("transform", "translate(-20, 0)")
 		.call(colorLegend);
+
+	// Append N/A cell for legend
+	svg.append("rect")
+		.attr("x", 0)
+		.attr("y", 260)
+		.attr("width", 50)
+		.attr("height", 20)
+		.style("fill", '#808080')
+		.attr("transform", "translate(-20, 0)");
+
+	svg.append("text")
+		.attr("x", 55)
+		.attr("y", 275)
+		.attr("text-anchor", "middle")  
+		.style("font-size", "15px") 
+		.text("N/A");
+
+}
+
+/**
+ * Draw trend type title
+ *
+ * @param trendType - Trend type.
+ * @returns none.
+ */
+function drawTrendDisplayName(trendDisplayName) {
+	var margin = {top: 15, left: 5};
+
+	var svg = d3.select(container)
+				.append("div")	
+				.classed("svg-trendtype-title", true)	
+				.append("svg")	
+				.attr("height", 30)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	svg.append("text")          
+		.attr("y", 10)
+		.attr("text-anchor", "left")  
+		.style("font-size", "20px") 
+		.text(trendDisplayName);					
 
 }

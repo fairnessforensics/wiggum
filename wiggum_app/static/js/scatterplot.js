@@ -603,9 +603,10 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
  * @param colLabels - dependent used for columns labels.
  * @param category - groupfeat and subgroup.
  * @param trend_type - trend type.
+ * @param detail_view_type - detail view type.
  * @returns matrix - containing information for cells.
  */
-var UpdateLinearRegressionMatrixFormat = function(matrix, rowLabels, colLabels, category, trend_type) {
+var UpdateLinearRegressionMatrixFormat = function(matrix, rowLabels, colLabels, category, trend_type, detail_view_type) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
@@ -616,7 +617,8 @@ var UpdateLinearRegressionMatrixFormat = function(matrix, rowLabels, colLabels, 
 					value: cell,
 					categoryAttr: category.groupby,
 					category: category.value,
-					trend_type: trend_type
+					trend_type: trend_type,
+					detail_view_type: detail_view_type
 				};
 		});
 	});

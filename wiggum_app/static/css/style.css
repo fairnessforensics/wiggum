@@ -50,7 +50,12 @@
     top: 10px;
     left: 0;
   }
-
+.svg-trendtype-title {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    height: 6%;    
+}
 #legend {
     width: 17%;    
     height: 42%;
@@ -319,6 +324,7 @@ div.tooltip {
 #trend_type_selection {
     position: absolute;
     top: 50px;
+    width: 206px;
 }
 
 #control_table {

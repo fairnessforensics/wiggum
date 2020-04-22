@@ -210,9 +210,10 @@ function DrawRankChart(data) {
  * @param colLabels - feat2 used for columns labels.
  * @param category - groupfeat and subgroup.
  * @param trend_type - trend type.
+ * @param detail_view_type - detail view type.
  * @returns matrix - containing information for cells.
  */
-var UpdateRankTrendMatrixFormat = function(matrix, rowLabels, colLabels, groupInfo, trend_type) {
+var UpdateRankTrendMatrixFormat = function(matrix, rowLabels, colLabels, groupInfo, trend_type, detail_view_type) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
@@ -223,7 +224,8 @@ var UpdateRankTrendMatrixFormat = function(matrix, rowLabels, colLabels, groupIn
 					targetAttr: rowLabels[i],
 					protectedAttr: colLabels[j],
 					categoryAttr: groupInfo.groupby,
-					category: groupInfo.value			
+					category: groupInfo.value,
+					detail_view_type: detail_view_type		
 			};
 		});
 	});

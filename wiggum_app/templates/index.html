@@ -30,7 +30,7 @@
             opt = options[i];
         
             if (opt.selected) {
-                result.push(opt.text);
+                result.push(opt.value);
             }
             }
             return result;
@@ -84,12 +84,13 @@
                             var option = '';
                             var trend_types = data.trend_types;
                             var trend_type_list = data.trend_type_list;
+                            var trend_display_names = data.trend_display_names;  
                             $('#trend_type_selection').empty();
                             for (var i=0;i<trend_types.length;i++){
                                 if (trend_type_list.includes(trend_types[i])){
-                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '" selected>' + trend_types[i] + '</option>';
+                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '" selected>' + trend_display_names[i] + '</option>';
                                 } else {
-                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                    option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_display_names[i] + '</option>';
                                 }
                             }
                             $('#trend_type_selection').append(option);
@@ -144,8 +145,9 @@
                                         $('#trend_type_selection').empty();
                                         var option = '';
                                         var trend_types = data.trend_types;
+                                        var trend_display_names = data.trend_display_names;                                        
                                         for (var i=0;i<trend_types.length;i++){
-                                            option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_types[i] + '</option>';
+                                            option += '<option id="trend_type_option" value="'+ trend_types[i] + '">' + trend_display_names[i] + '</option>';
                                         }
                                         $('#trend_type_selection').append(option);
 

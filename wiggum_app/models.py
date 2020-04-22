@@ -87,15 +87,17 @@ def checkSameMetadata(labeled_df, meta):
 
     return checkResult
 
-def getDistanceHeatmapDict(df):
+def getDistanceHeatmapDict(labeled_df, cur_result_df):
     """
     Generate Distance Heatmap Dictitonary List for overview 
     by grouping the results and extracting distances from result table.
 
     Parameters
     -----------
-    df : DataFrame
-        LabeledDataFrame    
+    labeled_df : LabeledDataFrame
+        object from which the cur_result_df was computed, used for meta information
+    cur_result_df : DataFrame
+        A result_df or derivative of it after filtering, detecting or ranking. 
     Returns
     --------
     distance_heatmap_dict_list: Distance Heatmap Dictitonary List formatted for use in visualization
@@ -103,7 +105,7 @@ def getDistanceHeatmapDict(df):
 
     distance_heatmap_dict_list = []
 
-    for trend_type, trend_df in df.groupby(['trend_type'], sort=False):
+    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
 
         # iterate over the GroupFeat variables
         for gby, gby_trend_df in trend_df.groupby('group_feat'):
@@ -118,7 +120,15 @@ def getDistanceHeatmapDict(df):
                 # replace Nan to 99
                 heatmap.fillna(99, inplace=True)
 
+                # trend display name
+                trend_display_name = labeled_df.get_trend_display_name(trend_type)
+
+                # detail view type
+                detail_view_type = labeled_df.get_detail_view_type(trend_type)
+
                 distance_heatmap_dict = {'trend_type' : trend_type,
+                            'trend_display_name': trend_display_name,
+                            'detail_view_type': detail_view_type,
                             'group_feat': gby,
                             'subgroup': gby_lev,
                             'heatmap':heatmap.to_dict('index')}
@@ -126,6 +136,31 @@ def getDistanceHeatmapDict(df):
                 distance_heatmap_dict_list.append(distance_heatmap_dict)
 
     return distance_heatmap_dict_list
+
+def replaceTrendDisplayName(cur_result_df):
+    """
+    Add trend display name column to df.
+
+    Parameters
+    -----------
+    cur_result_df : DataFrame
+        A result_df or derivative of it after filtering, detecting or ranking. 
+     
+    Returns
+    --------
+    cur_result_df: DataFrame
+       input with trend_type moved to the trend_name column and the display name in the trend_type column
+    """
+
+    # compute mapping dictionary to update tend names to diplay names
+    name_mapper =  {k:v().display_name for k,v in wg.all_trend_types.items()}
+
+    # preserve trend_type short names in the trend_name column
+    cur_result_df['trend_name'] =  cur_result_df['trend_type']
+    # replace the trend_types with the display names
+    cur_result_df.replace({'trend_type': name_mapper}, inplace=True)    
+
+    return cur_result_df
 
 def getRankTrendDetail(labeled_df, dependent, independent, group_feat):
     """

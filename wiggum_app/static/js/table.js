@@ -17,6 +17,9 @@ function tabulate(data, action) {
 
 	var columns = Object.keys(data[0]);
 
+	// Remove last column of trend names
+	columns.pop();
+	
 	// append the header row
 	var thead = table.append('thead').append('tr')
 	  .selectAll('th')
@@ -145,7 +148,16 @@ function tabulate(data, action) {
 			// trend_type
 			if (i==8) {
 				if (action == 'page_load') {
-					trend_type_options = d3.map(data, function(d){return d.trend_type;}).keys();
+					trend_types = d3.map(data, function(d){return d.trend_type;}).keys();
+					trend_names = d3.map(data, function(d){return d.trend_name;}).keys();
+					
+					for (var j = 0; j < trend_types.length; j++){
+						var singleObj = {};
+						singleObj['text'] = trend_types[j];
+						singleObj['value'] = trend_names[j];
+					
+						trend_type_options.push(singleObj);
+					}
 				} 					
 
 				var select = d3.select(this).append('select')
@@ -156,10 +168,10 @@ function tabulate(data, action) {
 				var options = select.selectAll('option')
 									.data(trend_type_options).enter()
 									.append('option')
-									.attr("value", function(d) { return d; })
-									.text(function(d){return d;})
+									.attr("value", function(d) { return d.value; })
+									.text(function(d){return d.text;})
 									.property("selected", 
-									function(d){ return trend_type_selected.includes(d); });
+									function(d){ return trend_type_selected.includes(d.value); });
 			}	
 			// agg_trend_strength
 			if (i==5) {
