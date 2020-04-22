@@ -87,17 +87,17 @@ def checkSameMetadata(labeled_df, meta):
 
     return checkResult
 
-def getDistanceHeatmapDict(labeled_df, df):
+def getDistanceHeatmapDict(labeled_df, cur_result_df):
     """
     Generate Distance Heatmap Dictitonary List for overview 
     by grouping the results and extracting distances from result table.
 
     Parameters
     -----------
-    labeled_df : DataFrame
-        LabeledDataFrame   
-    df : DataFrame
-        dataframe
+    labeled_df : LabeledDataFrame
+        object from which the cur_result_df was computed, used for meta information
+    cur_result_df : DataFrame
+        The cur_result_df parameter will be passed by filter_df, detect_df and rank_df, not always result_df
     Returns
     --------
     distance_heatmap_dict_list: Distance Heatmap Dictitonary List formatted for use in visualization
@@ -105,7 +105,7 @@ def getDistanceHeatmapDict(labeled_df, df):
 
     distance_heatmap_dict_list = []
 
-    for trend_type, trend_df in df.groupby(['trend_type'], sort=False):
+    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
 
         # iterate over the GroupFeat variables
         for gby, gby_trend_df in trend_df.groupby('group_feat'):
@@ -137,26 +137,26 @@ def getDistanceHeatmapDict(labeled_df, df):
 
     return distance_heatmap_dict_list
 
-def addTrendDisplayName(df):
+def replaceTrendDisplayName(cur_result_df):
     """
     Add trend display name column to df.
 
     Parameters
     -----------
-    df : DataFrame
-        dataframe
+    cur_result_df : DataFrame
+        The cur_result_df parameter will be passed by filter_df, detect_df and rank_df, not always result_df
     Returns
     --------
-    df: df appended trend display name
+    cur_result_df: df appended trend display name
     """
 
     # add trend display column in result df
     name_mapper =  {k:v().display_name for k,v in wg.all_trend_types.items()}
 
-    df['trend_name'] = df['trend_type']
-    df.replace({'trend_type': name_mapper}, inplace=True)    
+    cur_result_df['trend_name'] =  cur_result_df['trend_type']
+    cur_result_df.replace({'trend_type': name_mapper}, inplace=True)    
 
-    return df
+    return cur_result_df
 
 def getRankTrendDetail(labeled_df, dependent, independent, group_feat):
     """

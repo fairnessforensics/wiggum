@@ -287,7 +287,7 @@ def main():
 
             # Add trend diplay name
             result_df_temp = labeled_df_setup.result_df.copy()
-            result_df = models.addTrendDisplayName(result_df_temp)
+            result_df = models.replaceTrendDisplayName(result_df_temp)
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = result_df.to_json(orient='records'),
@@ -328,7 +328,7 @@ def main():
             filter_flag = True
 
             # Add trend diplay name
-            filter_result = models.addTrendDisplayName(filter_result)
+            filter_result = models.replaceTrendDisplayName(filter_result)
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = filter_result.to_json(orient='records'),
@@ -351,7 +351,7 @@ def main():
 
             # Add trend diplay name
             result_df_temp = labeled_df_setup.result_df.copy()
-            result_df = models.addTrendDisplayName(result_df_temp)
+            result_df = models.replaceTrendDisplayName(result_df_temp)
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = result_df.to_json(orient='records'),
@@ -394,7 +394,7 @@ def main():
             df = json.dumps(df, indent=2)
 
             # Add trend diplay name
-            detect_result = models.addTrendDisplayName(detect_result)
+            detect_result = models.replaceTrendDisplayName(detect_result)
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = detect_result.to_json(orient='records'),
@@ -431,7 +431,7 @@ def main():
             df = json.dumps(df, indent=2)
 
             # Add trend diplay name
-            rank_result = models.addTrendDisplayName(rank_result)
+            rank_result = models.replaceTrendDisplayName(rank_result)
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = rank_result.to_json(orient='records'),
