@@ -97,7 +97,7 @@ def getDistanceHeatmapDict(labeled_df, cur_result_df):
     labeled_df : LabeledDataFrame
         object from which the cur_result_df was computed, used for meta information
     cur_result_df : DataFrame
-        The cur_result_df parameter will be passed by filter_df, detect_df and rank_df, not always result_df
+        A result_df or derivative of it after filtering, detecting or ranking. 
     Returns
     --------
     distance_heatmap_dict_list: Distance Heatmap Dictitonary List formatted for use in visualization
