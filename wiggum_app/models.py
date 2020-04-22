@@ -155,7 +155,9 @@ def replaceTrendDisplayName(cur_result_df):
     # compute mapping dictionary to update tend names to diplay names
     name_mapper =  {k:v().display_name for k,v in wg.all_trend_types.items()}
 
+    # preserve trend_type short names in the trend_name column
     cur_result_df['trend_name'] =  cur_result_df['trend_type']
+    # replace the trend_types with the display names
     cur_result_df.replace({'trend_type': name_mapper}, inplace=True)    
 
     return cur_result_df
