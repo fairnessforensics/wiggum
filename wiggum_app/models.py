@@ -152,7 +152,7 @@ def replaceTrendDisplayName(cur_result_df):
        input with trend_type moved to the trend_name column and the display name in the trend_type column
     """
 
-    # add trend display column in result df
+    # compute mapping dictionary to update tend names to diplay names
     name_mapper =  {k:v().display_name for k,v in wg.all_trend_types.items()}
 
     cur_result_df['trend_name'] =  cur_result_df['trend_type']
