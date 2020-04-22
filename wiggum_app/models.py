@@ -144,10 +144,12 @@ def replaceTrendDisplayName(cur_result_df):
     Parameters
     -----------
     cur_result_df : DataFrame
-        The cur_result_df parameter will be passed by filter_df, detect_df and rank_df, not always result_df
+        A result_df or derivative of it after filtering, detecting or ranking. 
+     
     Returns
     --------
-    cur_result_df: df appended trend display name
+    cur_result_df: DataFrame
+       input with trend_type moved to the trend_name column and the display name in the trend_type column
     """
 
     # add trend display column in result df
