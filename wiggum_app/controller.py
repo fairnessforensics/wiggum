@@ -97,6 +97,7 @@ def main():
                             'trend_types': list(wg.all_trend_types.keys()),
                             'trend_display_names': trend_display_names})
 
+        # index.html 'Save' button
         if action == 'save':
             meta = request.form['metaList']
 
@@ -105,7 +106,7 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.save_all(directory)
+            labeled_df_setup.to_csvs(directory)
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
