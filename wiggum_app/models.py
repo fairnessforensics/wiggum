@@ -154,10 +154,7 @@ def getOverviewLegendType(distance_heatmap_dict):
     overview_legend_types: List
        Legend types for overview distance matrices
     """
-    overview_legend_types = []
-
-    for hd in distance_heatmap_dict:
-        overview_legend_types.append(hd['overview_legend_type'])
+    overview_legend_types = [hd['overview_legend_type'] for hd in distance_heatmap_dict]
 
     # get unique values in overview_legend_types
     legend_types_unique = set(overview_legend_types)
