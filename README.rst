@@ -40,6 +40,7 @@ in browser available as a command line tool. To run the app:
 
   wiggum-app
 
+This will start the server on http://127.0.0.1:5000/ from the current working directory.
 
 
 Development
