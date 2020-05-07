@@ -583,8 +583,8 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 			row.forEach(function(cell, j) {
 			
 				matrix[i][j] = {
-						rowVar: vars[i],
-						colVar: vars[j],
+						dependentVar: vars[i],
+						independentVar: vars[j],
 						value: cell,
 						categoryAttr: category.groupby,
 						category: category.value,
@@ -597,12 +597,10 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 		matrix.forEach(function(row, i) {
 			row.forEach(function(cell, j) {
 				matrix[i][j] = {
-
-					rowVar: vars[i],
-					colVar: vars[j],
+					dependentVar: vars[i],
+					independentVar: vars[j],
 					value: cell,
 					categoryAttr: category.groupby,
-
 					category: category.value,
 					autoDetectFlg: 0
 				};
@@ -649,8 +647,8 @@ var UpdateLinearRegressionMatrixFormat = function(matrix, rowLabels, colLabels, 
 		row.forEach(function(cell, j) {
 		
 			matrix[i][j] = {
-					rowVar: rowLabels[i],
-					colVar: colLabels[j],
+					dependentVar: rowLabels[i],
+					independentVar: colLabels[j],
 					value: cell,
 					categoryAttr: category.groupby,
 					category: category.value,
@@ -687,14 +685,13 @@ function updateScatter(data) {
 		d = this.datum();
 	}
 
-	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
+	var vars = { x: d.independentVar, y: d.dependentVar, z: d.value, 
 		categoryAttr: d.categoryAttr, category: d.category, trend_type: d.trend_type};
 
 	// updateVars used for same axis range
 	updateVars = vars;	
 
 	updateScatterplot(csvData, vars);
-	updateTabulate(vars);
 	highlightSubgroup(vars.category);
 }
 

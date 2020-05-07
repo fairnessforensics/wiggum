@@ -60,7 +60,7 @@ function DrawParallelCoordinates(data, vars) {
 	var dimensions = ["aggregate", vars.category.toString()];
 
 	for (var key in data[0]) {
-		if (key!= "aggregate" && key!= vars.protectedAttr
+		if (key!= "aggregate" && key!= vars.independentVar
 				&& key!=vars.category.toString()) {
 			dimensions.push(key);
 		}
@@ -96,7 +96,7 @@ function DrawParallelCoordinates(data, vars) {
 	// Highlight
 	var highlight = function(d){
   
-		selected_group = d[vars.protectedAttr];
+		selected_group = d[vars.independentVar];
 
 		d3.selectAll(".line")
 			.transition().duration(200)
@@ -113,7 +113,7 @@ function DrawParallelCoordinates(data, vars) {
 	var doNotHighlight = function(d){
 		d3.selectAll(".line")
 			.transition().duration(200).delay(1000)
-			.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.protectedAttr]))} )
+			.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.independentVar]))} )
 			.style("opacity", "0.9")
 	}
   
@@ -126,10 +126,10 @@ function DrawParallelCoordinates(data, vars) {
 		.data(data)
 		.enter()
 		.append("path")
-		.attr("class", function (d) { return "line " + "trend" + d[vars.protectedAttr] } ) 
+		.attr("class", function (d) { return "line " + "trend" + d[vars.independentVar] } ) 
 		.attr("d",  path)
 		.style("fill", "none" )
-		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.protectedAttr]))} )
+		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.independentVar]))} )
 		.style("opacity", 0.9)
 		.attr("stroke-width", 3)
 		.on("mouseover", highlight)
@@ -176,7 +176,7 @@ function DrawParallelCoordinates(data, vars) {
 		.attr("dy", ".35em")
 		.style("font-size", "12px")                     
 		.style("text-anchor", "start")
-		.text(vars.protectedAttr);
+		.text(vars.independentVar);
 
 	// by <groupby var> groups
 	svg.append("text")
@@ -222,7 +222,7 @@ function DrawParallelCoordinates2(data, vars) {
 	var dimensions = ["aggregate", vars.category.toString()];
 
 	for (var key in data[0]) {
-		if (key!= "aggregate" && key!= vars.protectedAttr
+		if (key!= "aggregate" && key!= vars.independentVar
 				&& key!=vars.category.toString()) {
 			dimensions.push(key);
 		}
@@ -258,7 +258,7 @@ function DrawParallelCoordinates2(data, vars) {
 	// Highlight
 	var highlight = function(d){
   
-		selected_group = d[vars.protectedAttr];
+		selected_group = d[vars.independentVar];
 
 		d3.selectAll(".line")
 			.transition().duration(200)
@@ -275,7 +275,7 @@ function DrawParallelCoordinates2(data, vars) {
 	var doNotHighlight = function(d){
 		d3.selectAll(".line")
 			.transition().duration(200).delay(1000)
-			.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.protectedAttr]))} )
+			.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.independentVar]))} )
 			.style("opacity", "0.9")
 	}
   
@@ -293,10 +293,10 @@ function DrawParallelCoordinates2(data, vars) {
 		.data(data)
 		.enter()
 		.append("path")
-		.attr("class", function (d) { return "line " + "trend" + d[vars.protectedAttr] } ) 
+		.attr("class", function (d) { return "line " + "trend" + d[vars.independentVar] } ) 
 		.attr("d",  path)
 		.style("fill", "none" )
-		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.protectedAttr]))} )
+		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.independentVar]))} )
 		.style("opacity", 0.6)
 		.attr("stroke-width", 2)
 		.on("mouseover", highlight)
@@ -307,10 +307,10 @@ function DrawParallelCoordinates2(data, vars) {
 		.data(data)
 		.enter()
 		.append("path")
-		.attr("class", function (d) { return "line " + "trend" + d[vars.protectedAttr] } ) 
+		.attr("class", function (d) { return "line " + "trend" + d[vars.independentVar] } ) 
 		.attr("d",  curve)
 		.style("fill", "none" )
-		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.protectedAttr]))} )
+		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.independentVar]))} )
 		.style("opacity", 0.9)
 		.attr("stroke-width", 3)
 		.on("mouseover", highlight)
@@ -324,7 +324,7 @@ function DrawParallelCoordinates2(data, vars) {
 			names.forEach(function(name){
 				obj[name] = item['aggregate'];
 			});
-			obj[vars.protectedAttr] = item[vars.protectedAttr];
+			obj[vars.independentVar] = item[vars.independentVar];
 			result.push(obj);
 		});
 		return(result);
@@ -335,10 +335,10 @@ function DrawParallelCoordinates2(data, vars) {
 		.data(aggregate_data)
 		.enter()
 		.append("path")
-		.attr("class", function (d) { return "line " + "trend" + d[vars.protectedAttr] } ) 
+		.attr("class", function (d) { return "line " + "trend" + d[vars.independentVar] } ) 
 		.attr("d",  path)
 		.style("fill", "none" )
-		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.protectedAttr]))} )
+		.style("stroke", function(d){ return( color_detail_ranktrend(d[vars.independentVar]))} )
 		.style("opacity", 0.9)
 		.attr("stroke-width", 2);
 
@@ -383,7 +383,7 @@ function DrawParallelCoordinates2(data, vars) {
 		.attr("dy", ".35em")
 		.style("font-size", "12px")                     
 		.style("text-anchor", "start")
-		.text(vars.protectedAttr);
+		.text(vars.independentVar);
 
 	// by <groupby var> groups
 	svg.append("text")
