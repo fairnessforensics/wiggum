@@ -136,7 +136,7 @@ function updateDetailView() {
 		updateScatter(d);
 
 		// highlight in result table
-		var vars_table = { x: d.rowVar, y: d.colVar, categoryAttr: d.categoryAttr, 
+		var vars_table = { x: d.dependentVar, y: d.independentVar, categoryAttr: d.categoryAttr, 
 			category: d.category, trend_type:d.trend_type };		
 
 		updateTabulate(vars_table);
@@ -145,8 +145,8 @@ function updateDetailView() {
 		$.ajax({
 			type: 'POST',
 			url: '/',
-			data: {'action' : "detail_ranktrend", 'dependent': d.targetAttr, 
-						'independent': d.protectedAttr, 'group_feat': d.categoryAttr},     
+			data: {'action' : "detail_ranktrend", 'dependent': d.dependentVar, 
+						'independent': d.independentVar, 'group_feat': d.categoryAttr},     
 			success: function(data) {
 				//updateRankChart(d);
 				updateParallelCoordinates(data, d);
@@ -154,7 +154,7 @@ function updateDetailView() {
 		});
 
 		// highlight in result table
-		var vars_table = { x: d.targetAttr, y: d.protectedAttr, categoryAttr: d.categoryAttr, 
+		var vars_table = { x: d.dependentVar, y: d.independentVar, categoryAttr: d.categoryAttr, 
 			category: d.category, trend_type:d.trend_type };		
 
 		updateTabulate(vars_table);
@@ -236,7 +236,9 @@ function distanceMatrixHeatmap(options) {
 		.enter()
 		.append("rect")	
 		.attr("class", "cell")
-//		.attr("id", function(d) {return targetAttr + "_" + d.protectedAttr + "_" + d.keyName + "_" + d.subgroups[d.colVar]})
+		.attr("id", function(d) {
+			return d.trend_type + "_" + d.independentVar + "_" + d.dependentVar + "_" + d.categoryAttr + "_" + d.category
+		})
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
 
 	cells.attr("width", x.rangeBand()-1)
@@ -270,13 +272,6 @@ function distanceMatrixHeatmap(options) {
 			.style("font-size", "16px") 
 			.style("text-decoration", "underline")  
 			.text(subLabel);
-		
-	distanceMatrixPlot.append("text")
-			.attr("x", (width / 2))             
-			.attr("y", -60)
-			.attr("text-anchor", "middle")  
-			.style("font-size", "15px") 
-			.text(targetAttr);	
 
 	distanceMatrixPlot.append("text")
 			.attr("x", -(width/2))              			  

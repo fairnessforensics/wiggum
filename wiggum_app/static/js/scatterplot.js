@@ -129,7 +129,10 @@ var updateScatterplot = function(data, vars) {
 	scatterplot.selectAll("line").remove();	
 	var lgAll = calcLinear(data, vars.x, vars.y, 
 		d3.min(data, function(d){ return d[vars.x]}), 
-		d3.max(data, function(d){ return d[vars.x]}));
+		d3.max(data, function(d){ return d[vars.x]}),
+		d3.min(y.domain()), 
+		d3.max(y.domain())			
+		);
 
 	scatterplot.append("line")
 		.transition()
@@ -153,8 +156,11 @@ var updateScatterplot = function(data, vars) {
 					})
 					.rollup(function(leaves){
 						var lgGroup = calcLinear(leaves, vars.x, vars.y, 
-							d3.min(leaves, function(d){ return d[vars.x]}), 
-							d3.max(leaves, function(d){ return d[vars.x]}))
+							d3.min(data, function(d){ return d[vars.x]}), 
+							d3.max(data, function(d){ return d[vars.x]}),
+							d3.min(y.domain()), 
+							d3.max(y.domain())						
+							)
 							return lgGroup;})
 					.entries(data)
 
@@ -385,7 +391,10 @@ function createScatterplot(data) {
 	// Regression line for all
 	var lg = calcLinear(data, conAttrs[0], conAttrs[1], 
 		d3.min(data, function(d){ return d[conAttrs[0]]}), 
-		d3.max(data, function(d){ return d[conAttrs[0]]}));
+		d3.max(data, function(d){ return d[conAttrs[0]]}),
+		d3.min(y.domain()), 
+		d3.max(y.domain())			
+		);
 
 	scatterplot.append("line")
 		.attr("class", "regression")
@@ -405,8 +414,11 @@ function createScatterplot(data) {
 				})
 				.rollup(function(leaves){
 					var lgGroup = calcLinear(leaves, conAttrs[0], conAttrs[1], 
-						d3.min(leaves, function(d){ return d[conAttrs[0]]}), 
-						d3.max(leaves, function(d){ return d[conAttrs[0]]}))
+						d3.min(data, function(d){ return d[conAttrs[0]]}), 
+						d3.max(data, function(d){ return d[conAttrs[0]]}),
+						d3.min(y.domain()), 
+						d3.max(y.domain())							
+						)
 						return lgGroup;})
 				.entries(data)
 
@@ -457,10 +469,12 @@ function createScatterplot(data) {
  * @param y - the variable for y axis.
  * @param minX - minimal value for X.
  * @param maxX - maximal value for X.
+ * @param minY - minimal value for Y.
+ * @param maxY - maximal value for Y.
  * @returns {object} an object of two points,
  *                   each point is an object with an x and y coordinate.
  */
-function calcLinear(data, x, y, minX, maxX){
+function calcLinear(data, x, y, minX, maxX, minY, maxY){
 	/////////
 	//SLOPE//
 	/////////
@@ -515,16 +529,39 @@ function calcLinear(data, x, y, minX, maxX){
 	// y-intercept = b = (e - f) / n
 	var b = (e - f) / n;
 
+
+	// check the point is inside the scatterplot
+	var tempMinY = m * minX + b;
+	var tempMaxY = m * maxX + b;
+
+	// check if regression line is beyond the min value Y
+	if (tempMinY < minY) {
+		// set minimum X value based on minimun Y value
+		minX = (minY - b) / m;
+	} else {
+		// set minimun Y based on the linear calculation
+		minY = tempMinY;
+	}
+
+	// check if regression line is beyond the max value Y
+	if (tempMaxY > maxY) {
+		// set maximum X value based on maximun Y value
+		maxX = (maxY - b) / m;
+	} else {
+		// set maximun Y based on the linear calculation
+		maxY = tempMaxY;
+	}
+
 	// return an object of two points
 	// each point is an object with an x and y coordinate
 	return {
 	  ptA : {
 		x: minX,
-		y: m * minX + b
+		y: minY
 	  },
 	  ptB : {
 		x: maxX,
-		y: m * maxX + b
+		y: maxY
 	  }
 	}
 }
@@ -546,8 +583,8 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 			row.forEach(function(cell, j) {
 			
 				matrix[i][j] = {
-						rowVar: vars[i],
-						colVar: vars[j],
+						dependentVar: vars[i],
+						independentVar: vars[j],
 						value: cell,
 						categoryAttr: category.groupby,
 						category: category.value,
@@ -560,12 +597,10 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 		matrix.forEach(function(row, i) {
 			row.forEach(function(cell, j) {
 				matrix[i][j] = {
-
-					rowVar: vars[i],
-					colVar: vars[j],
+					dependentVar: vars[i],
+					independentVar: vars[j],
 					value: cell,
 					categoryAttr: category.groupby,
-
 					category: category.value,
 					autoDetectFlg: 0
 				};
@@ -612,8 +647,8 @@ var UpdateLinearRegressionMatrixFormat = function(matrix, rowLabels, colLabels, 
 		row.forEach(function(cell, j) {
 		
 			matrix[i][j] = {
-					rowVar: rowLabels[i],
-					colVar: colLabels[j],
+					dependentVar: rowLabels[i],
+					independentVar: colLabels[j],
 					value: cell,
 					categoryAttr: category.groupby,
 					category: category.value,
@@ -650,14 +685,13 @@ function updateScatter(data) {
 		d = this.datum();
 	}
 
-	var vars = { x: d.colVar, y: d.rowVar, z: d.value, 
+	var vars = { x: d.independentVar, y: d.dependentVar, z: d.value, 
 		categoryAttr: d.categoryAttr, category: d.category, trend_type: d.trend_type};
 
 	// updateVars used for same axis range
 	updateVars = vars;	
 
 	updateScatterplot(csvData, vars);
-	updateTabulate(vars);
 	highlightSubgroup(vars.category);
 }
 

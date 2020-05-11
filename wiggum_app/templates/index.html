@@ -496,7 +496,7 @@
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <label style="font-size: 14px;">Choose one file to load a new dataset or a directory with previously saved metadata</label><br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input name="file" type="file" id="myFile" style = "width:170px" onchange="clearFolder()">
+            <input name="file" type="file" id="myFile" style = "width:170px" onchange="clearFolder()" accept=".csv">
             <input name="file" type="file" id="myFolder" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
             <button id="open-file-btn" type="button" value="open">Open</button>&nbsp;&nbsp;&nbsp;&nbsp;
             <select id = "trend_type_selection" multiple="multiple">

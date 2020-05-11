@@ -223,11 +223,11 @@ function tabulate(data, action) {
 	  .data(data)
 	  .enter()
 		.append('tr')
-		.attr("row", function(d) { return d.trend_type + "_"+ d.dependent+"_"+d.independent+"_"+d.group_feat+"_"+d.subgroup; })
+		.attr("row", function(d) { return d.trend_name + "_"+ d.dependent+"_"+d.independent+"_"+d.group_feat+"_"+d.subgroup; })
 		.attr("class", "tablerow")
 		.on("click", function(d, i) {
-			var vars = {x: d.independent, y: d.dependent, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_type};
-			return interactBivariateMatrix(vars, i); });
+			var vars = {x: d.independent, y: d.dependent, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_name};
+			return interactDistanceMatrix(vars, i); });
 
 	// create a cell in each row for each column
 	var cells = rows.selectAll('td')
@@ -275,6 +275,28 @@ function updateTabulate(vars) {
 	var cell_id = vars.trend_type + "_" + vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
 	d3.select("tr[row='" + cell_id + "']").classed("highlighted", true);
 }
+
+/**
+ * interact distance matrix with result talbe
+ *
+ * @param vars - variables' values using for matrix cell's id.
+ * @returns none.
+ */
+function interactDistanceMatrix(vars) {
+
+	// unclick all ceslls in distance matrix
+	var svg = d3.select(container);
+	svg.selectAll(".cell").classed("clicked", false);
+
+	// click the cell based on the information from clicked row in result table
+	var cell_id = vars.trend_type + "_" + vars.x + "_" + vars.y + "_" + vars.categoryAttr + "_" + vars.category;
+	d3.select("rect[id='"+cell_id+"']").classed("clicked", true);
+
+	// The way to dispatch it with plain JS
+	var evt = new MouseEvent("click");
+	document.getElementById(cell_id).dispatchEvent(evt);
+
+};
 
 /**
  * interact bivariate matrix with result talbe

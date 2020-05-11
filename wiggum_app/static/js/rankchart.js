@@ -8,7 +8,7 @@ function updateRankChart(d) {
 
 	// Result table
 	var vars_table = 
-		{ x: d.targetAttr, y: d.protectedAttr, categoryAttr: d.categoryAttr, 
+		{ x: d.dependentVar, y: d.independentVar, categoryAttr: d.categoryAttr, 
 			category: d.category, trend_type:d.trend_type };		
 			
 	updateTabulate(vars_table);
@@ -17,8 +17,8 @@ function updateRankChart(d) {
 	// highlighted subgroup
 	var filteredData = tableRecords.filter(function (e) {
 		return e.trend_type == d.trend_type && 
-				e.feat1 == d.targetAttr && 
-				e.feat2 == d.protectedAttr &&  
+				e.feat1 == d.dependentVar && 
+				e.feat2 == d.independentVar &&  
 				e.group_feat == d.categoryAttr &&
 				e.subgroup == d.category;
 	});
@@ -49,8 +49,8 @@ function updateRankChart(d) {
 	// other subgroup trend
 	var otherSubgroupData = tableRecords.filter(function (e) {
 		return e.trend_type == d.trend_type && 
-				e.feat1 == d.targetAttr && 
-				e.feat2 == d.protectedAttr &&  
+				e.feat1 == d.dependentVar && 
+				e.feat2 == d.independentVar &&  
 				e.group_feat == d.categoryAttr &&
 				e.subgroup != d.category;
 	});
@@ -221,8 +221,8 @@ var UpdateRankTrendMatrixFormat = function(matrix, rowLabels, colLabels, groupIn
 			matrix[i][j] = {
 					value: cell,
 					trend_type: trend_type,
-					targetAttr: rowLabels[i],
-					protectedAttr: colLabels[j],
+					dependentVar: rowLabels[i],
+					independentVar: colLabels[j],
 					categoryAttr: groupInfo.groupby,
 					category: groupInfo.value,
 					detail_view_type: detail_view_type		
