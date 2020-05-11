@@ -188,6 +188,9 @@ function drawDistanceMatrixHeatmap(data, action) {
 
 	updateDistanceHeatmapContainer(data.distance_heatmap_dict);
 
+	// Diplay overview legend
+	DrawHeatmapLegend(data.overview_legend_types)
+
 	// Display info table
 	tableRecords = JSON.parse(data.result_df)    
 	tabulate(tableRecords, action);

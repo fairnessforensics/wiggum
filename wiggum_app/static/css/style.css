@@ -70,13 +70,13 @@
     height: 20%;
     position: absolute;
     margin-left: 5%;   
-    margin-top: 20%; 
+    margin-top: 30%; 
 }
 
 #ranking {
     position: absolute;
     margin-left: 5%;     
-    margin-top: 21.5%; 
+    margin-top: 31.5%; 
 }
 
 #scatterplot {

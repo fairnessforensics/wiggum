@@ -97,6 +97,7 @@ def main():
                             'trend_types': list(wg.all_trend_types.keys()),
                             'trend_display_names': trend_display_names})
 
+        # index.html 'Save' button
         if action == 'save':
             meta = request.form['metaList']
 
@@ -105,7 +106,7 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
             directory = 'data/' + project_name
-            labeled_df_setup.save_all(directory)
+            labeled_df_setup.to_csvs(directory)
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
@@ -280,6 +281,9 @@ def main():
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, labeled_df_setup.result_df)
 
+            # Extract overview legend types
+            overview_legend_types = models.getOverviewLegendType(distance_heatmap_dict)
+
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
@@ -291,7 +295,8 @@ def main():
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = result_df.to_json(orient='records'),
-                            df = df, default_threshold = default_threshold, project_name = project_name)
+                            df = df, default_threshold = default_threshold, 
+                            project_name = project_name, overview_legend_types = overview_legend_types)
 
         # visualize.html rank trend's cells clicked
         if action == 'detail_ranktrend':
@@ -321,6 +326,9 @@ def main():
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, filter_result)
 
+            # Extract overview legend types
+            overview_legend_types = models.getOverviewLegendType(distance_heatmap_dict)
+
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
@@ -332,13 +340,16 @@ def main():
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = filter_result.to_json(orient='records'),
-                            df = df)
+                            df = df, overview_legend_types = overview_legend_types)
 
 
         # visualize.html 'Reset' button clicked
         if action == 'reset':
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, labeled_df_setup.result_df)
+
+            # Extract overview legend types
+            overview_legend_types = models.getOverviewLegendType(distance_heatmap_dict)
 
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
@@ -355,7 +366,7 @@ def main():
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = result_df.to_json(orient='records'),
-                            df = df)
+                            df = df, overview_legend_types = overview_legend_types)
 
         # visualize.html 'Detect' button clicked
         if action == 'detect':
@@ -390,6 +401,9 @@ def main():
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, detect_result)
 
+            # Extract overview legend types
+            overview_legend_types = models.getOverviewLegendType(distance_heatmap_dict)
+
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
@@ -398,7 +412,7 @@ def main():
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = detect_result.to_json(orient='records'),
-                            df = df)
+                            df = df, overview_legend_types = overview_legend_types)
 
         # visualize.html 'Rank' button clicked
         if action == 'rank':
@@ -427,6 +441,9 @@ def main():
             # Generate distance heatmaps
             distance_heatmap_dict = models.getDistanceHeatmapDict(labeled_df_setup, rank_result)
 
+            # Extract overview legend types
+            overview_legend_types = models.getOverviewLegendType(distance_heatmap_dict)
+
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
@@ -435,4 +452,4 @@ def main():
 
             return jsonify(distance_heatmap_dict = distance_heatmap_dict, 
                             result_df = rank_result.to_json(orient='records'),
-                            df = df)
+                            df = df, overview_legend_types = overview_legend_types)

@@ -126,9 +126,13 @@ def getDistanceHeatmapDict(labeled_df, cur_result_df):
                 # detail view type
                 detail_view_type = labeled_df.get_detail_view_type(trend_type)
 
+                # overview legend type
+                overview_legend_type = labeled_df.get_overview_legend_type(trend_type)
+
                 distance_heatmap_dict = {'trend_type' : trend_type,
                             'trend_display_name': trend_display_name,
                             'detail_view_type': detail_view_type,
+                            'overview_legend_type': overview_legend_type,
                             'group_feat': gby,
                             'subgroup': gby_lev,
                             'heatmap':heatmap.to_dict('index')}
@@ -136,6 +140,27 @@ def getDistanceHeatmapDict(labeled_df, cur_result_df):
                 distance_heatmap_dict_list.append(distance_heatmap_dict)
 
     return distance_heatmap_dict_list
+
+def getOverviewLegendType(distance_heatmap_dict):
+    """
+    Get overview legend types.
+
+    Parameters
+    -----------
+    distance_heatmap_dict : Dictionary
+        Distance Heatmap Dictitonary List formatted for use in visualization. 
+    Returns
+    --------
+    overview_legend_types: List
+       Legend types for overview distance matrices
+    """
+    overview_legend_types = [hd['overview_legend_type'] for hd in distance_heatmap_dict]
+
+    # get unique values in overview_legend_types
+    legend_types_unique = set(overview_legend_types)
+    overview_legend_types = list(legend_types_unique)
+
+    return overview_legend_types
 
 def replaceTrendDisplayName(cur_result_df):
     """
