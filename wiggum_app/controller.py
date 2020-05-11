@@ -35,14 +35,14 @@ def main():
             # initial filter flag and filter object
             filter_flag = False
             filter_object = {}
+            uploaded_files = request.files.getlist("file")
 
             folder = request.form['folder']
 
             # set folder name to project name
             project_name = folder
 
-            folder = 'data/' + folder
-            labeled_df_setup = wg.LabeledDataFrame(folder)
+            labeled_df_setup = wg.LabeledDataFrame(uploaded_files)
 
             result_dict = {}
             result_dict = models.getMetaDict(labeled_df_setup)
@@ -105,8 +105,10 @@ def main():
 
             # store meta data into csv
             project_name = request.form['projectName']
-            directory = 'data/' + project_name
-            labeled_df_setup.to_csvs(directory)
+
+            directory = app.config['SAVE_FOLDER'] + project_name
+            labeled_df_setup.save_all(directory)
+
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
@@ -186,7 +188,7 @@ def main():
         if action == 'save_trends':
             # store meta data into csv
             project_name = request.form['projectName']
-            directory = 'data/' + project_name
+            directory = app.config['SAVE_FOLDER'] + project_name
             labeled_df_setup.save_all(directory)          
             return 'Saved'      
 
