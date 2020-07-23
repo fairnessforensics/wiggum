@@ -7,6 +7,7 @@ python:
 install:
   - pip install . #install the current version of the code
   - pip install -r requirements.txt
+  - npm install -g jsdoc
 addons:
   apt_packages:
     - pandoc # required for docs
