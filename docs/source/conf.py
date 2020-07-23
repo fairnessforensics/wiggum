@@ -37,7 +37,8 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'nbsphinx',
-    'numpydoc',]
+    'numpydoc',
+    'sphinx_js']
 
 # SPhinx gen_gallery
 # sphinx_gallery_conf = {
@@ -45,6 +46,9 @@ extensions = ['sphinx.ext.autodoc',
 #     'examples_dirs' : '../../examples',
 #     # path where to save gallery generated examples
 #     'gallery_dirs'  : 'auto_examples'}
+
+# JS source path
+js_source_path = '../../wiggum_app/static/js'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

@@ -15,6 +15,7 @@ Wiggum Documentation
    API
    app_structure
    trend_objects
+   JS_API
 
 
 * this documentation site is under active development*

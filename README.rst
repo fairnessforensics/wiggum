@@ -59,6 +59,12 @@ some extensions are required, all are included in `requirements.txt` and can be
 
   pip install -r requirements.txt
 
+To generate JavaScript documentation, install JSDoc using npm 
+
+.. code-block:: bash
+
+  npm install -g jsdoc
+
 then
 
 .. code-block:: bash
