@@ -1,21 +1,22 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Reference &#8212; Wiggum 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="App Outline" href="app_structure.html" />
     <link rel="prev" title="User Manual for Wiggum App" href="app_user_manual.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -28,19 +29,21 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h3><a href="index.html">Table Of Contents</a></h3>
+<h3><a href="index.html">Table of Contents</a></h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JS_API.html">JS API Reference</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="app_user_manual.html" title="previous chapter">User Manual for Wiggum App</a></li>
+      <li>Next: <a href="app_structure.html" title="next chapter">App Outline</a></li>
   </ul></li>
 </ul>
 </div>
@@ -52,17 +55,15 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="documentwrapper">
@@ -74,1079 +75,911 @@
   <div class="section" id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
 <p>Wiggum</p>
-<span class="target" id="module-wiggum.trend_components"></span><dl class="class">
-<dt id="wiggum.trend_components.Trend">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">Trend</code><span class="sig-paren">(</span><em>labeled_df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend" title="Permalink to this definition">¶</a></dt>
-<dd><p>baseclass for abstraction and building trend objects. All trend objects must
-inherit this class in order to have a constructor (__init__). This may be
-overloaded to define a different constructor.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>self</strong></dt>
-<dd></dd>
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame or None</span></dt>
-<dd><p class="first last">if passed, get_trend_vars is called on initialization using labeled_df</p>
-</dd>
-<dt><strong>as the target dataset to compute trends on</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.Trend.get_trend_value_type" title="wiggum.trend_components.Trend.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</td>
-<td>return the type that the trend values for this trend type should be</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.Trend.is_SP" title="wiggum.trend_components.Trend.is_SP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_SP</span></code></a>(row,&nbsp;thresh)</td>
-<td>default is if it’s above a threshold, operates rowwise and can be applied to a DataFrame with the apply method</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.Trend.load" title="wiggum.trend_components.Trend.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(content_dict)</td>
-<td>load a trend  from a dictionary of the content</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.Trend.get_trend_value_type">
-<code class="descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>return the type that the trend values for this trend type should be</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="wiggum.trend_components.Trend.is_SP">
-<code class="descname">is_SP</code><span class="sig-paren">(</span><em>row</em>, <em>thresh</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.is_SP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.is_SP" title="Permalink to this definition">¶</a></dt>
-<dd><p>default is if it’s above a threshold, operates rowwise and can be
-applied to a DataFrame with the apply method</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>row</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.series</span></dt>
-<dd><p class="first last">row of a result df to apply the threshold to</p>
-</dd>
-<dt><strong>thresh</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float scalar</span></dt>
-<dd><p class="first last">threshold to compare the distance to</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>boolean value if the distance is over the threshold</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="wiggum.trend_components.Trend.load">
-<code class="descname">load</code><span class="sig-paren">(</span><em>content_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.load" title="Permalink to this definition">¶</a></dt>
-<dd><p>load a trend  from a dictionary of the content</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>content_dict</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Dictionary</span></dt>
-<dd><p class="first last">the dictionary that results from saving a trend object via the</p>
-</dd>
-<dt><strong>trend.__dict__ output</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a trend object</span></dt>
-<dd><p class="first last">with all of the parameters set according to the dictionary</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wiggum.trend_components.OrdinalRegression">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">OrdinalRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#OrdinalRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.OrdinalRegression" title="Permalink to this definition">¶</a></dt>
-<dd><p>regression compatible varTypeMixin, sets list formatted regression_vars and
-symmetric_vars = True</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.OrdinalRegression.get_trend_vars" title="wiggum.trend_components.OrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
-<td>set regression_vars for regression of pairs of ordinal variables, by assigning regression_vars as an instance property</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></td>
-<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="72%" />
-<col width="28%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_weights_regression</strong></td>
-<td>&#160;</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.OrdinalRegression.get_trend_vars">
-<code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#OrdinalRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.OrdinalRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
-<dd><p>set regression_vars for regression of pairs of ordinal variables, by
-assigning regression_vars as an instance property</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame</span></dt>
-<dd><p class="first last">object to parse for variable types</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>regression_vars</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
-<dd><p class="first last">variables list of all ordinal trend variables</p>
-</dd>
-<dt><strong>var_weight_list</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
-<dd><p class="first last">list of variables to be used as weights for each regression_vars</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="function">
-<dt id="wiggum.trend_components.w_avg">
-<code class="descclassname">wiggum.trend_components.</code><code class="descname">w_avg</code><span class="sig-paren">(</span><em>df</em>, <em>avcol</em>, <em>wcol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#w_avg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.w_avg" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>commpute a weighted average and use the std to define confidence interval</dt>
-<dd>compatible with DataFrame.apply() and get_trends functions in
-wiggum.trend_components.categorical</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame or DataFrameGroupBy</span></dt>
-<dd><p class="first last">passed as the source of apply, the data to extract columns from for
-computing a weighted average</p>
-</dd>
-<dt><strong>avcol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd><p class="first last">name of column in df to take the average of</p>
-</dd>
-<dt><strong>wcol</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
-<dd><p class="first last">name of column in df to use for weighting</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>stat_data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pandas Series</span></dt>
-<dd><p class="first last">with ‘stat’, ‘max’, ‘min’ values defining the statistic and a
-confidence interval and ‘count’ defining the power of the computation</p>
-</dd>
-<dt><strong>stat</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">mean of df[avcol] weighted row wise by df[wcol]</p>
-</dd>
-<dt><strong>max</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">mean + std to be used for upper limit of confidence interval</p>
-</dd>
-<dt><strong>min</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">mean - std</p>
-</dd>
-<dt><strong>count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">sum wcol</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="class">
-<dt id="wiggum.trend_components.ContinuousOrdinalRegression">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">ContinuousOrdinalRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousOrdinalRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousOrdinalRegression" title="Permalink to this definition">¶</a></dt>
-<dd><p>regression compatible varTypeMixin, sets list formatted regression_vars and
-uses continuous dependent vars and ordinal independent</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars" title="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
-<td>set regression_vars for regression of pairs of ordinal and continuous trend variables, by assigning regression_vars as an instance property</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></td>
-<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="72%" />
-<col width="28%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_weights_regression</strong></td>
-<td>&#160;</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars">
-<code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousOrdinalRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
-<dd><p>set regression_vars for regression of pairs of ordinal and continuous
-trend variables, by assigning regression_vars as an instance property</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame</span></dt>
-<dd><p class="first last">object to parse for variable types</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>regression_vars</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
-<dd><p class="first last">variables list of all trend variables with type set to ordinal or
-continuous</p>
-</dd>
-<dt><strong>var_weight_list</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
-<dd><p class="first last">list of variables to be used as weights for each regression_vars</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wiggum.trend_components.ContinuousRegression">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">ContinuousRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousRegression" title="Permalink to this definition">¶</a></dt>
-<dd><p>regression compatible varTypeMixin, for working with continuous variables
-sets list formatted regression_vars and symmetric_vars = True</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.ContinuousRegression.get_trend_vars" title="wiggum.trend_components.ContinuousRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
-<td>set regression_vars for regression of pairs of  continuous trend variables, by assigning regression_vars as an instance property</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></td>
-<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="72%" />
-<col width="28%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>set_weights_regression</strong></td>
-<td>&#160;</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.ContinuousRegression.get_trend_vars">
-<code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
-<dd><p>set regression_vars for regression of pairs of  continuous
-trend variables, by assigning regression_vars as an instance property</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame</span></dt>
-<dd><p class="first last">object to parse for variable types</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>regression_vars</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
-<dd><p class="first last">variables list of all trend variables with type set to ordinal or
-continuous</p>
-</dd>
-<dt><strong>var_weight_list</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
-<dd><p class="first last">list of variables to be used as weights for each regression_vars</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wiggum.trend_components.BinaryWeightedRank">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">BinaryWeightedRank</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#BinaryWeightedRank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank" title="Permalink to this definition">¶</a></dt>
-<dd><p>statRank compatible varTypeMixin, for computing means of only binary valued
-variables sets stat to wg.trend_components.w_avg</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_vars" title="wiggum.trend_components.BinaryWeightedRank.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</td>
-<td>set target, trendgroup, and var_weight_list for computing rank trends</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.trend_value_type" title="wiggum.trend_components.BinaryWeightedRank.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.BinaryWeightedRank.get_trend_vars">
-<code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#BinaryWeightedRank.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_vars" title="Permalink to this definition">¶</a></dt>
-<dd><p>set target, trendgroup, and var_weight_list for computing rank trends</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame</span></dt>
-<dd><p class="first last">object to parse for variable types</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>regression_vars</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of strings</span></dt>
-<dd><p class="first last">variables list of all trend variables with type set to ordinal or
-continuous</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="wiggum.trend_components.BinaryWeightedRank.trend_value_type">
-<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank.trend_value_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wiggum.trend_components.WeightedRank">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">WeightedRank</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#WeightedRank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.WeightedRank" title="Permalink to this definition">¶</a></dt>
-<dd><p>common parts for all continuous variable trends</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.WeightedRank.trend_value_type" title="wiggum.trend_components.WeightedRank.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="docutils">
-<colgroup>
-<col width="64%" />
-<col width="36%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>get_trend_vars</strong></td>
-<td>&#160;</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.WeightedRank.get_trend_vars">
-<code class="descname">get_trend_vars</code><span class="sig-paren">(</span><em>labeled_df</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#WeightedRank.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.WeightedRank.get_trend_vars" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="wiggum.trend_components.WeightedRank.trend_value_type">
-<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.WeightedRank.trend_value_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="wiggum.trend_components.StatRankTrend">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">StatRankTrend</code><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute a trend that is the ascending ranking of categorical variables,
-quality based on the trend vs actual kendall tau distance and the distance
-in subgroup vs aggregtae is 1-tau</p>
-<p>the distances are a continuous value</p>
-<p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.StatRankTrend.get_distance" title="wiggum.trend_components.StatRankTrend.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[,&nbsp;col_a,&nbsp;col_b])</td>
-<td>kendalltau distance as a permuation distance</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.StatRankTrend.get_trends" title="wiggum.trend_components.StatRankTrend.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df,&nbsp;trend_col_name)</td>
-<td>Compute a trend that is the ascending ranking of categorical variables</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.StatRankTrend.is_computable" title="wiggum.trend_components.StatRankTrend.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</td>
-<td>check if this trend can be computed based on data and metadata available</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.StatRankTrend.get_distance">
-<code class="descname">get_distance</code><span class="sig-paren">(</span><em>row</em>, <em>col_a='subgroup_trend'</em>, <em>col_b='agg_trend'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend.get_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>kendalltau distance as a permuation distance</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>row</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.Series</span></dt>
-<dd><p class="first last">row of a result_df DataFrame. the <cite>agg_trend</cite> and <cite>subgroup_trend</cite>
-columns must contain lists</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>tau_dist</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">perumation distance between the subgroup_trend and agg_trend
-compatible with assignment to a cell of a result_df</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="wiggum.trend_components.StatRankTrend.get_trends">
-<code class="descname">get_trends</code><span class="sig-paren">(</span><em>data_df</em>, <em>trend_col_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend.get_trends" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute a trend that is the ascending ranking of categorical variables</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame or DataFrameGroupBy</span></dt>
-<dd><p class="first last">data to compute trends on, may be a whole, unmodified DataFrame or</p>
-</dd>
-<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt>
-<dd></dd>
-<dt><strong>trend_col_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt>
-<dd><p class="first last">which type of trend is to be computed
-TODO: could infer this by type of above?</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>reg_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
-<dd><p class="first last">partial result_df, multiple can be merged together to form
-a complete result_df</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="wiggum.trend_components.StatRankTrend.is_computable">
-<code class="descname">is_computable</code><span class="sig-paren">(</span><em>labeled_df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend.is_computable" title="Permalink to this definition">¶</a></dt>
-<dd><p>check if this trend can be computed based on data and metadata available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Trend</span></dt>
-<dd><p class="first last">a trend object with a set_vars Parameters</p>
-</dd>
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame {None} (optional)</span></dt>
-<dd><p class="first last">data to use if trend is not already configured</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>computable</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd><p class="first last">True if requirements of get_trends are filled</p>
-</dd>
-<dt><strong>See also:</strong></dt>
-<dd></dd>
-<dt><strong>get_trends() for description of how this trend computes and</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
+<span class="target" id="module-wiggum.trend_components"></span><dl class="py class">
 <dt id="wiggum.trend_components.BinClassStats">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">BinClassStats</code><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">BinClassStats</code><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats" title="Permalink to this definition">¶</a></dt>
 <dd><p>class of trend for computing classification statistics from confusion matrix compoents
 based on teh comparison of values from two columns of the data</p>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.BinClassStats.get_distance" title="wiggum.trend_components.BinClassStats.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[,&nbsp;col_a,&nbsp;col_b])</td>
-<td>distance for confusion matrix stats is</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.BinClassStats.get_distance" title="wiggum.trend_components.BinClassStats.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[, col_a, col_b])</p></td>
+<td><p>distance for confusion matrix stats is</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.BinClassStats.get_trends" title="wiggum.trend_components.BinClassStats.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df,&nbsp;trend_col_name)</td>
-<td>Compute a trend between two variables that are prediction and ground truth, requires a precompute step to augment the data with row-wise labels for speed</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.BinClassStats.get_trends" title="wiggum.trend_components.BinClassStats.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df, trend_col_name)</p></td>
+<td><p>Compute a trend between two variables that are prediction and ground truth, requires a precompute step to augment the data with row-wise labels for speed</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.BinClassStats.is_computable" title="wiggum.trend_components.BinClassStats.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</td>
-<td>check if this trend can be computed based on data and metadata available</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.BinClassStats.is_computable" title="wiggum.trend_components.BinClassStats.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</p></td>
+<td><p>check if this trend can be computed based on data and metadata available</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
+<dl class="py method">
 <dt id="wiggum.trend_components.BinClassStats.get_distance">
-<code class="descname">get_distance</code><span class="sig-paren">(</span><em>row</em>, <em>col_a='subgroup_trend'</em>, <em>col_b='agg_trend'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats.get_distance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">col_a</span><span class="o">=</span><span class="default_value">'subgroup_trend'</span></em>, <em class="sig-param"><span class="n">col_b</span><span class="o">=</span><span class="default_value">'agg_trend'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats.get_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>distance for confusion matrix stats is</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="wiggum.trend_components.BinClassStats.get_trends">
-<code class="descname">get_trends</code><span class="sig-paren">(</span><em>data_df</em>, <em>trend_col_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats.get_trends" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_df</span></em>, <em class="sig-param"><span class="n">trend_col_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats.get_trends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a trend between two variables that are prediction and ground
 truth, requires a precompute step to augment the data with row-wise
 labels for speed</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame or DataFrameGroupBy</span></dt>
-<dd><p class="first last">data to compute trends on, may be a whole, unmodified DataFrame or</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_df</strong><span class="classifier">DataFrame or DataFrameGroupBy</span></dt><dd><p>data to compute trends on, may be a whole, unmodified DataFrame or</p>
 </dd>
-<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions. for each</strong></dt>
-<dd></dd>
-<dt><strong>groundtruth and prediction pair there must be an accuracy column named like</strong></dt>
-<dd></dd>
-<dt><strong>groundtruthvar_predictionvar_acc.</strong></dt>
-<dd></dd>
-<dt><strong>trend_col_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt>
-<dd><p class="first last">which type of trend is to be computed</p>
+<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions. for each</strong></dt><dd></dd>
+<dt><strong>groundtruth and prediction pair there must be an accuracy column named like</strong></dt><dd></dd>
+<dt><strong>groundtruthvar_predictionvar_acc.</strong></dt><dd></dd>
+<dt><strong>trend_col_name</strong><span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt><dd><p>which type of trend is to be computed</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>reg_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
-<dd><p class="first last">returns result df with rows for accuracy (acc), true positive
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>reg_df</strong><span class="classifier">DataFrame</span></dt><dd><p>returns result df with rows for accuracy (acc), true positive
 rate (tpr), positive predictive value (ppr), and true negative
 rate (tnr)</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="wiggum.trend_components.BinClassStats.is_computable">
-<code class="descname">is_computable</code><span class="sig-paren">(</span><em>labeled_df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats.is_computable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_computable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/classification.html#BinClassStats.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinClassStats.is_computable" title="Permalink to this definition">¶</a></dt>
 <dd><p>check if this trend can be computed based on data and metadata available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Trend</span></dt>
-<dd><p class="first last">a trend object with a set_vars Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>self</strong><span class="classifier">Trend</span></dt><dd><p>a trend object with a set_vars Parameters</p>
 </dd>
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame {None} (optional)</span></dt>
-<dd><p class="first last">data to use if trend is not already configured</p>
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame {None} (optional)</span></dt><dd><p>data to use if trend is not already configured</p>
 </dd>
 </dl>
-</td>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>computable</strong><span class="classifier">bool</span></dt><dd><p>True if requirements of get_trends are filled</p>
+</dd>
+<dt><strong>See also:</strong></dt><dd></dd>
+<dt><strong>get_trends() for description of how this trend computes and</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wiggum.trend_components.BinaryWeightedRank">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">BinaryWeightedRank</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#BinaryWeightedRank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank" title="Permalink to this definition">¶</a></dt>
+<dd><p>statRank compatible varTypeMixin, for computing means of only binary valued
+variables sets stat to wg.trend_components.w_avg</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_vars" title="wiggum.trend_components.BinaryWeightedRank.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</p></td>
+<td><p>set target, trendgroup, and var_weight_list for computing rank trends</p></td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>computable</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd><p class="first last">True if requirements of get_trends are filled</p>
-</dd>
-<dt><strong>See also:</strong></dt>
-<dd></dd>
-<dt><strong>get_trends() for description of how this trend computes and</strong></dt>
-<dd></dd>
-</dl>
-</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.BinaryWeightedRank.trend_value_type" title="wiggum.trend_components.BinaryWeightedRank.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt id="wiggum.trend_components.BinaryWeightedRank.get_trend_vars">
+<code class="sig-name descname">get_trend_vars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#BinaryWeightedRank.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank.get_trend_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>set target, trendgroup, and var_weight_list for computing rank trends</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame</span></dt><dd><p>object to parse for variable types</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>regression_vars</strong><span class="classifier">list of strings</span></dt><dd><p>variables list of all trend variables with type set to ordinal or
+continuous</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="wiggum.trend_components.BinaryWeightedRank.trend_value_type">
+<code class="sig-name descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.BinaryWeightedRank.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
+<dt id="wiggum.trend_components.ContinuousOrdinalRegression">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">ContinuousOrdinalRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousOrdinalRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousOrdinalRegression" title="Permalink to this definition">¶</a></dt>
+<dd><p>regression compatible varTypeMixin, sets list formatted regression_vars and
+uses continuous dependent vars and ordinal independent</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars" title="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</p></td>
+<td><p>set regression_vars for regression of pairs of ordinal and continuous trend variables, by assigning regression_vars as an instance property</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 72%" />
+<col style="width: 28%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>set_weights_regression</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars">
+<code class="sig-name descname">get_trend_vars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousOrdinalRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousOrdinalRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>set regression_vars for regression of pairs of ordinal and continuous
+trend variables, by assigning regression_vars as an instance property</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame</span></dt><dd><p>object to parse for variable types</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>regression_vars</strong><span class="classifier">list of strings</span></dt><dd><p>variables list of all trend variables with type set to ordinal or
+continuous</p>
+</dd>
+<dt><strong>var_weight_list</strong><span class="classifier">list of strings</span></dt><dd><p>list of variables to be used as weights for each regression_vars</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wiggum.trend_components.ContinuousRegression">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">ContinuousRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousRegression" title="Permalink to this definition">¶</a></dt>
+<dd><p>regression compatible varTypeMixin, for working with continuous variables
+sets list formatted regression_vars and symmetric_vars = True</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.ContinuousRegression.get_trend_vars" title="wiggum.trend_components.ContinuousRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</p></td>
+<td><p>set regression_vars for regression of pairs of  continuous trend variables, by assigning regression_vars as an instance property</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 72%" />
+<col style="width: 28%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>set_weights_regression</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="wiggum.trend_components.ContinuousRegression.get_trend_vars">
+<code class="sig-name descname">get_trend_vars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#ContinuousRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.ContinuousRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>set regression_vars for regression of pairs of  continuous
+trend variables, by assigning regression_vars as an instance property</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame</span></dt><dd><p>object to parse for variable types</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>regression_vars</strong><span class="classifier">list of strings</span></dt><dd><p>variables list of all trend variables with type set to ordinal or
+continuous</p>
+</dd>
+<dt><strong>var_weight_list</strong><span class="classifier">list of strings</span></dt><dd><p>list of variables to be used as weights for each regression_vars</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wiggum.trend_components.CorrelationSignTrend">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">CorrelationSignTrend</code><a class="reference internal" href="_modules/wiggum/trend_components/statistical.html#CorrelationSignTrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.CorrelationSignTrend" title="Permalink to this definition">¶</a></dt>
+<dd><p>trends that are based on a correlation of type that is specified as a
+property and computes a binary comparison of the signs as a distance</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_correlation_table</span></code>(data_df, …)</p></td>
+<td><p>common code for ocmputing correlations for any correlation based trend</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.CorrelationSignTrend.get_distance" title="wiggum.trend_components.CorrelationSignTrend.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[, col_a, col_b])</p></td>
+<td><p>distance between the subgroup and aggregate trends for a row of a result_df  binary 0 for same sign, 1 for opposite sign</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.CorrelationSignTrend.get_trends" title="wiggum.trend_components.CorrelationSignTrend.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df, trend_col_name)</p></td>
+<td><p>Compute a trend, its quality and return a partial result_df</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code>([labeled_df])</p></td>
+<td><p>check if this trend can be computed based on data and metadata available</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_reg_df</span></code>(reg_df, groupby_name)</p></td>
+<td><p>final prep for reg_df before return</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="wiggum.trend_components.CorrelationSignTrend.get_distance">
+<code class="sig-name descname">get_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">col_a</span><span class="o">=</span><span class="default_value">'subgroup_trend'</span></em>, <em class="sig-param"><span class="n">col_b</span><span class="o">=</span><span class="default_value">'agg_trend'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/statistical.html#CorrelationSignTrend.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.CorrelationSignTrend.get_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>distance between the subgroup and aggregate trends for a row of a
+result_df  binary 0 for same sign, 1 for opposite sign</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>row</strong><span class="classifier">pd.Series</span></dt><dd><p>row of a result_df DataFrame</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>&lt;&gt;_dist</strong><span class="classifier">float</span></dt><dd><p>distance between the subgroup_trend and agg_trend, compatible with
+assignment to a cell of a result_df</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wiggum.trend_components.CorrelationSignTrend.get_trends">
+<code class="sig-name descname">get_trends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_df</span></em>, <em class="sig-param"><span class="n">trend_col_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/statistical.html#CorrelationSignTrend.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.CorrelationSignTrend.get_trends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a trend, its quality and return a partial result_df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_df</strong><span class="classifier">DataFrame or DataFrameGroupBy</span></dt><dd><p>data to compute trends on, may be a whole, unmodified DataFrame or</p>
+</dd>
+<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt><dd></dd>
+<dt><strong>trend_col_name</strong><span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt><dd><p>which type of trend is to be computed</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>reg_df</strong><span class="classifier">DataFrame</span></dt><dd><p>partial result_df, multiple can be merged together to form
+a complete result_df</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wiggum.trend_components.LinearRegression">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">LinearRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression" title="Permalink to this definition">¶</a></dt>
+<dd><p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.LinearRegression.get_distance" title="wiggum.trend_components.LinearRegression.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[, col_a, col_b])</p></td>
+<td><p>compute angle between the overall and subgroup slopes for a row of a dataframe.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.LinearRegression.get_distance_unnormalized" title="wiggum.trend_components.LinearRegression.get_distance_unnormalized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance_unnormalized</span></code></a>(row[, col_a, col_b])</p></td>
+<td><p>compute angle between the overall and subgroup slopes for a row of a dataframe.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.LinearRegression.get_trends" title="wiggum.trend_components.LinearRegression.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df, trend_col_name)</p></td>
+<td><p>Compute a linear regressions and return a partial result_df</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.LinearRegression.is_computable" title="wiggum.trend_components.LinearRegression.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</p></td>
+<td><p>check if this trend can be computed based on data and metadata available this requires that the regression vars be a list of tuple or list of length at least 2.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="wiggum.trend_components.LinearRegression.get_distance">
+<code class="sig-name descname">get_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">col_a</span><span class="o">=</span><span class="default_value">'subgroup_trend'</span></em>, <em class="sig-param"><span class="n">col_b</span><span class="o">=</span><span class="default_value">'agg_trend'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.get_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
+closest to the positive x axis and is always positive valued, to be used as
+a distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>row</strong><span class="classifier">pd.Series</span></dt><dd><p>row of a result_df DataFrame</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>angle</strong><span class="classifier">float</span></dt><dd><p>angle in degrees between the subgroup_trend and agg_trend, compatible with
+assignment to a cell of a result_df</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wiggum.trend_components.LinearRegression.get_distance_unnormalized">
+<code class="sig-name descname">get_distance_unnormalized</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">col_a</span><span class="o">=</span><span class="default_value">'subgroup_trend'</span></em>, <em class="sig-param"><span class="n">col_b</span><span class="o">=</span><span class="default_value">'agg_trend'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.get_distance_unnormalized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.get_distance_unnormalized" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
+closest to the positive x axis and is always positive valued, to be used as
+a distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>row</strong><span class="classifier">pd.Series</span></dt><dd><p>row of a result_df DataFrame</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>angle</strong><span class="classifier">float</span></dt><dd><p>angle in degrees between the subgroup_trend and agg_trend, compatible with
+assignment to a cell of a result_df</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wiggum.trend_components.LinearRegression.get_trends">
+<code class="sig-name descname">get_trends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_df</span></em>, <em class="sig-param"><span class="n">trend_col_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.get_trends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a linear regressions and return a partial result_df</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_df</strong><span class="classifier">DataFrame or DataFrameGroupBy</span></dt><dd><p>data to compute trends on, may be a whole, unmodified DataFrame or</p>
+</dd>
+<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt><dd></dd>
+<dt><strong>trend_col_name</strong><span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt><dd><p>which type of trend is to be computed</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>reg_df</strong><span class="classifier">DataFrame</span></dt><dd><p>partial result_df, multiple can be merged together to form
+a complete result_df</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wiggum.trend_components.LinearRegression.is_computable">
+<code class="sig-name descname">is_computable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.is_computable" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if this trend can be computed based on data and metadata available
+this requires that the regression vars be a list of tuple or list of
+length at least 2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>self</strong><span class="classifier">Trend</span></dt><dd><p>a trend object with a set_vars Parameters</p>
+</dd>
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame {None} (optional)</span></dt><dd><p>data to use if trend is not already configured</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>computable</strong><span class="classifier">bool</span></dt><dd><p>True if requirements of get_trends are filled</p>
+</dd>
+<dt><strong>See also:</strong></dt><dd></dd>
+<dt><strong>get_trends() for description of how this trend computes and</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wiggum.trend_components.OrdinalRegression">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">OrdinalRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#OrdinalRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.OrdinalRegression" title="Permalink to this definition">¶</a></dt>
+<dd><p>regression compatible varTypeMixin, sets list formatted regression_vars and
+symmetric_vars = True</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.OrdinalRegression.get_trend_vars" title="wiggum.trend_components.OrdinalRegression.get_trend_vars"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_vars</span></code></a>(labeled_df)</p></td>
+<td><p>set regression_vars for regression of pairs of ordinal variables, by assigning regression_vars as an instance property</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 72%" />
+<col style="width: 28%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>set_weights_regression</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="wiggum.trend_components.OrdinalRegression.get_trend_vars">
+<code class="sig-name descname">get_trend_vars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#OrdinalRegression.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.OrdinalRegression.get_trend_vars" title="Permalink to this definition">¶</a></dt>
+<dd><p>set regression_vars for regression of pairs of ordinal variables, by
+assigning regression_vars as an instance property</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame</span></dt><dd><p>object to parse for variable types</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>regression_vars</strong><span class="classifier">list of strings</span></dt><dd><p>variables list of all ordinal trend variables</p>
+</dd>
+<dt><strong>var_weight_list</strong><span class="classifier">list of strings</span></dt><dd><p>list of variables to be used as weights for each regression_vars</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="wiggum.trend_components.PredictionClass">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">PredictionClass</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#PredictionClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.PredictionClass" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">PredictionClass</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#PredictionClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.PredictionClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>for binary classification performance stats</p>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.PredictionClass.trend_value_type" title="wiggum.trend_components.PredictionClass.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></td>
-<td>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.PredictionClass.trend_value_type" title="wiggum.trend_components.PredictionClass.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p></td>
 </tr>
 </tbody>
 </table>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="64%" />
-<col width="36%" />
+<col style="width: 64%" />
+<col style="width: 36%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>get_trend_vars</strong></td>
-<td>&#160;</td>
+<tbody>
+<tr class="row-odd"><td><p><strong>get_trend_vars</strong></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="wiggum.trend_components.PredictionClass.trend_value_type">
-<code class="descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.PredictionClass.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.PredictionClass.trend_value_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.float</span></code></p>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="wiggum.trend_components.LinearRegression">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">LinearRegression</code><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression" title="Permalink to this definition">¶</a></dt>
-<dd><p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
-<colgroup>
-<col width="10%" />
-<col width="90%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.LinearRegression.get_distance" title="wiggum.trend_components.LinearRegression.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[,&nbsp;col_a,&nbsp;col_b])</td>
-<td>compute angle between the overall and subgroup slopes for a row of a dataframe.</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.LinearRegression.get_distance_unnormalized" title="wiggum.trend_components.LinearRegression.get_distance_unnormalized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance_unnormalized</span></code></a>(row[,&nbsp;col_a,&nbsp;col_b])</td>
-<td>compute angle between the overall and subgroup slopes for a row of a dataframe.</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.LinearRegression.get_trends" title="wiggum.trend_components.LinearRegression.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df,&nbsp;trend_col_name)</td>
-<td>Compute a linear regressions and return a partial result_df</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.LinearRegression.is_computable" title="wiggum.trend_components.LinearRegression.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</td>
-<td>check if this trend can be computed based on data and metadata available this requires that the regression vars be a list of tuple or list of length at least 2.</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="wiggum.trend_components.LinearRegression.get_distance">
-<code class="descname">get_distance</code><span class="sig-paren">(</span><em>row</em>, <em>col_a='subgroup_trend'</em>, <em>col_b='agg_trend'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.get_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
-closest to the positive x axis and is always positive valued, to be used as
-a distance.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>row</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.Series</span></dt>
-<dd><p class="first last">row of a result_df DataFrame</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>angle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">angle in degrees between the subgroup_trend and agg_trend, compatible with
-assignment to a cell of a result_df</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="wiggum.trend_components.LinearRegression.get_distance_unnormalized">
-<code class="descname">get_distance_unnormalized</code><span class="sig-paren">(</span><em>row</em>, <em>col_a='subgroup_trend'</em>, <em>col_b='agg_trend'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.get_distance_unnormalized"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.get_distance_unnormalized" title="Permalink to this definition">¶</a></dt>
-<dd><p>compute angle between the overall and subgroup slopes for a row of a dataframe. This is the angle
-closest to the positive x axis and is always positive valued, to be used as
-a distance.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>row</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.Series</span></dt>
-<dd><p class="first last">row of a result_df DataFrame</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>angle</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">angle in degrees between the subgroup_trend and agg_trend, compatible with
-assignment to a cell of a result_df</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="wiggum.trend_components.LinearRegression.get_trends">
-<code class="descname">get_trends</code><span class="sig-paren">(</span><em>data_df</em>, <em>trend_col_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.get_trends" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute a linear regressions and return a partial result_df</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame or DataFrameGroupBy</span></dt>
-<dd><p class="first last">data to compute trends on, may be a whole, unmodified DataFrame or</p>
-</dd>
-<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt>
-<dd></dd>
-<dt><strong>trend_col_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt>
-<dd><p class="first last">which type of trend is to be computed</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>reg_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
-<dd><p class="first last">partial result_df, multiple can be merged together to form
-a complete result_df</p>
-</dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="wiggum.trend_components.LinearRegression.is_computable">
-<code class="descname">is_computable</code><span class="sig-paren">(</span><em>labeled_df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/regression.html#LinearRegression.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.LinearRegression.is_computable" title="Permalink to this definition">¶</a></dt>
-<dd><p>check if this trend can be computed based on data and metadata available
-this requires that the regression vars be a list of tuple or list of
-length at least 2.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Trend</span></dt>
-<dd><p class="first last">a trend object with a set_vars Parameters</p>
-</dd>
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame {None} (optional)</span></dt>
-<dd><p class="first last">data to use if trend is not already configured</p>
-</dd>
-</dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>computable</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd><p class="first last">True if requirements of get_trends are filled</p>
-</dd>
-<dt><strong>See also:</strong></dt>
-<dd></dd>
-<dt><strong>get_trends() for description of how this trend computes and</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
+<dl class="py class">
 <dt id="wiggum.trend_components.StatBinRankTrend">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">StatBinRankTrend</code><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">StatBinRankTrend</code><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a trend that determines between alphabetically ordered values of a
 two-valued categorical variable are &gt; or &lt; when ordered by a statistic of
 another variable
 quality based on the ratio and the distance is 0/1 loss</p>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.StatBinRankTrend.get_distance" title="wiggum.trend_components.StatBinRankTrend.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[,&nbsp;col_a,&nbsp;col_b])</td>
-<td>0/1 loss on &gt;&lt;</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.StatBinRankTrend.get_distance" title="wiggum.trend_components.StatBinRankTrend.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[, col_a, col_b])</p></td>
+<td><p>0/1 loss on &gt;&lt;</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.StatBinRankTrend.get_trends" title="wiggum.trend_components.StatBinRankTrend.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df,&nbsp;trend_col_name)</td>
-<td>Compute a trend between a binary ranking variable</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.StatBinRankTrend.get_trends" title="wiggum.trend_components.StatBinRankTrend.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df, trend_col_name)</p></td>
+<td><p>Compute a trend between a binary ranking variable</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.StatBinRankTrend.is_computable" title="wiggum.trend_components.StatBinRankTrend.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</td>
-<td>check if this trend can be computed based on data and metadata available</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.StatBinRankTrend.is_computable" title="wiggum.trend_components.StatBinRankTrend.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</p></td>
+<td><p>check if this trend can be computed based on data and metadata available</p></td>
 </tr>
 </tbody>
 </table>
-<table border="1" class="docutils">
+<table class="docutils align-default">
 <colgroup>
-<col width="47%" />
-<col width="53%" />
+<col style="width: 47%" />
+<col style="width: 53%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><strong>is_SP</strong></td>
-<td>&#160;</td>
+<tbody>
+<tr class="row-odd"><td><p><strong>is_SP</strong></p></td>
+<td></td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
+<dl class="py method">
 <dt id="wiggum.trend_components.StatBinRankTrend.get_distance">
-<code class="descname">get_distance</code><span class="sig-paren">(</span><em>row</em>, <em>col_a='subgroup_trend'</em>, <em>col_b='agg_trend'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend.get_distance" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">col_a</span><span class="o">=</span><span class="default_value">'subgroup_trend'</span></em>, <em class="sig-param"><span class="n">col_b</span><span class="o">=</span><span class="default_value">'agg_trend'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend.get_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>0/1 loss on &gt;&lt;</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>row</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.Series</span></dt>
-<dd><p class="first last">row of a result_df DataFrame. the <cite>agg_trend</cite> and <cite>subgroup_trend</cite>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>row</strong><span class="classifier">pd.Series</span></dt><dd><p>row of a result_df DataFrame. the <cite>agg_trend</cite> and <cite>subgroup_trend</cite>
 columns must contain lists</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>0_1_loss</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">0/1 loss distance between the subgroup_trend and agg_trend
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>0_1_loss</strong><span class="classifier">float</span></dt><dd><p>0/1 loss distance between the subgroup_trend and agg_trend
 compatible with assignment to a cell of a result_df</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="wiggum.trend_components.StatBinRankTrend.get_trends">
-<code class="descname">get_trends</code><span class="sig-paren">(</span><em>data_df</em>, <em>trend_col_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend.get_trends" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_trends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_df</span></em>, <em class="sig-param"><span class="n">trend_col_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend.get_trends" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a trend between a binary ranking variable</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame or DataFrameGroupBy</span></dt>
-<dd><p class="first last">data to compute trends on, may be a whole, unmodified DataFrame or</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_df</strong><span class="classifier">DataFrame or DataFrameGroupBy</span></dt><dd><p>data to compute trends on, may be a whole, unmodified DataFrame or</p>
 </dd>
-<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt>
-<dd></dd>
-<dt><strong>trend_col_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt>
-<dd><p class="first last">which type of trend is to be computed
+<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt><dd></dd>
+<dt><strong>trend_col_name</strong><span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt><dd><p>which type of trend is to be computed
 TODO: could infer this by type of above?</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>reg_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
-<dd><p class="first last">partial result_df, multiple can be merged together to form
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>reg_df</strong><span class="classifier">DataFrame</span></dt><dd><p>partial result_df, multiple can be merged together to form
 a complete result_df</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="wiggum.trend_components.StatBinRankTrend.is_computable">
-<code class="descname">is_computable</code><span class="sig-paren">(</span><em>labeled_df=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend.is_computable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_computable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatBinRankTrend.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatBinRankTrend.is_computable" title="Permalink to this definition">¶</a></dt>
 <dd><p>check if this trend can be computed based on data and metadata available</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>self</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Trend</span></dt>
-<dd><p class="first last">a trend object with a set_vars Parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>self</strong><span class="classifier">Trend</span></dt><dd><p>a trend object with a set_vars Parameters</p>
 </dd>
-<dt><strong>labeled_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">LabeledDataFrame {None} (optional)</span></dt>
-<dd><p class="first last">data to use if trend is not already configured</p>
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame {None} (optional)</span></dt><dd><p>data to use if trend is not already configured</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>computable</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd><p class="first last">True if requirements of get_trends are filled</p>
 </dd>
-<dt><strong>See also:</strong></dt>
-<dd></dd>
-<dt><strong>get_trends() for description of how this trend computes and</strong></dt>
-<dd></dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>computable</strong><span class="classifier">bool</span></dt><dd><p>True if requirements of get_trends are filled</p>
+</dd>
+<dt><strong>See also:</strong></dt><dd></dd>
+<dt><strong>get_trends() for description of how this trend computes and</strong></dt><dd></dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="wiggum.trend_components.CorrelationSignTrend">
-<em class="property">class </em><code class="descclassname">wiggum.trend_components.</code><code class="descname">CorrelationSignTrend</code><a class="reference internal" href="_modules/wiggum/trend_components/statistical.html#CorrelationSignTrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.CorrelationSignTrend" title="Permalink to this definition">¶</a></dt>
-<dd><p>trends that are based on a correlation of type that is specified as a
-property and computes a binary comparison of the signs as a distance</p>
+<dl class="py class">
+<dt id="wiggum.trend_components.StatRankTrend">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">StatRankTrend</code><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a trend that is the ascending ranking of categorical variables,
+quality based on the trend vs actual kendall tau distance and the distance
+in subgroup vs aggregtae is 1-tau</p>
+<p>the distances are a continuous value</p>
 <p class="rubric">Methods</p>
-<table border="1" class="longtable docutils">
+<table class="longtable docutils align-default">
 <colgroup>
-<col width="10%" />
-<col width="90%" />
+<col style="width: 10%" />
+<col style="width: 90%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_correlation_table</span></code>(data_df,&nbsp;…)</td>
-<td>common code for ocmputing correlations for any correlation based trend</td>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.StatRankTrend.get_distance" title="wiggum.trend_components.StatRankTrend.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[, col_a, col_b])</p></td>
+<td><p>kendalltau distance as a permuation distance</p></td>
 </tr>
-<tr class="row-even"><td><a class="reference internal" href="#wiggum.trend_components.CorrelationSignTrend.get_distance" title="wiggum.trend_components.CorrelationSignTrend.get_distance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_distance</span></code></a>(row[,&nbsp;col_a,&nbsp;col_b])</td>
-<td>distance between the subgroup and aggregate trends for a row of a result_df  binary 0 for same sign, 1 for opposite sign</td>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.StatRankTrend.get_trends" title="wiggum.trend_components.StatRankTrend.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df, trend_col_name)</p></td>
+<td><p>Compute a trend that is the ascending ranking of categorical variables</p></td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#wiggum.trend_components.CorrelationSignTrend.get_trends" title="wiggum.trend_components.CorrelationSignTrend.get_trends"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trends</span></code></a>(data_df,&nbsp;trend_col_name)</td>
-<td>Compute a trend, its quality and return a partial result_df</td>
-</tr>
-<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code>([labeled_df])</td>
-<td>check if this trend can be computed based on data and metadata available</td>
-</tr>
-<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">wrap_reg_df</span></code>(reg_df,&nbsp;groupby_name)</td>
-<td>final prep for reg_df before return</td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.StatRankTrend.is_computable" title="wiggum.trend_components.StatRankTrend.is_computable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_computable</span></code></a>([labeled_df])</p></td>
+<td><p>check if this trend can be computed based on data and metadata available</p></td>
 </tr>
 </tbody>
 </table>
-<dl class="method">
-<dt id="wiggum.trend_components.CorrelationSignTrend.get_distance">
-<code class="descname">get_distance</code><span class="sig-paren">(</span><em>row</em>, <em>col_a='subgroup_trend'</em>, <em>col_b='agg_trend'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/statistical.html#CorrelationSignTrend.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.CorrelationSignTrend.get_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>distance between the subgroup and aggregate trends for a row of a
-result_df  binary 0 for same sign, 1 for opposite sign</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>row</strong> <span class="classifier-delimiter">:</span> <span class="classifier">pd.Series</span></dt>
-<dd><p class="first last">row of a result_df DataFrame</p>
+<dl class="py method">
+<dt id="wiggum.trend_components.StatRankTrend.get_distance">
+<code class="sig-name descname">get_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">col_a</span><span class="o">=</span><span class="default_value">'subgroup_trend'</span></em>, <em class="sig-param"><span class="n">col_b</span><span class="o">=</span><span class="default_value">'agg_trend'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend.get_distance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend.get_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>kendalltau distance as a permuation distance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>row</strong><span class="classifier">pd.Series</span></dt><dd><p>row of a result_df DataFrame. the <cite>agg_trend</cite> and <cite>subgroup_trend</cite>
+columns must contain lists</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>&lt;&gt;_dist</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
-<dd><p class="first last">distance between the subgroup_trend and agg_trend, compatible with
-assignment to a cell of a result_df</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>tau_dist</strong><span class="classifier">float</span></dt><dd><p>perumation distance between the subgroup_trend and agg_trend
+compatible with assignment to a cell of a result_df</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="method">
-<dt id="wiggum.trend_components.CorrelationSignTrend.get_trends">
-<code class="descname">get_trends</code><span class="sig-paren">(</span><em>data_df</em>, <em>trend_col_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/statistical.html#CorrelationSignTrend.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.CorrelationSignTrend.get_trends" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute a trend, its quality and return a partial result_df</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame or DataFrameGroupBy</span></dt>
-<dd><p class="first last">data to compute trends on, may be a whole, unmodified DataFrame or</p>
+<dl class="py method">
+<dt id="wiggum.trend_components.StatRankTrend.get_trends">
+<code class="sig-name descname">get_trends</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_df</span></em>, <em class="sig-param"><span class="n">trend_col_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend.get_trends"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend.get_trends" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a trend that is the ascending ranking of categorical variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_df</strong><span class="classifier">DataFrame or DataFrameGroupBy</span></dt><dd><p>data to compute trends on, may be a whole, unmodified DataFrame or</p>
 </dd>
-<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt>
-<dd></dd>
-<dt><strong>trend_col_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt>
-<dd><p class="first last">which type of trend is to be computed</p>
+<dt><strong>a grouped DataFrame as passed by LabeledDataFrame get trend functions</strong></dt><dd></dd>
+<dt><strong>trend_col_name</strong><span class="classifier">{‘subgroup_trend’,’agg_trend’}</span></dt><dd><p>which type of trend is to be computed
+TODO: could infer this by type of above?</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>reg_df</strong> <span class="classifier-delimiter">:</span> <span class="classifier">DataFrame</span></dt>
-<dd><p class="first last">partial result_df, multiple can be merged together to form
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>reg_df</strong><span class="classifier">DataFrame</span></dt><dd><p>partial result_df, multiple can be merged together to form
 a complete result_df</p>
 </dd>
 </dl>
-</td>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wiggum.trend_components.StatRankTrend.is_computable">
+<code class="sig-name descname">is_computable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/categorical.html#StatRankTrend.is_computable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.StatRankTrend.is_computable" title="Permalink to this definition">¶</a></dt>
+<dd><p>check if this trend can be computed based on data and metadata available</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>self</strong><span class="classifier">Trend</span></dt><dd><p>a trend object with a set_vars Parameters</p>
+</dd>
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame {None} (optional)</span></dt><dd><p>data to use if trend is not already configured</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>computable</strong><span class="classifier">bool</span></dt><dd><p>True if requirements of get_trends are filled</p>
+</dd>
+<dt><strong>See also:</strong></dt><dd></dd>
+<dt><strong>get_trends() for description of how this trend computes and</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wiggum.trend_components.Trend">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">Trend</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend" title="Permalink to this definition">¶</a></dt>
+<dd><p>baseclass for abstraction and building trend objects. All trend objects must
+inherit this class in order to have a constructor (__init__). This may be
+overloaded to define a different constructor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>self</strong></dt><dd></dd>
+<dt><strong>labeled_df</strong><span class="classifier">LabeledDataFrame or None</span></dt><dd><p>if passed, get_trend_vars is called on initialization using labeled_df</p>
+</dd>
+<dt><strong>as the target dataset to compute trends on</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.Trend.get_trend_value_type" title="wiggum.trend_components.Trend.get_trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_trend_value_type</span></code></a>()</p></td>
+<td><p>return the type that the trend values for this trend type should be</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#wiggum.trend_components.Trend.is_SP" title="wiggum.trend_components.Trend.is_SP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_SP</span></code></a>(row, thresh)</p></td>
+<td><p>default is if it’s above a threshold, operates rowwise and can be applied to a DataFrame with the apply method</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.Trend.load" title="wiggum.trend_components.Trend.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(content_dict)</p></td>
+<td><p>load a trend  from a dictionary of the content</p></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt id="wiggum.trend_components.Trend.get_trend_value_type">
+<code class="sig-name descname">get_trend_value_type</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.get_trend_value_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.get_trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>return the type that the trend values for this trend type should be</p>
 </dd></dl>
 
+<dl class="py method">
+<dt id="wiggum.trend_components.Trend.is_SP">
+<code class="sig-name descname">is_SP</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">row</span></em>, <em class="sig-param"><span class="n">thresh</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.is_SP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.is_SP" title="Permalink to this definition">¶</a></dt>
+<dd><p>default is if it’s above a threshold, operates rowwise and can be
+applied to a DataFrame with the apply method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>row</strong><span class="classifier">pd.series</span></dt><dd><p>row of a result df to apply the threshold to</p>
+</dd>
+<dt><strong>thresh</strong><span class="classifier">float scalar</span></dt><dd><p>threshold to compare the distance to</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>boolean value if the distance is over the threshold</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="wiggum.trend_components.Trend.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">content_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#Trend.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.Trend.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>load a trend  from a dictionary of the content</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>content_dict</strong><span class="classifier">Dictionary</span></dt><dd><p>the dictionary that results from saving a trend object via the</p>
+</dd>
+<dt><strong>trend.__dict__ output</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>self</strong><span class="classifier">a trend object</span></dt><dd><p>with all of the parameters set according to the dictionary</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="wiggum.trend_components.WeightedRank">
+<em class="property">class </em><code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">WeightedRank</code><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#WeightedRank"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.WeightedRank" title="Permalink to this definition">¶</a></dt>
+<dd><p>common parts for all continuous variable trends</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#wiggum.trend_components.WeightedRank.trend_value_type" title="wiggum.trend_components.WeightedRank.trend_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">trend_value_type</span></code></a></p></td>
+<td><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 64%" />
+<col style="width: 36%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>get_trend_vars</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt id="wiggum.trend_components.WeightedRank.get_trend_vars">
+<code class="sig-name descname">get_trend_vars</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">labeled_df</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#WeightedRank.get_trend_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.WeightedRank.get_trend_vars" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="wiggum.trend_components.WeightedRank.trend_value_type">
+<code class="sig-name descname">trend_value_type</code><a class="headerlink" href="#wiggum.trend_components.WeightedRank.trend_value_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">builtins.str</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="wiggum.trend_components.w_avg">
+<code class="sig-prename descclassname">wiggum.trend_components.</code><code class="sig-name descname">w_avg</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">avcol</span></em>, <em class="sig-param"><span class="n">wcol</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wiggum/trend_components/base_getvars.html#w_avg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wiggum.trend_components.w_avg" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>commpute a weighted average and use the std to define confidence interval</dt><dd><p>compatible with DataFrame.apply() and get_trends functions in
+wiggum.trend_components.categorical</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>df</strong><span class="classifier">DataFrame or DataFrameGroupBy</span></dt><dd><p>passed as the source of apply, the data to extract columns from for
+computing a weighted average</p>
+</dd>
+<dt><strong>avcol</strong><span class="classifier">string</span></dt><dd><p>name of column in df to take the average of</p>
+</dd>
+<dt><strong>wcol</strong><span class="classifier">string</span></dt><dd><p>name of column in df to use for weighting</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>stat_data</strong><span class="classifier">pandas Series</span></dt><dd><p>with ‘stat’, ‘max’, ‘min’ values defining the statistic and a
+confidence interval and ‘count’ defining the power of the computation</p>
+</dd>
+<dt><strong>stat</strong><span class="classifier">float</span></dt><dd><p>mean of df[avcol] weighted row wise by df[wcol]</p>
+</dd>
+<dt><strong>max</strong><span class="classifier">float</span></dt><dd><p>mean + std to be used for upper limit of confidence interval</p>
+</dd>
+<dt><strong>min</strong><span class="classifier">float</span></dt><dd><p>mean - std</p>
+</dd>
+<dt><strong>count</strong><span class="classifier">int</span></dt><dd><p>sum wcol</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <p>Wiggum App: interactive visualization</p>
@@ -1165,7 +998,7 @@ compuation and visualization.</p>
       &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |

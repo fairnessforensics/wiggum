@@ -1,19 +1,19 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wiggum Documentation &#8212; Wiggum 0.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="What is Simpson’s Paradox?" href="notebooks/simple_simpsons_paradox_intro.html" />
@@ -28,13 +28,14 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h3><a href="#">Table Of Contents</a></h3>
+<h3><a href="#">Table of Contents</a></h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JS_API.html">JS API Reference</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
@@ -52,17 +53,15 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="documentwrapper">
@@ -80,10 +79,11 @@
 <li class="toctree-l1"><a class="reference internal" href="app_user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="JS_API.html">JS API Reference</a></li>
 </ul>
 </div>
 <ul class="simple">
-<li>this documentation site is under active development*</li>
+<li><p>this documentation site is under active development*</p></li>
 </ul>
 </div>
 <div class="section" id="wiggum">
@@ -92,11 +92,10 @@
 <div class="section" id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
 <p>Simpson’s Paradox Inspired Fairness Forensics</p>
-<dl class="docutils">
-<dt>Prior version published in:</dt>
-<dd><ul class="first last simple">
-<li><a class="reference external" href="http://www.flairs-31.info/program">FLAIRS 31</a>  <a class="reference external" href="../dsp_paper.pdf">paper</a></li>
-<li><a class="reference external" href="https://fairnessforensics.github.io/detect_simpsons_paradox/">Docs available separately</a></li>
+<dl class="simple">
+<dt>Prior version published in:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="http://www.flairs-31.info/program">FLAIRS 31</a>  <a class="reference external" href="../dsp_paper.pdf">paper</a></p></li>
+<li><p><a class="reference external" href="https://fairnessforensics.github.io/detect_simpsons_paradox/">Docs available separately</a></p></li>
 </ul>
 </dd>
 </dl>
@@ -127,8 +126,13 @@ in browser available as a command line tool. To run the app:</p>
 <p>To run in the same environment as developed or to compile docs, sphinx and
 some extensions are required, all are included in <cite>requirements.txt</cite> and can be</p>
 <blockquote>
-<div>installed with:</div></blockquote>
+<div><p>installed with:</p>
+</div></blockquote>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt
+</pre></div>
+</div>
+<p>To generate JavaScript documentation, install JSDoc using npm</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>npm install -g jsdoc
 </pre></div>
 </div>
 <p>then</p>
@@ -151,8 +155,8 @@ need to be restarted to get the updates, if they’re done outside of the notebo
 <h2>How to Fairness Forensics<a class="headerlink" href="#how-to-fairness-forensics" title="Permalink to this headline">¶</a></h2>
 <p>How to conduct a fairness forensics investigation with Wiggum:</p>
 <ul class="simple">
-<li>With the Wiggum app: <a href="#id1"><span class="problematic" id="id2">:ref:`user_manual`_</span></a></li>
-<li>With the Wiggum package in a Jupyter Notebook:</li>
+<li><p>With the Wiggum app: <a href="#id1"><span class="problematic" id="id2">:ref:`user_manual`_</span></a></p></li>
+<li><p>With the Wiggum package in a Jupyter Notebook:</p></li>
 </ul>
 </div>
 <div class="section" id="example-investigations-and-case-studies">
@@ -173,19 +177,19 @@ need to be restarted to get the updates, if they’re done outside of the notebo
 <p>We provide the following detailed documentation if you want to contribute to
 Wiggum or exte4nd it for your own use.</p>
 <ul class="simple">
-<li>Basic dev setup:</li>
-<li>How to add new trends</li>
-<li>How to extend the app</li>
-<li>Contributors Guide:</li>
+<li><p>Basic dev setup:</p></li>
+<li><p>How to add new trends</p></li>
+<li><p>How to extend the app</p></li>
+<li><p>Contributors Guide:</p></li>
 </ul>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 
@@ -200,7 +204,7 @@ Wiggum or exte4nd it for your own use.</p>
       &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |

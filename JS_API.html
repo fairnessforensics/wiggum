@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS API Reference &#8212; Wiggum 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="App Outline" href="app_structure.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html">Table of Contents</a></h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app_user_manual.html">User Manual for Wiggum App</a></li>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">JS API Reference</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="app_structure.html" title="previous chapter">App Outline</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/JS_API.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="js-api-reference">
+<h1>JS API Reference<a class="headerlink" href="#js-api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main">
+<h2>Main:<a class="headerlink" href="#main" title="Permalink to this headline">¶</a></h2>
+<dl class="js function">
+<dt id="drawDistanceMatrixHeatmap">
+<code class="sig-name descname">drawDistanceMatrixHeatmap</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="headerlink" href="#drawDistanceMatrixHeatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw distance matrix heatmap</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – distance heatmap matrices.</p></li>
+<li><p><strong>action</strong> – action.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="clearSelected">
+<code class="sig-name descname">clearSelected</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#clearSelected" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unselect the menu selections</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – id for menu selection.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="distance-matrix-heatmap">
+<h2>Distance Matrix Heatmap:<a class="headerlink" href="#distance-matrix-heatmap" title="Permalink to this headline">¶</a></h2>
+<dl class="js function">
+<dt id="updateDistanceHeatmapContainer">
+<code class="sig-name descname">updateDistanceHeatmapContainer</code><span class="sig-paren">(</span><em class="sig-param">dataAll</em><span class="sig-paren">)</span><a class="headerlink" href="#updateDistanceHeatmapContainer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update distance heatmap container</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataAll</strong> – distance heatmap dictionary.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="clickHeatmapMatrixCell">
+<code class="sig-name descname">clickHeatmapMatrixCell</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#clickHeatmapMatrixCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Click heatmap matrix cell event</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>none.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="updateDetailView">
+<code class="sig-name descname">updateDetailView</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#updateDetailView" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update detail view</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>none.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="distanceMatrixHeatmap">
+<code class="sig-name descname">distanceMatrixHeatmap</code><span class="sig-paren">(</span><em class="sig-param">options</em><span class="sig-paren">)</span><a class="headerlink" href="#distanceMatrixHeatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw distance heatmap</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>options</strong> – Data containing matrix information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="DrawHeatmapLegend">
+<code class="sig-name descname">DrawHeatmapLegend</code><span class="sig-paren">(</span><em class="sig-param">overviewLegendTypes</em><span class="sig-paren">)</span><a class="headerlink" href="#DrawHeatmapLegend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw heatmap legend</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overviewLegendTypes</strong> – Legend types for overview distance matrices. It is generated by extracting the unique trend types from all distance matrix heatmaps. Overview legend type can be binary or continuous or both.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="table">
+<h2>Table:<a class="headerlink" href="#table" title="Permalink to this headline">¶</a></h2>
+<dl class="js function">
+<dt id="tabulate">
+<code class="sig-name descname">tabulate</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="headerlink" href="#tabulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate reuslt table</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – result table from server side.</p></li>
+<li><p><strong>action</strong> – User action.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result table.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="updateLabel">
+<code class="sig-name descname">updateLabel</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#updateLabel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update label for slide</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – label value.</p></li>
+<li><p><strong>id</strong> – label id.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="updateTabulate">
+<code class="sig-name descname">updateTabulate</code><span class="sig-paren">(</span><em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#updateTabulate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change highlight row when table is interacted</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vars</strong> – variables’ values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="interactDistanceMatrix">
+<code class="sig-name descname">interactDistanceMatrix</code><span class="sig-paren">(</span><em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#interactDistanceMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>interact distance matrix with result talbe</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vars</strong> – variables’ values using for matrix cell’s id.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="roleTable">
+<code class="sig-name descname">roleTable</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">var_types</em>, <em class="sig-param">samples</em>, <em class="sig-param">possibleRoles</em>, <em class="sig-param">isCounts</em>, <em class="sig-param">roles</em>, <em class="sig-param">weighting_vars</em>, <em class="sig-param">checked_vars</em>, <em class="sig-param">intersection_vars</em><span class="sig-paren">)</span><a class="headerlink" href="#roleTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting role table for data augmentation and data annotation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – variable name.</p></li>
+<li><p><strong>var_types</strong> – variable type.</p></li>
+<li><p><strong>samples</strong> – samples.</p></li>
+<li><p><strong>possibleRoles</strong> – possible roles.</p></li>
+<li><p><strong>isCounts</strong> – counts for weighting.</p></li>
+<li><p><strong>roles</strong> – variable role.</p></li>
+<li><p><strong>weighting_vars</strong> – weighting variable.</p></li>
+<li><p><strong>checked_vars</strong> – variable for quantiles.</p></li>
+<li><p><strong>intersection_vars</strong> – intersections of categorical variables.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="getMetaList">
+<code class="sig-name descname">getMetaList</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#getMetaList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get metadata</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>none.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>meta data list.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="scatterplot">
+<h2>Scatterplot:<a class="headerlink" href="#scatterplot" title="Permalink to this headline">¶</a></h2>
+<dl class="js function">
+<dt id="updateScatterplot">
+<code class="sig-name descname">updateScatterplot</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#updateScatterplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update Scatterplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – data for drawing dots.</p></li>
+<li><p><strong>vars</strong> – variables containing scatterplot elements information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="createScatterplot">
+<code class="sig-name descname">createScatterplot</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#createScatterplot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Scatterplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – the data for drawing the dots.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="calcLinear">
+<code class="sig-name descname">calcLinear</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">minX</em>, <em class="sig-param">maxX</em>, <em class="sig-param">minY</em>, <em class="sig-param">maxY</em><span class="sig-paren">)</span><a class="headerlink" href="#calcLinear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate linear regression line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – data for drawing dots.</p></li>
+<li><p><strong>x</strong> – the variable for x axis.</p></li>
+<li><p><strong>y</strong> – the variable for y axis.</p></li>
+<li><p><strong>minX</strong> – minimal value for X.</p></li>
+<li><p><strong>maxX</strong> – maximal value for X.</p></li>
+<li><p><strong>minY</strong> – minimal value for Y.</p></li>
+<li><p><strong>maxY</strong> – maximal value for Y.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>object</strong> – an object of two points, each point is an object with an x and y coordinate.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="UpdateMatrixFormat">
+<code class="sig-name descname">UpdateMatrixFormat</code><span class="sig-paren">(</span><em class="sig-param">matrix</em>, <em class="sig-param">vars</em>, <em class="sig-param">category</em>, <em class="sig-param">trend_type</em><span class="sig-paren">)</span><a class="headerlink" href="#UpdateMatrixFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update matrix format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix</strong> – matrix used for formatting.</p></li>
+<li><p><strong>vars</strong> – containing independent, dependent info.</p></li>
+<li><p><strong>category</strong> – groupby info.</p></li>
+<li><p><strong>trend_type</strong> – trend type.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="updateScatter">
+<code class="sig-name descname">updateScatter</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#updateScatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update scatterplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>none.</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="highlightSubgroup">
+<code class="sig-name descname">highlightSubgroup</code><span class="sig-paren">(</span><em class="sig-param">subgroup</em><span class="sig-paren">)</span><a class="headerlink" href="#highlightSubgroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>highlight the regression line in scatterplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subgroup</strong> – the group needed for highlight.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="parallel-coordinates">
+<h2>Parallel Coordinates:<a class="headerlink" href="#parallel-coordinates" title="Permalink to this headline">¶</a></h2>
+<dl class="js function">
+<dt id="updateParallelCoordinates">
+<code class="sig-name descname">updateParallelCoordinates</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#updateParallelCoordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Rank Chart</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – rank trend’s detail data.</p></li>
+<li><p><strong>vars</strong> – clicked cell’s information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="js function">
+<dt id="DrawParallelCoordinates">
+<code class="sig-name descname">DrawParallelCoordinates</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#DrawParallelCoordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Parallel Coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – rank trend’s detail data.</p></li>
+<li><p><strong>vars</strong> – clicked cell’s information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="grouped-bar-chart">
+<h2>Grouped Bar Chart:<a class="headerlink" href="#grouped-bar-chart" title="Permalink to this headline">¶</a></h2>
+<dl class="js function">
+<dt id="DrawGroupedBarChart">
+<code class="sig-name descname">DrawGroupedBarChart</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#DrawGroupedBarChart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draw Bar Chart</p>
+<dl class="field-list simple">
+<dt class="field-odd">Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – counts’ data.</p></li>
+<li><p><strong>vars</strong> – clicked cell’s information.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>none.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/JS_API.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

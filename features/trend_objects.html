@@ -1,19 +1,19 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trend objects &#8212; Wiggum 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
@@ -27,13 +27,14 @@
     
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-<h3><a href="../index.html">Table Of Contents</a></h3>
+<h3><a href="../index.html">Table of Contents</a></h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../app_user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../API.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../app_structure.html">App Outline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../JS_API.html">JS API Reference</a></li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>
@@ -50,17 +51,15 @@
     </ul>
    </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
         </div>
       </div>
       <div class="documentwrapper">
@@ -215,16 +214,17 @@ We provide a single baseTrend that defines a constructor shared across all trend
 <p>begin{minipage}[c]{0.95columnwidth}
 begin{lstlisting}[language=Python,</p>
 <blockquote>
-<div>label={fig:exmapleTrend},
+<div><p>label={fig:exmapleTrend},
 columns={fullflexible},
 frame = single,
-caption={Example of a trend class definition using the base class, texttt{trend}; trendComputeMixin, texttt{statRankTrend}; and varTypeMixin, texttt{weightedRank}. The class property texttt{my_stat} allows further customization of the texttt{statRankTrend}, for example we also have a median_rank_trend.}]</div></blockquote>
-<dl class="docutils">
-<dt>class mean_rank_trend(statRankTrend,</dt>
-<dd><blockquote class="first">
-<div>weightedRank,
-trend):</div></blockquote>
-<p class="last">name = ‘rank_trend’ # required class property
+caption={Example of a trend class definition using the base class, texttt{trend}; trendComputeMixin, texttt{statRankTrend}; and varTypeMixin, texttt{weightedRank}. The class property texttt{my_stat} allows further customization of the texttt{statRankTrend}, for example we also have a median_rank_trend.}]</p>
+</div></blockquote>
+<dl>
+<dt>class mean_rank_trend(statRankTrend,</dt><dd><blockquote>
+<div><p>weightedRank,
+trend):</p>
+</div></blockquote>
+<p>name = ‘rank_trend’ # required class property
 # trend specific class variable
 my_stat = lambda self,d,m,w : weighted_avg(d,m,w)</p>
 </dd>
@@ -238,9 +238,9 @@ For the distance between linear trends, Wiggum uses a normalization of the angle
 The normalization step creates a distance in $[0,1]$ that is always positive valued.
 This normalization makes the distance comparable to the 0/1 loss distance used in the binary detection setting.
 We choose to make $d=1$ for a right angle  and $d=0$ for parallel lines, whether vertical or horizontal.</p>
-<dl class="docutils">
-<dt>begin{align}</dt>
-<dd>d = normangle(t_a,t_s) = frac{2}{pi} left(left|tan^{-1}(t_a) - tan^{-1}(t_s)right|% frac{pi}{2}right) label{eq:normangle}</dd>
+<dl class="simple">
+<dt>begin{align}</dt><dd><p>d = normangle(t_a,t_s) = frac{2}{pi} left(left|tan^{-1}(t_a) - tan^{-1}(t_s)right|% frac{pi}{2}right) label{eq:normangle}</p>
+</dd>
 </dl>
 <p>end{align}
 % []</p>
@@ -248,9 +248,9 @@ We choose to make $d=1$ for a right angle  and $d=0$ for parallel lines, whether
 For multi-valued ranking trends, we rely on Kendall’s $tau$ based permutation distance for distance and strength.
 The distance is the Kendall’s Tau distance between the aggregate and subgroup trend lists.
 The strength is the Kendall’s tau similarity between the element-wise sorted list and the trend-sorted list.</p>
-<dl class="docutils">
-<dt>begin{align}</dt>
-<dd>tau(a,b) &amp;= frac{P - Q}{sqrt{(P + Q + T)(P+Q + U)}}</dd>
+<dl class="simple">
+<dt>begin{align}</dt><dd><p>tau(a,b) &amp;= frac{P - Q}{sqrt{(P + Q + T)(P+Q + U)}}</p>
+</dd>
 </dl>
 <p>end{align}</p>
 <p>where $P$ is the number of concordant pairs, $Q$ is the number of discordant pairs, $T$ is the number of ties only in $a$  and U is the number of pairs only in $b$.
@@ -286,7 +286,7 @@ Using the Wiggum package in a scientific computing environment, weighted sums of
       &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.6</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
