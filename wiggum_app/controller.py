@@ -107,8 +107,8 @@ def main():
             project_name = request.form['projectName']
 
             directory = app.config['SAVE_FOLDER'] + project_name
-            labeled_df_setup.save_all(directory)
 
+            labeled_df_setup.to_csvs(directory)
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
