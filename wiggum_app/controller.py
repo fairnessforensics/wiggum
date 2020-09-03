@@ -1,11 +1,12 @@
 from wiggum_app import app, render_template
 from wiggum_app import models
-from flask import request, flash, redirect,jsonify, url_for
+from flask import request, flash, redirect,jsonify, url_for, send_file
 import pandas as pd
 import json
 import wiggum as wg
 import numpy as np
 from .models import Decoder
+import os
 
 @app.route("/")
 def index():
@@ -14,6 +15,14 @@ def index():
 @app.route("/visualize", methods=['GET', 'POST'])
 def visualize():
     return render_template("visualize.html")
+
+@app.route("/download/")
+def download():
+    # get zip file path from config.py
+    file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], app.config['ZIP_FILE'])
+    return send_file(file_path,
+        mimetype = 'zip',
+        as_attachment = True)     
 
 @app.route("/", methods = ['POST'])
 def main():
@@ -106,9 +115,12 @@ def main():
             # store meta data into csv
             project_name = request.form['projectName']
 
-            directory = app.config['SAVE_FOLDER'] + project_name
-
+            directory = os.path.join(app.config['SAVE_FOLDER'], project_name)
             labeled_df_setup.to_csvs(directory)
+            
+            # compress saved files
+            models.compress_files(directory)
+            
             return 'Saved'
 
         # index.html 'Compute Quantiles' button clicked
@@ -188,8 +200,13 @@ def main():
         if action == 'save_trends':
             # store meta data into csv
             project_name = request.form['projectName']
-            directory = app.config['SAVE_FOLDER'] + project_name
-            labeled_df_setup.save_all(directory)          
+
+            directory = os.path.join(app.config['SAVE_FOLDER'], project_name)
+            labeled_df_setup.save_all(directory)       
+
+            # compress saved files
+            models.compress_files(directory)
+
             return 'Saved'      
 
         # index.html 'Visualize' button clicked

@@ -73,6 +73,14 @@
     margin-top: 30%; 
 }
 
+#downloadbutton {
+    width: 15%;    
+    height: 20%;
+    position: absolute;
+    margin-left: 13.8%;   
+    margin-top: 35%; 
+}
+
 #ranking {
     position: absolute;
     margin-left: 5%;     

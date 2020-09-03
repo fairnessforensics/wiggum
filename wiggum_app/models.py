@@ -1,4 +1,5 @@
 import wiggum as wg
+from wiggum_app import app
 from itertools import combinations
 import pandas as pd
 import sys
@@ -6,6 +7,8 @@ import logging
 from sklearn import mixture
 import numpy as np
 import json
+import os
+import zipfile
 
 def updateMetaData(labeled_df, meta):
     """
@@ -294,6 +297,32 @@ def getMetaDict(labeled_df):
                     'samples': sample_list}
 
     return result_dict
+
+def compress_files(directory):
+    """
+    Compress saved files to zip file
+    Parameters
+    -----------
+    directory : string
+        directory for zip file
+    Returns
+    --------
+    None
+    """
+    # Compress to Zip files
+    data_files = os.listdir(directory)
+    data_files_fullpath = [os.path.join (directory, d) for d in data_files]
+
+    # get zip file path from config.py
+    file_path = os.path.join(app.config['APP_DOWNLOAD_FOLDER'], app.config['ZIP_FILE'])
+
+    zipf = zipfile.ZipFile(file_path, 'w', zipfile.ZIP_DEFLATED)
+
+    for file in data_files_fullpath:
+        zipf.write(file)
+    zipf.close()
+
+    return ''
 
 class Decoder(json.JSONDecoder):
     def decode(self, s):
