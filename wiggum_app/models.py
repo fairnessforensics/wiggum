@@ -314,7 +314,7 @@ def compress_files(directory):
     data_files_fullpath = [os.path.join (directory, d) for d in data_files]
 
     # get zip file path from config.py
-    file_path = os.path.join(app.config['APP_DOWNLOAD_FOLDER'], app.config['ZIP_FILE'])
+    file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], app.config['ZIP_FILE'])
 
     zipf = zipfile.ZipFile(file_path, 'w', zipfile.ZIP_DEFLATED)
 

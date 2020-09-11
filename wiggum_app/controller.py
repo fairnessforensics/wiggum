@@ -19,7 +19,7 @@ def visualize():
 @app.route("/download/")
 def download():
     # get zip file path from config.py
-    file_path = os.path.join(app.config['DOWNLOAD_FOLDER'], app.config['ZIP_FILE'])
+    file_path = os.path.join(os.getcwd(), app.config['DOWNLOAD_FOLDER'], app.config['ZIP_FILE'])
     return send_file(file_path,
         mimetype = 'zip',
         as_attachment = True)     
