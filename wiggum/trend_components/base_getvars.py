@@ -102,6 +102,7 @@ class Regression():
         dep_vars = labeled_df.get_vars_per_roletype('dependent', d_type)
         # if the lists are the same, then symmetric
         dep_indep = [d in indep_vars for d in dep_vars]
+        # product of bools is true iff all are true
         if np.product(dep_indep):
             self.symmetric_vars = True
         # use iterator to compute pairs

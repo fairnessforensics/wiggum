@@ -89,49 +89,49 @@ class CorrelationBase():
 
             # -----------------------------------------------------------------
             #  process into trend table
-            if self.symmetric_vars:
-                # if symmetric get indices for upper right triangle
-                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-                    # if groupby then compute upper right
-                    # append for all groups if groupby instead of single DataFrame
-                    # construct a list of the upper triangle of the submatrices per group
-                    num_groups = len(data_df.groups)
-                    # need to increment this many values
-                    n_triu_values = len(triu_indices_0[0])
-                    # the incides are stored, row, colum, only the rows get incremented
-                    # increment by [0, num_vars, numvars*2, ...]
-                    increments_r = [i*num_vars for i in range(num_groups)]*(n_triu_values)
-                    # ad the increment amounts to the row values, keep the col values
-                    triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
-                                                    triu_indices_0[1].repeat(num_groups))
-                    triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
-                                                    triu_indices_0[1].repeat(num_groups))
-                    groupby_vars = list(data_df.groups.keys())*n_triu_values
-                else:
-                    # if not a groupby then the original is correct, use that
-                    triu_indices = triu_indices_0
-                    triu_feat_indices = triu_indices
-                    n_triu_values = len(triu_indices_0)
-                    groupby_vars = ['']*n_triu_values
+            # if self.symmetric_vars:
+            #     # if symmetric get indices for upper right triangle
+            #     if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+            #         # if groupby then compute upper right
+            #         # append for all groups if groupby instead of single DataFrame
+            #         # construct a list of the upper triangle of the submatrices per group
+            #         num_groups = len(data_df.groups)
+            #         # need to increment this many values
+            #         n_triu_values = len(triu_indices_0[0])
+            #         # the incides are stored, row, colum, only the rows get incremented
+            #         # increment by [0, num_vars, numvars*2, ...]
+            #         increments_r = [i*num_vars for i in range(num_groups)]*(n_triu_values)
+            #         # ad the increment amounts to the row values, keep the col values
+            #         triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
+            #                                         triu_indices_0[1].repeat(num_groups))
+            #         triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
+            #                                         triu_indices_0[1].repeat(num_groups))
+            #         groupby_vars = list(data_df.groups.keys())*n_triu_values
+            #     else:
+            #         # if not a groupby then the original is correct, use that
+            #         triu_indices = triu_indices_0
+            #         triu_feat_indices = triu_indices
+            #         n_triu_values = len(triu_indices_0)
+            #         groupby_vars = ['']*n_triu_values
+            #
+            #     # only store vlaues from upper right triangle
+            #     corr_triu = corr_mat.values[triu_indices]
+            #
+            #     corr_data = [[corr_var_list[x],corr_var_list[y],val,g] for x,y,val
+            #                 in zip(*triu_feat_indices,corr_triu,groupby_vars)]
+            #
+            # else:
+                # if not symmetric pull vars from the tuple list
+            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                corr_target_vals = []
+                groupby_vars = list(data_df.groups.keys())
 
-                # only store vlaues from upper right triangle
-                corr_triu = corr_mat.values[triu_indices]
-
-                corr_data = [[corr_var_list[x],corr_var_list[y],val,g] for x,y,val
-                            in zip(*triu_feat_indices,corr_triu,groupby_vars)]
+                corr_data = [(i,d, corr_mat[i][g][d],g) for (i,d),g in
+                                    itertools.product(self.regression_vars,groupby_vars)]
 
             else:
-                # if not symmetric pull vars from the tuple list
-                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-                    corr_target_vals = []
-                    groupby_vars = list(data_df.groups.keys())
-
-                    corr_data = [(i,d, corr_mat[i][g][d],g) for (i,d),g in
-                                        itertools.product(self.regression_vars,groupby_vars)]
-
-                else:
-                    # not symmtetric, not groupby
-                    corr_data = [(i,d, corr_mat[i][d],'') for i,d in self.regression_vars]
+                # not symmtetric, not groupby
+                corr_data = [(i,d, corr_mat[i][d],'') for i,d in self.regression_vars]
         else:
             # no data to computes
             corr_data = [[]]
