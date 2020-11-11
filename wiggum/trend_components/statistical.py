@@ -41,7 +41,7 @@ class CorrelationBase():
 
     def compute_correlation_table(self,data_df,trend_col_name):
         '''
-        common code for ocmputing correlations for any correlation based trend
+        common code for computing correlations for any correlation based trend
 
 
         Parameters
@@ -65,6 +65,8 @@ class CorrelationBase():
         Returns
         -------
         corr_data : list of tuples
+            the tuples are of (independednt variable name, dependent variable name,
+            correlation, grouping variable)
         '''
         # recover a single list from the independent and dependent vars
         indep, dep = zip(*self.regression_vars)
@@ -141,7 +143,7 @@ class CorrelationBase():
 
     def wrap_reg_df(self, reg_df,groupby_name):
         '''
-        final prep for reg_df before return
+        add the groupby varaible or drop the subgroup coloumn
 
         Parameters
         ----------
@@ -207,8 +209,10 @@ class CorrelationTrend(CorrelationBase):
             a complete result_df
         """
 
+        # get correlations
         corr_data = self.compute_correlation_table(data_df,trend_col_name)
 
+        # expand to trend and strength
         # strength here is the absolute value of the trend value
         reg_df = pd.DataFrame(data=[[i,d,v,np.abs(v),g] for i,d,v,g in corr_data],
                 columns = ['independent','dependent',trend_col_name,
@@ -284,8 +288,10 @@ class CorrelationSignTrend(CorrelationBase):
             a complete result_df
         """
 
+        # compute the correlations
         corr_data = self.compute_correlation_table(data_df,trend_col_name)
 
+        # expand to trend and strength
         sign_label = {1:'+',-1:'-'}
         # strength here is the absolute value of the trend value
         reg_df = pd.DataFrame(data=[[i,d,sign_label[np.sign(v)],np.abs(v),g]
