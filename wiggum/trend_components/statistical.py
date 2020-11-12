@@ -41,7 +41,7 @@ class CorrelationBase():
 
     def compute_correlation_table(self,data_df,trend_col_name):
         '''
-        common code for ocmputing correlations for any correlation based trend
+        common code for computing correlations for any correlation based trend
 
 
         Parameters
@@ -65,6 +65,8 @@ class CorrelationBase():
         Returns
         -------
         corr_data : list of tuples
+            the tuples are of (independednt variable name, dependent variable name,
+            correlation, grouping variable)
         '''
         # recover a single list from the independent and dependent vars
         indep, dep = zip(*self.regression_vars)
@@ -87,51 +89,17 @@ class CorrelationBase():
             # store the correlation matrix for later use
             self.trend_precompute[trend_name] = corr_mat
 
-            # -----------------------------------------------------------------
-            #  process into trend table
-            if self.symmetric_vars:
-                # if symmetric get indices for upper right triangle
-                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-                    # if groupby then compute upper right
-                    # append for all groups if groupby instead of single DataFrame
-                    # construct a list of the upper triangle of the submatrices per group
-                    num_groups = len(data_df.groups)
-                    # need to increment this many values
-                    n_triu_values = len(triu_indices_0[0])
-                    # the incides are stored, row, colum, only the rows get incremented
-                    # increment by [0, num_vars, numvars*2, ...]
-                    increments_r = [i*num_vars for i in range(num_groups)]*(n_triu_values)
-                    # ad the increment amounts to the row values, keep the col values
-                    triu_indices = (increments_r + triu_indices_0[0].repeat(num_groups),
-                                                    triu_indices_0[1].repeat(num_groups))
-                    triu_feat_indices = (triu_indices_0[0].repeat(num_groups),
-                                                    triu_indices_0[1].repeat(num_groups))
-                    groupby_vars = list(data_df.groups.keys())*n_triu_values
-                else:
-                    # if not a groupby then the original is correct, use that
-                    triu_indices = triu_indices_0
-                    triu_feat_indices = triu_indices
-                    n_triu_values = len(triu_indices_0)
-                    groupby_vars = ['']*n_triu_values
+            # unpack into a list of tuples
+            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                corr_target_vals = []
+                groupby_vars = list(data_df.groups.keys())
 
-                # only store vlaues from upper right triangle
-                corr_triu = corr_mat.values[triu_indices]
-
-                corr_data = [[corr_var_list[x],corr_var_list[y],val,g] for x,y,val
-                            in zip(*triu_feat_indices,corr_triu,groupby_vars)]
+                corr_data = [(i,d, corr_mat[i][g][d],g) for (i,d),g in
+                                    itertools.product(self.regression_vars,groupby_vars)]
 
             else:
-                # if not symmetric pull vars from the tuple list
-                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-                    corr_target_vals = []
-                    groupby_vars = list(data_df.groups.keys())
-
-                    corr_data = [(i,d, corr_mat[i][g][d],g) for (i,d),g in
-                                        itertools.product(self.regression_vars,groupby_vars)]
-
-                else:
-                    # not symmtetric, not groupby
-                    corr_data = [(i,d, corr_mat[i][d],'') for i,d in self.regression_vars]
+                # not symmtetric, not groupby
+                corr_data = [(i,d, corr_mat[i][d],'') for i,d in self.regression_vars]
         else:
             # no data to computes
             corr_data = [[]]
@@ -141,7 +109,7 @@ class CorrelationBase():
 
     def wrap_reg_df(self, reg_df,groupby_name):
         '''
-        final prep for reg_df before return
+        add the groupby varaible or drop the subgroup coloumn
 
         Parameters
         ----------
@@ -207,8 +175,10 @@ class CorrelationTrend(CorrelationBase):
             a complete result_df
         """
 
+        # get correlations
         corr_data = self.compute_correlation_table(data_df,trend_col_name)
 
+        # expand to trend and strength
         # strength here is the absolute value of the trend value
         reg_df = pd.DataFrame(data=[[i,d,v,np.abs(v),g] for i,d,v,g in corr_data],
                 columns = ['independent','dependent',trend_col_name,
@@ -284,8 +254,10 @@ class CorrelationSignTrend(CorrelationBase):
             a complete result_df
         """
 
+        # compute the correlations
         corr_data = self.compute_correlation_table(data_df,trend_col_name)
 
+        # expand to trend and strength
         sign_label = {1:'+',-1:'-'}
         # strength here is the absolute value of the trend value
         reg_df = pd.DataFrame(data=[[i,d,sign_label[np.sign(v)],np.abs(v),g]
