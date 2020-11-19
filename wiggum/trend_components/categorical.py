@@ -127,9 +127,9 @@ class StatBinRankTrend():
                 # save detailed precompute
                 # if groupby add subgroup info
                 if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-                    group_feat = data_df.count().index.name
+                    splitby = data_df.count().index.name
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
-                                            group_feat, str(groupby_lev)])
+                                            splitby, str(groupby_lev)])
                 else:
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
 
@@ -154,7 +154,7 @@ class StatBinRankTrend():
                                                     trend_col_name +'_strength',
                                                     'subgroup'])
             #same for all
-            reg_df['group_feat'] = data_df.count().index.name
+            reg_df['splitby'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,
@@ -305,9 +305,9 @@ class StatRankTrend():
                 # save detailed precompute
                 # if groupby add subgroup info
                 if type(data_df) is pd.core.groupby.DataFrameGroupBy:
-                    group_feat = data_df.count().index.name
+                    splitby = data_df.count().index.name
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
-                                            group_feat, str(groupby_lev)])
+                                            splitby, str(groupby_lev)])
                 else:
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
 
@@ -387,7 +387,7 @@ class StatRankTrend():
                                                     trend_col_name +'_strength',
                                                     'subgroup'])
             #same for all
-            reg_df['group_feat'] = data_df.count().index.name
+            reg_df['splitby'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,

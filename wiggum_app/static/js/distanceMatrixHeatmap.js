@@ -30,7 +30,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 		data = dataAll[key];
 		heatmapMatrix = jsonto2darray(data.heatmap);
 
-		groupInfo = {'groupby': data.group_feat, 'value': data.subgroup}
+		groupInfo = {'groupby': data.splitby, 'value': data.subgroup}
 
 		if (data.detail_view_type == 'scatter') {	
 			
@@ -54,7 +54,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 
 			if (createScatterPlotFlag) {
 				// Scatter plot
-				catAttrs = data.group_feat;
+				catAttrs = data.splitby;
 				conAttrs = [];
 				conAttrs.push(rowLabels[0]);
 				conAttrs.push(colLabels[0]);				
@@ -97,7 +97,7 @@ function updateDistanceHeatmapContainer(dataAll) {
 			data	  : matrix_data,
 			rowLabels : rowLabels,
 			colLabels : colLabels,			
-			subLabel  : data.group_feat + ' : ' + data.subgroup,
+			subLabel  : data.splitby + ' : ' + data.subgroup,
 			overviewLegendType: data.overview_legend_type
 		});
 	}
@@ -146,7 +146,7 @@ function updateDetailView() {
 			type: 'POST',
 			url: '/',
 			data: {'action' : "detail_ranktrend", 'dependent': d.dependentVar, 
-						'independent': d.independentVar, 'group_feat': d.categoryAttr},     
+						'independent': d.independentVar, 'splitby': d.categoryAttr},     
 			success: function(data) {
 				//updateRankChart(d);
 				updateParallelCoordinates(data, d);

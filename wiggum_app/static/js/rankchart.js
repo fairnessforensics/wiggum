@@ -19,7 +19,7 @@ function updateRankChart(d) {
 		return e.trend_type == d.trend_type && 
 				e.feat1 == d.dependentVar && 
 				e.feat2 == d.independentVar &&  
-				e.group_feat == d.categoryAttr &&
+				e.splitby == d.categoryAttr &&
 				e.subgroup == d.category;
 	});
 
@@ -51,7 +51,7 @@ function updateRankChart(d) {
 		return e.trend_type == d.trend_type && 
 				e.feat1 == d.dependentVar && 
 				e.feat2 == d.independentVar &&  
-				e.group_feat == d.categoryAttr &&
+				e.splitby == d.categoryAttr &&
 				e.subgroup != d.category;
 	});
 

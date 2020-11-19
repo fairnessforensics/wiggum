@@ -1,7 +1,7 @@
 function rankingView(rankingArray) {
 
 	var label_array = rankingArray.map(obj =>{ 
-		var rObj = obj.feat1 + ' : ' + obj.feat2 + ' : ' + obj.group_feat;
+		var rObj = obj.feat1 + ' : ' + obj.feat2 + ' : ' + obj.splitby;
 		return rObj;
 	});
 
@@ -44,20 +44,20 @@ function updateContainerForRanking(selections) {
 	var temp = selections[0].split(" : ");
 	ranking.feat1 = temp[0];
 	ranking.feat2 = temp[1];
-	ranking.group_feat = temp[2];
+	ranking.splitby = temp[2];
 
 	if (selectTypeValue == "Regression") {
 		updateContainer();
 
 		// Update Scatterplot
 		var vars = { x: ranking.feat1, y: ranking.feat2, 
-			categoryAttr: ranking.group_feat, category: 'all'};
+			categoryAttr: ranking.splitby, category: 'all'};
 	
 		updateScatterplot(csvData, vars);
 
 		// Update Table
 		var filter_data = tableRecords.filter(function(d){
-			return d.feat1 == ranking.feat1 && d.feat2 == ranking.feat2 && d.group_feat == ranking.group_feat;})
+			return d.feat1 == ranking.feat1 && d.feat2 == ranking.feat2 && d.splitby == ranking.splitby;})
 		tabulate(filter_data, tableColumns);
 
 	} else {

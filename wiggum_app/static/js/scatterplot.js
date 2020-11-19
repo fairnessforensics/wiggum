@@ -610,11 +610,11 @@ var UpdateMatrixFormat = function(matrix, vars, category, trend_type) {
 					for (var k = 0; k < len; k++){
 						if ((autoDetectResult.independent[k] == vars[i] &&
 							autoDetectResult.dependent[k] == vars[j] &&
-							autoDetectResult.group_feat[k] == category.groupby &&
+							autoDetectResult.splitby[k] == category.groupby &&
 							autoDetectResult.subgroup[k] == category.value) ||
 							(autoDetectResult.independent[k] == vars[j] &&
 								autoDetectResult.dependent[k] == vars[i] &&
-								autoDetectResult.group_feat[k] == category.groupby &&
+								autoDetectResult.splitby[k] == category.groupby &&
 								autoDetectResult.subgroup[k] == category.value)
 							) {
 							matrix[i][j].autoDetectFlg = 1

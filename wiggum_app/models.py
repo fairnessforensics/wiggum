@@ -108,7 +108,7 @@ def getDistanceHeatmapDict(labeled_df, cur_result_df):
     for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
 
         # iterate over the GroupFeat variables
-        for gby, gby_trend_df in trend_df.groupby('group_feat'):
+        for gby, gby_trend_df in trend_df.groupby('splitby'):
             # groupby the subgroups
             cgby = gby_trend_df.groupby('subgroup')
             # iterate over the values of the subgroups
@@ -133,7 +133,7 @@ def getDistanceHeatmapDict(labeled_df, cur_result_df):
                             'trend_display_name': trend_display_name,
                             'detail_view_type': detail_view_type,
                             'overview_legend_type': overview_legend_type,
-                            'group_feat': gby,
+                            'splitby': gby,
                             'subgroup': gby_lev,
                             'heatmap':heatmap.to_dict('index')}
 
@@ -187,7 +187,7 @@ def replaceTrendDisplayName(cur_result_df):
 
     return cur_result_df
 
-def getRankTrendDetail(labeled_df, dependent, independent, group_feat):
+def getRankTrendDetail(labeled_df, dependent, independent, splitby):
     """
     Extract stats for rank trend detail view.
 
@@ -199,8 +199,8 @@ def getRankTrendDetail(labeled_df, dependent, independent, group_feat):
         a variable that will have independent information    
     dependent : str
         a variable that will have dependent information    
-    group_feat : str
-        a variable that will have group_feat information                            
+    splitby : str
+        a variable that will have splitby information                            
     Returns
     --------
     detail_df: dataframe
@@ -231,7 +231,7 @@ def getRankTrendDetail(labeled_df, dependent, independent, group_feat):
     count_df['aggregate'] = trend_precompute[sel_agg_trend]['count']
 
     # subgroups' stats
-    sel_subgroup_trend = '_'.join(['rank_trend', 'subgroup_trend', dependent, independent, group_feat])
+    sel_subgroup_trend = '_'.join(['rank_trend', 'subgroup_trend', dependent, independent, splitby])
 
     for key in trend_precompute:
         if key.startswith(sel_subgroup_trend):
