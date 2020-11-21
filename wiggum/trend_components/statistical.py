@@ -122,14 +122,14 @@ class CorrelationBase():
         Returns
         -------
         reg_df : DataFrame
-            data frame with added group_feat column or removed subgroup column
+            data frame with added splitby column or removed subgroup column
         as applicable and added trend_type column
         '''
 
         # if groupby add subgroup indicator columns
         if groupby_name:
             #same for all
-            reg_df['group_feat'] = groupby_name
+            reg_df['splitby'] = groupby_name
         else:
             # if not, remove subgoup
             reg_df.drop(columns = 'subgroup',inplace=True)

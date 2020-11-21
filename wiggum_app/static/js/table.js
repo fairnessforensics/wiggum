@@ -87,24 +87,24 @@ function tabulate(data, action) {
 									.property("selected", 
 									function(d){ return independent_selected.includes(d); });
 			}	
-			// group_feat
+			// splitby
 			if (i==2) {
 				if (action == 'page_load') {
-					group_feat_options = d3.map(data, function(d){return d.group_feat;}).keys();
+					splitby_options = d3.map(data, function(d){return d.splitby;}).keys();
 				} 
 
 				var select = d3.select(this).append('select')
-											.attr('id','group_feat_selector')				
+											.attr('id','splitby_selector')				
 											.attr('multiple', 'multiple')
 											.style('height', '44px');
 														
 				var options = select.selectAll('option')
-									.data(group_feat_options).enter()
+									.data(splitby_options).enter()
 									.append('option')
 									.attr("value", function(d) { return d; })
 									.text(function(d){return d;})
 									.property("selected", 
-									function(d){ return group_feat_selected.includes(d); });
+									function(d){ return splitby_selected.includes(d); });
 			}	
 			// subgroup
 			if (i==3) {
@@ -223,10 +223,10 @@ function tabulate(data, action) {
 	  .data(data)
 	  .enter()
 		.append('tr')
-		.attr("row", function(d) { return d.trend_name + "_"+ d.dependent+"_"+d.independent+"_"+d.group_feat+"_"+d.subgroup; })
+		.attr("row", function(d) { return d.trend_name + "_"+ d.dependent+"_"+d.independent+"_"+d.splitby+"_"+d.subgroup; })
 		.attr("class", "tablerow")
 		.on("click", function(d, i) {
-			var vars = {x: d.independent, y: d.dependent, categoryAttr: d.group_feat, category: d.subgroup, trend_type: d.trend_name};
+			var vars = {x: d.independent, y: d.dependent, categoryAttr: d.splitby, category: d.subgroup, trend_type: d.trend_name};
 			return interactDistanceMatrix(vars, i); });
 
 	// create a cell in each row for each column

@@ -43,12 +43,12 @@ var server_data;
 // For table components
 var independent_options = [];
 var dependent_options = [];
-var group_feat_options = [];
+var splitby_options = [];
 var subgroup_options = [];
 var trend_type_options = [];
 var independent_selected = [];
 var dependent_selected = [];
-var group_feat_selected = [];
+var splitby_selected = [];
 var subgroup_selected = [];
 var trend_type_selected = [];
 var subgroup_trend_strength = 0;
@@ -152,13 +152,13 @@ d3.select("#controlbuttons").append("text")
 function setSelectedOptions() {
 	var independent_selector = document.getElementById("independent_selector");
 	var dependent_selector = document.getElementById("dependent_selector");
-	var group_feat_selector = document.getElementById("group_feat_selector");
+	var splitby_selector = document.getElementById("splitby_selector");
 	var subgroup_selector = document.getElementById("subgroup_selector");    
 	var trend_type_selector = document.getElementById("trend_type_selector");   
 
 	independent_selected = getSelectValues(independent_selector);
 	dependent_selected = getSelectValues(dependent_selector);
-	group_feat_selected = getSelectValues(group_feat_selector);
+	splitby_selected = getSelectValues(splitby_selector);
 	subgroup_selected = getSelectValues(subgroup_selector);
 	trend_type_selected = getSelectValues(trend_type_selector);    
 }
@@ -444,11 +444,11 @@ function Matrix(options) {
 						return d.value == legendValue && d.autoDetectFlg == 1; 
 					} else {
 						return d.value == legendValue && d.autoDetectFlg == 1 && d.colVar == ranking.independent && 
-							d.rowVar == ranking.dependent && d.categoryAttr == ranking.group_feat;
+							d.rowVar == ranking.dependent && d.categoryAttr == ranking.splitby;
 					}					
 				} else if (!isEmpty(ranking)) {
 					return d.value == legendValue && d.colVar == ranking.independent && 
-						d.rowVar == ranking.dependent && d.categoryAttr == ranking.group_feat;					
+						d.rowVar == ranking.dependent && d.categoryAttr == ranking.splitby;					
 				} else {
 					return d.value == legendValue;
 				}
@@ -457,10 +457,10 @@ function Matrix(options) {
 					return d.autoDetectFlg == 1; 
 				} else {
 					return d.autoDetectFlg == 1 && d.colVar == ranking.independent && 
-						d.rowVar == ranking.dependent && d.categoryAttr == ranking.group_feat;; 
+						d.rowVar == ranking.dependent && d.categoryAttr == ranking.splitby;; 
 				}
 			} else if (!isEmpty(ranking)) {
-				return d.colVar == ranking.independent && d.rowVar == ranking.dependent && d.categoryAttr == ranking.group_feat;
+				return d.colVar == ranking.independent && d.rowVar == ranking.dependent && d.categoryAttr == ranking.splitby;
 			} else 
 			{
 				return d;

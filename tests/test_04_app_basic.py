@@ -141,7 +141,7 @@ def test_controller():
     response = tester.post('/', data = dict(action="page_load"))       
 
     # action: filter
-    filter_object = "{\"independent\":[],\"dependent\":[],\"group_feat\":[],\"subgroup\":[\"Iris-setosa\"],\"trend_type\":[]}"
+    filter_object = "{\"independent\":[],\"dependent\":[],\"splitby\":[],\"subgroup\":[\"Iris-setosa\"],\"trend_type\":[]}"
     response = tester.post('/', data = dict(action="filter", filter_object = filter_object))   
 
     assert controller.labeled_df_setup.result_df.empty == False
@@ -154,7 +154,7 @@ def test_controller():
     assert response.status_code == 200
 
     # action: detect
-    filter_object = "{\"independent\":[],\"dependent\":[],\"group_feat\":[],\"subgroup\":[\"Iris-setosa\"],\"trend_type\":[]}"
+    filter_object = "{\"independent\":[],\"dependent\":[],\"splitby\":[],\"subgroup\":[\"Iris-setosa\"],\"trend_type\":[]}"
     distance_threshold = 0.2
     sg_strength_threshold = 0.2
     agg_strength_threshold = 0.2
@@ -167,7 +167,7 @@ def test_controller():
     assert response.status_code == 200
 
     # action: ranking
-    filter_object = "{\"independent\":[],\"dependent\":[],\"group_feat\":[],\"subgroup\":[\"Iris-setosa\"],\"trend_type\":[]}"
+    filter_object = "{\"independent\":[],\"dependent\":[],\"splitby\":[],\"subgroup\":[\"Iris-setosa\"],\"trend_type\":[]}"
     agg_type = 'mean'
     score_col = 'distance'
     response = tester.post('/', data = dict(action="rank", filter_object = filter_object, 
@@ -207,9 +207,9 @@ def test_model():
     labeled_df_wage2.get_subgroup_trends_1lev([rankobj])
     dependent = 'pay'
     independent = 'gender'
-    group_feat = 'department'
+    splitby = 'department'
     rank_trend_detail, rank_trend_count = models.getRankTrendDetail(labeled_df_wage2, 
-                                                dependent, independent, group_feat)
+                                                dependent, independent, splitby)
     assert rank_trend_detail.empty == False
     assert rank_trend_count.empty == False
 

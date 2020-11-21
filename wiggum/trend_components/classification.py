@@ -135,7 +135,7 @@ class BinClassStats():
                                                 trend_col_name,'subgroup',
                                                 trend_col_name+'_strength'])
             #same for all
-            reg_df['group_feat'] = data_df.count().index.name
+            reg_df['splitby'] = data_df.count().index.name
         else:
             reg_df = pd.DataFrame(data = classification_stats,
                                             columns = ['independent','dependent',
