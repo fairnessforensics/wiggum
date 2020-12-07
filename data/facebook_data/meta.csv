@@ -1,0 +1,13 @@
+variable,dtype,var_type,role,isCount,weighting_var
+Page total likes,int64,continuous,"['independent', 'dependent']",False,
+Type,object,categorical,['splitby'],False,
+Category,int64,categorical,['splitby'],False,
+Month,int64,categorical,['splitby'],False,
+Weekday,int64,categorical,['splitby'],False,
+Hour,int64,categorical,['splitby'],False,
+Paid,float64,categorical,['splitby'],False,
+Reach,int64,continuous,['dependent'],False,
+Consumers,int64,continuous,"['independent', 'dependent']",False,
+Num_Comments,int64,continuous,"['independent', 'dependent']",False,
+Num_Likes,float64,continuous,['independent'],False,
+Num_Shares,float64,continuous,"['independent', 'dependent']",False,

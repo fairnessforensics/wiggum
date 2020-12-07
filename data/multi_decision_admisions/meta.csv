@@ -1,8 +1,0 @@
-variable,dtype,var_type,role,isCount,weighting_var
-department,int64,categorical,"['groupby', 'trend']",,
-gender,object,categorical,"['groupby', 'trend']",,
-decision,int64,binary,"['trend', 'groundtruth']",,
-race,object,categorical,"['groupby', 'trend']",,
-decision_noise,int64,binary,"['trend', 'prediction']",,
-decision_gender,int64,binary,"['trend', 'prediction']",,
-decision_race,int64,binary,"['trend', 'prediction']",,
