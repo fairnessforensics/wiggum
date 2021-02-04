@@ -67,7 +67,7 @@ Setting Variable Roles
 There are five different possible roles for a variable.
 
 #. Splitby
-	- Groupby's are generally categories that you want to split by and analyze, such as categorical or ordinal variables.
+	- Splitby variables are generally categories that you want to split by and analyze, such as categorical or ordinal variables.
 	- Common examples are gender, race, or age group. 
 #. Independent
 	- Independent variables are those that do not depend on another variable, or one that you wish to visualize on the y-axis.
