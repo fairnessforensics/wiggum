@@ -30,6 +30,8 @@ The first step to using Wiggum is to load a dataset. You may load data as a .csv
 folder that was created by Wiggum that contains the data, metadata, and results
 from a prior analysis.
 
+Data was saved before
+
 Uploading a .csv
 *****************
 

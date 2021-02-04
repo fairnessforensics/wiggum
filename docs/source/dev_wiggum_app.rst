@@ -1,6 +1,6 @@
 Developing Wiggum App
 =======================
-
+In Development, it is better to use `python3 run.py`
 
 
 Developing Wiggum-app
