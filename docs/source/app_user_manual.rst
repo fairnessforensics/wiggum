@@ -107,7 +107,7 @@ There are multiple trends that you can choose from to analyze your data.
 
 Pearson Correlation
 ********************
-
+Pearson Correlation is measure of linear correlation between two variables. It includes a numerical co-efficient ranging form -1.0 to +1.0. The co-efficient is used to determine how positively or negatively the association between the two variables are.
 Rank Trend
 ***********
 
