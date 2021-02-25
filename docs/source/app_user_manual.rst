@@ -113,7 +113,7 @@ Rank Trend
 Rank trend is used to measure ordinal association. It has a coefficient that measures he degree of similarity between two rankings, and it can be used to assess the significance of the relationship between them.
 Linear Regression
 ******************
-
+Linear Regression trend is used to show or predict the relationship between two variables, by fitting a linear equation to the observed data. Each observation consists of two variables, a dependent variable and an independent variable.
 
 Saving
 ^^^^^^^
