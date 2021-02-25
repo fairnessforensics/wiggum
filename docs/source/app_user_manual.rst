@@ -110,7 +110,7 @@ Pearson Correlation
 Pearson Correlation is measure of linear correlation between two variables. It includes a numerical co-efficient ranging form -1.0 to +1.0. The co-efficient is used to determine how positively or negatively the association between the two variables are.
 Rank Trend
 ***********
-
+Rank trend is used to measure ordinal association. It has a coefficient that measures he degree of similarity between two rankings, and it can be used to assess the significance of the relationship between them.
 Linear Regression
 ******************
 
