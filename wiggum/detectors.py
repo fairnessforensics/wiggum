@@ -7,14 +7,14 @@ import itertools as itert
 
 RESULT_DF_HEADER_old = ['attr1','attr2','allCorr','subgroupCorr','groupbyAttr','subgroup']
 
-RESULT_DF_HEADER = ['independent','dependent', 'group_feat',  'subgroup',
+RESULT_DF_HEADER = ['independent','dependent', 'splitby',  'subgroup',
                 'agg_trend', 'agg_trend_strength',
                 'subgroup_trend','subgroup_trend_strength',
                 'trend_type', 'comparison_type']
 N_RDFSG = len(RESULT_DF_HEADER)
 
 
-RESULT_DF_HEADER_PAIRWISE = ['independent','dependent', 'group_feat',
+RESULT_DF_HEADER_PAIRWISE = ['independent','dependent', 'splitby',
                 'subgroup','subgroup2',
                 'subgroup_trend','subgroup_trend_strength',
                 'subgroup_trend2','subgroup_trend_strength2',
@@ -22,7 +22,7 @@ RESULT_DF_HEADER_PAIRWISE = ['independent','dependent', 'group_feat',
 N_RDFP = len(RESULT_DF_HEADER_PAIRWISE)
 
 
-RESULT_DF_HEADER_ALL =['independent','dependent', 'group_feat',
+RESULT_DF_HEADER_ALL =['independent','dependent', 'splitby',
                 'subgroup','subgroup2',
                 'agg_trend', 'agg_trend_strength',
                 'subgroup_trend','subgroup_trend_strength',
@@ -63,7 +63,7 @@ def get_views(result_df,colored=False):
     if colored:
         views_per_occurence = zip(result_df['independent'].values,
                             result_df['dependent'].values,
-                                    result_df['group_feat'].values)
+                                    result_df['splitby'].values)
         views_unique = set([(a,b,c) for a,b,c in views_per_occurence])
     else:
         # uncolored (no grouping var)
@@ -112,7 +112,7 @@ class _TrendDetectors():
         return get_views(sp_df,colored)
 
     def get_SP_rows(self,thresh=None,inplace=False,replace=False,
-                    independent = None,dependent = None,group_feat= None,
+                    independent = None,dependent = None,splitby= None,
                     subgroup= None,subgroup2= None, trend_type=None,
                     comparison_type =None):
         """
@@ -138,7 +138,7 @@ class _TrendDetectors():
             trend variable name or None to include all if filtered
         dependent : str, list, or  None
             trend variable name or None to include all if filtered
-        group_feat : str, list, or  None
+        splitby : str, list, or  None
             groupoby variable name or None to include all if filtered
         subgroup : str, list, or  None
             value of groupby_feat or or None to include all if filtered
@@ -180,7 +180,7 @@ class _TrendDetectors():
 
         # always filter result and return
 
-        if  not(independent  or dependent  or group_feat or subgroup or
+        if  not(independent  or dependent  or splitby or subgroup or
                 subgroup2 or trend_type):
                 # filter only by detection col
             sp_df = self.result_df[self.result_df[col_name]]
@@ -188,7 +188,7 @@ class _TrendDetectors():
             # filter by detection and column values
             filt_idx = self.get_trend_rows(independent = independent ,
                                             dependent = dependent,
-                                            group_feat= group_feat,
+                                            splitby= splitby,
                             subgroup = subgroup, subgroup2= subgroup2,
                             trend_type = trend_type,
                             comparison_type = comparison_type, index=True)
@@ -648,7 +648,7 @@ def detect_simpsons_paradox(data_df,
                 temp_df['subgroup_trend'] = reverse_list
                 len_list = len(reverse_list)
                 # Store group attributes' information
-                temp_df['group_feat'] = [groupbyAttr for i in range(len_list)]
+                temp_df['splitby'] = [groupbyAttr for i in range(len_list)]
                 temp_df['subgroup'] = [subgroup for i in range(len_list)]
                 result_df = result_df.append(temp_df, ignore_index=True)
 

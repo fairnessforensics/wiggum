@@ -256,7 +256,7 @@ def test_basic_load_df_wages():
 
     labeled_df.get_subgroup_trends_1lev(['pearson_corr'])
 
-    assert np.product(labeled_df.result_df.columns == ['independent', 'dependent', 'group_feat', 'subgroup', 'agg_trend',
+    assert np.product(labeled_df.result_df.columns == ['independent', 'dependent', 'splitby', 'subgroup', 'agg_trend',
            'agg_trend_strength', 'subgroup_trend', 'subgroup_trend_strength',
            'trend_type', 'comparison_type'])
 
@@ -394,7 +394,7 @@ def test_basic_load_df_wages():
 
     year_df = labeled_df.get_trend_rows(independent='year')
     pay_df = labeled_df.get_trend_rows(dependent='pay')
-    dept_df = labeled_df.get_trend_rows(group_feat='department')
+    dept_df = labeled_df.get_trend_rows(splitby='department')
     mgmt_df = labeled_df.get_trend_rows(subgroup='Management')
     sales_df = labeled_df.get_trend_rows(subgroup2='Sales')
     linreg_df = labeled_df.get_trend_rows(trend_type ='lin_reg' )

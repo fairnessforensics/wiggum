@@ -175,7 +175,8 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
         elif type(data) is str:
             self.df = pd.read_csv(data)
             self.df.index.name = ''
-        elif data == None:
+        else:
+            # make an empty dataframe otherwise
             self.df = pd.DataFrame()
 
         # initialize metadata

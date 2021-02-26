@@ -302,10 +302,10 @@ def main():
         if action == 'detail_ranktrend':
             independent = request.form['independent']
             dependent = request.form['dependent']
-            group_feat = request.form['group_feat']
+            splitby = request.form['splitby']
 
             rank_trend_detail, rank_trend_count = models.getRankTrendDetail(labeled_df_setup, 
-                                                            dependent, independent, group_feat)
+                                                            dependent, independent, splitby)
 
             # covert row label to string to avoid jsonify error, e.g., department: 1
             rank_trend_count = rank_trend_count.rename(columns=lambda x: str(x))
@@ -320,7 +320,7 @@ def main():
 
             filter_result = labeled_df_setup.get_trend_rows(independent=filter_object['independent'],
                                 dependent=filter_object['dependent'],
-                                group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
+                                splitby=filter_object['splitby'],subgroup=filter_object['subgroup'],
                                 trend_type =filter_object['trend_type'])
 
             # Generate distance heatmaps
@@ -391,7 +391,7 @@ def main():
                 detect_result = labeled_df_setup.get_SP_rows(sp_filter,
                                     independent=filter_object['independent'],
                                     dependent=filter_object['dependent'],
-                                    group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
+                                    splitby=filter_object['splitby'],subgroup=filter_object['subgroup'],
                                     trend_type =filter_object['trend_type'],
                                     replace=True)
             else:
@@ -435,7 +435,7 @@ def main():
                 rank_result = labeled_df_setup.get_trend_rows(
                                     independent=filter_object['independent'],
                                     dependent=filter_object['dependent'],
-                                    group_feat=filter_object['group_feat'],subgroup=filter_object['subgroup'],
+                                    splitby=filter_object['splitby'],subgroup=filter_object['subgroup'],
                                     trend_type =filter_object['trend_type'])
 
             # Generate distance heatmaps
