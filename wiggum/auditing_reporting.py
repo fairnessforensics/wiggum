@@ -85,15 +85,16 @@ class _AuditReporting():
         """
         generate a df that can be used for tables
         """
-
+        pass
         return self.result_df[self.result_df[report_col] in report_values]
 
     def detect_annotate():
 
-        get_SP_rows
+        pass
 
     def save_report_table(self,report_col,report_values,filename):
         # call above and then save to csv
+        pass
 
 
     def result_df_stat_summary(self):
@@ -104,3 +105,4 @@ class _AuditReporting():
         # generate state tables and save each individually
 
         # generate narrative for a text file summary
+        pass
