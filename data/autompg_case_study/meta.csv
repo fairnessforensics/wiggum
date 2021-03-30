@@ -1,0 +1,10 @@
+variable,dtype,var_type,role,isCount,weighting_var
+mpg,float64,continuous,['dependent'],False,
+cylinders,int64,categorical,['splitby'],False,
+displacement,float64,continuous,['ignore'],False,
+horsepower,int64,continuous,"['independent', 'dependent']",False,
+weight,int64,continuous,['ignore'],False,
+acceleration,float64,continuous,['independent'],False,
+model year,int64,categorical,['splitby'],False,
+origin,int64,categorical,['splitby'],False,
+name,object,categorical,['ignore'],False,
