@@ -1,4 +1,3 @@
-
 import os
 import seaborn as sns
 import pandas as pd
@@ -58,8 +57,6 @@ def check_meta(row,meta_val,meta_type):
 def simple_type_mapper(df):
     """
     get variable types using the data types and counts
-
-
     Parameters
     -----------
     df : DataFrame
@@ -134,11 +131,8 @@ def update_old_roles(row):
 class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditReporting):
     """
     this is the object
-
     a LabeledDataFrame object contains 3 DataFrames of information: the actual data(df),
     meta data(meta_df) about it and the trends (result_df) in it.
-
-
     in this file we define the basic operations, the inherited Mixins have more
     methods in them, spread across files for space and organization
     """
@@ -146,7 +140,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
     def __init__(self,data=None,meta=None,results=None):
         """
         initialize
-
         Parameters
         ----------
         data : DataFrame, string, or None
@@ -229,6 +222,71 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
 
 
 
+    def get_trend_by_name(self,trend_name):
+        '''
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_name]]
+
+    def get_trend_display_name(self,trend_res_name):
+        '''
+        get a trend's diplay name from the name tha appears in result_df_parts
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_res_name]].display_name
+
+    def get_overview_legend_type(self,trend_res_name):
+        '''
+        get a trend's overview legend type from the name that appears in
+         result_df_parts
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_res_name]].overview_legend
+
+    def get_detail_view_type(self,trend_res_name):
+        '''
+        get a trend's overview legend type from the name that appears in
+         result_df_parts
+        Parameters
+        -----------
+        trend_res_name : strings
+            name that appears in result_df
+        '''
+        trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        return self.trend_list[trend_dict[trend_res_name]].detail_view
+
+
+
+    def correct_trend_value_datatypes(self):
+        # build mapper
+        trend_type_type_map = {t.name:t.get_trend_value_type()
+                                            for t in self.trend_list}
+
+        # save original column order
+        original_cols = self.result_df.columns
+        result_df_parts = []
+        # figure out which trend columns are present
+        used_trend_cols = [tc for tc in trend_cols if tc in original_cols]
+
+
+        # split into groups, cast types, add trend name column back
+        for tt,df in self.result_df.groupby('trend_type'):
+            df[used_trend_cols] = df[used_trend_cols].astype(trend_type_type_map[tt],copy=False)
+            df['trend_type'] = tt
+            result_df_parts.append(df)
+
+        # concatenate parts back into one df
+        self.result_df = pd.concat(result_df_parts,axis=0)
+        # reshuffled column order back to original
+        self.result_df = self.result_df[original_cols]
 
     def count_compress_binary(self,retain_var_list, compress_var_list):
         """
@@ -251,7 +309,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
         '''
         infer variable (meaningful) types based on a mapper function that takes the data as
         a Parameters
-
         Parameters
         dtype_var_func : functionhandle
             a functiont that takes a self.df and returns a list of the lenght of the number
@@ -264,7 +321,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
         '''
         infer variable (meaningful) types based on a mapper function that takes the data as
         a Parameters
-
         Parameters
         var_type_list : list or dict
             dict must be {variable:role,...}, list must be length of variables
@@ -287,7 +343,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
     def set_roles(self,role_info):
         """
         set info column role
-
         Parameters
         -----------
         role_list : list of roles or dict of mappings
@@ -307,7 +362,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
     def set_counts(self,count_info=None):
         """
         set the isCount column of the meta_df
-
         Parameters
         ----------
         count_info: dict, list, or None
@@ -335,7 +389,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
 
     def set_weighting_vars(self,weight_vars=None):
         """
-
         Parameters
         ----------
         count_info: dict, list, or None
@@ -357,7 +410,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
         """
         return a list of strings that describe the data from each column of the
     data, can be added as a column to meta_df
-
         Parameters
         -----------
         df : DataFrame
@@ -464,7 +516,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
     def to_csvs(self,dirname):
         """
         write out info as csvs to the same directory
-
         Parameters
         ----------
         dirname : string
@@ -493,7 +544,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
         field has the type cast to a string and the content is a dictionary of
         all of the parameters with the trend precompute DataFrames serialized
         into csv strings
-
         Parameters
         ----------
         dirname : string
