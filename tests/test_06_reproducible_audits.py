@@ -8,7 +8,7 @@ import pytest
 def test_annotation_reporting():
     
     # read some data into a labeled dataframe so we have something to work with
-    labeled_df = wg.LabeledDataFrame('../data/iristest')
+    labeled_df = wg.LabeledDataFrame('data/iristest')
     
     # get some trend objects so we can populate our results table
     rankobj = wg.Mean_Rank_Trend()
