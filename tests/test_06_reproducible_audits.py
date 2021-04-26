@@ -55,7 +55,7 @@ def test_annotation_reporting():
     # Create a data frame using our create report table function
     report_df2 = labeled_df.get_report_table([0,1,2,3,4,5,6],[0,1,2,3,4,5,6])
            
-    assert(report_df == report_df2)
+    assert(report_df.equals(report_df2))
     
 
     # add some simulated distance values to the table
