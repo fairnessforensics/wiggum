@@ -9,6 +9,9 @@ from .trend_components import *
 
 
 ## set all list at bottom
+from .trend_components.statistical import CorrelationTrend_V2
+
+
 class Binary_Accuracy_Trend(BinClassStats,PredictionClass,Trend):
     my_stat = 'acc'
     name = 'binary_acc'
@@ -65,8 +68,12 @@ class Continuous_Pearson(CorrelationTrend,ContinuousRegression,Trend):
     corrtype = 'pearson'
     display_name = 'Pearson Correlation'
 
-
 class All_Pearson(CorrelationTrend,ContinuousOrdinalRegression,Trend):
+    name = 'pearson_corr'
+    corrtype = 'pearson'
+    display_name = 'Pearson Correlation'
+
+class All_Pearson_V2(CorrelationTrend_V2, ContinuousOrdinalRegression, Trend):
     name = 'pearson_corr'
     corrtype = 'pearson'
     display_name = 'Pearson Correlation'
