@@ -42,7 +42,7 @@ class LinearRegression():
 
         return np.product([vartest for vartest in vart_test_list])
 
-    def get_trends(self,data_df,trend_col_name, version='None'):
+    def get_trends(self,data_df,trend_col_name):
         """
         Compute a linear regressions and return a partial result_df
 

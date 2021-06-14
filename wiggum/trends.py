@@ -68,11 +68,6 @@ class Continuous_Pearson(CorrelationTrend,ContinuousRegression,Trend):
     corrtype = 'pearson'
     display_name = 'Pearson Correlation'
     
-class Continuous_Pearson_V2(CorrelationTrend_V2,ContinuousRegression,Trend):
-    name = 'pearson_corr'
-    corrtype = 'pearson'
-    display_name = 'Pearson Correlation'
-
 class All_Pearson(CorrelationTrend,ContinuousOrdinalRegression,Trend):
     name = 'pearson_corr'
     corrtype = 'pearson'
@@ -87,18 +82,8 @@ class Spearman_Correlation(CorrelationTrend,OrdinalRegression,Trend):
     name ='spearman_corr'
     corrtype = 'spearman'
     display_name = 'Spearman Correlation'
-    
-class Spearman_Correlation_V2(CorrelationTrend_V2,OrdinalRegression,Trend):
-    name ='spearman_corr'
-    corrtype = 'spearman'
-    display_name = 'Spearman Correlation'
 
 class Kendall_Correlation(CorrelationTrend,ContinuousRegression,Trend):
-    name ='kendall_corr'
-    corrtype = 'kendall'
-    display_name = "Kendall's Tau Correlation"
-    
-class Kendall_Correlation_V2(CorrelationTrend_V2,ContinuousRegression,Trend):
     name ='kendall_corr'
     corrtype = 'kendall'
     display_name = "Kendall's Tau Correlation"
