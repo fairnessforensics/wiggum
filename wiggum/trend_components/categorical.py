@@ -1,4 +1,4 @@
-import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import itertools
 import scipy.stats as stats
@@ -91,7 +91,7 @@ class StatBinRankTrend():
         # use all
         cur_trendgroup = self.trendgroup
 
-        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+        if type(data_df) is pd.groupby.DataFrameGroupBy:
             # remove the grouping var from trendgroup this roung
             rmv_var = data_df.count().index.name
             cur_trendgroup = [gv for gv in cur_trendgroup if not(gv==rmv_var)]
@@ -126,7 +126,7 @@ class StatBinRankTrend():
 
                 # save detailed precompute
                 # if groupby add subgroup info
-                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                if type(data_df) is pd.groupby.DataFrameGroupBy:
                     splitby = data_df.count().index.name
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
                                             splitby, str(groupby_lev)])
@@ -148,7 +148,7 @@ class StatBinRankTrend():
 
 
         # if groupby add subgroup indicator columns
-        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+        if type(data_df) is pd.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,
                                                     trend_col_name +'_strength',
@@ -277,7 +277,7 @@ class StatRankTrend():
         # use all
         cur_trendgroup = self.trendgroup
 
-        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+        if type(data_df) is pd.groupby.DataFrameGroupBy:
             # remove the grouping var from trendgroup this roung
             rmv_var = data_df.count().index.name
             cur_trendgroup = [gv for gv in cur_trendgroup if not(gv==rmv_var)]
@@ -304,7 +304,7 @@ class StatRankTrend():
 
                 # save detailed precompute
                 # if groupby add subgroup info
-                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                if type(data_df) is pd.groupby.DataFrameGroupBy:
                     splitby = data_df.count().index.name
                     trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
                                             splitby, str(groupby_lev)])
@@ -381,7 +381,7 @@ class StatRankTrend():
 
 
         # if groupby add subgroup indicator columns
-        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+        if type(data_df) is pd.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
                                                     trend_col_name,
                                                     trend_col_name +'_strength',

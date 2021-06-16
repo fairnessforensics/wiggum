@@ -1,10 +1,10 @@
-import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import itertools
 import scipy.stats as stats
 
-groupby_name_by_type = {pd.core.groupby.DataFrameGroupBy:lambda df: df.keys,
-                                pd.core.frame.DataFrame:lambda df: None}
+groupby_name_by_type = {pd.groupby.DataFrameGroupBy:lambda df: df._idx_name,
+                                pd.dataframe.DataFrame:lambda df: None}
 
 class CorrelationBase():
     overview_legend = 'binary'
@@ -90,11 +90,11 @@ class CorrelationBase():
             self.trend_precompute[trend_name] = corr_mat
 
             # unpack into a list of tuples
-            if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+            if type(data_df) is pd.groupby.DataFrameGroupBy:
                 corr_target_vals = []
                 groupby_vars = list(data_df.groups.keys())
 
-                corr_data = [(i,d, corr_mat[i][g][d],g) for (i,d),g in
+                corr_data = [(i,d, corr_mat.loc[g,i][d],g) for (i,d),g in
                                     itertools.product(self.regression_vars,groupby_vars)]
 
             else:

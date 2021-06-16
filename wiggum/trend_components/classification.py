@@ -1,4 +1,4 @@
-import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import itertools
 import scipy.stats as stats
@@ -93,7 +93,7 @@ class BinClassStats():
         # look for columns named as pairs with _acc
 
 
-        if not(type(data_df) is pd.core.groupby.DataFrameGroupBy):
+        if not(type(data_df) is pd.groupby.DataFrameGroupBy):
 
             # make it tupe-like so that the loop can work
             data_df = [('',data_df)]
@@ -129,7 +129,7 @@ class BinClassStats():
                                             groupby_lev, strength])
 
         #save as df
-        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+        if type(data_df) is pd.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = classification_stats,
                                                 columns = ['independent','dependent',
                                                 trend_col_name,'subgroup',

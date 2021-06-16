@@ -1,4 +1,4 @@
-import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import itertools
 import scipy.stats as stats
@@ -79,7 +79,7 @@ class LinearRegression():
         # if not empty // empty lists are False
         if self.regression_vars:
 
-            if not(type(data_df) is pd.core.groupby.DataFrameGroupBy):
+            if not(type(data_df) is pd.groupby.DataFrameGroupBy):
 
                 # make it tupe-like so that the loop can work
                 data_df = [('',data_df)]
@@ -150,7 +150,7 @@ class LinearRegression():
                     self.trend_precompute[trend_name] = pc_df
 
         #save as df
-        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+        if type(data_df) is pd.groupby.DataFrameGroupBy:
             reg_df = pd.DataFrame(data = slopes, columns = ['independent','dependent',
                                                 trend_col_name,'subgroup',
                                                 trend_col_name+'_strength'])

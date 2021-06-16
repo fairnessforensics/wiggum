@@ -1,4 +1,4 @@
-import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import scipy.stats as stats
 import itertools as itert

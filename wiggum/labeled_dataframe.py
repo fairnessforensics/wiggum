@@ -1,7 +1,7 @@
 
 import os
 import seaborn as sns
-import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import matplotlib.markers as mk
 import matplotlib.pylab as plt
@@ -170,7 +170,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             data = os.path.join(data,data_csv)
 
         # set data
-        if type(data) is  pd.core.frame.DataFrame:
+        if type(data) is  pd.dataframe.DataFrame:
             self.df = data
         elif type(data) is str:
             self.df = pd.read_csv(data)
@@ -185,7 +185,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
                                columns = META_COLUMNS)
             self.meta_df.index.name = 'variable'
             self.meta_df['dtype'] = self.df.dtypes
-        elif type(meta) is  pd.core.frame.DataFrame:
+        elif type(meta) is  pd.dataframe.DataFrame:
             self.meta_df = meta
         elif type(meta) is str:
             self.meta_df = pd.read_csv(meta,index_col='variable')
@@ -477,7 +477,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
         all_vars = self.meta_df.index
 
-        return list(all_vars[is_target_role & drop_ignore])
+        return list(all_vars[is_target_role.squeeze() & drop_ignore.squeeze()])
 
     def get_vars_per_type(self, vartype):
         """
@@ -494,7 +494,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
         all_vars = self.meta_df.index
 
-        return list(all_vars[is_target_type & drop_ignore])
+        return list(all_vars[is_target_type.squeeze() & drop_ignore.squeeze()])
 
     def get_vars_per_roletype(self,role,vartype):
         """
@@ -511,8 +511,8 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         drop_ignore = self.meta_df.apply(check_ignore_status,axis=1)
 
         # combine
-        target_rows = [r & t & d for r,t,d in zip(is_target_role,is_target_type,
-                                            drop_ignore)]
+        target_rows = [r & t & d for r,t,d in zip(is_target_role.squeeze(),
+                            is_target_type.squeeze(),drop_ignore.squeeze())]
 
         all_vars = self.meta_df.index
 

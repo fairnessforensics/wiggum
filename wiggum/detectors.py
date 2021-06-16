@@ -1,4 +1,4 @@
-import pandas as pd
+import modin.pandas as pd
 import numpy as np
 import scipy.stats as stats
 import itertools as itert
@@ -276,6 +276,8 @@ class _TrendDetectors():
 
                 # iterate over groupby attributes
                 for groupbyAttr in groupby_vars:
+                    # Modin issue: set index before groupby for corr() in get_trends
+                    self.df.index = self.df[groupbyAttr]
 
                     #condition the data
                     cur_grouping = self.df.groupby(groupbyAttr)

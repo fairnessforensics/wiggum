@@ -1,6 +1,6 @@
 import wiggum as wg
 from itertools import combinations
-import pandas as pd
+import modin.pandas as pd
 import sys
 import logging
 from sklearn import mixture
