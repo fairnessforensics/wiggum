@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import itertools as itert
+from mpi4py import MPI
+from mpi4py.MPI import ANY_SOURCE
+import math
 
 ## constants
 
@@ -234,6 +237,10 @@ class _TrendDetectors():
         {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
 
         """
+        comm = MPI.COMM_WORLD
+        rank = comm.Get_rank()
+        size = comm.Get_size()
+
         data_df = self.df
         groupby_vars = self.get_vars_per_role('splitby')
 
@@ -268,14 +275,22 @@ class _TrendDetectors():
                         # TODO: only if col not there already
                         self.add_acc(*var_pair)
 
+                if rank == 0:
+                    # Tabulate aggregate statistics
+                    agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
-                # Tabulate aggregate statistics
-                agg_trends = cur_trend.get_trends(self.df,'agg_trend')
+                    all_agg_trends_list.append(agg_trends)
 
-                all_agg_trends_list.append(agg_trends)
+                # split tasks
+                n = len(groupby_vars)
+                local_n = int(math.ceil(n/size))
+
+                local_start = rank*local_n
+                local_end = local_start + local_n
+                local_groupby_vars = groupby_vars[local_start:local_end]
 
                 # iterate over groupby attributes
-                for groupbyAttr in groupby_vars:
+                for groupbyAttr in local_groupby_vars:
 
                     #condition the data
                     cur_grouping = self.df.groupby(groupbyAttr)
@@ -286,33 +301,42 @@ class _TrendDetectors():
                     # append
                     subgroup_trends_list.append(curgroup_trend_df)
 
-        # if any trends were computed, mrege them together
-        if subgroup_trends_list or all_agg_trends_list:
-            # condense and merge all trends with subgroup trends
-            subgroup_trends_df = pd.concat(subgroup_trends_list, sort=True)
-            all_agg_trends = pd.concat(all_agg_trends_list, sort=True)
-            new_res = pd.merge(subgroup_trends_df,all_agg_trends)
+        if rank != 0:
+            # send results
+            comm.send(subgroup_trends_list, dest=0)
+        else:
+            # rank 0:
+            # receive other process results then combine
+            for i in range(1, size):
+                temp_trends_list = comm.recv(source=ANY_SOURCE)
+                subgroup_trends_list = subgroup_trends_list + temp_trends_list     
 
-            # remove rows where a trend is undefined
-            new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+            # if any trends were computed, mrege them together
+            if subgroup_trends_list or all_agg_trends_list:
+                # condense and merge all trends with subgroup trends
+                subgroup_trends_df = pd.concat(subgroup_trends_list, sort=True)
+                all_agg_trends = pd.concat(all_agg_trends_list, sort=True)
+                new_res = pd.merge(subgroup_trends_df,all_agg_trends)
 
-            new_res[result_df_type_col_name] = 'aggregate-subgroup'
+                # remove rows where a trend is undefined
+                new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
 
-            # write or append depending on settings. contact in axis=0 is
-            # the pandas append
-            if self.result_df.empty or replace:
-                self.result_df = new_res
-            else:
-                self.result_df = pd.concat([self.result_df,new_res], axis =0,
-                                                    sort=True)
+                new_res[result_df_type_col_name] = 'aggregate-subgroup'
 
-            # reorder columns
-            _,n_cols = self.result_df.shape
-            col_reorder = {N_RDFSG:RESULT_DF_HEADER,
-                           N_RDFA:RESULT_DF_HEADER_ALL}
-            self.result_df = self.result_df[col_reorder[n_cols]]
-        return self.result_df
+                # write or append depending on settings. contact in axis=0 is
+                # the pandas append
+                if self.result_df.empty or replace:
+                    self.result_df = new_res
+                else:
+                    self.result_df = pd.concat([self.result_df,new_res], axis =0,
+                                                        sort=True)
 
+                # reorder columns
+                _,n_cols = self.result_df.shape
+                col_reorder = {N_RDFSG:RESULT_DF_HEADER,
+                            N_RDFA:RESULT_DF_HEADER_ALL}
+                self.result_df = self.result_df[col_reorder[n_cols]]
+            return self.result_df
 
     def get_pairwise_trends_1lev(self,trend_types, replace=False):
         """
