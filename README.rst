@@ -38,7 +38,14 @@ in browser available as a command line tool. To run the app:
 
 .. code-block:: bash
 
-  wiggum-app
+  wiggum-app 
+  
+When developing it can be easier to use
+
+.. code-block:: bash
+
+  python3 run.py
+
 
 This will start the server on http://127.0.0.1:5000/ from the current working directory.
 
