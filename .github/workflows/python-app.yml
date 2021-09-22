@@ -1,0 +1,65 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python application
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.6
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('setup.py') }}-${{ hashFiles('dev-requirements.txt') }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        pip install .
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        npm install -g jsdoc
+    - name: addons
+      uses: docker://pandoc
+    - name: script
+      run: |
+        pytest
+        # Use Sphinx to make the html docs
+        cd docs
+        make html # must be run in the docs folder
+    - name: deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+          skip_cleanup: true
+          github_token: $GITHUB_TOKEN
+          keep-history: true
+          # on:
+            # branch: master 
+          local_dir: docs/html/ # where compiled docs are placed by sphinx, set in sphinx conf.py
+          target_branch: gh-pages
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      run: |
+        pytest
