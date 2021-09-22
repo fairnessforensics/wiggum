@@ -13,20 +13,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-          matrix:
-            python:
-              - 3.6
-              - 3.7
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 
-      uses: gabrielfalcao/pyenv-action@v5
       with:
-        default: "${{ matrix.python }}"
-        command: pip install -U pip
-      # with:
-        # python-version: 3.6
+        python-version: 3.9
     - uses: actions/cache@v2
       with:
         path: ~/.cache/pip
@@ -40,10 +31,12 @@ jobs:
         npm install -g jsdoc
     - name: addons
       uses: docker://pandoc/core:2.9
-    - name: script
+    - name: pytest
       run: |
         pytest
         # Use Sphinx to make the html docs
+    - name: make docs
+      run: |
         cd docs
         make html # must be run in the docs folder
     - name: deploy
