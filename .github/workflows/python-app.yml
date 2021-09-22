@@ -13,13 +13,19 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    strategy:
+          matrix:
+            python:
+              - 3.6.8
+              - 3.7.5
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+    - name: Set up Python 
+      uses: gabrielfalcao/pyenv-action@v5
       with:
-        python-version: 3.6
+        default: "${{ matrix.python }}"
+      # with:
+        # python-version: 3.6
     - uses: actions/cache@v2
       with:
         path: ~/.cache/pip
