@@ -32,7 +32,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         npm install -g jsdoc
     - name: addons
-      uses: docker://pandoc
+      uses: docker://pandoc/core:2.9
     - name: script
       run: |
         pytest
@@ -53,7 +53,7 @@ jobs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        
+        SLACK_CHANNEL: oudalab:hYEt5Sslpd5gb7aMfQeI6EoM#code
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
