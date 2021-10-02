@@ -15,6 +15,29 @@ def index():
 def visualize():
     return render_template("visualize.html")
 
+@app.route("/interact", methods=['GET', 'POST'])
+def interact():
+    return render_template("interact.html")
+
+@app.route("/explore", methods=['GET', 'POST'])
+def explore():  
+    if request.method == 'POST':
+        action = request.form['action']
+
+        if action == 'page_load':
+
+            dep_vars = labeled_df_setup.get_vars_per_role('dependent')
+            indep_vars = labeled_df_setup.get_vars_per_role('independent')
+            splitby_vars = labeled_df_setup.get_vars_per_role('splitby')            
+
+            df = labeled_df_setup.df.to_dict(orient='records')
+            df = json.dumps(df, indent=2)
+
+            return jsonify(dep_vars = dep_vars,
+                            indep_vars = indep_vars,
+                            splitby_vars = splitby_vars,
+                            df = df) 
+
 @app.route("/", methods = ['POST'])
 def main():
     if request.method == 'POST':
@@ -255,6 +278,12 @@ def main():
                 return 'miss_old_trend_type'
 
             return redirect(url_for("visualize"))
+
+        if action == 'interact':
+            meta = request.form['metaList']
+            labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            return redirect(url_for("interact"))  
 
         # initial for visualize.html page
         if action == 'page_load':

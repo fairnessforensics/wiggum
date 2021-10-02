@@ -221,6 +221,37 @@
                 }
             });
 
+            // Interactive Exploration button click
+            $('#interact-btn').click(function() {
+                var form_data = new FormData($('#open-file')[0]);
+                var action = $('#interact-btn').val();
+
+                form_data.append('action', action);
+                document.getElementById("open-file").action = action;
+
+                var metaList = [];
+                metaList = getMetaList();
+                
+                form_data.append('metaList', metaList);
+
+                var trend_type_selection = document.getElementById("trend_type_selection");   
+                var trend_types = getSelectValues(trend_type_selection);
+                form_data.append('trend_types', trend_types);
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/interact',
+                    data: form_data,
+                    async: false,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data) {
+                    },
+                });
+            });
+
+
             // Save button click
             $('#save-btn').click(function() {
                 var form_data = new FormData($('#open-file')[0]);
@@ -526,7 +557,12 @@
                         </td>
                         <td class="param">
                             <button id="clustering-btn" type="button" value="clustering">Clustering</button> 
-                        </td>                    
+                        </td>      
+                        <td class="param">  
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            <button id="interact-btn" type="submit" value="interact">Interactive Exploration</button> 
+                        </td>                                          
                     </tr>
                     <tr class = "paramtr">
                         <td class="param">            

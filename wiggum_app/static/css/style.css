@@ -363,3 +363,29 @@ div.tooltip {
     border-color: white;
     top: 30px;
 }
+
+#interact_scatterplot {
+    display: inline-block;
+    background: white;
+    position: absolute;    
+    margin-top: 3%;    
+    margin-left: 3%;    
+}
+
+#dep_sel_button {
+    position: absolute;
+    margin-left: 3%;   
+    margin-top: 1.8%; 
+}
+
+#indep_sel_button {
+    position: absolute;
+    margin-left: 30%;   
+    margin-top: 34.5%; 
+}
+
+#splitby_sel_button {
+    position: absolute;
+    margin-left: 30%;   
+    margin-top: 1.8%; 
+}
