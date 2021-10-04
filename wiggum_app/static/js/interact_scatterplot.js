@@ -1,24 +1,22 @@
 function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	$('svg').remove();
-	var margin = {top: 10, right: 20, bottom: 20, left: 20},
+	var margin = {top: 20, right: 20, bottom: 20, left: 20},
 		width = 500 - margin.left - margin.right,
-		height = 490 - margin.top - margin.bottom;
+		height = 500 - margin.top - margin.bottom;
 
-	// setup x 
-	var xValue = function(d) { return d[indep_var];}, 
-		xScale = d3.scale.linear().range([0, width]), 
-		xMap = function(d) { return xScale(xValue(d));}, 
-		xAxis = d3.svg.axis().scale(xScale).orient("bottom");
-
-	// setup y
-	var yValue = function(d) { return d[dep_var];}, 
-		yScale = d3.scale.linear().range([height, 0]), 
-		yMap = function(d) { return yScale(yValue(d));}, 
-		yAxis = d3.svg.axis().scale(yScale).orient("left");
+	var x = d3.scaleLinear()
+		.range([0, width]);
+	
+	var y = d3.scaleLinear()
+		.range([height, 0]);
+	
+	var xAxis = d3.axisBottom(x);
+	
+	var yAxis = d3.axisLeft(y);
 
 	// setup fill color
 	var cValue = function(d) { return d[splitby_var];};
-	var color = d3.scale.category10();
+	var color = d3.scaleOrdinal(d3.schemeCategory10);
 	
 	// add the graph canvas to the body of the webpage
 	var svg = d3.select("#interact_scatterplot").append("svg")
@@ -27,14 +25,13 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	  .append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	  // change string (from CSV) into number format
 	  data.forEach(function(d) {
 		d[dep_var] = +d[dep_var];
 		d[indep_var] = +d[indep_var];
 	  });
 
-	  xScale.domain([d3.min(data, xValue)-1, d3.max(data, xValue)+1]);
-	  yScale.domain([d3.min(data, yValue)-1, d3.max(data, yValue)+1]);
+	  x.domain(d3.extent(data, function(d) { return d[indep_var]; })).nice();
+	  y.domain(d3.extent(data, function(d) { return d[dep_var]; })).nice();
 
 	  // x-axis
 	  svg.append("g")
@@ -64,13 +61,10 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	  svg.selectAll(".dot")
 		  .data(data)
 		  .enter().append("circle")	
-		  .attr("class", "dot")
-		  .transition()
-		  .duration(300)
-		  .ease("linear")		  
+		  .attr("class", "dot")	  		    	  
 		  .attr("r", 4)
-		  .attr("cx", xMap)
-		  .attr("cy", yMap)
+		  .attr("cx", function(d) { return x(d[indep_var]);})
+		  .attr("cy", function(d) { return y(d[dep_var]);})
 //		  .style("opacity", 0.9)
 		  .attr("stroke", "black")
 		  .attr("stroke-width", 1)			  

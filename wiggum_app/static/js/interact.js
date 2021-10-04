@@ -54,9 +54,94 @@
 
     // create initial scatterplot
     var csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
-    var vars = { x: indep_vars[0], y: dep_vars[0], 
-		categoryAttr: splitby_vars[0], category: "all"};
-    //updateScatterplot(csvData, vars); 
 
-    drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0])
+    drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
+
+    // add rectangel selection interaction
+    var svg = d3.select("#interact_scatterplot").select("svg");
+    var margin = {top: 20, right: 20, bottom: 20, left: 20}
+    addRectSel(svg, margin);
  }
+
+
+/**
+ * Add rectangel selection interaction
+ *
+ * @param svg.
+ * @returns none.
+ */ 
+function addRectSel(svg, margin) {
+    var d;
+	svg.on( "mousedown", function() {
+		var p = d3.mouse(this);
+
+		svg.append("rect")            
+            .attrs({
+                rx      : 6,
+                ry      : 6,
+                class   : "selection",
+                x       : p[0] - margin.left,
+                y       : p[1] - margin.top,
+                width   : 0,
+                height  : 0
+            })
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	})
+	.on( "mousemove", function() {
+		var s = svg.select( "rect.selection");            
+
+		if( !s.empty()) {
+			var p = d3.mouse(this);
+			d = {
+					x       : parseFloat(s.attr("x")),
+					y       : parseFloat(s.attr("y")),
+					width   : parseFloat(s.attr("width")),
+					height  : parseFloat(s.attr("height"))
+				};
+			var move = {
+					x : p[0] - d.x - margin.left,
+					y : p[1] - d.y - margin.top
+				}
+			;
+
+			if( move.x < 1) {
+				d.x = p[0] - margin.left;
+				d.width -= move.x;
+			} else {
+				d.width = move.x;       
+			}
+
+			if( move.y < 1) {
+				d.y = p[1] - margin.top;
+				d.height -= move.y;
+			} else {
+				d.height = move.y;       
+			}
+			s.attrs(d);         
+		}
+	})
+	.on( "mouseup", function() {
+        d3.selectAll('circle.selected').classed( "selected", false);
+
+        radius=1;  
+
+        d3.selectAll('circle').each( function(circle_data, i) {  
+            thisCircle = d3.select(this);
+  
+            if(!d3.select(this).classed("selected") && 
+                    // inner circle inside selection frame
+                    parseFloat(thisCircle.attr('cx'))-radius>=d.x && 
+                    parseFloat(thisCircle.attr('cx'))+radius<=d.x+d.width &&
+                    parseFloat(thisCircle.attr('cy'))-radius>=d.y && 
+                    parseFloat(thisCircle.attr('cy'))+radius<=d.y+d.height
+            ) { 
+                d3.select(this)                            
+                    .classed("selected",true);
+            }
+         });
+
+	  // remove selection frame
+	  svg.selectAll("rect.selection").remove();
+    
+	});        
+}

@@ -389,3 +389,15 @@ div.tooltip {
     margin-left: 30%;   
     margin-top: 1.8%; 
 }
+
+.selection {
+    stroke          : gray;
+    stroke-width    : 1px;
+    stroke-dasharray: 4px;
+    stroke-opacity  : 0.5;
+    fill            : transparent;      
+  }
+
+  .selected{
+    fill: yellow !important;
+  }
