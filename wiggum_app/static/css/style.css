@@ -390,6 +390,12 @@ div.tooltip {
     margin-top: 1.8%; 
 }
 
+#radio_button {
+    position: absolute;
+    margin-left: 15%;   
+    margin-top: 1.8%; 
+}
+
 .selection {
     stroke          : gray;
     stroke-width    : 1px;
@@ -401,3 +407,31 @@ div.tooltip {
   .selected{
     fill: yellow !important;
   }
+
+  .lasso path {
+    stroke: rgb(80,80,80);
+    stroke-width:2px;
+  }
+  
+  .lasso .drawn {
+    fill-opacity:.05 ;
+  }
+  
+  .lasso .loop_close {
+    fill:none;
+    stroke-dasharray: 4,4;
+  }
+  
+  .lasso .origin {
+    fill:#3399FF;
+    fill-opacity:.5;
+  }
+  
+  .not_possible {
+    fill:rgb(200,200,200);
+  }
+  
+  .possible {
+    fill:#EC888C;
+  }
+  

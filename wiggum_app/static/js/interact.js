@@ -1,4 +1,3 @@
-
 /**
  * Initialize interact page
  *
@@ -57,12 +56,172 @@
 
     drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
 
-    // add rectangel selection interaction
-    var svg = d3.select("#interact_scatterplot").select("svg");
-    var margin = {top: 20, right: 20, bottom: 20, left: 20}
-    addRectSel(svg, margin);
+    addRadioButton();
  }
 
+ 
+/**
+ * Add RadioButton for selections
+ *
+ * @param none.
+ * @returns none.
+ */ 
+ function addRadioButton() {
+    var w= 200;
+    var h= 50;
+
+    var svg= d3.select("#radio_button")
+                .append("svg")
+                .attr("width",w)
+                .attr("height",h)
+
+//container for all buttons
+var allButtons= svg.append("g")
+                    .attr("id","allButtons") 
+
+//fontawesome button labels
+var labels= ['\uf0c8 Rect','\uf0d0 Lasso'];
+
+//colors for different button states 
+var defaultColor= "#797979"
+var hoverColor= "#56C1FF"
+var pressedColor= "#0076BA"
+
+//groups for each button (which will hold a rect and text)
+var buttonGroups= allButtons.selectAll("g.button")
+    .data(labels)
+    .enter()
+    .append("g")
+    .attr("class","button")
+    .style("cursor","pointer")
+    .on("click",function(d,i) {
+        updateButtonColors(d3.select(this), d3.select(this.parentNode));
+
+        var svg = d3.select("#interact_scatterplot").select("svg");
+        var margin = {top: 20, right: 20, bottom: 20, left: 20};
+        if (i == 0) {
+            svg.on(".drag", null);                                      
+            addRectSel(svg, margin);
+        } else {
+            svg.on("mousedown", null);
+            svg.on("mousemove", null);
+            svg.on("mouseup", null);    
+            addLasso(svg);
+        }
+    })
+    .on("mouseover", function() {
+        if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+            d3.select(this)
+                .select("rect")
+                .attr("fill",hoverColor);
+        }
+    })
+    .on("mouseout", function() {
+        if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+            d3.select(this)
+                .select("rect")
+                .attr("fill",defaultColor);
+        }
+    })
+
+    var bWidth= 75; //button width
+    var bHeight= 22; //button height
+    var bSpace= 5; //space between buttons
+    var x0= 20; //x offset
+    var y0= 0; //y offset
+
+    //adding a rect to each toggle button group
+    //rx and ry give the rect rounded corner
+    buttonGroups.append("rect")
+                .attr("class","buttonRect")
+                .attr("width",bWidth)
+                .attr("height",bHeight)
+                .attr("x",function(d,i) {return x0+(bWidth+bSpace)*i;})
+                .attr("y",y0)
+                .attr("rx",5) //rx and ry give the buttons rounded corners
+                .attr("ry",5)
+                .attr("fill",defaultColor)
+
+    //adding text to each toggle button group, centered 
+    //within the toggle button rect
+    buttonGroups.append("text")
+                .attr("class","buttonText")
+                .attr("font-family","FontAwesome")
+                .attr("x",function(d,i) {
+                    return x0 + (bWidth+bSpace)*i + bWidth/2;
+                })
+                .attr("y",y0+bHeight/2)
+                .attr("text-anchor","middle")
+                .attr("dominant-baseline","central")
+                .attr("fill","white")
+                .text(function(d) {return d;})
+
+    function updateButtonColors(button, parent) {
+        parent.selectAll("rect")
+                .attr("fill",defaultColor)
+
+        button.select("rect")
+                .attr("fill",pressedColor)
+    }
+ }
+
+/**
+ * Add lasso selection interaction
+ *
+ * @param svg.
+ * @returns none.
+ */ 
+ function addLasso(svg) {
+// Lasso functions
+    var lasso_start = function() {
+        lasso.items()
+            .attr("r",4) // reset size
+            .classed("not_possible",true)
+            .classed("selected",false);
+    };
+
+    var lasso_draw = function() {
+
+        // Style the possible dots
+        lasso.possibleItems()
+            .classed("not_possible",false)
+            .classed("possible",true);
+
+        // Style the not possible dot
+        lasso.notPossibleItems()
+            .classed("not_possible",true)
+            .classed("possible",false);
+    };
+
+    var lasso_end = function() {
+        // Reset the color of all dots
+        lasso.items()
+            .classed("not_possible",false)
+            .classed("possible",false);
+
+        // Style the selected dots
+        lasso.selectedItems()
+            .classed("selected",true)
+            .attr("r",4);
+
+        // Reset the style of the not selected dots
+        lasso.notSelectedItems()
+            .attr("r",4);
+
+    };
+
+    var lasso = d3.lasso()
+                    .closePathSelect(true)
+                    .closePathDistance(100)
+                    .items(svg.selectAll(".dot"))
+                    .targetArea(svg)
+                    .on("start",lasso_start)
+                    .on("draw",lasso_draw)
+                    .on("end",lasso_end);
+
+    svg.call(lasso);    
+      
+ }
 
 /**
  * Add rectangel selection interaction
@@ -72,7 +231,7 @@
  */ 
 function addRectSel(svg, margin) {
     var d;
-	svg.on( "mousedown", function() {
+	svg.on("mousedown", function() {
 		var p = d3.mouse(this);
 
 		svg.append("rect")            
@@ -87,7 +246,7 @@ function addRectSel(svg, margin) {
             })
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 	})
-	.on( "mousemove", function() {
+	.on("mousemove", function() {
 		var s = svg.select( "rect.selection");            
 
 		if( !s.empty()) {
@@ -120,7 +279,7 @@ function addRectSel(svg, margin) {
 			s.attrs(d);         
 		}
 	})
-	.on( "mouseup", function() {
+	.on("mouseup", function() {
         d3.selectAll('circle.selected').classed( "selected", false);
 
         radius=1;  
