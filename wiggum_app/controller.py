@@ -30,6 +30,9 @@ def explore():
             indep_vars = labeled_df_setup.get_vars_per_role('independent')
             splitby_vars = labeled_df_setup.get_vars_per_role('splitby')            
 
+            # add id for future selection
+            labeled_df_setup.df['id'] = labeled_df_setup.df.index
+
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
@@ -37,6 +40,21 @@ def explore():
                             indep_vars = indep_vars,
                             splitby_vars = splitby_vars,
                             df = df) 
+
+        if action == 'rect_select':
+            selected_data = request.form['selected_data']
+            selected_data =json.loads(selected_data)
+            
+            # extract all selected data's id
+            selected_ids = [row['id'] for row in selected_data]
+
+            # add new 'selected' column to df
+            labeled_df_setup.df['selected'] = labeled_df_setup.df['id'].apply(
+                                                lambda x: '1' if x in selected_ids else '0') 
+            # update meta_df for the new column
+            labeled_df_setup.update_meta_df_cluster()
+
+            return 'success'
 
 @app.route("/", methods = ['POST'])
 def main():

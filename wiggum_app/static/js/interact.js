@@ -56,7 +56,6 @@
 
     drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
 
-    addRadioButton();
  }
 
  
@@ -95,6 +94,10 @@ var buttonGroups= allButtons.selectAll("g.button")
     .attr("class","button")
     .style("cursor","pointer")
     .on("click",function(d,i) {
+
+        // Clear all selected points 
+        d3.selectAll('circle.selected').classed( "selected", false);
+
         updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
         var svg = d3.select("#interact_scatterplot").select("svg");
@@ -208,6 +211,8 @@ var buttonGroups= allButtons.selectAll("g.button")
         lasso.notSelectedItems()
             .attr("r",4);
 
+        processSelectedData();
+
     };
 
     var lasso = d3.lasso()
@@ -301,6 +306,35 @@ function addRectSel(svg, margin) {
 
 	  // remove selection frame
 	  svg.selectAll("rect.selection").remove();
-    
-	});        
+      
+      // call backend
+      processSelectedData();
+    })    
+}
+
+
+/**
+ * Process selected data
+ *
+ * @param none.
+ * @returns none.
+ */ 
+ function processSelectedData() {
+      // all data selected
+      var selected_data = d3.selectAll(".selected").data();
+      
+      if (selected_data.length > 0) {
+        selected_data = JSON.stringify(selected_data);
+
+        // call server
+        $.ajax({
+            type: 'POST',
+            url: "/explore",
+            data: {'action':'rect_select', 'selected_data': selected_data},
+            success: function(data) {
+                // TODO
+                
+            }
+        }); 
+      }
 }

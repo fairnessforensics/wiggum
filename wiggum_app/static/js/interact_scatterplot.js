@@ -92,4 +92,6 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 		  .attr("dy", ".35em")
 		  .style("text-anchor", "end")
 		  .text(function(d) { return d;})
+
+	addRadioButton();
 }
