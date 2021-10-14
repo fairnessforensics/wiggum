@@ -11,9 +11,9 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 		.range([height, 0]);
 	
 	var xAxis = d3.axisBottom(x);
-	
+	var xAxis2 = d3.axisBottom(x);	
 	var yAxis = d3.axisLeft(y);
-
+	var yAxis2 = d3.axisLeft(y);
 	// setup fill color
 	var cValue = function(d) { return d[splitby_var];};
 	var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -32,6 +32,9 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 
 	  x.domain(d3.extent(data, function(d) { return d[indep_var]; })).nice();
 	  y.domain(d3.extent(data, function(d) { return d[dep_var]; })).nice();
+
+	  // add grid before draw dots
+	  addGrid(svg, xAxis2, yAxis2, width, height);
 
 	  // x-axis
 	  svg.append("g")
@@ -56,7 +59,7 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 		  .attr("dy", ".71em");
 //		  .style("text-anchor", "end")
 //		  .text(dep_var);
-
+	  
 	  // draw dots
 	  svg.selectAll(".dot")
 		  .data(data)
@@ -94,4 +97,29 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 		  .text(function(d) { return d;})
 
 	addRadioButton();
+
 }
+
+function addGrid(svg, xAxis, yAxis, width, height) {
+	svg.insert("g", '#scatterplot')
+	  .attr("class", "grid grid-x")
+	  .attr("transform", "translate(0," + height + ")")
+	  .call(xAxis
+		.tickSize(-height)
+		.tickFormat(''));
+  
+	svg.insert("g", '#scatterplot')
+	  .attr("class", "grid grid-y")
+	  .call(yAxis
+		.tickSize(-width)
+		.tickFormat(''));
+  
+	svg.selectAll('.grid')
+	  .selectAll('line')
+	  .attr('stroke', 'lightgray');
+
+	svg.on("mousemove", function() {
+		var p = d3.mouse(this);
+		console.log(p);
+	})
+  }
