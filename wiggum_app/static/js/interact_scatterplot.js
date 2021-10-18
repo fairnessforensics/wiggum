@@ -11,9 +11,8 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 		.range([height, 0]);
 	
 	var xAxis = d3.axisBottom(x);
-	var xAxis2 = d3.axisBottom(x);	
 	var yAxis = d3.axisLeft(y);
-	var yAxis2 = d3.axisLeft(y);
+
 	// setup fill color
 	var cValue = function(d) { return d[splitby_var];};
 	var color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -22,22 +21,19 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	var svg = d3.select("#interact_scatterplot").append("svg")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
-	  .append("g")
+	    .append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	  data.forEach(function(d) {
+	data.forEach(function(d) {
 		d[dep_var] = +d[dep_var];
 		d[indep_var] = +d[indep_var];
 	  });
 
-	  x.domain(d3.extent(data, function(d) { return d[indep_var]; })).nice();
-	  y.domain(d3.extent(data, function(d) { return d[dep_var]; })).nice();
+	x.domain(d3.extent(data, function(d) { return d[indep_var]; })).nice();
+	y.domain(d3.extent(data, function(d) { return d[dep_var]; })).nice();
 
-	  // add grid before draw dots
-	  addGrid(svg, xAxis2, yAxis2, width, height);
-
-	  // x-axis
-	  svg.append("g")
+	// x-axis
+	svg.append("g")
 		  .attr("class", "x axis")
 		  .attr("transform", "translate(0," + height + ")")
 		  .call(xAxis)
@@ -48,8 +44,8 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 //		  .style("text-anchor", "end")
 //		  .text(indep_var);
 
-	  // y-axis
-	  svg.append("g")
+	// y-axis
+	svg.append("g")
 		  .attr("class", "y axis")
 		  .call(yAxis)
 		.append("text")
@@ -60,8 +56,8 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 //		  .style("text-anchor", "end")
 //		  .text(dep_var);
 	  
-	  // draw dots
-	  svg.selectAll(".dot")
+	// draw dots
+	svg.selectAll(".dot")
 		  .data(data)
 		  .enter().append("circle")	
 		  .attr("class", "dot")	  		    	  
@@ -73,23 +69,23 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 		  .attr("stroke-width", 1)			  
 		  .style("fill", function(d) { return color(cValue(d));});
 
-	  // draw legend
-	  var legend = svg.selectAll(".legend")
+	// draw legend
+	var legend = svg.selectAll(".legend")
 		  .data(color.domain())
 		.enter().append("g")
 		  .attr("class", "legend")
 		  .attr("transform", function(d, i) { return "translate(10," + i * 20 + ")"; });
 
-	  // draw legend colored rectangles
-	  legend.append("rect")
+	// draw legend colored rectangles
+	legend.append("rect")
 		  .attr("x", width - 18)
 		  .attr("width", 18)
 		  .attr("height", 18)
 //		  .style("opacity", 0.9)
 		  .style("fill", color);
 
-	  // draw legend text
-	  legend.append("text")
+	// draw legend text
+	legend.append("text")
 		  .attr("x", width - 24)
 		  .attr("y", 9)
 		  .attr("dy", ".35em")
@@ -99,27 +95,3 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	addRadioButton();
 
 }
-
-function addGrid(svg, xAxis, yAxis, width, height) {
-	svg.insert("g", '#scatterplot')
-	  .attr("class", "grid grid-x")
-	  .attr("transform", "translate(0," + height + ")")
-	  .call(xAxis
-		.tickSize(-height)
-		.tickFormat(''));
-  
-	svg.insert("g", '#scatterplot')
-	  .attr("class", "grid grid-y")
-	  .call(yAxis
-		.tickSize(-width)
-		.tickFormat(''));
-  
-	svg.selectAll('.grid')
-	  .selectAll('line')
-	  .attr('stroke', 'lightgray');
-
-	svg.on("mousemove", function() {
-		var p = d3.mouse(this);
-		console.log(p);
-	})
-  }

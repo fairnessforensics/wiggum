@@ -66,7 +66,7 @@
  * @returns none.
  */ 
  function addRadioButton() {
-    var w= 200;
+    var w= 300;
     var h= 50;
 
     var svg= d3.select("#radio_button")
@@ -79,7 +79,7 @@ var allButtons= svg.append("g")
                     .attr("id","allButtons") 
 
 //fontawesome button labels
-var labels= ['\uf0c8 Rect','\uf0d0 Lasso'];
+var labels= ['\uf0c8 Rect','\uf0d0 Lasso','\uf00a Grid'];
 
 //colors for different button states 
 var defaultColor= "#797979"
@@ -103,13 +103,22 @@ var buttonGroups= allButtons.selectAll("g.button")
         var svg = d3.select("#interact_scatterplot").select("svg");
         var margin = {top: 20, right: 20, bottom: 20, left: 20};
         if (i == 0) {
-            svg.on(".drag", null);                                      
+            svg.on(".drag", null);   
+
             addRectSel(svg, margin);
-        } else {
+        } else if (i == 1) {
             svg.on("mousedown", null);
             svg.on("mousemove", null);
             svg.on("mouseup", null);    
-            addLasso(svg);
+
+            addLasso(svg);         
+        }  else {
+            svg.on("mousedown", null);
+            svg.on("mousemove", null);
+            svg.on("mouseup", null); 
+            svg.on(".drag", null);                   
+
+            addGrid(svg, margin);
         }
     })
     .on("mouseover", function() {
@@ -338,3 +347,4 @@ function addRectSel(svg, margin) {
         }); 
       }
 }
+
