@@ -11,23 +11,17 @@ function addGrid(svg, margin) {
         height = svg.attr("height") - margin.top - margin.bottom,
         transform = svg.attr("transform");
 
-	//var grid = d3.select("#grid")
-	//				.append("svg")
-///					.attr("width", width)
-	//				.attr("height", height)
-      //              .attr("transform", transform);
-
     // grid dimension
     var d = 9;
     var gridData = initGridData(width, height, d);
-    console.log(gridData);
+    //console.log(gridData);
 
 	var row = svg.select("g")
                     .selectAll(".row")
 					.data(gridData)
 					.enter().append("g")
 					.attr("class", "row");
-	
+
 	var column = row.selectAll(".square")
 					.data(function(d) { return d; })
 					.enter().append("rect")
@@ -41,8 +35,9 @@ function addGrid(svg, margin) {
                     .style("stroke", "#222")
                     .style("stroke-opacity", 0.2)                   
 					.on("click", function(d, i) {
-                        d3.selectAll('circle.selected').classed( "selected", false);
-                        
+                        //d3.selectAll('circle.selected').classed( "selected", false);
+                        d.click ++;
+
                         var grid_selected = d3.select(this);
                         var grid = {
                             x       : parseFloat(grid_selected.attr("x")),
@@ -51,20 +46,38 @@ function addGrid(svg, margin) {
                             height  : parseFloat(grid_selected.attr("height"))
                         };
 
-                        d3.selectAll('circle').each( function() {  
-                            thisCircle = d3.select(this);
-                  
-                            if(!d3.select(this).classed("selected") && 
-                                    // inner circle inside selected grid
-                                    parseFloat(thisCircle.attr('cx'))>grid.x && 
-                                    parseFloat(thisCircle.attr('cx'))<=grid.x+grid.width &&
-                                    parseFloat(thisCircle.attr('cy'))>grid.y && 
-                                    parseFloat(thisCircle.attr('cy'))<=grid.y+grid.height
-                            ) { 
-                                d3.select(this)                            
-                                    .classed("selected",true);
-                            }
-                         });
+                        if ((d.click)%2 == 0) {
+                            // click twice, unselect
+                            d3.selectAll('circle').each( function() {  
+                                thisCircle = d3.select(this);
+                    
+                                if(d3.select(this).classed("selected") && 
+                                        // inner circle inside selected grid
+                                        parseFloat(thisCircle.attr('cx'))>grid.x && 
+                                        parseFloat(thisCircle.attr('cx'))<=grid.x+grid.width &&
+                                        parseFloat(thisCircle.attr('cy'))>grid.y && 
+                                        parseFloat(thisCircle.attr('cy'))<=grid.y+grid.height
+                                ) { 
+                                    d3.select(this)                            
+                                        .classed("selected",false);
+                                }
+                            });
+                        } else {
+                            d3.selectAll('circle').each( function() {  
+                                thisCircle = d3.select(this);
+                    
+                                if(!d3.select(this).classed("selected") && 
+                                        // inner circle inside selected grid
+                                        parseFloat(thisCircle.attr('cx'))>grid.x && 
+                                        parseFloat(thisCircle.attr('cx'))<=grid.x+grid.width &&
+                                        parseFloat(thisCircle.attr('cy'))>grid.y && 
+                                        parseFloat(thisCircle.attr('cy'))<=grid.y+grid.height
+                                ) { 
+                                    d3.select(this)                            
+                                        .classed("selected",true);
+                                }
+                            });
+                        }
 					});
 
 }
@@ -83,7 +96,8 @@ function initGridData(width, height, d) {
 	var ypos = 1;
 	var g_width = width/d;
 	var g_height = height/d;
-	
+	var click = 0;
+
 	for (var row = 0; row < d; row++) {
 		data.push( new Array() );
 		
@@ -92,7 +106,8 @@ function initGridData(width, height, d) {
 				x: xpos,
 				y: ypos,
 				width: g_width,
-				height: g_height
+				height: g_height,
+                click: click
 			})
 			xpos += g_width;
 		}

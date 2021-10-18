@@ -102,14 +102,19 @@ var buttonGroups= allButtons.selectAll("g.button")
 
         var svg = d3.select("#interact_scatterplot").select("svg");
         var margin = {top: 20, right: 20, bottom: 20, left: 20};
+
         if (i == 0) {
             svg.on(".drag", null);   
+            // remove all grids' rows
+            d3.selectAll('.row').remove();
 
             addRectSel(svg, margin);
         } else if (i == 1) {
             svg.on("mousedown", null);
             svg.on("mousemove", null);
             svg.on("mouseup", null);    
+            // remove all grids' rows
+            d3.selectAll('.row').remove();
 
             addLasso(svg);         
         }  else {
