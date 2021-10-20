@@ -1,0 +1,57 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Python application
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 
+      uses: actions/setup-python@v2
+      with: 
+        python-version: 3.8
+    - name: pip cache    
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('setup.py') }}-${{ hashFiles('dev-requirements.txt') }}
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install flake8 pytest
+        pip install .
+        pipenv install install
+        npm install -g jsdoc
+    - name: addons
+      uses: docker://pandoc/core:2.9
+    - name: pytest
+      run: |
+        pytest
+        # Use Sphinx to make the html docs
+    - name: make docs
+      run: |
+        cd docs
+        make html # must be run in the docs folder
+    - name: deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+          skip_cleanup: true
+          github_token: $GITHUB_TOKEN
+          keep-history: true
+          # on:
+            # branch: master 
+          local_dir: docs/html/ # where compiled docs are placed by sphinx, set in sphinx conf.py
+          target_branch: gh-pages
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_CHANNEL: oudalab:hYEt5Sslpd5gb7aMfQeI6EoM#code
