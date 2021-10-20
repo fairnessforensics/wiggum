@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.stats as stats
 import itertools as itert
-from sklearn import preprocessing
+# from sklearn import preprocessing
 
 #also in detectors
 result_df_type_col_name = 'comparison_type'
