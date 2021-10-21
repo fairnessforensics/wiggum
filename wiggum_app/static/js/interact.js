@@ -53,6 +53,15 @@
 
     // create initial scatterplot
     var csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+    
+    // TODO---------date column----------->
+    var dateFlg = Object.keys(csvData[0]).includes("date");
+    if (dateFlg) {
+        csvData.forEach(function(d) {
+            d['date'] = d3.timeParse("%Y-%m-%d")(d['date']);
+        });
+    }
+    // TODO<-------------------
 
     drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
 
@@ -101,7 +110,7 @@ var buttonGroups= allButtons.selectAll("g.button")
         updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
         var svg = d3.select("#interact_scatterplot").select("svg");
-        var margin = {top: 20, right: 20, bottom: 20, left: 20};
+        var margin = {top: 20, right: 20, bottom: 20, left: 60};
 
         if (i == 0) {
             svg.on(".drag", null);   

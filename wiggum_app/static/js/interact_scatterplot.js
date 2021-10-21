@@ -1,11 +1,18 @@
 function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	$('svg').remove();
-	var margin = {top: 20, right: 20, bottom: 20, left: 20},
-		width = 500 - margin.left - margin.right,
+	var margin = {top: 20, right: 20, bottom: 20, left: 60},
+		width = 540 - margin.left - margin.right,
 		height = 500 - margin.top - margin.bottom;
 
 	var x = d3.scaleLinear()
 		.range([0, width]);
+
+    // TODO---------date column----------->		
+	if (indep_var == 'date') {
+		x = d3.scaleTime()
+				.range([0, width]);
+	}		
+	// TODO<-------------------
 	
 	var y = d3.scaleLinear()
 		.range([height, 0]);
@@ -23,11 +30,6 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 		.attr("height", height + margin.top + margin.bottom)
 	    .append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-	data.forEach(function(d) {
-		d[dep_var] = +d[dep_var];
-		d[indep_var] = +d[indep_var];
-	  });
 
 	x.domain(d3.extent(data, function(d) { return d[indep_var]; })).nice();
 	y.domain(d3.extent(data, function(d) { return d[dep_var]; })).nice();

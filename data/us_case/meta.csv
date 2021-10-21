@@ -1,0 +1,8 @@
+variable,dtype,var_type,role,isCount,weighting_var
+date,object,categorical,['independent'],False,
+total_cases,int64,ordinal,"['independent', 'dependent']",False,
+new_cases,int64,ordinal,"['independent', 'dependent']",False,
+total_deaths,int64,ordinal,"['independent', 'dependent']",False,
+new_deaths,int64,ordinal,"['independent', 'dependent']",False,
+icu_patients,int64,ordinal,"['independent', 'dependent']",False,
+hosp_patients,int64,ordinal,"['independent', 'dependent']",False,
