@@ -38,6 +38,7 @@ jobs:
         # Use Sphinx to make the html docs
     - name: make docs
       run: |
+        pipenv install sphinx
         cd docs
         make html # must be run in the docs folder
     - name: deploy
