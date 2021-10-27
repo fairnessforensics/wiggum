@@ -65,6 +65,37 @@
 
     drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
 
+    addAggSlider();
+}
+
+ 
+/**
+ * Add Slider for aggregate correlation
+ *
+ * @param none.
+ * @returns none.
+ */ 
+ function addAggSlider() {    
+
+    var sliderRange = d3.sliderBottom()
+                        .domain([0,1])
+                        .width(120)
+                        .tickFormat(d3.format('.2'))
+                        .ticks(5)
+                        .default([0.1, 0.9])
+                        .fill('#2196f3')
+                        .on('onchange', val => {
+                            d3.select('#agg_slider_lable').text('aggregate correlation');
+                        });
+
+    d3.select('div#agg_slider')
+        .append('svg')
+        .attr('width', 200)
+        .attr('height', 100)
+        .append('g')
+        .attr('transform', 'translate(30,30)')
+        .call(sliderRange);
+
  }
 
  

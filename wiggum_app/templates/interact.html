@@ -6,6 +6,7 @@
 	<title>Wiggum: Interactive Exploration</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script src="https://d3js.org/d3.v4.min.js"></script>   
+    <script src="https://unpkg.com/d3-simple-slider"></script>    
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>       
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.13.0/d3-legend.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -33,7 +34,11 @@
         <select id="indep_sel_button"></select>
         <select id="splitby_sel_button"></select>
         <div id="interact_scatterplot"></div>
-        <div id="radio_button"></div>        
+        <div id="radio_button"></div>    
+        <div>
+            <p id="agg_slider_lable">aggregate correlation</p>
+            <div id="agg_slider"></div>
+          </div>           
         <script src="{{ url_for('static', filename='js/interact.js') }}"></script>
         <script src="{{ url_for('static', filename='js/interact_scatterplot.js') }}"></script>
         <script src="{{ url_for('static', filename='js/lasso.js') }}"></script>      

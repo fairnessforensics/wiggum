@@ -435,3 +435,14 @@ div.tooltip {
     fill:#EC888C;
   }
   
+#agg_slider_lable {
+    position: absolute;
+    margin-left: 41.3%;   
+    margin-top: 1.8%; 
+}
+
+#agg_slider {
+    position: absolute;
+    margin-left: 40%;   
+    margin-top: 1.8%; 
+}
