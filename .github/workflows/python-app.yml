@@ -35,7 +35,7 @@ jobs:
       uses: docker://pandoc/core:2.9
     - name: pytest
       run: |
-        pytest
+        pipenv run pytest
         # Use Sphinx to make the html docs
     - name: make docs
       run: |
