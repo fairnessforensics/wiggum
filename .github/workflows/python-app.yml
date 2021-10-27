@@ -40,7 +40,8 @@ jobs:
       run: |
         pipenv install sphinx
         cd docs
-        pipenv make html # must be run in the docs folder
+        pipenv shell 
+        make html # must be run in the docs folder
     - name: deploy
       uses: peaceiris/actions-gh-pages@v3
       with:
