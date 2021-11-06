@@ -36,10 +36,26 @@ def explore():
             df = labeled_df_setup.df.to_dict(orient='records')
             df = json.dumps(df, indent=2)
 
+            # Generate distance heatmaps
+            if len(trend_list) > 0:
+                # Compute result dataframe
+                labeled_df_setup.get_subgroup_trends_1lev(trend_list)
+
+                if labeled_df_setup.result_df.empty:
+                    return 'no_result'
+
+                # add distances
+                labeled_df_setup.add_distance()
+
+                # Generate distance heatmaps
+                distance_heatmap_dict = models.getDistanceHeatmapDict2D(
+                                        labeled_df_setup, labeled_df_setup.result_df)
+
             return jsonify(dep_vars = dep_vars,
                             indep_vars = indep_vars,
                             splitby_vars = splitby_vars,
-                            df = df) 
+                            df = df,
+                            distance_heatmap_dict = distance_heatmap_dict) 
 
         if action == 'rect_select':
             selected_data = request.form['selected_data']
@@ -63,7 +79,8 @@ def main():
         action = request.form['action']
 
         global labeled_df_setup
-        
+        global trend_list
+
         # store filter parameters
         global filter_flag
         global filter_object
@@ -244,7 +261,6 @@ def main():
 
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
 
-            global trend_list
             # initial trend list
             trend_list = []
             miss_trends_flg = False
@@ -300,6 +316,15 @@ def main():
         if action == 'interact':
             meta = request.form['metaList']
             labeled_df_setup = models.updateMetaData(labeled_df_setup, meta)
+
+            # Simplified trend types process, ignore checking.
+            trend_list = []
+            user_trends = request.form['trend_types']
+            user_trends = user_trends.split(",")
+
+            # check user trend list
+            if len(user_trends) > 0:
+                trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
 
             return redirect(url_for("interact"))  
 

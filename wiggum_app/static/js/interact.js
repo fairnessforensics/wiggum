@@ -1,3 +1,6 @@
+// Global variable
+var csvData;
+
 /**
  * Initialize interact page
  *
@@ -52,7 +55,7 @@
     })
 
     // create initial scatterplot
-    var csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+    csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
     
     // TODO---------date column----------->
     var dateFlg = Object.keys(csvData[0]).includes("date");
@@ -146,7 +149,7 @@ var buttonGroups= allButtons.selectAll("g.button")
         if (i == 0) {
             svg.on(".drag", null);   
             // remove all grids' rows
-            d3.selectAll('.row').remove();
+            svg.selectAll('.row').remove();
 
             addRectSel(svg, margin);
         } else if (i == 1) {
@@ -154,7 +157,7 @@ var buttonGroups= allButtons.selectAll("g.button")
             svg.on("mousemove", null);
             svg.on("mouseup", null);    
             // remove all grids' rows
-            d3.selectAll('.row').remove();
+            svg.selectAll('.row').remove();
 
             addLasso(svg);         
         }  else {

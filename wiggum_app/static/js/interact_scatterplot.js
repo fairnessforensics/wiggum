@@ -1,5 +1,8 @@
 function drawScatterplot(data, indep_var, dep_var, splitby_var) {
-	$('svg').remove();
+
+	d3.select("#interact_scatterplot").selectAll('svg').remove();
+	d3.select("#radio_button").selectAll('svg').remove();	
+
 	var margin = {top: 20, right: 20, bottom: 20, left: 60},
 		width = 540 - margin.left - margin.right,
 		height = 500 - margin.top - margin.bottom;
