@@ -99,4 +99,53 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 
 	addRadioButton();
 
+	// draw regression line
+	// Regression line for all
+	var lgAll = calcLinear(data, indep_var, dep_var, 
+		d3.min(x.domain()), 
+		d3.max(x.domain()), 
+		d3.min(y.domain()), 
+		d3.max(y.domain())			
+		);
+	
+	svg.append("line")
+		.attr("class", "regression")
+		.attr("x1", x(lgAll.ptA.x))
+		.attr("y1", y(lgAll.ptA.y))
+		.attr("x2", x(lgAll.ptB.x))
+		.attr("y2", y(lgAll.ptB.y))
+		.attr("stroke", "black")
+		.attr("stroke-dasharray", "5,5")
+		.attr("stroke-width", 2);
+//		.attr("transform", "translate("+margin.left+"," + margin.top + ")");
+
+	// Regression lines for subgroups
+	var lgGroup_nest = d3.nest()
+				.key(function(d){
+					return d[splitby_var];
+				})
+				.rollup(function(leaves){
+					var lgGroup = calcLinear(leaves, indep_var, dep_var, 
+						d3.min(x.domain()), 
+						d3.max(x.domain()),
+						d3.min(y.domain()), 
+						d3.max(y.domain())							
+						)
+						return lgGroup;})
+				.entries(data)
+
+	var lines = svg.selectAll('.line')
+					.data(lgGroup_nest);
+
+	lines.enter().append('line')
+					.attr("class", "regression")
+					.attr("x1", function(d) { return x(d.value.ptA.x); })
+					.attr("y1", function(d) { return y(d.value.ptA.y); })
+					.attr("x2", function(d) { return x(d.value.ptB.x); })
+					.attr("y2", function(d) { return y(d.value.ptB.y); })		
+					.attr("stroke", function(d) { return color(d.key); })																		
+					.attr("stroke-width", 2);
+//					.attr("transform", "translate("+margin.left+"," + margin.top + ")");
+
+
 }
