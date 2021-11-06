@@ -209,3 +209,108 @@ function clearSelected(id){
       elements[i].selected = false;
     }
   }
+
+/**
+ * Calculate linear regression line
+ *
+ * @param data - data for drawing dots.
+ * @param x - the variable for x axis.
+ * @param y - the variable for y axis.
+ * @param minX - minimal value for X.
+ * @param maxX - maximal value for X.
+ * @param minY - minimal value for Y.
+ * @param maxY - maximal value for Y.
+ * @returns {object} an object of two points,
+ *                   each point is an object with an x and y coordinate.
+ */
+ function calcLinear(data, x, y, minX, maxX, minY, maxY){
+	/////////
+	//SLOPE//
+	/////////
+
+	// Let n = the number of data points
+	var n = data.length;
+
+	// Get just the points
+	var pts = [];
+	data.forEach(function(d,i){
+	  var obj = {};
+	  obj.x = d[x];
+	  obj.y = d[y];
+	  obj.mult = obj.x*obj.y;
+	  pts.push(obj);
+	});
+
+	// Let a equal n times the summation of all x-values multiplied by their corresponding y-values
+	// Let b equal the sum of all x-values times the sum of all y-values
+	// Let c equal n times the sum of all squared x-values
+	// Let d equal the squared sum of all x-values
+	var sum = 0;
+	var xSum = 0;
+	var ySum = 0;
+	var sumSq = 0;
+	pts.forEach(function(pt){
+	  sum = sum + pt.mult;
+	  xSum = xSum + pt.x;
+	  ySum = ySum + pt.y;
+	  sumSq = sumSq + (pt.x * pt.x);
+	});
+	var a = sum * n;
+	var b = xSum * ySum;
+	var c = sumSq * n;
+	var d = xSum * xSum;
+
+	// Plug the values that you calculated for a, b, c, and d into the following equation to calculate the slope
+	// slope = m = (a - b) / (c - d)
+	var m = (a - b) / (c - d);
+
+	/////////////
+	//INTERCEPT//
+	/////////////
+
+	// Let e equal the sum of all y-values
+	var e = ySum;
+
+	// Let f equal the slope times the sum of all x-values
+	var f = m * xSum;
+
+	// Plug the values you have calculated for e and f into the following equation for the y-intercept
+	// y-intercept = b = (e - f) / n
+	var b = (e - f) / n;
+
+
+	// check the point is inside the scatterplot
+	var tempMinY = m * minX + b;
+	var tempMaxY = m * maxX + b;
+
+	// check if regression line is beyond the min value Y
+	if (tempMinY < minY) {
+		// set minimum X value based on minimun Y value
+		minX = (minY - b) / m;
+	} else {
+		// set minimun Y based on the linear calculation
+		minY = tempMinY;
+	}
+
+	// check if regression line is beyond the max value Y
+	if (tempMaxY > maxY) {
+		// set maximum X value based on maximun Y value
+		maxX = (maxY - b) / m;
+	} else {
+		// set maximun Y based on the linear calculation
+		maxY = tempMaxY;
+	}
+
+	// return an object of two points
+	// each point is an object with an x and y coordinate
+	return {
+	  ptA : {
+		x: minX,
+		y: minY
+	  },
+	  ptB : {
+		x: maxX,
+		y: maxY
+	  }
+	}
+}
