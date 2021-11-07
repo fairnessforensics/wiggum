@@ -216,9 +216,10 @@ function drawDistanceHeatmap2D(dataAll, action) {
 		.datum(function (d) { return d; })	
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
 
-	cells.attr("width", x.bandwidth()-1)
-	    .attr("height", y.bandwidth()-1)
+	cells.attr("width", x.bandwidth()-2)
+	    .attr("height", y.bandwidth()-2)
 	    .style("stroke-width", "1px")
+		.style("stroke", "black")
     	.transition()
 //		.style("fill", function(d, i) {return heatmapColor(d.value); });
 		.style("fill", function(d, i) {
