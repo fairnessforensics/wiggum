@@ -447,6 +447,13 @@ div.tooltip {
     margin-top: 1.8%; 
 }
 
+
+#subgroup_distance {
+    position: absolute;
+    margin-left: 40%;   
+    margin-top: 10%; 
+}
+
 #distance_matrix_2d {
     width: 100%;
     display: block;
@@ -455,7 +462,7 @@ div.tooltip {
     max-height: 100%;
     overflow-y: scroll;
     padding-right: 30px; 
-    margin-left: 50%; 
+    margin-left: 60%; 
 }
 
 .svg-container-2d {

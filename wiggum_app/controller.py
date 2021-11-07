@@ -72,6 +72,18 @@ def explore():
 
             return 'success'
 
+
+        if action == 'distance_heatmap_click':
+            datum = request.form['datum']  
+            datum =json.loads(datum, cls=Decoder)
+
+            trend_rows = labeled_df_setup.get_trend_rows(independent=datum['independent'],
+                                            dependent=datum['dependent'],
+                                            splitby=datum['splitby'],
+                                            trend_type =datum['trend_type'])
+
+            return jsonify(trend_rows = trend_rows.to_json(orient='records'))   
+
 @app.route("/", methods = ['POST'])
 def main():
     if request.method == 'POST':

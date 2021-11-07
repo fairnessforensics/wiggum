@@ -29,7 +29,7 @@ function drawDistanceHeatmap2D(dataAll, action) {
 			for (var colkey in first_row) {
 				colLabels.push(colkey);
 			}
-			
+
 			matrix_data = UpdateLRMatrixFormat(heatmapMatrix, rowLabels, 
 												colLabels, data.trend_type,
 												data.detail_view_type);
@@ -62,7 +62,26 @@ function drawDistanceHeatmap2D(dataAll, action) {
 
 	var clickFlg = d3.select(this).classed("clicked", true);
 
-	if (clickFlg) { updateScatterPlot.call(this, d3.select(this)); }
+	if (clickFlg) { 
+
+		var datum = d3.select(this).datum();
+
+		updateScatterPlot.call(this, datum); 
+
+		// Call server for subgroups' distances
+		datum = JSON.stringify(datum);
+		$.ajax({
+			type: 'POST',
+			url: "/explore",
+			data: {'action':'distance_heatmap_click', 'datum': datum},
+			success: function(data) {
+				// Draw Subgroup Distance for explaining
+				drawSubgroupDistance(data, datum);
+			}
+		}); 
+
+	}
+
 };
 
 /**
@@ -71,9 +90,8 @@ function drawDistanceHeatmap2D(dataAll, action) {
  * @param none.
  * @returns none.
  */
- function updateScatterPlot(cell) {
+ function updateScatterPlot(datum) {
 
-	var datum = cell.datum();
     drawScatterplot(csvData, datum.independent,datum.dependent, datum.splitby);
 
 	// Change dropdowns' selected values
@@ -104,7 +122,7 @@ function drawDistanceHeatmap2D(dataAll, action) {
  * @param detail_view_type - detail view type.
  * @returns matrix - containing information for cells.
  */
- var UpdateLRMatrixFormat = function(matrix, rowLabels, colLabels, category, trend_type, detail_view_type) {
+ var UpdateLRMatrixFormat = function(matrix, rowLabels, colLabels, trend_type, detail_view_type) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
