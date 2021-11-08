@@ -151,15 +151,22 @@ function drawDistanceHeatmap2D(dataAll, action) {
  */
  function distanceHeatmap(options) {
 
-	var margin = {top: 70, right: 10, bottom: 10, left: 130},
-	    width = 100,
-	    height = 100,
-	    data = options.data,
+	var data = options.data,
 	    container = options.container;
+
+	var numrows = data.length;
+	var numcols = data[0].length;
+
+	var margin = {top: 150, right: 10, bottom: 10, left: 200},
+	    width = numcols * 33 + margin.left + margin.right,
+	    height = numrows * 33 + margin.top + margin.bottom;
 
 	if(!data){
 		throw new Error('Please pass data');
 	}
+
+    var rw = 30,
+    rh = 30;
 
 	// continous color for overview
 	var heatmapColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
@@ -168,42 +175,29 @@ function drawDistanceHeatmap2D(dataAll, action) {
 							.domain([0, 1])
 							.range(heatmapColors);
 
-	var numrows = data.length;
-	var numcols = data[0].length;
 
-	//Redraw for zoom
-	function redraw() {
-		svg.attr("transform",
-			"translate(" + d3.event.translate + ")"
-			+ " scale(" + d3.event.scale + ")");	
-	}	
+	// Adjust size for div
+	if (width < 500) {
+		d3.select(container)
+			.style("width", width + 30 + 'px');
+	} 
+	if (height < 500) {
+		d3.select(container)
+			.style("height", height + 30 + 'px');
+	}
 
 	var svg = d3.select(container)
-				.append("div")	
-				.classed("svg-container-2d", true) 
 				.append("svg")
-				.attr("viewBox", "0 0 300 300")	
-				.classed("svg-content-responsive-2d", true)
-				.call(zm = d3.zoom().scaleExtent([0.1,3]).on("zoom", redraw))
-				.append("g");
+				.attr('width', width)
+				.attr('height', height)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	var distanceMatrixPlot = svg.append("g")
-		.attr("id", "distanceMatrixPlot")
-	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-	var x = d3.scaleBand()
-	    .domain(d3.range(numcols))
-	    .rangeRound([0, width]);
-
-	var y = d3.scaleBand()
-	    .domain(d3.range(numrows))
-	    .rangeRound([0, height]);
-
-	var row = distanceMatrixPlot.selectAll(".row")
+	var row = svg.selectAll(".row")
 	    .data(data)
 		.enter().append("g")
 	    .attr("class", "row")
-	    .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; });
+	    .attr("transform", function(d, i) { return "translate(0," + 33 * i + ")"; });
 
 	var cells = row.selectAll(".cell")
 	    .data(function(d) { return d; })
@@ -214,84 +208,48 @@ function drawDistanceHeatmap2D(dataAll, action) {
 			return d.trend_type + "_" + d.independent + "_" + d.dependent + "_" + d.splitby
 		})
 		.datum(function (d) { return d; })	
-	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
+	    .attr("transform", function(d, i) { return "translate(" + 33 * i + ", 0)"; });
 
-	cells.attr("width", x.bandwidth()-2)
-	    .attr("height", y.bandwidth()-2)
+	cells.attr("width", rw)
+	    .attr("height", rh)
 	    .style("stroke-width", "1px")
 		.style("stroke", "black")
     	.transition()
-//		.style("fill", function(d, i) {return heatmapColor(d.value); });
 		.style("fill", function(d, i) {
-			if (d.value == 99) {
-				return '#808080';
-			} else {
-				return heatmapColorScale(d.value);
-			}
+			return heatmapColorScale(d.value);
 		});
 
-//	distanceMatrixPlot.append("text")
-//			.attr("x", -(width/2))              			  
-//			.attr("y", -height-margin.bottom+5)
-//			.attr("text-anchor", "middle")  
-//			.attr("transform", "rotate(-90)")
-//			.style("font-size", "15px") 
-//			.text("dependent | independent");	
-
-//	distanceMatrixPlot.append("text")
-//			.attr("x", (width / 2))             
-//			.attr("y", -margin.top+10)
-//			.attr("text-anchor", "middle")  
-//			.style("font-size", "15px") 
-//			.text("splitby");	
-
-	var labels = distanceMatrixPlot.append('g')
+	var labels = svg.append('g')
 		.attr('class', "labels");
 
 	var columnLabels = labels.selectAll(".column-label")
 	    .data(options.colLabels)
 	    .enter().append("g")
 	    .attr("class", "column-label")
-	    .attr("transform", function(d, i) { return "translate(" + x(i) + "," + 0 + ")"; });
-
-	columnLabels.append("line")
-		.style("stroke", "black")
-	    .style("stroke-width", "1px")
-	    .attr("x1", x.bandwidth() / 2)
-	    .attr("x2", x.bandwidth() / 2)
-	    .attr("y1", 0)
-		.attr("y2", -5);
+	    .attr("transform", function(d, i) { return "translate(" + 33 * i + "," + 0 + ")"; });
 
 	columnLabels.append("text")
 		.attr("x", 8)
-		.attr("y", x.bandwidth()/2-6)
+		.attr("y", 2)
 		.attr("dy", ".82em")
 	    .attr("text-anchor", "start")
 	    .attr("transform", "rotate(-90)")
 		.text(function(d, i) { return d; })
-		.style("font-size", "10px");
+		.style("font-size", "20px");
 
 	var rowLabels = labels.selectAll(".row-label")
 	    .data(options.rowLabels)
 	  .enter().append("g")
 	    .attr("class", "row-label")
-	    .attr("transform", function(d, i) { return "translate(" + 0 + "," + y(i) + ")"; });
-
-	rowLabels.append("line")
-		.style("stroke", "black")
-	    .style("stroke-width", "1px")
-	    .attr("x1", 0)
-	    .attr("x2", -5)
-	    .attr("y1", y.bandwidth() / 2)
-	    .attr("y2", y.bandwidth() / 2);
+	    .attr("transform", function(d, i) { return "translate(" + 0 + "," + 33 * i + ")"; });
 
 	rowLabels.append("text")
 	    .attr("x", -8)
-	    .attr("y", y.bandwidth() / 2)
-	    .attr("dy", ".32em")
+	    .attr("y", 8)
+	    .attr("dy", ".62em")
 	    .attr("text-anchor", "end")
 		.text(function(d, i) { return d; })
-		.style("font-size", "10px");	
+		.style("font-size", "20px");	
 }
 
 /**
