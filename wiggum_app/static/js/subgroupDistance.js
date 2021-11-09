@@ -51,6 +51,7 @@
         .data(function(d) { return d; })
         .enter()
         .append('rect')
+		.attr("class", "cell")        
         .attr('x', function(d, i) { return 33 * i; })
         .attr('width', rw)
         .attr('height', rh)
@@ -90,12 +91,96 @@
 	    .style("stroke", "black")
         .style("fill", function(d, i) {
 			return heatmapColorScale(datum.value);
-		});
+		})
+        .on("click", clickResultCell);
 
     subgroupDistancePlot.append("text")
         .attr("x", 175)              			  
         .attr("y", 33 * num_rows / 2 + 3)
         .attr("text-anchor", "start")  
         .style("font-size", "26px") 
-        .text(Math.round(datum.value*100)/100);	     
+        .text(Math.round(datum.value*100)/100);	  
+        
+        
+    	// Cell Click Event
+	d3.select("#subgroup_distance").selectAll('.cell')
+            .on("click", clickSubgroupDistCell);	    
+}
+
+/**
+ * Click result cell event
+ *
+ * @param none.
+ * @returns none.
+ */
+ var clickResultCell = function() {
+
+	var svg = d3.select("#subgroup_distance");
+	svg.selectAll(".cell").classed("clicked", false);
+
+    // TODO differentiate result cell and other cells
+    // For highlighting the cell
+    
+    d3.selectAll('.elm').transition().style('opacity', 1);
+    d3.select("#interact_scatterplot")
+        .selectAll(".dot")
+        .style('opacity', 1);
+ }
+
+/**
+ * Click subgroup distance cell event
+ *
+ * @param none.
+ * @returns none.
+ */
+ var clickSubgroupDistCell = function() {
+	var svg = d3.select("#subgroup_distance");
+
+	svg.selectAll(".cell").classed("clicked", false);
+
+	var clickFlg = d3.select(this).classed("clicked", true);
+
+	if (clickFlg) { 
+
+		var datum = d3.select(this).datum();
+
+		highlightRegressionLine.call(this, datum);
+        highlightPoints.call(this, datum);
+	}
+
+};
+
+/**
+ * highlight points in interactive scatterplot
+ *
+ * @param datum - the data containing selected cell info.
+ * @returns none.
+ */
+ function highlightPoints(datum) {
+    var subgroup = datum.subgroup;
+    
+    d3.select("#interact_scatterplot")
+        .selectAll(".dot")
+        .style('opacity', 0.2);
+
+    d3.select("#interact_scatterplot")
+        .selectAll(".sel-" + subgroup)
+        .transition()
+        .style('opacity', 1);
+
+}
+
+/**
+ * highlight regression line in interactive scatterplot
+ *
+ * @param datum - the data containing selected cell info.
+ * @returns none.
+ */
+ function highlightRegressionLine(datum) {
+    var subgroup = datum.subgroup;
+
+	d3.selectAll('.elm').transition().style('opacity', 0.2);
+	re_invalid_ch = /[~!@$%^&*()+=,.';:"?><{}`#\\/|\[\]]/g
+	d3.selectAll('.sel-' + 
+	subgroup.toString().replace(re_invalid_ch, '\\$&').replace(/ /g, '_')).transition().style('opacity', 1);
 }

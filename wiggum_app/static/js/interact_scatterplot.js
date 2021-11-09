@@ -65,7 +65,7 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	svg.selectAll(".dot")
 		  .data(data)
 		  .enter().append("circle")	
-		  .attr("class", "dot")	  		    	  
+		  .attr("class", function (d) { return "dot " + "sel-" + cValue(d) } )		    	  
 		  .attr("r", 4)
 		  .attr("cx", function(d) { return x(d[indep_var]);})
 		  .attr("cy", function(d) { return y(d[dep_var]);})
@@ -137,8 +137,15 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	var lines = svg.selectAll('.line')
 					.data(lgGroup_nest);
 
+	// regular expression for checking invalid characters in the class name for a line
+	var re_invalid_ch = /[~!@$%^&*()+=,.';:"?><{}`#\\/|\[\]]/g;
+
 	lines.enter().append('line')
-					.attr("class", "regression")
+					.attr("class",function (d) { 
+							return 's-line elm ' + 'sel-' 
+							+ d.key.toString().replace(re_invalid_ch, '\$&').replace(/ /g, '_');
+						} 
+					)	
 					.attr("x1", function(d) { return x(d.value.ptA.x); })
 					.attr("y1", function(d) { return y(d.value.ptA.y); })
 					.attr("x2", function(d) { return x(d.value.ptB.x); })
