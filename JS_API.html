@@ -4,16 +4,14 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JS API Reference &#8212; Wiggum 0.1 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
-    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="App Outline" href="app_structure.html" />
@@ -29,9 +27,8 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Table of Contents</a></h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="notebooks/simple_simpsons_paradox_intro.html">What is Simpson’s Paradox?</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_user_manual.html">User Manual for Wiggum App</a></li>
 <li class="toctree-l1"><a class="reference internal" href="API.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="app_structure.html">App Outline</a></li>
@@ -56,7 +53,7 @@
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -75,8 +72,8 @@
 <div class="section" id="main">
 <h2>Main:<a class="headerlink" href="#main" title="Permalink to this headline">¶</a></h2>
 <dl class="js function">
-<dt id="drawDistanceMatrixHeatmap">
-<code class="sig-name descname">drawDistanceMatrixHeatmap</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="headerlink" href="#drawDistanceMatrixHeatmap" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="drawDistanceMatrixHeatmap">
+<span class="sig-name descname"><span class="pre">drawDistanceMatrixHeatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">action</span></em><span class="sig-paren">)</span><a class="headerlink" href="#drawDistanceMatrixHeatmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw distance matrix heatmap</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -92,8 +89,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="clearSelected">
-<code class="sig-name descname">clearSelected</code><span class="sig-paren">(</span><em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#clearSelected" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="clearSelected">
+<span class="sig-name descname"><span class="pre">clearSelected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clearSelected" title="Permalink to this definition">¶</a></dt>
 <dd><p>Unselect the menu selections</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -111,8 +108,8 @@
 <div class="section" id="distance-matrix-heatmap">
 <h2>Distance Matrix Heatmap:<a class="headerlink" href="#distance-matrix-heatmap" title="Permalink to this headline">¶</a></h2>
 <dl class="js function">
-<dt id="updateDistanceHeatmapContainer">
-<code class="sig-name descname">updateDistanceHeatmapContainer</code><span class="sig-paren">(</span><em class="sig-param">dataAll</em><span class="sig-paren">)</span><a class="headerlink" href="#updateDistanceHeatmapContainer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="updateDistanceHeatmapContainer">
+<span class="sig-name descname"><span class="pre">updateDistanceHeatmapContainer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">dataAll</span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateDistanceHeatmapContainer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update distance heatmap container</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -127,8 +124,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="clickHeatmapMatrixCell">
-<code class="sig-name descname">clickHeatmapMatrixCell</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#clickHeatmapMatrixCell" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="clickHeatmapMatrixCell">
+<span class="sig-name descname"><span class="pre">clickHeatmapMatrixCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">none</span></em><span class="sig-paren">)</span><a class="headerlink" href="#clickHeatmapMatrixCell" title="Permalink to this definition">¶</a></dt>
 <dd><p>Click heatmap matrix cell event</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -143,8 +140,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="updateDetailView">
-<code class="sig-name descname">updateDetailView</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#updateDetailView" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="updateDetailView">
+<span class="sig-name descname"><span class="pre">updateDetailView</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">none</span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateDetailView" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update detail view</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -159,8 +156,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="distanceMatrixHeatmap">
-<code class="sig-name descname">distanceMatrixHeatmap</code><span class="sig-paren">(</span><em class="sig-param">options</em><span class="sig-paren">)</span><a class="headerlink" href="#distanceMatrixHeatmap" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="distanceMatrixHeatmap">
+<span class="sig-name descname"><span class="pre">distanceMatrixHeatmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">options</span></em><span class="sig-paren">)</span><a class="headerlink" href="#distanceMatrixHeatmap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw distance heatmap</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -175,8 +172,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="DrawHeatmapLegend">
-<code class="sig-name descname">DrawHeatmapLegend</code><span class="sig-paren">(</span><em class="sig-param">overviewLegendTypes</em><span class="sig-paren">)</span><a class="headerlink" href="#DrawHeatmapLegend" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="DrawHeatmapLegend">
+<span class="sig-name descname"><span class="pre">DrawHeatmapLegend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">overviewLegendTypes</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DrawHeatmapLegend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw heatmap legend</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -194,8 +191,8 @@
 <div class="section" id="table">
 <h2>Table:<a class="headerlink" href="#table" title="Permalink to this headline">¶</a></h2>
 <dl class="js function">
-<dt id="tabulate">
-<code class="sig-name descname">tabulate</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">action</em><span class="sig-paren">)</span><a class="headerlink" href="#tabulate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="tabulate">
+<span class="sig-name descname"><span class="pre">tabulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">action</span></em><span class="sig-paren">)</span><a class="headerlink" href="#tabulate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate reuslt table</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -211,8 +208,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="updateLabel">
-<code class="sig-name descname">updateLabel</code><span class="sig-paren">(</span><em class="sig-param">value</em>, <em class="sig-param">id</em><span class="sig-paren">)</span><a class="headerlink" href="#updateLabel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="updateLabel">
+<span class="sig-name descname"><span class="pre">updateLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">value</span></em>, <em class="sig-param"><span class="pre">id</span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateLabel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update label for slide</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -228,8 +225,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="updateTabulate">
-<code class="sig-name descname">updateTabulate</code><span class="sig-paren">(</span><em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#updateTabulate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="updateTabulate">
+<span class="sig-name descname"><span class="pre">updateTabulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vars</span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateTabulate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change highlight row when table is interacted</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -244,8 +241,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="interactDistanceMatrix">
-<code class="sig-name descname">interactDistanceMatrix</code><span class="sig-paren">(</span><em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#interactDistanceMatrix" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="interactDistanceMatrix">
+<span class="sig-name descname"><span class="pre">interactDistanceMatrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">vars</span></em><span class="sig-paren">)</span><a class="headerlink" href="#interactDistanceMatrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>interact distance matrix with result talbe</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -260,8 +257,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="roleTable">
-<code class="sig-name descname">roleTable</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">var_types</em>, <em class="sig-param">samples</em>, <em class="sig-param">possibleRoles</em>, <em class="sig-param">isCounts</em>, <em class="sig-param">roles</em>, <em class="sig-param">weighting_vars</em>, <em class="sig-param">checked_vars</em>, <em class="sig-param">intersection_vars</em><span class="sig-paren">)</span><a class="headerlink" href="#roleTable" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="roleTable">
+<span class="sig-name descname"><span class="pre">roleTable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">var_types</span></em>, <em class="sig-param"><span class="pre">samples</span></em>, <em class="sig-param"><span class="pre">possibleRoles</span></em>, <em class="sig-param"><span class="pre">isCounts</span></em>, <em class="sig-param"><span class="pre">roles</span></em>, <em class="sig-param"><span class="pre">weighting_vars</span></em>, <em class="sig-param"><span class="pre">checked_vars</span></em>, <em class="sig-param"><span class="pre">intersection_vars</span></em><span class="sig-paren">)</span><a class="headerlink" href="#roleTable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Setting role table for data augmentation and data annotation</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -284,8 +281,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="getMetaList">
-<code class="sig-name descname">getMetaList</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#getMetaList" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="getMetaList">
+<span class="sig-name descname"><span class="pre">getMetaList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">none</span></em><span class="sig-paren">)</span><a class="headerlink" href="#getMetaList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -303,8 +300,8 @@
 <div class="section" id="scatterplot">
 <h2>Scatterplot:<a class="headerlink" href="#scatterplot" title="Permalink to this headline">¶</a></h2>
 <dl class="js function">
-<dt id="updateScatterplot">
-<code class="sig-name descname">updateScatterplot</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#updateScatterplot" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="updateScatterplot">
+<span class="sig-name descname"><span class="pre">updateScatterplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">vars</span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateScatterplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update Scatterplot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -320,8 +317,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="createScatterplot">
-<code class="sig-name descname">createScatterplot</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="headerlink" href="#createScatterplot" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="createScatterplot">
+<span class="sig-name descname"><span class="pre">createScatterplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#createScatterplot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create Scatterplot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -336,8 +333,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="calcLinear">
-<code class="sig-name descname">calcLinear</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">minX</em>, <em class="sig-param">maxX</em>, <em class="sig-param">minY</em>, <em class="sig-param">maxY</em><span class="sig-paren">)</span><a class="headerlink" href="#calcLinear" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="calcLinear">
+<span class="sig-name descname"><span class="pre">calcLinear</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">x</span></em>, <em class="sig-param"><span class="pre">y</span></em>, <em class="sig-param"><span class="pre">minX</span></em>, <em class="sig-param"><span class="pre">maxX</span></em>, <em class="sig-param"><span class="pre">minY</span></em>, <em class="sig-param"><span class="pre">maxY</span></em><span class="sig-paren">)</span><a class="headerlink" href="#calcLinear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate linear regression line</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -358,8 +355,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="UpdateMatrixFormat">
-<code class="sig-name descname">UpdateMatrixFormat</code><span class="sig-paren">(</span><em class="sig-param">matrix</em>, <em class="sig-param">vars</em>, <em class="sig-param">category</em>, <em class="sig-param">trend_type</em><span class="sig-paren">)</span><a class="headerlink" href="#UpdateMatrixFormat" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="UpdateMatrixFormat">
+<span class="sig-name descname"><span class="pre">UpdateMatrixFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">matrix</span></em>, <em class="sig-param"><span class="pre">vars</span></em>, <em class="sig-param"><span class="pre">category</span></em>, <em class="sig-param"><span class="pre">trend_type</span></em><span class="sig-paren">)</span><a class="headerlink" href="#UpdateMatrixFormat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update matrix format</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -377,8 +374,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="updateScatter">
-<code class="sig-name descname">updateScatter</code><span class="sig-paren">(</span><em class="sig-param">none</em><span class="sig-paren">)</span><a class="headerlink" href="#updateScatter" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="updateScatter">
+<span class="sig-name descname"><span class="pre">updateScatter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">none</span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateScatter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update scatterplot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -393,8 +390,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="highlightSubgroup">
-<code class="sig-name descname">highlightSubgroup</code><span class="sig-paren">(</span><em class="sig-param">subgroup</em><span class="sig-paren">)</span><a class="headerlink" href="#highlightSubgroup" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="highlightSubgroup">
+<span class="sig-name descname"><span class="pre">highlightSubgroup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">subgroup</span></em><span class="sig-paren">)</span><a class="headerlink" href="#highlightSubgroup" title="Permalink to this definition">¶</a></dt>
 <dd><p>highlight the regression line in scatterplot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -412,8 +409,8 @@
 <div class="section" id="parallel-coordinates">
 <h2>Parallel Coordinates:<a class="headerlink" href="#parallel-coordinates" title="Permalink to this headline">¶</a></h2>
 <dl class="js function">
-<dt id="updateParallelCoordinates">
-<code class="sig-name descname">updateParallelCoordinates</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#updateParallelCoordinates" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="updateParallelCoordinates">
+<span class="sig-name descname"><span class="pre">updateParallelCoordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">vars</span></em><span class="sig-paren">)</span><a class="headerlink" href="#updateParallelCoordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw Rank Chart</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -429,8 +426,8 @@
 </dd></dl>
 
 <dl class="js function">
-<dt id="DrawParallelCoordinates">
-<code class="sig-name descname">DrawParallelCoordinates</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#DrawParallelCoordinates" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="DrawParallelCoordinates">
+<span class="sig-name descname"><span class="pre">DrawParallelCoordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">vars</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DrawParallelCoordinates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw Parallel Coordinates</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -449,8 +446,8 @@
 <div class="section" id="grouped-bar-chart">
 <h2>Grouped Bar Chart:<a class="headerlink" href="#grouped-bar-chart" title="Permalink to this headline">¶</a></h2>
 <dl class="js function">
-<dt id="DrawGroupedBarChart">
-<code class="sig-name descname">DrawGroupedBarChart</code><span class="sig-paren">(</span><em class="sig-param">data</em>, <em class="sig-param">vars</em><span class="sig-paren">)</span><a class="headerlink" href="#DrawGroupedBarChart" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object js" id="DrawGroupedBarChart">
+<span class="sig-name descname"><span class="pre">DrawGroupedBarChart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">data</span></em>, <em class="sig-param"><span class="pre">vars</span></em><span class="sig-paren">)</span><a class="headerlink" href="#DrawGroupedBarChart" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw Bar Chart</p>
 <dl class="field-list simple">
 <dt class="field-odd">Arguments</dt>
@@ -479,7 +476,7 @@
       &copy;2019, Chenguang Xu, Sarah M Brown, Christan E Grant.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
       
       |
