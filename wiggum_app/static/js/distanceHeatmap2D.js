@@ -157,7 +157,25 @@ function drawDistanceHeatmap2D(dataAll, action) {
 	var numrows = data.length;
 	var numcols = data[0].length;
 
-	var margin = {top: 150, right: 10, bottom: 10, left: 200},
+	// Set margin left based on longest row label
+	var rowLabels_temp = options.rowLabels;
+	var longest_row_label = rowLabels_temp.reduce(
+		function (a, b) {
+			return a.length > b.length ? a : b;
+		}
+	);
+	var left_margin = longest_row_label.length*10;
+
+	// Set margin top based on longest column label
+	var colLabels_temp = options.colLabels;	
+	var longest_col_label = colLabels_temp.reduce(
+		function (a, b) {
+			return a.length > b.length ? a : b;
+		}
+	);
+	var top_margin = longest_col_label.length*10;
+
+	var margin = {top: top_margin, right: 10, bottom: 10, left: left_margin},
 	    width = numcols * 33 + margin.left + margin.right,
 	    height = numrows * 33 + margin.top + margin.bottom;
 
