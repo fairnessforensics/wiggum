@@ -24,7 +24,8 @@
                         init(data)
 
                         drawDistanceHeatmap2D(data.distance_heatmap_dict);
-                    }
+                    },
+                    error: function(ts) { console.log(ts.responseText) }
                 });
             }); 
         });
