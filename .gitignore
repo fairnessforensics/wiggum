@@ -14,8 +14,9 @@ env/
 
 #binaries
 *.DS_Store
-
+.Pipfile.swp
 .cache
+.idea/
 
 # ignore output from tests
 data/wages_test
