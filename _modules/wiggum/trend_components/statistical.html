@@ -170,43 +170,6 @@
         <span class="c1"># always return this</span>
         <span class="k">return</span> <span class="n">corr_data</span>
 
-    <span class="k">def</span> <span class="nf">compute_correlation_table_V2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data_df</span><span class="p">):</span>
-        
-        <span class="c1"># recover a single list from the independent and dependent vars</span>
-        <span class="n">indep</span><span class="p">,</span> <span class="n">dep</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">)</span>
-        <span class="n">corr_var_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">indep</span><span class="p">))</span>
-        <span class="n">corr_var_list</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">dep</span><span class="p">)))</span>
-
-        <span class="n">corr_var_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">corr_var_list</span><span class="p">))</span>
-
-        <span class="c1"># get locations of upper right triangle of a correlation matrix for this</span>
-        <span class="c1"># many values</span>
-        <span class="n">num_vars</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">corr_var_list</span><span class="p">)</span>
-        <span class="n">triu_indices_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="n">num_vars</span><span class="p">,</span><span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-
-            <span class="c1"># unpack into a list of tuples</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span> <span class="ow">is</span> <span class="n">pd</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">groupby</span><span class="o">.</span><span class="n">DataFrameGroupBy</span><span class="p">:</span>
-                <span class="n">corr_target_vals</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="n">groupby_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data_df</span><span class="o">.</span><span class="n">groups</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-
-                <span class="n">corr_data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">,</span> <span class="n">data_df</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">g</span><span class="p">)[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">data_df</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="n">g</span><span class="p">)[</span><span class="n">i</span><span class="p">],</span> <span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrtype</span><span class="p">),</span><span class="n">g</span><span class="p">)</span>
-                             <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">),</span><span class="n">g</span> <span class="ow">in</span>
-                             <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">,</span><span class="n">groupby_vars</span><span class="p">)]</span>
-
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># not symmtetric, not groupby</span>
-                <span class="n">corr_data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">,</span> <span class="n">data_df</span><span class="p">[</span><span class="n">d</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">data_df</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">corrtype</span><span class="p">),</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-                             <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">regression_vars</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># no data to computes</span>
-            <span class="n">corr_data</span> <span class="o">=</span> <span class="p">[[]]</span>
-
-        <span class="c1"># always return this</span>
-        <span class="k">return</span> <span class="n">corr_data</span>
-
     <span class="k">def</span> <span class="nf">wrap_reg_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reg_df</span><span class="p">,</span><span class="n">groupby_name</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        add the groupby varaible or drop the subgroup coloumn</span>
@@ -318,83 +281,7 @@
         <span class="n">binary_distance</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">sg_trend</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">ag_trend</span><span class="p">)))</span>
         <span class="k">return</span> <span class="n">binary_distance</span>
 
-<span class="k">class</span> <span class="nc">CorrelationTrend_V2</span><span class="p">(</span><span class="n">CorrelationBase</span><span class="p">):</span>
-    <span class="c1">############################################################################</span>
-    <span class="c1"># trend computation functions</span>
-    <span class="c1">############################################################################</span>
 
-    <span class="k">def</span> <span class="nf">get_trends</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">data_df</span><span class="p">,</span><span class="n">trend_col_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Compute a trend, its quality and return a partial result_df</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        data_df : DataFrame or DataFrameGroupBy</span>
-<span class="sd">            data to compute trends on, may be a whole, unmodified DataFrame or</span>
-<span class="sd">        a grouped DataFrame as passed by LabeledDataFrame get trend functions</span>
-<span class="sd">        trend_col_name : {&#39;subgroup_trend&#39;,&#39;agg_trend&#39;}</span>
-<span class="sd">            which type of trend is to be computed</span>
-
-<span class="sd">        Required properties</span>
-<span class="sd">        --------------------</span>
-<span class="sd">        name : string</span>
-<span class="sd">            used in the trend_type column of result_df and by viz</span>
-<span class="sd">        regression_vars : list of strings</span>
-<span class="sd">            variables to compute correlations of</span>
-<span class="sd">        corrtype : string {&#39;pearson&#39;,&#39;spearman&#39;,&#39;kendall&#39;}</span>
-<span class="sd">            correlation type to be passed to DataFrame.corr(method=corrtype)</span>
-
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        reg_df : DataFrame</span>
-<span class="sd">            partial result_df, multiple can be merged together to form</span>
-<span class="sd">            a complete result_df</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="c1"># get correlations</span>
-        <span class="n">corr_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_correlation_table_V2</span><span class="p">(</span><span class="n">data_df</span><span class="p">)</span>
-
-        <span class="c1"># expand to trend and strength</span>
-        <span class="c1"># strength here is the absolute value of the trend value</span>
-        <span class="n">reg_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[[</span><span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">v</span><span class="p">),</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">g</span> <span class="ow">in</span> <span class="n">corr_data</span><span class="p">],</span>
-                              <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;independent&#39;</span><span class="p">,</span><span class="s1">&#39;dependent&#39;</span><span class="p">,</span><span class="n">trend_col_name</span><span class="p">,</span>
-                                         <span class="n">trend_col_name</span><span class="o">+</span><span class="s1">&#39;_strength&#39;</span><span class="p">,</span><span class="s1">&#39;subgroup&#39;</span><span class="p">])</span>
-
-
-        <span class="c1"># this will either be None or the string that is the name, depending</span>
-        <span class="c1"># on if data_df is a groupby object or not</span>
-        <span class="n">groupby_name</span> <span class="o">=</span> <span class="n">groupby_name_by_type</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">data_df</span><span class="p">)](</span><span class="n">data_df</span><span class="p">)</span>
-        <span class="c1"># finalize the table</span>
-        <span class="n">reg_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrap_reg_df</span><span class="p">(</span><span class="n">reg_df</span><span class="p">,</span><span class="n">groupby_name</span><span class="p">)</span>
-
-
-
-        <span class="k">return</span> <span class="n">reg_df</span>
-
-    <span class="k">def</span> <span class="nf">get_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">row</span><span class="p">,</span><span class="n">col_a</span><span class="o">=</span><span class="s1">&#39;subgroup_trend&#39;</span><span class="p">,</span><span class="n">col_b</span><span class="o">=</span><span class="s1">&#39;agg_trend&#39;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        distance between the subgroup and aggregate trends for a row of a</span>
-<span class="sd">        result_df  binary 0 for same sign, 1 for opposite sign</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        row : pd.Series</span>
-<span class="sd">            row of a result_df DataFrame</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        &lt;&gt;_dist : float</span>
-<span class="sd">            distance between the subgroup_trend and agg_trend, compatible with</span>
-<span class="sd">            assignment to a cell of a result_df</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">sg_trend</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col_a</span><span class="p">]</span>
-        <span class="n">ag_trend</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="n">col_b</span><span class="p">]</span>
-
-        <span class="c1"># if they&#39;re the same set to False</span>
-        <span class="n">binary_distance</span>  <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="ow">not</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">sg_trend</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">ag_trend</span><span class="p">)))</span>
-        <span class="k">return</span> <span class="n">binary_distance</span>
-    
 <div class="viewcode-block" id="CorrelationSignTrend"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.CorrelationSignTrend">[docs]</a><span class="k">class</span> <span class="nc">CorrelationSignTrend</span><span class="p">(</span><span class="n">CorrelationBase</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    trends that are based on a correlation of type that is specified as a</span>
