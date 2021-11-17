@@ -1,0 +1,8 @@
+,independent,dependent,splitby,subgroup,agg_trend,agg_trend_strength,subgroup_trend
+0,sepal length,sepal width,class,Iris-setosa,-0.057268233797164836,0.10936924995064938,0.8072336651226962
+1,sepal length,sepal width,class,Iris-versicolor,-0.057268233797164836,0.10936924995064938,0.31971934554813386
+2,sepal length,sepal width,class,Iris-virginica,-0.057268233797164836,0.10936924995064938,0.23189049503351364
+3,petal length,sepal length,class,Iris-setosa,0.4091258984678836,0.8717541573048717,0.5360629067245115
+4,petal length,sepal length,class,Iris-versicolor,0.4091258984678836,0.8717541573048717,0.8282809611829944
+5,petal length,sepal length,class,Iris-virginica,0.4091258984678836,0.8717541573048717,0.9957386363636366
+6,petal length,sepal width,class,Iris-setosa,-0.10333896908804828,0.42051609640115445,0.38801518438177834

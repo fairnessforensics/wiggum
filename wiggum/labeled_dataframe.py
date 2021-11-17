@@ -1,4 +1,3 @@
-
 import os
 import seaborn as sns
 import pandas as pd
@@ -22,7 +21,7 @@ old_result_map = {'feat1':'independent','feat2':'dependent'}
 from .detectors import RESULT_DF_HEADER, _TrendDetectors
 from .data_augmentation import _AugmentedData
 from .ranking_processing import _ResultDataFrame
-
+from .auditing_reporting import _AuditReporting
 
 
 
@@ -58,8 +57,6 @@ def check_meta(row,meta_val,meta_type):
 def simple_type_mapper(df):
     """
     get variable types using the data types and counts
-
-
     Parameters
     -----------
     df : DataFrame
@@ -131,14 +128,11 @@ def update_old_roles(row):
 
 
 
-class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
+class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditReporting):
     """
     this is the object
-
     a LabeledDataFrame object contains 3 DataFrames of information: the actual data(df),
     meta data(meta_df) about it and the trends (result_df) in it.
-
-
     in this file we define the basic operations, the inherited Mixins have more
     methods in them, spread across files for space and organization
     """
@@ -146,7 +140,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def __init__(self,data=None,meta=None,results=None):
         """
         initialize
-
         Parameters
         ----------
         data : DataFrame, string, or None
@@ -238,7 +231,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def get_trend_display_name(self,trend_res_name):
         '''
         get a trend's diplay name from the name tha appears in result_df_parts
-
         Parameters
         -----------
         trend_res_name : strings
@@ -251,7 +243,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         '''
         get a trend's overview legend type from the name that appears in
          result_df_parts
-
         Parameters
         -----------
         trend_res_name : strings
@@ -264,7 +255,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         '''
         get a trend's overview legend type from the name that appears in
          result_df_parts
-
         Parameters
         -----------
         trend_res_name : strings
@@ -319,7 +309,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         '''
         infer variable (meaningful) types based on a mapper function that takes the data as
         a Parameters
-
         Parameters
         dtype_var_func : functionhandle
             a functiont that takes a self.df and returns a list of the lenght of the number
@@ -332,7 +321,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         '''
         infer variable (meaningful) types based on a mapper function that takes the data as
         a Parameters
-
         Parameters
         var_type_list : list or dict
             dict must be {variable:role,...}, list must be length of variables
@@ -355,7 +343,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def set_roles(self,role_info):
         """
         set info column role
-
         Parameters
         -----------
         role_list : list of roles or dict of mappings
@@ -375,7 +362,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def set_counts(self,count_info=None):
         """
         set the isCount column of the meta_df
-
         Parameters
         ----------
         count_info: dict, list, or None
@@ -403,7 +389,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
 
     def set_weighting_vars(self,weight_vars=None):
         """
-
         Parameters
         ----------
         count_info: dict, list, or None
@@ -425,7 +410,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         """
         return a list of strings that describe the data from each column of the
     data, can be added as a column to meta_df
-
         Parameters
         -----------
         df : DataFrame
@@ -532,7 +516,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
     def to_csvs(self,dirname):
         """
         write out info as csvs to the same directory
-
         Parameters
         ----------
         dirname : string
@@ -561,7 +544,6 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         field has the type cast to a string and the content is a dictionary of
         all of the parameters with the trend precompute DataFrames serialized
         into csv strings
-
         Parameters
         ----------
         dirname : string
