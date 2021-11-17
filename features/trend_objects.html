@@ -93,7 +93,7 @@ manipulation of the data into the various roles that the trend calculation
 requires.  Currently there is only one <cite>baseTrendMixin</cite> class, that all must inherit:
 <cite>trend</cite></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">trend</span><span class="p">():</span>
-<span class="hll">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+<span class="hll">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 </span>       <span class="c1"># set trend_precompute to empty as an insntance property</span>
        <span class="c1"># if labeled_df is passed, call get_trend_vars</span>
        <span class="k">return</span> <span class="bp">self</span>

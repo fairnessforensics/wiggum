@@ -64,7 +64,7 @@
 <span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">io</span> <span class="k">import</span> <span class="n">StringIO</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 
 <div class="viewcode-block" id="Trend"><a class="viewcode-back" href="../../../API.html#wiggum.trend_components.Trend">[docs]</a><span class="k">class</span> <span class="nc">Trend</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -80,7 +80,7 @@
 <span class="sd">    as the target dataset to compute trends on</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">labeled_df</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trend_precompute</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">preaugment</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># initialize this to False, it&#39;s changed by the the get_trend_vars</span>
