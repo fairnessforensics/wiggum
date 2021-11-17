@@ -218,7 +218,6 @@ class _TrendDetectors():
 
         return new_trends
 
-
     def get_subgroup_trends_1lev(self,trend_types, replace=False):
         """
         find subgroup and aggregate trends in the dataset, return a DataFrame that
@@ -262,7 +261,7 @@ class _TrendDetectors():
 
                 if cur_trend.preaugment == 'confusion':
                     acc_pairs = itert.product(cur_trend.groundtruth,
-                                                cur_trend.prediction)
+                                              cur_trend.prediction)
 
                     for var_pair in acc_pairs:
                         # TODO: only if col not there already
@@ -304,7 +303,7 @@ class _TrendDetectors():
                 self.result_df = new_res
             else:
                 self.result_df = pd.concat([self.result_df,new_res], axis =0,
-                                                    sort=True)
+                                           sort=True)
 
             # reorder columns
             _,n_cols = self.result_df.shape

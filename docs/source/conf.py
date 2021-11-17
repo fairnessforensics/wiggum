@@ -38,7 +38,7 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.githubpages',
     'numpydoc',
     'sphinx_js']
-#     'nbsphinx',
+
 # SPhinx gen_gallery
 # sphinx_gallery_conf = {
 #     # path to your examples scripts

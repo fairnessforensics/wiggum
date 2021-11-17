@@ -1,0 +1,9 @@
+role,gender,Headcount,MeanHourlyPay
+Management,M,200,25
+R&D engineering,M,100,20
+Sales,M,100,20
+Support,M,100,10
+Management,F,120,25
+R&D engineering,F,60,20
+Sales,F,60,20
+Support,F,260,10

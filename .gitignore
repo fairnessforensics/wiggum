@@ -5,6 +5,7 @@
 # ignore notebook checkpoints
 research_notebooks/.ipynb_checkpoints
 docs/source/notebooks/.ipynb_checkpoints
+*.ipynb_checkpoints
 
 # ignore compiled stuff
 *.pyc
@@ -13,8 +14,9 @@ env/
 
 #binaries
 *.DS_Store
-
+.Pipfile.swp
 .cache
+.idea/
 
 # ignore output from tests
 data/wages_test

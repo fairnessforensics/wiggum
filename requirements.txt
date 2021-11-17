@@ -22,12 +22,12 @@ ipython-genutils==0.2.0
 ipywidgets==7.4.0
 itsdangerous==0.24
 jedi==0.12.1
-jinja2>=2.10.1
+jinja2==2.10.1
 jsonschema==2.6.0
 jupyter==1.0.0
 jupyter-client==5.3.1
 jupyter-console==6.0.0
-jupyter-core>=4.5.0
+jupyter-core==4.5.0
 kiwisolver==1.0.1
 MarkupSafe==1.1.1
 matplotlib==3.1.1
@@ -71,7 +71,7 @@ snowballstemmer==1.2.1
 Sphinx==3.1.2
 sphinx-js==3.0
 sphinxcontrib-websupport==1.1.0
-terminado>=0.8.1
+terminado==0.8.1
 testpath==0.3.1
 tornado==5.1
 traitlets==4.3.2
@@ -81,3 +81,5 @@ webencodings==0.5.1
 Werkzeug==0.15.5
 widgetsnbextension==3.4.0
 zipp==0.5.2
+
+
