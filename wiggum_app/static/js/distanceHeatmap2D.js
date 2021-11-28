@@ -14,7 +14,7 @@ function drawDistanceHeatmap2D(dataAll, action) {
 		data = dataAll[key];
 		heatmapMatrix = jsonto2darray(data.heatmap);
 
-		if (data.detail_view_type == 'scatter') {	
+		//if (data.detail_view_type == 'scatter') {	
 			rowLabels = [];
 			colLabels = [];
 	
@@ -33,7 +33,7 @@ function drawDistanceHeatmap2D(dataAll, action) {
 			matrix_data = UpdateLRMatrixFormat(heatmapMatrix, rowLabels, 
 												colLabels, data.trend_type,
 												data.detail_view_type);
-		}
+		//}
 
 		distanceHeatmap({
 			container : '#distance_matrix_2d',
@@ -70,6 +70,7 @@ function drawDistanceHeatmap2D(dataAll, action) {
 
 		// Call server for subgroups' distances
 		datum = JSON.stringify(datum);
+
 		$.ajax({
 			type: 'POST',
 			url: "/explore",
@@ -126,7 +127,7 @@ function drawDistanceHeatmap2D(dataAll, action) {
 
 	matrix.forEach(function(row, i) {
 		row.forEach(function(cell, j) {
-			rowLabelArray = rowLabels[i].split(" | ");
+			rowLabelArray = rowLabels[i].split(" : ");
 
 			matrix[i][j] = {
 					dependent: rowLabelArray[0],
