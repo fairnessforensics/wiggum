@@ -163,7 +163,7 @@ def getDistanceHeatmapDict2D(labeled_df, cur_result_df):
         grouped_df = trend_df.groupby(['dependent','independent','splitby']).agg(
                                         {'distance': ['mean']}).reset_index()
         grouped_df.columns = ['dependent', 'independent', 'splitby', 'mean_distance']
-        grouped_df["dep_indep"] = grouped_df['dependent'] + ' | ' + grouped_df['independent']
+        grouped_df["dep_indep"] = grouped_df['dependent'] + ' : ' + grouped_df['independent']
         heatmap = grouped_df.pivot(index='dep_indep', columns='splitby', values='mean_distance')
 
         distance_heatmap_dict = {}
