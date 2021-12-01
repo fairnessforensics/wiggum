@@ -46,8 +46,3 @@ jobs:
       with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/html/ # where compiled docs are placed by sphinx, set in sphinx conf.py
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_CHANNEL: oudalab:hYEt5Sslpd5gb7aMfQeI6EoM#code
