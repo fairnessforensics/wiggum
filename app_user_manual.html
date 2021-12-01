@@ -78,28 +78,148 @@ Currently, launching from any location can create issues with loading files, so
 the app should be launched from the code directory.</p>
 <div class="section" id="data-preparation">
 <h2>Data Preparation<a class="headerlink" href="#data-preparation" title="Permalink to this headline">¶</a></h2>
-<p>The data preparation page of Wiggum app is the place to load the data, set metadata
+<p>The data preparation page of Wiggum app is the place to load the data, set metadata,
 and to augment the data.</p>
 <div class="section" id="loading-data">
 <h3>Loading data<a class="headerlink" href="#loading-data" title="Permalink to this headline">¶</a></h3>
-<p>The first step to using Wiggum is to load a dataset. You may load data as a .csv file or from a
+<p>The first step to using Wiggum is to load a dataset. You may load data as a .csv file or load from a
 folder that was created by Wiggum that contains the data, metadata, and results
 from a prior analysis.</p>
+<p>Data was saved before</p>
+<div class="section" id="uploading-a-csv">
+<h4>Uploading a .csv<a class="headerlink" href="#uploading-a-csv" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
-<li><p>Click “Choose File”: select a data file from your local disk.</p></li>
-<li><p>Select upload</p></li>
-<li><p>accept.</p></li>
+<li><p>Click “Choose File” in the upper left corner of the page, then select a data file from your local disk.</p></li>
+<li><p>Select “Upload”. The data will now appear in a metadata table below.</p></li>
 </ol>
 </div>
-<div class="section" id="setting-meta-data">
-<h3>Setting Meta data<a class="headerlink" href="#setting-meta-data" title="Permalink to this headline">¶</a></h3>
-<p>Wiggum requires that you set meta data</p>
+<div class="section" id="load-from-a-prior-analysis">
+<h4>Load from a prior analysis<a class="headerlink" href="#load-from-a-prior-analysis" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li><p>Click “Choose Files” in the upper left corner of page, then select a folder created by Wiggum from a prior analysis.</p></li>
+<li><p>Select “Upload”. The data will appear in a metadata table below with your previous metadata selections.</p></li>
+</ol>
+</div>
+</div>
+<div class="section" id="setting-metadata">
+<h3>Setting Metadata<a class="headerlink" href="#setting-metadata" title="Permalink to this headline">¶</a></h3>
+<p>Wiggum requires that you set labels for each column or variable in your data. This will be done once data has been loaded. The user must set the variable type, the variable role, and if applicable, whether to use the variable as a weighting variable.</p>
+<div class="section" id="setting-variable-type">
+<h4>Setting Variable Type<a class="headerlink" href="#setting-variable-type" title="Permalink to this headline">¶</a></h4>
+<p>There are four different possible variable types. Wiggum will provide its initial suggestion for variable types based on certain characteristics, but the user is free to change them.</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Binary</dt><dd><ul class="simple">
+<li><p>Binary variables for Wiggum are for values that are only true/false, so use them for boolean variables. For other variables that may only have two values, but are not true/false, label them as categorical.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Ordinal</dt><dd><ul class="simple">
+<li><p>Ordinal variables are those that require an order, like years.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Categorical</dt><dd><ul class="simple">
+<li><p>Categorical variables are those that have qualitative values based on some characteristic, such as eye color, gender, or type.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Continuous</dt><dd><ul class="simple">
+<li><p>Continuous variables are values that are doubles, floats, or integers. These are usually numeric values.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</div>
+<div class="section" id="setting-variable-roles">
+<h4>Setting Variable Roles<a class="headerlink" href="#setting-variable-roles" title="Permalink to this headline">¶</a></h4>
+<p>There are five different possible roles for a variable.</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt>Splitby</dt><dd><ul class="simple">
+<li><p>Splitby variables are generally categories that you want to split by and analyze, such as categorical or ordinal variables.</p></li>
+<li><p>Common examples are gender, race, or age group.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Independent</dt><dd><ul class="simple">
+<li><p>Independent variables are those that do not depend on another variable, or one that you wish to visualize on the y-axis.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Dependent</dt><dd><ul class="simple">
+<li><p>Dependent variables are the variables that you wish to measure based on the independent variables.</p></li>
+<li><p>Common examples are time or other continuous variables.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><p>Prediction</p></li>
+<li><p>Groundtruth</p></li>
+<li><dl class="simple">
+<dt>Ignore</dt><dd><ul class="simple">
+<li><p>Ignore variables are those that the user does not want to consider for calculations or visualization. These can be variables that are irrelevant in consideration of the mix effect, or variables that the user wants to use as a weighting variable.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+</div>
+<div class="section" id="other-metadata-settings">
+<h4>Other Metadata Settings<a class="headerlink" href="#other-metadata-settings" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic">
+<li><dl>
+<dt>isCount</dt><dd><ul class="simple">
+<li><p>isCount can be used for ignore variables. It is most useful whenever you have a population variable, or a ‘count’ variable, that you want</p></li>
+</ul>
+<p>to use as a weight for certain categories or trend variables. In order to use a variable as isCount, mark the variable role as ‘ignore’ then select ‘Y’ for isCount.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>weighting_var</dt><dd><ul class="simple">
+<li><p>In order to utilize an ignore, isCount variable properly, it must be set as the weighting_var, or weighting variable, for at least one other variable in the metadata table.</p></li>
+</ul>
+<p>The weighting_var can be set to any variable in the table, but is best utilized if it is an ignore, isCount variable.</p>
+</dd>
+</dl>
+</li>
+<li><p>Example</p></li>
+</ol>
+</div>
 </div>
 <div class="section" id="data-augmentation">
 <h3>Data Augmentation<a class="headerlink" href="#data-augmentation" title="Permalink to this headline">¶</a></h3>
+<p>Data augmentation is useful for you if you want to combine certain categorical variables to analyze. In the metadata entry screen, there is a checkbox for quantiles and intersection for each variable.
+Intersection is used for categorical variables.</p>
+<p>Checking the intersection checkbox for more than one categorical variable creates a new column in your data representing the intersection of the two variables.
+For example, if you wanted to discover trends related to a categorical combination like ‘White Female’, check the intersection box for the variables race and gender.</p>
+<p>Check the quantile box for continuous variables that you want to discretize.</p>
 </div>
 <div class="section" id="choosing-trends">
 <h3>Choosing Trends<a class="headerlink" href="#choosing-trends" title="Permalink to this headline">¶</a></h3>
+<p>There are multiple trends that you can choose from to analyze your data.</p>
+<div class="section" id="pearson-correlation">
+<h4>Pearson Correlation<a class="headerlink" href="#pearson-correlation" title="Permalink to this headline">¶</a></h4>
+<p>Pearson Correlation is measure of linear correlation between two variables. It includes a numerical co-efficient ranging form -1.0 to +1.0. The co-efficient is used to determine how positively or negatively the association between the two variables are.
+Rank Trend
+<strong>*******</strong>
+Rank trend is used to measure ordinal association. It has a coefficient that measures he degree of similarity between two rankings, and it can be used to assess the significance of the relationship between them.
+Linear Regression
+<strong>**************</strong>
+Linear Regression trend is used to show or predict the relationship between two variables, by fitting a linear equation to the observed data. Each observation consists of two variables, a dependent variable and an independent variable.</p>
+</div>
 </div>
 <div class="section" id="saving">
 <h3>Saving<a class="headerlink" href="#saving" title="Permalink to this headline">¶</a></h3>
@@ -111,6 +231,8 @@ For more information on saving see the <a class="reference internal" href="featu
 <h2>Data Visualization<a class="headerlink" href="#data-visualization" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="using-heatmaps-to-explore-details">
 <h3>Using heatmaps to explore details<a class="headerlink" href="#using-heatmaps-to-explore-details" title="Permalink to this headline">¶</a></h3>
+<p>You can click on specific squares in the heatmaps to visualize trends. A detail view will appear in the window that highlights the trend of the square you clicked.
+Use these detailed views to explore your data.</p>
 </div>
 <div class="section" id="filtering">
 <h3>Filtering<a class="headerlink" href="#filtering" title="Permalink to this headline">¶</a></h3>
@@ -118,7 +240,7 @@ For more information on saving see the <a class="reference internal" href="featu
 <div class="section" id="ranking">
 <h3>Ranking<a class="headerlink" href="#ranking" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
-<li><p>Choosde columns</p></li>
+<li><p>Choose columns</p></li>
 <li><p>Press rank button</p></li>
 </ol>
 </div>
