@@ -111,7 +111,7 @@ Pearson Correlation is measure of linear correlation between two variables. It i
 
 Spearman Correlation
 *********************
-Spearman Correlation measures the strength and direction of monotonic relation between two ranked variables. Like the Pearson co-efficient the Spearman co-efficient ranges between -1.0 an d +1.0. The correlation is used to determine how positivley or negatively the association between the two ranked variables are.
+Spearman Correlation measures the strength and direction of monotonic relation between two ranked variables. Like the Pearson co-efficient the Spearman co-efficient ranges between -1.0 and +1.0. The correlation is used to determine how positivley or negatively the association between the two ranked variables are.
 
 Rank Trend
 ***********
@@ -139,6 +139,11 @@ Use these detailed views to explore your data.
 Filtering
 ^^^^^^^^^^^^
 
+
+
+#. Choose columns
+#. Press filter
+#. Choose filter
 
 Ranking
 ^^^^^^^^^
