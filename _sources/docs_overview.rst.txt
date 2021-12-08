@@ -39,7 +39,7 @@ Extending and Contributing to Wiggum
 -------------------------------------
 
 We provide the following detailed documentation if you want to contribute to
-Wiggum or exte4nd it for your own use.
+Wiggum or extend it for your own use.
 
 * Basic dev setup:
 * How to add new trends
