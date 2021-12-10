@@ -1,3 +1,5 @@
+var graph_data;
+
 /**
  * Draw bipartite graph
  * 
@@ -7,7 +9,7 @@
  function drawBipartiteGraph(dataAll) {
 
 	var dataList = prepareGraphData(dataAll);
-	var data = dataList[0];
+	graph_data = dataList[0];
 	var node_list_len = dataList[1];
 	var rowLabels = dataList[2];
 
@@ -20,7 +22,7 @@
 
 	var left_margin = longest_row_label.length*5;
 
-	var margin = {top: 10, right: 150, bottom: 10, left: left_margin};
+	var margin = {top: 20, right: 150, bottom: 10, left: left_margin};
 	var width = 300 + margin.left + margin.right;
 	var height = margin.top + node_list_len * 30;
 
@@ -33,41 +35,70 @@
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	var links = svg.selectAll("link")
-		.data(data.links)
+		.data(graph_data.links)
 		.enter()
 		.append("line")
 		.attr("class", "link")
+		.attr("id", function(l) {
+			return 'link_' + l.source + '_' + l.target})
 		.attr("x1", function(l) {
-			var sourceNode = data.nodes.filter(function(d, i) {
+			var sourceNode = graph_data.nodes.filter(function(d, i) {
 				return i == l.source
 			})[0];
 			d3.select(this).attr("y1", sourceNode.y);
 			return sourceNode.x
 		})
 		.attr("x2", function(l) {
-			var targetNode = data.nodes.filter(function(d, i) {
+			var targetNode = graph_data.nodes.filter(function(d, i) {
 				return i == l.target
 			})[0];
+
 			d3.select(this).attr("y2", targetNode.y);
 			return targetNode.x
 		})
 		.attr("fill", "none")
 		.attr("stroke", "white");
 	
+	// continous color for overview
+	var heatmapColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
+	// continous color scale for overview
+	var heatmapColorScale = d3.scaleQuantize()
+							.domain([0, 1])
+							.range(heatmapColors);
+
 	var nodes = svg.selectAll(".node")
-		.data(data.nodes)
+		.data(graph_data.nodes)
 		.enter().append("g")
-		.attr("class", "node");
+//		.attr("class", "node");
+		.attr("class", function(d) {
+			if (d.type == 'source') {
+				return "source_node";
+			} else {
+				return "target_node";
+			}
+		});
 	
 	nodes.append("circle")
-		.attr("cx", function(d) {
-			return d.x
-		})
-		.attr("cy", function(d) {
-			return d.y
-		})
+//		.attr("class", function(d) {
+//			if (d.type == 'source') {
+//				return "source_node";
+//			} else {
+//				return "target_node";
+//			}
+//		})	
+//		.attr("cx", function(d) {
+//			return d.x
+//		})
+//		.attr("cy", function(d) {
+//			return d.y
+//		})
 		.attr("r", 10)
-		.attr("fill", '#000')
+		.style("stroke-width", "1px")
+		.style("stroke", "black")
+		.style("fill", function(d, i) {
+			return heatmapColorScale(d.value);
+		})
+		.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
 	nodes.append("text")
 		.attr("x", function(d) {return d.x})
@@ -80,7 +111,6 @@
 			}
 		})		
 		.attr("dy", ".28em")
-	   // .attr("text-anchor", "end")
 		.attr("text-anchor", function(d) {
 			if (d.type == "source") {
 				return 'end';
@@ -90,7 +120,6 @@
 		})
 		.text(function(d, i) { return d.name; })
 		.style("font-size", "20px");
-
 }
 
 /**
@@ -101,6 +130,7 @@
  * @returns max list length.
  */
  function prepareGraphData(dataAll) {
+	var g_data;
 
 	for (var key in dataAll){
 		// Now only regression trend, loop only once. TODO multiple trend types
@@ -148,13 +178,17 @@
 			rowLabels.forEach(function(rowValue, j) {
 				var singleObj = {};
 				singleObj['name'] = value;
-				singleObj['type'] = 'target';			
+				singleObj['type'] = 'target';
+				singleObj['source'] = rowValue;	
+				singleObj['source_id'] = j;		
+				singleObj['target_id'] = (i+1) * rowLabels.length + j;								
+				singleObj['value'] = heatmapMatrix[j][i];			
 				singleObj['x'] = targetX;
 				singleObj['y'] = (i * rowLabels.length + j) * targetY_interval;
 				node_list.push(singleObj);
 			});
 		});		
-		console.log(node_list);
+
 		// Create link list
 		var link_list = [];
 		colLabels.forEach(function(value, i) {
@@ -165,15 +199,129 @@
 				link_list.push(singleObj);
 			});		
 		});	
-		console.log(link_list);
 
-		var data = {
+		g_data = {
 			nodes: node_list,
 			links: link_list
 		};
 	}
 
-	return [data, maxListLen, rowLabels];
+	return [g_data, maxListLen, rowLabels];
+}
+
+function sortColorViewpoint() {
+	var new_graph_data = sortData();
+	
+	sortLink(new_graph_data);
+	// Not working since sortNodes() solves the link issue
+	//sortNodes();
+}
+
+function sortLink(new_graph_data) {
+
+	var svg = d3.select("#bipartite_graph").select('svg').select('g');
+
+	d3.select("#bipartite_graph").selectAll('.link').remove();
+
+	var links = svg.selectAll("link")
+		.data(new_graph_data.links)
+		.enter()
+		.append("line")
+		.attr("class", "link")
+		.attr("x1", function(l) {
+			var sourceNode = new_graph_data.nodes.filter(function(d, i) {			
+				return i == l.source
+			})[0];
+			d3.select(this).attr("y1", sourceNode.y);
+			return sourceNode.x
+		})
+		.attr("x2", function(l) {
+			var targetNode = new_graph_data.nodes.filter(function(d, i) {
+				return d.source_id == l.source && d.target_id == l.target
+			})[0];
+
+			d3.select(this).attr("y2", targetNode.y);
+			return targetNode.x
+		})
+		.attr("fill", "none")
+		.attr("stroke", "white");
+
+	// Move the lines to back
+	d3.selection.prototype.moveToBack = function() {  
+			return this.each(function() { 
+				var firstChild = this.parentNode.firstChild; 
+				if (firstChild) { 
+					this.parentNode.insertBefore(this, firstChild); 
+				} 
+			});
+		};	
+	svg.selectAll(".link").moveToBack();
+}
+
+function sortData() {
+	var nodes = graph_data.nodes;
+
+	// get target nodes
+	var target_node_list = [];
+	var source_node_list = [];
+	nodes.forEach(function(obj, i) {
+		if (obj.type == 'target'){
+			target_node_list.push(obj);
+		} else {
+			source_node_list.push(obj);
+		}
+	});	
+
+	target_node_list.sort(function (a, b) {
+		return b.value - a.value;
+	});
+
+	// Change target node y position
+	var targetY_interval = 30;	
+	target_node_list.forEach(function(obj, i) {
+		obj['y'] = i * targetY_interval;
+	});	
+
+	var link_list = [];
+	target_node_list.forEach(function(node_obj, i) {
+		var singleObj = {};
+		singleObj['source'] = node_obj.source_id;
+		singleObj['target'] = node_obj.target_id;
+		link_list.push(singleObj);
+	});		
+
+	var graph_data_sorted = {
+		nodes: source_node_list.concat(target_node_list),
+		links: link_list
+	};
+
+	return graph_data_sorted;
+
+}
+
+function sortNodes() {
+	var nodes = d3.select("#bipartite_graph")		
+					.selectAll(".target_node")
+					.sort((a,b) => d3.descending(a.value, b.value))
+					.transition()
+					.duration(1000);
+
+	nodes.select("circle")
+		.attr("y", 0)
+		.attr("transform", function(d, i) { 
+			var link_id = '#link_' +d.source_id + '_' + d.target_id;
+
+			var link = d3.select("#bipartite_graph")
+						.select(link_id)
+						.transition()
+						.duration(1000)										
+						.attr("y2", 30 * i);
+
+			return "translate(" + d.x + "," + 30 * i + ")"; });
+	
+	nodes.select("text")
+		.attr("y", 0)
+		.attr("transform", function(d, i) { return "translate(0," + 30 * i + ")"; });
 }
 
 /* JSON Example

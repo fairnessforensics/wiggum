@@ -46,7 +46,13 @@
           </div>   
         <div id = "subgroup_distance"></div>  
         <div id="distance_matrix_2d"></div>        
-        <div id="bipartite_graph"></div>     
+        <div id="bipartite_graph">
+            <input name="sortButton" 
+                type="button" 
+                value="sort" 
+                style="float: right;"
+                onclick="sortNodes()" />
+        </div>     
         <script src="{{ url_for('static', filename='js/interact.js') }}"></script>
         <script src="{{ url_for('static', filename='js/interact_scatterplot.js') }}"></script>
         <script src="{{ url_for('static', filename='js/lasso.js') }}"></script>      
