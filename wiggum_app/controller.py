@@ -55,6 +55,7 @@ def explore():
                             indep_vars = indep_vars,
                             splitby_vars = splitby_vars,
                             df = df,
+                            result_df = labeled_df_setup.result_df.to_json(orient='records'),
                             distance_heatmap_dict = distance_heatmap_dict) 
 
         if action == 'rect_select':

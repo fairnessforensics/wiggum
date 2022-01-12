@@ -9,6 +9,10 @@ var csvData;
  */
  function init(data){	
 
+    // Draw node link tree
+    var result_table = JSON.parse(data.result_df);
+    drawNodeLinkTree(result_table);
+
     // dependent vars list
     var dep_vars = data.dep_vars
     d3.select("#dep_sel_button")
