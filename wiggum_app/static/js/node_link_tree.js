@@ -5,8 +5,8 @@
  * @returns none.
 */
 function drawNodeLinkTree(data) {
-	var width = 500;
-	var height = 300;
+	var width = 600;
+	var height = 2600;
 	var margin = {top: 0, right: 50, bottom: 0, left: 50};
 	var innerWidth = width - margin.left - margin.right;
 	var innerHeight = height - margin.top - margin.bottom;
@@ -17,8 +17,7 @@ function drawNodeLinkTree(data) {
 						.key(d => [d.dependent, d.independent])
 						.key(d => d.splitby)
 						.entries(data);
-	console.log(nested_data);
-
+/*
 	var test = {
 		"data": {
 		  "id": "World"
@@ -36,11 +35,11 @@ function drawNodeLinkTree(data) {
 		}
 		]
 	};
-	console.log(test);
-
-	var test = nested_data[0];
-	console.log(test);
-	var root = d3.hierarchy(test, d => d.values);
+*/
+	// Add root
+	nested_data = {key: 'root', values: nested_data};
+	
+	var root = d3.hierarchy(nested_data, d => d.values);
 	//var root = d3.hierarchy(test, d => d.children);
 	var links = treeLayout(root).links();
 	var linkPathGenerator = d3.linkHorizontal()
@@ -88,10 +87,10 @@ function drawNodeLinkTree(data) {
 
 	g.selectAll('text').data(root.descendants())
 		.enter().append('text')
-		.attr('x', d => d.y)
+		.attr('x', d => d.children ? d.y - 10 : d.y + 10)
 		.attr('y', d => d.x)
 		.attr('dy', '0.32em')
-		.attr('text-anchor', d => d.children ? 'middle' : 'start')
+		.attr('text-anchor', d => d.children ? 'end' : 'start')
 //		.attr('font-size', d => 3 - d.depth + 'em')
 		.attr('pointer-events', 'none')
 		.text(d => d.height ? d.data.key : d.data.subgroup)
