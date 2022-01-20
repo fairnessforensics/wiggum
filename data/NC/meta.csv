@@ -1,0 +1,6 @@
+variable,dtype,var_type,role,isCount,weighting_var
+ID,int64,ordinal,['splitby'],False,
+Total Pop,int64,continuous,['ignore'],False,
+Party,object,categorical,['independent'],False,
+Partisan Lean,float64,continuous,['dependent'],False,
+Total VAP,int64,ordinal,['ignore'],True,
