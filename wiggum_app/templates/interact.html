@@ -10,6 +10,7 @@
     <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>       
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.13.0/d3-legend.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">    
 
     <script>     
@@ -45,7 +46,8 @@
             <div id="agg_slider"></div>
           </div>   
         <div id = "subgroup_distance"></div>  
-        <div id="distance_matrix_2d"></div>       
+        <div id="distance_matrix_2d"></div>    
+        <div id="map"></div>     
         <div id="node_link_tree"></div>    
         <div id="bipartite_graph">
             <input name="sortButton" 
@@ -62,7 +64,8 @@
         <script src="{{ url_for('static', filename='js/newmain.js') }}"></script>    
         <script src="{{ url_for('static', filename='js/subgroupDistance.js') }}"></script>   
         <script src="{{ url_for('static', filename='js/bipartite_graph.js') }}"></script>  
-        <script src="{{ url_for('static', filename='js/node_link_tree.js') }}"></script>              
+        <script src="{{ url_for('static', filename='js/node_link_tree.js') }}"></script>    
+        <script src="{{ url_for('static', filename='js/map.js') }}"></script>            
     </form>
 
 </body>

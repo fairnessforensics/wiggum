@@ -476,6 +476,23 @@ div.tooltip {
     overflow:auto;
 }
 
+#map {
+    width: 600px;
+    background: white; 
+    height: 100%;
+    max-height: 100%;
+    margin-left: 3%;    
+    margin-top: 20%;    
+    display: inline-block;
+    position: absolute;   
+}
+
+.country {
+    fill: lightgreen;
+    stroke: black;
+    stroke-opacity: 0.1;
+}
+
 #bipartite_graph {
     width: 600px;
     height: 500px;
