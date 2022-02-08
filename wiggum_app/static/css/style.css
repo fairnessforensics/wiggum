@@ -487,12 +487,6 @@ div.tooltip {
     position: absolute;   
 }
 
-.country {
-    fill: lightgreen;
-    stroke: black;
-    stroke-opacity: 0.1;
-}
-
 #bipartite_graph {
     width: 600px;
     height: 500px;
@@ -514,4 +508,22 @@ div.tooltip {
     stroke-linecap: round;
     stroke-linejoin: round;
     cursor: default;
+  }
+
+  .districts {
+    fill: #bbb;
+  }
+  
+  .district-boundaries {
+    pointer-events: none;
+    fill: none;
+    stroke: #000;
+    stroke-width: .5px;
+  }
+  
+  .state-boundaries {
+    pointer-events: none;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 1.5px;
   }
