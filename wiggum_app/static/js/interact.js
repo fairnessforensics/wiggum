@@ -11,7 +11,8 @@ var csvData;
 
     // Draw node link tree
     var result_table = JSON.parse(data.result_df);
-    drawNodeLinkTree(result_table);
+    drawNodeLinkTree(data);
+    //drawNodeLinkTree(result_table, data.agg_distance_heatmap_dict);
     drawMap(result_table);
 
     // dependent vars list

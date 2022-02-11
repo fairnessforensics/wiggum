@@ -32,7 +32,7 @@ function drawMap(data) {
 		const state_id = 12;
 		const states = topojson.feature(us, us.objects.states);
 		const state = states.features.filter(function(d) { return d.id === state_id; })[0];
-		console.log(us);
+		//console.log(us);
 		projection.scale(1)
 				.translate([0, 0]);
 		var b = path.bounds(state),

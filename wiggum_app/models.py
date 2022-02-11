@@ -187,6 +187,56 @@ def getDistanceHeatmapDict2D(labeled_df, cur_result_df):
 
     return distance_heatmap_dict_list
 
+def getAggregateDistanceHeatmapDict(labeled_df, cur_result_df):
+    """
+    Generate Aggregated Distance Heatmap Dictitonary List for overview 
+    by grouping the results and extracting distances from result table.
+
+    Parameters
+    -----------
+    labeled_df : LabeledDataFrame
+        object from which the cur_result_df was computed, used for meta information
+    cur_result_df : DataFrame
+        A result_df or derivative of it after filtering, detecting or ranking. 
+    Returns
+    --------
+    distance_heatmap_dict_list: Distance Heatmap Dictitonary List formatted for use in visualization
+    """
+
+    distance_heatmap_dict_list = []
+
+    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
+
+        grouped_df = trend_df.groupby(['dependent','independent']).agg(
+                                        {'distance': ['mean']}).reset_index()
+
+        grouped_df.columns = ['dependent', 'independent', 'mean_distance']
+        heatmap = grouped_df.pivot(index='dependent', columns='independent', values='mean_distance')
+        
+        # replace Nan to 99
+        heatmap.fillna(99, inplace=True)
+        
+        distance_heatmap_dict = {}
+
+        # trend display name
+        trend_display_name = labeled_df.get_trend_display_name(trend_type)
+
+        # detail view type
+        detail_view_type = labeled_df.get_detail_view_type(trend_type)
+
+        # overview legend type
+        overview_legend_type = labeled_df.get_overview_legend_type(trend_type)
+
+        distance_heatmap_dict = {'trend_type' : trend_type,
+                    'trend_display_name': trend_display_name,
+                    'detail_view_type': detail_view_type,
+                    'overview_legend_type': overview_legend_type,
+                    'heatmap':heatmap.to_dict('index')}
+
+        distance_heatmap_dict_list.append(distance_heatmap_dict)
+
+    return distance_heatmap_dict_list
+
 def getOverviewLegendType(distance_heatmap_dict):
     """
     Get overview legend types.

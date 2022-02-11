@@ -5,6 +5,9 @@
  * @returns none.
 */
 function drawNodeLinkTree(data) {
+
+    var result_table = JSON.parse(data.result_df);
+
 	var width = 600;
 	var height = 2600;
 	var margin = {top: 0, right: 50, bottom: 0, left: 50};
@@ -15,36 +18,16 @@ function drawNodeLinkTree(data) {
 
 	var nested_data = d3.nest()
 						.key(d => [d.dependent, d.independent])
+						.sortKeys(d3.ascending)
 						.key(d => d.splitby)
-						.entries(data);
-/*
-	var test = {
-		"data": {
-		  "id": "World"
-		},
-		"children": [
-		  {
-			"data": {
-			  "id": "Asia"
-			},
-		},
-		{
-		  "data": {
-			"id": "Europe"
-		  },
-		}
-		]
-	};
-*/
+						.entries(result_table);
+
 	// Add root
 	nested_data = {key: 'root', values: nested_data};
-	
+
 	var root = d3.hierarchy(nested_data, d => d.values);
-	//var root = d3.hierarchy(test, d => d.children);
+
 	var links = treeLayout(root).links();
-	var linkPathGenerator = d3.linkHorizontal()
-		.x(d => d.y)
-		.y(d => d.x);
 
 	var svg = d3.select('#node_link_tree')
 				.append('svg');
@@ -58,23 +41,58 @@ function drawNodeLinkTree(data) {
 		zoomG.attr('transform', d3.event.transform);
 	}));
 
-	g.selectAll('path').data(links)
-			.enter().append('path')
-			.attr('d', linkPathGenerator)
-			.attr('fill', 'none')
-			.attr('stroke', '#57bdc3')
-			.style("opacity", function(d, i) {
-				return !d.source.depth ? 0 : 1;
-			})
-			.style("pointer-events", function(d, i) {
-				return !d.source.depth ? "none" : "all";
-			});
 
-	g.selectAll('circle').data(root.descendants())
-		.enter().append('circle')
-		.attr('r', 6)
-		.attr('cx', d => d.y)
-		.attr('cy', d => d.x)		
+	var node = g.selectAll('g.node')
+				.data(root.descendants());
+	
+	var nodeEnter = node.enter()
+						.append('g')
+						.attr("class", function(d) {
+							return 'node level-' + d.depth;
+						})
+						.attr("transform", function(d) { 
+							return "translate(" + d.y + "," + d.x + ")"; });
+
+	rootG = g.select('.level-0');
+	
+	//for (var key in distance_heatmap_dict){
+	// Now only regression trend, loop only once. TODO multiple trend types
+	//data = distance_heatmap_dict[key];
+	//}
+	agg_distance_heatmap_dict = data.agg_distance_heatmap_dict;
+	data = agg_distance_heatmap_dict[0];
+	heatmapMatrix = jsonto2darray(data.heatmap);
+
+	if (data.detail_view_type == 'scatter') {	
+		
+		rowLabels = [];
+		colLabels = [];
+
+		// get rows' labels
+		for (var rowkey in data.heatmap) {
+			rowLabels.push(rowkey);
+		}
+
+		// get columns' lables
+		var first_row = data.heatmap[Object.keys(data.heatmap)[0]];
+		for (var colkey in first_row) {
+			colLabels.push(colkey);
+		}
+
+		matrix_data = UpdateMatrixFormat(heatmapMatrix, rowLabels, 
+			colLabels);
+	}
+
+	drawHeatmap({
+		container : rootG,
+		data	  : matrix_data,
+		rowLabels : rowLabels,
+		colLabels : colLabels,			
+		subLabel  : 'Pattern'
+	});
+
+	nodeEnter.append('circle')
+		.attr('r', 6)	
 		.style('fill', '#fff')
 		.style('stroke', 'steelblue')
 		.style('stroke-width', '2px')
@@ -85,13 +103,10 @@ function drawNodeLinkTree(data) {
 			return !d.depth ? "none" : "all";
 		}); 	
 
-	g.selectAll('text').data(root.descendants())
-		.enter().append('text')
-		.attr('x', d => d.children ? d.y - 10 : d.y + 10)
-		.attr('y', d => d.x)
+	nodeEnter.append('text')
+		.attr('dx', d => d.children ? '-0.6em' : '0.6em')
 		.attr('dy', '0.32em')
 		.attr('text-anchor', d => d.children ? 'end' : 'start')
-//		.attr('font-size', d => 3 - d.depth + 'em')
 		.attr('pointer-events', 'none')
 		.text(d => d.height ? d.data.key : d.data.subgroup)
 		.style("opacity", function(d, i) {
@@ -100,6 +115,240 @@ function drawNodeLinkTree(data) {
 		.style("pointer-events", function(d, i) {
 			return !d.depth ? "none" : "all";
 		}); 
-		//.text(d => d.data.data.id);
 
+	// Generate links
+	var numrows = matrix_data.length;
+	var numcols = matrix_data[0].length;
+	var width = 90,
+	height = 90;
+
+	var x = d3.scaleBand()
+	    .domain(d3.range(numcols))
+	    .range([0, width]);
+
+	var y = d3.scaleBand()
+	    .domain(d3.range(numrows))
+	    .range([0, height]);
+
+	var linkPathGenerator = d3.linkHorizontal()
+								.x(d => d.y)
+								.y(d => d.x);
+
+	var matrixLinkPathGenerator 
+			= d3.linkHorizontal()
+				.source(function(d, i) {
+					var keyArray = d.target.data.key.split(",");
+					var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
+					
+					return [d.source.y + x(c) + x.bandwidth()/2, d.source.x + y(r)+y.bandwidth()/2];
+				}).target(function(d, i) {
+					return [d.target.y, d.target.x];
+				})
+
+	g.selectAll('path').data(links)
+		.enter().append('path')
+		.attr('d', function(d, i) {
+			return !d.source.depth ? matrixLinkPathGenerator(d, i) : linkPathGenerator(d);
+		})
+		.attr('fill', 'none')
+		.attr('stroke', 'black')
+		.style("stroke-width", "1px")
+		.style("pointer-events", function(d, i) {
+			return !d.source.depth ? "none" : "all";
+		});
+}
+
+function matrixIndexed(details, dep, indep) {
+	var r;
+	var c;
+
+	for (r = 0; r < details.length; ++r) {
+	   const nsDetails = details[r];
+	   for (c = 0; c < nsDetails.length; ++c) {
+		  const tempObject = nsDetails[c];
+		  if ((tempObject.dependentVar === dep) && (tempObject.independentVar === indep)) {
+			 return {r, c};
+		  }
+	   }
+	}
+	return {};
+ }
+
+/**
+ * Prepare matrix information 
+ *
+ * @param matrix - matrix.
+ * @param rowLabels - independent used for row labels.
+ * @param colLabels - dependent used for columns labels.
+ * @returns matrix - containing information for cells.
+ */
+ var UpdateMatrixFormat = function(matrix, rowLabels, colLabels) {
+
+	matrix.forEach(function(row, i) {
+		row.forEach(function(cell, j) {
+		
+			matrix[i][j] = {
+					dependentVar: rowLabels[i],
+					independentVar: colLabels[j],
+					value: cell
+				};
+		});
+	});
+
+	return matrix;
+};
+
+
+/**
+ * Draw heatmap
+ *
+ * @param options - Data containing matrix information.
+ * @returns none.
+ */
+ function drawHeatmap(options) {
+
+	// continous color for overview
+	var heatmapConColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
+	// continous color scale for overview
+	var heatmapColorScale = d3.scaleQuantize()
+							.domain([0, 1])
+							.range(heatmapConColors);
+
+	var margin = {top: 93, right: 20, bottom: 30, left: 133},
+	    width = 90,
+	    height = 90,
+	    data = options.data,
+	    container = options.container,
+		subLabel = options.subLabel;
+
+	if(!data){
+		throw new Error('Please pass data');
+	}
+
+	var numrows = data.length;
+	var numcols = data[0].length;
+
+	//var distanceMatrixPlot = svg.append("g")
+	var distanceMatrixPlot = container.append("g")
+		.attr("id", "distanceMatrixPlot");
+	    //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	var x = d3.scaleBand()
+	    .domain(d3.range(numcols))
+	    .range([0, width]);
+
+	var y = d3.scaleBand()
+	    .domain(d3.range(numrows))
+	    .range([0, height]);
+
+	var row = distanceMatrixPlot.selectAll(".row")
+	    .data(data)
+		.enter().append("g")
+	    .attr("class", "row")
+	    .attr("transform", function(d, i) { return "translate(0," + y(i) + ")"; });
+
+	var cells = row.selectAll(".cell")
+	    .data(function(d) { return d; })
+		.enter()
+		.append("rect")	
+		.attr("class", "cell")
+		.attr("id", function(d) {
+			return d.trend_type + "_" + d.independentVar + "_" + d.dependentVar + "_" + d.categoryAttr + "_" + d.category
+		})
+	    .attr("transform", function(d, i) { return "translate(" + x(i) + ", 0)"; });
+
+	cells.attr("width", x.bandwidth()-3)
+	    .attr("height", y.bandwidth()-3)
+	    .style("stroke-width", "1px")
+		.style("stroke", "black")
+    	.transition()
+		.style("fill", function(d, i) {
+			if (d.value == 99) {
+				return '#808080';
+			} else {
+				return heatmapColorScale(d.value);
+			}
+		});
+
+	//cells.style("opacity", 0.1)
+	//	.filter(function(d){
+	//		if (legendValue != -1) {
+	//			return d.value == legendValue;
+	//		} else 
+	//		{
+	//			return d;
+	//		}			
+	//	})
+	//	.style("opacity", 1);
+
+	distanceMatrixPlot.append("text")
+			.attr("x", (width / 2))             
+			.attr("y", height + (margin.bottom / 2))
+			.attr("text-anchor", "middle")  
+			.style("font-size", "16px") 
+			.style("text-decoration", "underline")  
+			.text(subLabel);
+
+	distanceMatrixPlot.append("text")
+			.attr("x", -(width/2))              			  
+			.attr("y", -height-margin.bottom+5)
+			.attr("text-anchor", "middle")  
+			.attr("transform", "rotate(-90)")
+			.style("font-size", "15px") 
+			.text("dependent");	
+
+	distanceMatrixPlot.append("text")
+			.attr("x", (width / 2))             
+			.attr("y", -margin.top+10)
+			.attr("text-anchor", "middle")  
+			.style("font-size", "15px") 
+			.text("independent");	
+
+	var labels = distanceMatrixPlot.append('g')
+		.attr('class', "labels");
+
+	var columnLabels = labels.selectAll(".column-label")
+	    .data(options.colLabels)
+	    .enter().append("g")
+	    .attr("class", "column-label")
+	    .attr("transform", function(d, i) { return "translate(" + x(i) + "," + 0 + ")"; });
+
+	columnLabels.append("line")
+		.style("stroke", "black")
+	    .style("stroke-width", "1px")
+	    .attr("x1", x.bandwidth() / 2)
+	    .attr("x2", x.bandwidth() / 2)
+	    .attr("y1", 0)
+		.attr("y2", -5);
+
+	columnLabels.append("text")
+		.attr("x", 8)
+		.attr("y", x.bandwidth()/2-6)
+		.attr("dy", ".82em")
+	    .attr("text-anchor", "start")
+	    .attr("transform", "rotate(-90)")
+		.text(function(d, i) { return d; })
+		.style("font-size", "10px");
+
+	var rowLabels = labels.selectAll(".row-label")
+	    .data(options.rowLabels)
+	  .enter().append("g")
+	    .attr("class", "row-label")
+	    .attr("transform", function(d, i) { return "translate(" + 0 + "," + y(i) + ")"; });
+
+	rowLabels.append("line")
+		.style("stroke", "black")
+	    .style("stroke-width", "1px")
+	    .attr("x1", 0)
+	    .attr("x2", -5)
+	    .attr("y1", y.bandwidth() / 2)
+	    .attr("y2", y.bandwidth() / 2);
+
+	rowLabels.append("text")
+	    .attr("x", -8)
+	    .attr("y", y.bandwidth() / 2)
+	    .attr("dy", ".32em")
+	    .attr("text-anchor", "end")
+		.text(function(d, i) { return d; })
+		.style("font-size", "10px");	
 }

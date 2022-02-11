@@ -1,0 +1,7 @@
+variable,dtype,var_type,role,isCount,weighting_var
+state,object,categorical,['ignore'],False,
+district,int64,ordinal,['splitby'],False,
+precinct,int64,ordinal,['splitby'],False,
+party_simplified,object,categorical,['independent'],False,
+candidate,object,categorical,['ignore'],False,
+votes,int64,ordinal,['dependent'],False,

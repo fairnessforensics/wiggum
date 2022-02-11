@@ -51,12 +51,17 @@ def explore():
                 distance_heatmap_dict = models.getDistanceHeatmapDict2D(
                                         labeled_df_setup, labeled_df_setup.result_df)
 
+                # Generate aggregate distance heatmaps
+                agg_distance_heatmap_dict = models.getAggregateDistanceHeatmapDict(
+                                        labeled_df_setup, labeled_df_setup.result_df)
+
             return jsonify(dep_vars = dep_vars,
                             indep_vars = indep_vars,
                             splitby_vars = splitby_vars,
                             df = df,
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
-                            distance_heatmap_dict = distance_heatmap_dict) 
+                            distance_heatmap_dict = distance_heatmap_dict,
+                            agg_distance_heatmap_dict = agg_distance_heatmap_dict) 
 
         if action == 'rect_select':
             selected_data = request.form['selected_data']
