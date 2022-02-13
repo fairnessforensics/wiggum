@@ -8,9 +8,9 @@ function drawNodeLinkTree(data) {
 
     var result_table = JSON.parse(data.result_df);
 
-	var width = 600;
+	var width = 650;
 	var height = 2600;
-	var margin = {top: 0, right: 50, bottom: 0, left: 50};
+	var margin = {top: 0, right: 50, bottom: 0, left: 100};
 	var innerWidth = width - margin.left - margin.right;
 	var innerHeight = height - margin.top - margin.bottom;
 
@@ -91,8 +91,39 @@ function drawNodeLinkTree(data) {
 		subLabel  : 'Pattern'
 	});
 
-	nodeEnter.append('circle')
-		.attr('r', 6)	
+	firstLevelG = g.selectAll('.level-1');
+
+	firstLevelG.each(function (d) {
+
+		var keyArray = d.data.key.split(",");
+
+		var container = d3.select(this);
+
+		drawHeatmap({
+			container : container,
+			data	  : matrix_data,
+			rowLabels : rowLabels,
+			colLabels : colLabels,			
+			subLabel  : '',
+			selDep: keyArray[0],
+			selIndep: keyArray[1]
+		});
+	})
+					
+	/*firstLevelG.append('rect')
+		.attr("class", "cell")
+	    .attr("x", -10)
+	    .attr("y", -10)		
+		.attr("width", 20)
+	    .attr("height", 20)
+		.style('fill', '#fff')
+		.style("stroke", "black")
+	    .style("stroke-width", "2px");
+		*/
+
+	secondLevelG = g.selectAll('.level-2');
+	secondLevelG.append('circle')
+		.attr('r', 10)	
 		.style('fill', '#fff')
 		.style('stroke', 'steelblue')
 		.style('stroke-width', '2px')
@@ -101,14 +132,29 @@ function drawNodeLinkTree(data) {
 		})
 		.style("pointer-events", function(d, i) {
 			return !d.depth ? "none" : "all";
-		}); 	
+		}); 			
+
+	thirdLevelG = g.selectAll('.level-3');
+	thirdLevelG.append('rect')
+		.attr("class", "cell")
+		.attr("x", -10)
+		.attr("y", -10)		
+		.attr("width", 20)
+		.attr("height", 20)
+		.style('fill', '#fff')
+		.style("stroke", "black")
+		.style("stroke-width", "2px");
 
 	nodeEnter.append('text')
-		.attr('dx', d => d.children ? '-0.6em' : '0.6em')
-		.attr('dy', '0.32em')
-		.attr('text-anchor', d => d.children ? 'end' : 'start')
+		.attr('dx', d => d.children ? '0em' : '1em')
+		.attr('dy', d => d.children ? '1.5em' : '0.32em')
+		.attr('text-anchor', d => d.children ? 'middle' : 'start')
 		.attr('pointer-events', 'none')
-		.text(d => d.height ? d.data.key : d.data.subgroup)
+		.text(function(d) {
+			if (d.depth > 1) {
+				return d.height ? d.data.key : d.data.subgroup
+			}
+		})
 		.style("opacity", function(d, i) {
 			return !d.depth ? 0 : 1;
 		})
@@ -137,18 +183,30 @@ function drawNodeLinkTree(data) {
 	var matrixLinkPathGenerator 
 			= d3.linkHorizontal()
 				.source(function(d, i) {
-					var keyArray = d.target.data.key.split(",");
-					var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
 					
-					return [d.source.y + x(c) + x.bandwidth()/2, d.source.x + y(r)+y.bandwidth()/2];
+					if (d.source.depth == 0) {
+						var keyArray = d.target.data.key.split(",");
+						var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
+						return [d.source.y + x(c) + x.bandwidth()/2, d.source.x + y(r)+y.bandwidth()/2];
+					} else {
+						var keyArray = d.source.data.key.split(",");
+						var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
+						return [d.source.y + x(c) + x.bandwidth()-3, d.source.x + y(r)+y.bandwidth()/2];
+					}
 				}).target(function(d, i) {
-					return [d.target.y, d.target.x];
+					if (d.source.depth == 0) {
+						var keyArray = d.target.data.key.split(",");
+						var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
+						return [d.target.y + x(c) + x.bandwidth()/2, d.target.x + y(r)+y.bandwidth()/2];
+					} else {
+						return [d.target.y, d.target.x];
+					}
 				})
 
 	g.selectAll('path').data(links)
 		.enter().append('path')
 		.attr('d', function(d, i) {
-			return !d.source.depth ? matrixLinkPathGenerator(d, i) : linkPathGenerator(d);
+			return d.source.depth < 2 ? matrixLinkPathGenerator(d, i) : linkPathGenerator(d);
 		})
 		.attr('fill', 'none')
 		.attr('stroke', 'black')
@@ -261,6 +319,13 @@ function matrixIndexed(details, dep, indep) {
 	    .attr("height", y.bandwidth()-3)
 	    .style("stroke-width", "1px")
 		.style("stroke", "black")
+		.attr("class", function(d) {
+			if (options.selDep) {
+				if (d.dependentVar === options.selDep && d.independentVar === options.selIndep) {
+					return "cell clicked";
+				}
+			}
+		})
     	.transition()
 		.style("fill", function(d, i) {
 			if (d.value == 99) {
@@ -289,7 +354,7 @@ function matrixIndexed(details, dep, indep) {
 			.style("text-decoration", "underline")  
 			.text(subLabel);
 
-	distanceMatrixPlot.append("text")
+	/*distanceMatrixPlot.append("text")
 			.attr("x", -(width/2))              			  
 			.attr("y", -height-margin.bottom+5)
 			.attr("text-anchor", "middle")  
@@ -303,7 +368,7 @@ function matrixIndexed(details, dep, indep) {
 			.attr("text-anchor", "middle")  
 			.style("font-size", "15px") 
 			.text("independent");	
-
+	*/
 	var labels = distanceMatrixPlot.append('g')
 		.attr('class', "labels");
 

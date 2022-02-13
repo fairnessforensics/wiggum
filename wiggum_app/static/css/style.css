@@ -456,23 +456,26 @@ div.tooltip {
 
 #distance_matrix_2d {
     width: 500px;
-    display: block;
+    display: inline-block;
+    position: absolute;    
     background: white; 
     height: 100%;
     max-height: 100%;
     padding-right: 30px; 
-    margin-left: 60%; 
+    margin-left: 75%; 
     overflow:auto;
 }
 
 #node_link_tree {
-    width: 600px;
-    display: block;
+    width: 650px;
+    display: inline-block;
+    position: absolute;    
     background: white; 
     height: 100%;
     max-height: 100%;
     padding-right: 30px; 
     margin-left: 30%; 
+    margin-top: 5%; 
     overflow:auto;
 }
 
@@ -482,7 +485,7 @@ div.tooltip {
     height: 100%;
     max-height: 100%;
     margin-left: 3%;    
-    margin-top: 20%;    
+    margin-top: 30%;    
     display: inline-block;
     position: absolute;   
 }
@@ -490,10 +493,12 @@ div.tooltip {
 #bipartite_graph {
     width: 600px;
     height: 500px;
-    display: block;
+    display: inline-block;
+    position: absolute;   
     background: white; 
     padding-right: 30px; 
-    margin-left: 60%; 
+    margin-top: 40%;    
+    margin-left: 75%; 
     overflow:auto;
 }
 
