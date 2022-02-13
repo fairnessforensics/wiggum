@@ -380,8 +380,8 @@ div.tooltip {
 
 #indep_sel_button {
     position: absolute;
-    margin-left: 30%;   
-    margin-top: 36%; 
+    margin-left: 20%;   
+    margin-top: 23%; 
 }
 
 #splitby_sel_button {
@@ -472,12 +472,12 @@ div.tooltip {
     height: 100%;
     max-height: 100%;
     padding-right: 30px; 
-    margin-left: 60%; 
+    margin-left: 30%; 
     overflow:auto;
 }
 
 #map {
-    width: 600px;
+    width: 300px;
     background: white; 
     height: 100%;
     max-height: 100%;

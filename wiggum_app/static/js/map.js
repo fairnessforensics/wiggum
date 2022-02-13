@@ -5,8 +5,8 @@
  * @returns none.
 */
 function drawMap(data) {
-	var width = 600,
-		height = 500;
+	var width = 300,
+		height = 300;
 
 	var svg = d3.select('#map')
 				.append('svg')

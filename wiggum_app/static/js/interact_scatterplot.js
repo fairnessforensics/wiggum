@@ -4,8 +4,8 @@ function drawScatterplot(data, indep_var, dep_var, splitby_var) {
 	d3.select("#radio_button").selectAll('svg').remove();	
 
 	var margin = {top: 20, right: 20, bottom: 20, left: 60},
-		width = 540 - margin.left - margin.right,
-		height = 500 - margin.top - margin.bottom;
+		width = 340 - margin.left - margin.right,
+		height = 300 - margin.top - margin.bottom;
 
 	var x = d3.scaleLinear()
 		.range([0, width]);
