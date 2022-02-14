@@ -1,3 +1,10 @@
+// continous color for overview
+var heatmapConColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
+// continous color scale for overview
+var heatmapColorScale = d3.scaleQuantize()
+						.domain([0, 1])
+						.range(heatmapConColors);
+
 /**
  * Draw node link tree
  * 
@@ -88,10 +95,89 @@ function drawNodeLinkTree(data) {
 		data	  : matrix_data,
 		rowLabels : rowLabels,
 		colLabels : colLabels,			
-		subLabel  : 'Pattern'
+		subLabel  : 'Pattern',
+		level: 'level0'
 	});
 
-	firstLevelG = g.selectAll('.level-1');
+	// First level - aggregate pattern
+	var firstLevelG = g.selectAll('.level-1');
+	var firstLevelabels= ['\uf03a','\uf00a'];
+	firstLevelG1 = g.select('.level-1');
+
+	const firstLevelG1_position = firstLevelG1.attr('transform').split(/[\s,()]+/);
+	const firstLevelG1_x = parseFloat(firstLevelG1_position[1]);
+
+	//container for all buttons
+	var firstLevelButtons= g.append("g")
+						.attr("id","firstLevelButtons")
+						.attr("transform",  "translate(" + firstLevelG1_x + ", 0)");
+
+	var firstLevelButtonGroups= firstLevelButtons.selectAll("g.button")
+						.data(firstLevelabels)
+						.enter()
+						.append("g")
+						.attr("class","button")
+						.style("cursor","pointer")
+						.on("click",function(d, i) {
+							updateButtonColors(d3.select(this), d3.select(this.parentNode));
+							if (i == 0) {
+								// list
+								d3.selectAll('.level1.list').transition().style('visibility', "visible");
+								d3.selectAll('.level1.heatmap').transition().style('visibility', "hidden");	
+								d3.selectAll('.path.list').transition().style('visibility', "visible");
+								d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");			
+							} else {
+								// heatmap
+								d3.selectAll('.level1.list').transition().style('visibility', "hidden");
+								d3.selectAll('.level1.heatmap').transition().style('visibility', "visible");
+								d3.selectAll('.path.list').transition().style('visibility', "hidden");
+								d3.selectAll('.path.heatmap').transition().style('visibility', "visible");								
+							}
+						});
+
+	function updateButtonColors(button, parent) {
+
+		var defaultColor= "#797979";
+		var pressedColor= "#0076BA";
+
+		parent.selectAll("rect")
+				.attr("fill",defaultColor)
+
+		button.select("rect")
+				.attr("fill",pressedColor)
+	}
+
+	var bWidth= 35; //button width
+	var bHeight= 22; //button height
+	var bSpace= 5; //space between buttons
+	var x0= 0; //x offset
+	var y0= 0; //y offset
+
+	//adding a rect to each toggle button group
+	//rx and ry give the rect rounded corner
+	firstLevelButtonGroups.append("rect")
+				.attr("class","buttonRect")
+				.attr("width",bWidth)
+				.attr("height",bHeight)
+				.attr("x",function(d,i) {return x0+(bWidth+bSpace)*i;})
+				.attr("y",y0)
+				.attr("rx",5) //rx and ry give the buttons rounded corners
+				.attr("ry",5)
+				.attr("fill","#797979")
+
+    //adding text to each toggle button group, centered 
+    //within the toggle button rect
+    firstLevelButtonGroups.append("text")
+                .attr("class","buttonText")
+                .attr("font-family","FontAwesome")
+                .attr("x",function(d,i) {
+                    return x0 + (bWidth+bSpace)*i + bWidth/2;
+                })
+                .attr("y",y0+bHeight/2)
+                .attr("text-anchor","middle")
+                .attr("dominant-baseline","central")
+                .attr("fill","white")
+                .text(function(d) {return d;})
 
 	firstLevelG.each(function (d) {
 
@@ -106,20 +192,29 @@ function drawNodeLinkTree(data) {
 			colLabels : colLabels,			
 			subLabel  : '',
 			selDep: keyArray[0],
-			selIndep: keyArray[1]
+			selIndep: keyArray[1],
+			level: 'level1'
 		});
 	})
 					
-	/*firstLevelG.append('rect')
-		.attr("class", "cell")
+	firstLevelG.append('rect')
+		.attr("class", "level1 list cell")
 	    .attr("x", -10)
 	    .attr("y", -10)		
 		.attr("width", 20)
 	    .attr("height", 20)
-		.style('fill', '#fff')
+		.style("fill", function(d, i) {
+			var keyArray = d.data.key.split(",");
+			var value = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
+			if (value == 99) {
+				return '#808080';
+			} else {
+				return heatmapColorScale(value);
+			}
+		})
 		.style("stroke", "black")
-	    .style("stroke-width", "2px");
-		*/
+	    .style("stroke-width", "2px")
+		.style("visibility", "hidden");
 
 	secondLevelG = g.selectAll('.level-2');
 	secondLevelG.append('circle')
@@ -148,15 +243,16 @@ function drawNodeLinkTree(data) {
 	nodeEnter.append('text')
 		.attr('dx', d => d.children ? '0em' : '1em')
 		.attr('dy', d => d.children ? '1.5em' : '0.32em')
+		.attr('class', d => 'level'+d.depth + ' list text')
 		.attr('text-anchor', d => d.children ? 'middle' : 'start')
 		.attr('pointer-events', 'none')
 		.text(function(d) {
-			if (d.depth > 1) {
+			if (d.depth > 0) {
 				return d.height ? d.data.key : d.data.subgroup
 			}
 		})
-		.style("opacity", function(d, i) {
-			return !d.depth ? 0 : 1;
+		.style("visibility", function(d, i) {
+			return d.depth > 1 ? "visible" : "hidden";
 		})
 		.style("pointer-events", function(d, i) {
 			return !d.depth ? "none" : "all";
@@ -186,37 +282,56 @@ function drawNodeLinkTree(data) {
 					
 					if (d.source.depth == 0) {
 						var keyArray = d.target.data.key.split(",");
-						var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
+						var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
 						return [d.source.y + x(c) + x.bandwidth()/2, d.source.x + y(r)+y.bandwidth()/2];
 					} else {
 						var keyArray = d.source.data.key.split(",");
-						var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
+						var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
 						return [d.source.y + x(c) + x.bandwidth()-3, d.source.x + y(r)+y.bandwidth()/2];
 					}
-				}).target(function(d, i) {
+				}).target(function(d, i, type) {
 					if (d.source.depth == 0) {
+						if (type === 'list') {
+							return [d.target.y, d.target.x];
+						}
 						var keyArray = d.target.data.key.split(",");
-						var {r, c} = matrixIndexed(matrix_data, keyArray[0], keyArray[1]);
+						var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
 						return [d.target.y + x(c) + x.bandwidth()/2, d.target.x + y(r)+y.bandwidth()/2];
 					} else {
 						return [d.target.y, d.target.x];
 					}
 				})
 
-	g.selectAll('path').data(links)
+	g.selectAll('.path heatmap').data(links)
 		.enter().append('path')
 		.attr('d', function(d, i) {
 			return d.source.depth < 2 ? matrixLinkPathGenerator(d, i) : linkPathGenerator(d);
 		})
+		.attr("class", "path heatmap")
 		.attr('fill', 'none')
 		.attr('stroke', 'black')
 		.style("stroke-width", "1px")
 		.style("pointer-events", function(d, i) {
 			return !d.source.depth ? "none" : "all";
 		});
+
+	g.selectAll('.path list').data(links)
+		.enter().append('path')
+		.attr('d', function(d, i) {
+			return d.source.depth < 1 ? matrixLinkPathGenerator(d, i, 'list') : linkPathGenerator(d);
+		})
+		.attr("class", "path list")
+		.attr('fill', 'none')
+		.attr('stroke', 'black')
+		.style("stroke-width", "1px")
+		.style("pointer-events", function(d, i) {
+			return !d.source.depth ? "none" : "all";
+		})
+		.style("visibility", "hidden");
+
 }
 
-function matrixIndexed(details, dep, indep) {
+function getMatrixIndex(details, dep, indep) {
 	var r;
 	var c;
 
@@ -230,6 +345,22 @@ function matrixIndexed(details, dep, indep) {
 	   }
 	}
 	return {};
+ }
+
+ function getMatrixValue(details, dep, indep) {
+	var r;
+	var c;
+
+	for (r = 0; r < details.length; ++r) {
+	   const nsDetails = details[r];
+	   for (c = 0; c < nsDetails.length; ++c) {
+		  const tempObject = nsDetails[c];
+		  if ((tempObject.dependentVar === dep) && (tempObject.independentVar === indep)) {
+			 return tempObject.value;
+		  }
+	   }
+	}
+	return -1;
  }
 
 /**
@@ -265,19 +396,13 @@ function matrixIndexed(details, dep, indep) {
  */
  function drawHeatmap(options) {
 
-	// continous color for overview
-	var heatmapConColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
-	// continous color scale for overview
-	var heatmapColorScale = d3.scaleQuantize()
-							.domain([0, 1])
-							.range(heatmapConColors);
-
 	var margin = {top: 93, right: 20, bottom: 30, left: 133},
 	    width = 90,
 	    height = 90,
 	    data = options.data,
 	    container = options.container,
-		subLabel = options.subLabel;
+		subLabel = options.subLabel
+		level = options.level;
 
 	if(!data){
 		throw new Error('Please pass data');
@@ -309,7 +434,6 @@ function matrixIndexed(details, dep, indep) {
 	    .data(function(d) { return d; })
 		.enter()
 		.append("rect")	
-		.attr("class", "cell")
 		.attr("id", function(d) {
 			return d.trend_type + "_" + d.independentVar + "_" + d.dependentVar + "_" + d.categoryAttr + "_" + d.category
 		})
@@ -322,9 +446,10 @@ function matrixIndexed(details, dep, indep) {
 		.attr("class", function(d) {
 			if (options.selDep) {
 				if (d.dependentVar === options.selDep && d.independentVar === options.selIndep) {
-					return "cell clicked";
+					return level + " heatmap cell clicked";
 				}
 			}
+			return level + " heatmap cell";
 		})
     	.transition()
 		.style("fill", function(d, i) {
@@ -379,6 +504,7 @@ function matrixIndexed(details, dep, indep) {
 	    .attr("transform", function(d, i) { return "translate(" + x(i) + "," + 0 + ")"; });
 
 	columnLabels.append("line")
+		.attr("class", level + " heatmap line")
 		.style("stroke", "black")
 	    .style("stroke-width", "1px")
 	    .attr("x1", x.bandwidth() / 2)
@@ -387,6 +513,7 @@ function matrixIndexed(details, dep, indep) {
 		.attr("y2", -5);
 
 	columnLabels.append("text")
+		.attr("class", level + " heatmap text")
 		.attr("x", 8)
 		.attr("y", x.bandwidth()/2-6)
 		.attr("dy", ".82em")
@@ -402,6 +529,7 @@ function matrixIndexed(details, dep, indep) {
 	    .attr("transform", function(d, i) { return "translate(" + 0 + "," + y(i) + ")"; });
 
 	rowLabels.append("line")
+		.attr("class", level + " heatmap line")
 		.style("stroke", "black")
 	    .style("stroke-width", "1px")
 	    .attr("x1", 0)
@@ -410,6 +538,7 @@ function matrixIndexed(details, dep, indep) {
 	    .attr("y2", y.bandwidth() / 2);
 
 	rowLabels.append("text")
+		.attr("class", level + " heatmap text")
 	    .attr("x", -8)
 	    .attr("y", y.bandwidth() / 2)
 	    .attr("dy", ".32em")
