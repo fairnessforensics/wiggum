@@ -381,18 +381,18 @@ div.tooltip {
 #indep_sel_button {
     position: absolute;
     margin-left: 20%;   
-    margin-top: 23%; 
+    margin-top: 20%; 
 }
 
 #splitby_sel_button {
     position: absolute;
-    margin-left: 30%;   
+    margin-left: 22%;   
     margin-top: 1.8%; 
 }
 
 #radio_button {
     position: absolute;
-    margin-left: 12%;   
+    margin-left: 8%;   
     margin-top: 1.8%; 
 }
 
