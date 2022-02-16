@@ -437,14 +437,14 @@ div.tooltip {
   
 #agg_slider_lable {
     position: absolute;
-    margin-left: 41.3%;   
-    margin-top: 1.8%; 
+    margin-left: 10.3%;   
+    margin-top: 61.8%; 
 }
 
 #agg_slider {
     position: absolute;
-    margin-left: 40%;   
-    margin-top: 1.8%; 
+    margin-left: 10%;   
+    margin-top: 61.8%; 
 }
 
 
@@ -475,7 +475,7 @@ div.tooltip {
     max-height: 100%;
     padding-right: 30px; 
     margin-left: 30%; 
-    margin-top: 6%; 
+    margin-top: 3%; 
     overflow:auto;
 }
 
