@@ -70,7 +70,7 @@ function drawNodeLinkTree(data) {
 	data = agg_distance_heatmap_dict[0];
 	heatmapMatrix = jsonto2darray(data.heatmap);
 
-	if (data.detail_view_type == 'scatter') {	
+	if (data.detail_view_type === 'scatter' || data.detail_view_type == 'rank') {	
 		
 		rowLabels = [];
 		colLabels = [];
@@ -100,9 +100,9 @@ function drawNodeLinkTree(data) {
 	});
 
 	// First level - aggregate pattern
-	var firstLevelG = g.selectAll('.level-1');
-	var firstLevelabels= ['\uf03a','\uf00a'];
-	firstLevelG1 = g.select('.level-1');
+	// Generate interactive buttons
+	var levelLabels= ['\uf03a','\uf00a'];
+	var firstLevelG1 = g.select('.level-1');
 
 	const firstLevelG1_position = firstLevelG1.attr('transform').split(/[\s,()]+/);
 	const firstLevelG1_x = parseFloat(firstLevelG1_position[1]);
@@ -112,72 +112,12 @@ function drawNodeLinkTree(data) {
 						.attr("id","firstLevelButtons")
 						.attr("transform",  "translate(" + firstLevelG1_x + ", 0)");
 
-	var firstLevelButtonGroups= firstLevelButtons.selectAll("g.button")
-						.data(firstLevelabels)
-						.enter()
-						.append("g")
-						.attr("class","button")
-						.style("cursor","pointer")
-						.on("click",function(d, i) {
-							updateButtonColors(d3.select(this), d3.select(this.parentNode));
-							if (i == 0) {
-								// list
-								d3.selectAll('.level1.list').transition().style('visibility', "visible");
-								d3.selectAll('.level1.heatmap').transition().style('visibility', "hidden");	
-								d3.selectAll('.path.list').transition().style('visibility', "visible");
-								d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");			
-							} else {
-								// heatmap
-								d3.selectAll('.level1.list').transition().style('visibility', "hidden");
-								d3.selectAll('.level1.heatmap').transition().style('visibility', "visible");
-								d3.selectAll('.path.list').transition().style('visibility', "hidden");
-								d3.selectAll('.path.heatmap').transition().style('visibility', "visible");								
-							}
-						});
+	firstLevelButtons.call(interactiveLevelButton, {
+		levelLabels
+	});
 
-	function updateButtonColors(button, parent) {
-
-		var defaultColor= "#797979";
-		var pressedColor= "#0076BA";
-
-		parent.selectAll("rect")
-				.attr("fill",defaultColor)
-
-		button.select("rect")
-				.attr("fill",pressedColor)
-	}
-
-	var bWidth= 35; //button width
-	var bHeight= 22; //button height
-	var bSpace= 5; //space between buttons
-	var x0= 0; //x offset
-	var y0= 0; //y offset
-
-	//adding a rect to each toggle button group
-	//rx and ry give the rect rounded corner
-	firstLevelButtonGroups.append("rect")
-				.attr("class","buttonRect")
-				.attr("width",bWidth)
-				.attr("height",bHeight)
-				.attr("x",function(d,i) {return x0+(bWidth+bSpace)*i;})
-				.attr("y",y0)
-				.attr("rx",5) //rx and ry give the buttons rounded corners
-				.attr("ry",5)
-				.attr("fill","#797979")
-
-    //adding text to each toggle button group, centered 
-    //within the toggle button rect
-    firstLevelButtonGroups.append("text")
-                .attr("class","buttonText")
-                .attr("font-family","FontAwesome")
-                .attr("x",function(d,i) {
-                    return x0 + (bWidth+bSpace)*i + bWidth/2;
-                })
-                .attr("y",y0+bHeight/2)
-                .attr("text-anchor","middle")
-                .attr("dominant-baseline","central")
-                .attr("fill","white")
-                .text(function(d) {return d;})
+	// First level drawing
+	var firstLevelG = g.selectAll('.level-1');
 
 	firstLevelG.each(function (d) {
 
@@ -197,12 +137,14 @@ function drawNodeLinkTree(data) {
 		});
 	})
 					
+	var rectWidth = 20;
+	var rectHeight = 20;
 	firstLevelG.append('rect')
 		.attr("class", "level1 list cell")
 	    .attr("x", -10)
 	    .attr("y", -10)		
-		.attr("width", 20)
-	    .attr("height", 20)
+		.attr("width", rectWidth)
+	    .attr("height", rectHeight)
 		.style("fill", function(d, i) {
 			var keyArray = d.data.key.split(",");
 			var value = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
@@ -216,27 +158,46 @@ function drawNodeLinkTree(data) {
 	    .style("stroke-width", "2px")
 		.style("visibility", "hidden");
 
-	secondLevelG = g.selectAll('.level-2');
+	// Second level - splitby
+	// Generate interactive buttons
+	levelLabels= ['\uf03a','SP'];
+	var secondLevelG1 = g.select('.level-2');
+
+	const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
+	const secondLevelG1_x = parseFloat(secondLevelG1_position[1]);
+
+	//container for all buttons
+	var secondLevelButtons= g.append("g")
+						.attr("id","secondLevelButtons")
+						.attr("transform",  "translate(" + secondLevelG1_x + ", 0)");
+
+	secondLevelButtons.call(interactiveLevelButton, {
+		levelLabels
+	});
+
+	// Second level drawing
+	var secondLevelCircleRadius = 10;
+	var secondLevelG = g.selectAll('.level-2');
 	secondLevelG.append('circle')
-		.attr('r', 10)	
+		.attr('r', secondLevelCircleRadius)	
 		.style('fill', '#fff')
-		.style('stroke', 'steelblue')
+		.style('stroke', 'black')
 		.style('stroke-width', '2px')
-		.style("opacity", function(d, i) {
-			return !d.depth ? 0 : 1;
-		})
-		.style("pointer-events", function(d, i) {
+		.style("fill-opacity", 1)
+		.style("pointer-events", function(d) {
 			return !d.depth ? "none" : "all";
 		}); 			
 
 	thirdLevelG = g.selectAll('.level-3');
 	thirdLevelG.append('rect')
 		.attr("class", "cell")
-		.attr("x", -10)
-		.attr("y", -10)		
-		.attr("width", 20)
-		.attr("height", 20)
-		.style('fill', '#fff')
+		.attr("x", -rectWidth/2)
+		.attr("y", -rectHeight/2)		
+		.attr("width", rectWidth)
+		.attr("height", rectHeight)
+		.style("fill", function(d) {
+			return heatmapColorScale(d.data.distance);
+		})
 		.style("stroke", "black")
 		.style("stroke-width", "2px");
 
@@ -272,9 +233,21 @@ function drawNodeLinkTree(data) {
 	    .domain(d3.range(numrows))
 	    .range([0, height]);
 
-	var linkPathGenerator = d3.linkHorizontal()
-								.x(d => d.y)
-								.y(d => d.x);
+	var linkPathGenerator 
+			= d3.linkHorizontal()
+				.source(function(d) {
+					if (d.source.depth == 1) {
+						return [d.source.y + rectWidth / 2, d.source.x];
+					} else if (d.source.depth == 2) { 
+						return [d.source.y + secondLevelCircleRadius, d.source.x];
+					}else {}
+				}).target(function(d) {
+					if (d.source.depth == 1) {
+						return [d.target.y - secondLevelCircleRadius, d.target.x];
+					} else if (d.source.depth == 2) { 
+						return [d.target.y - rectWidth / 2, d.target.x];
+					}else {}
+				});	
 
 	var matrixLinkPathGenerator 
 			= d3.linkHorizontal()
@@ -291,16 +264,18 @@ function drawNodeLinkTree(data) {
 					}
 				}).target(function(d, i, type) {
 					if (d.source.depth == 0) {
+						// Level 1
 						if (type === 'list') {
-							return [d.target.y, d.target.x];
+							return [d.target.y  - rectWidth/2, d.target.x];
 						}
 						var keyArray = d.target.data.key.split(",");
 						var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
 						return [d.target.y + x(c) + x.bandwidth()/2, d.target.x + y(r)+y.bandwidth()/2];
 					} else {
-						return [d.target.y, d.target.x];
+						// Level 2
+						return [d.target.y - secondLevelCircleRadius, d.target.x];
 					}
-				})
+				});
 
 	g.selectAll('.path heatmap').data(links)
 		.enter().append('path')
@@ -545,4 +520,77 @@ function getMatrixIndex(details, dep, indep) {
 	    .attr("text-anchor", "end")
 		.text(function(d, i) { return d; })
 		.style("font-size", "10px");	
+}
+
+function updateButtonColors(button, parent) {
+
+	var defaultColor= "#797979";
+	var pressedColor= "#0076BA";
+
+	parent.selectAll("rect")
+			.attr("fill",defaultColor)
+
+	button.select("rect")
+			.attr("fill",pressedColor)
+}
+
+const interactiveLevelButton = (selection, props) => {
+	const {
+		levelLabels
+	} = props;
+
+	var levelButtonGroups= selection.selectAll("g.button")
+						.data(levelLabels)
+						.enter()
+						.append("g")
+						.attr("class","button")
+						.style("cursor","pointer")
+						.on("click",function(d, i) {
+							updateButtonColors(d3.select(this), d3.select(this.parentNode));
+							if (i == 0) {
+								// list
+								d3.selectAll('.level1.list').transition().style('visibility', "visible");
+								d3.selectAll('.level1.heatmap').transition().style('visibility', "hidden");	
+								d3.selectAll('.path.list').transition().style('visibility', "visible");
+								d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");			
+							} else {
+								// heatmap
+								d3.selectAll('.level1.list').transition().style('visibility', "hidden");
+								d3.selectAll('.level1.heatmap').transition().style('visibility', "visible");
+								d3.selectAll('.path.list').transition().style('visibility', "hidden");
+								d3.selectAll('.path.heatmap').transition().style('visibility', "visible");								
+							}
+						});
+
+	var bWidth= 35; //button width
+	var bHeight= 22; //button height
+	var bSpace= 5; //space between buttons
+	var x0= 0; //x offset
+	var y0= 0; //y offset
+
+	//adding a rect to each toggle button group
+	//rx and ry give the rect rounded corner
+	levelButtonGroups.append("rect")
+				.attr("class","buttonRect")
+				.attr("width",bWidth)
+				.attr("height",bHeight)
+				.attr("x",function(d,i) {return x0+(bWidth+bSpace)*i;})
+				.attr("y",y0)
+				.attr("rx",5) //rx and ry give the buttons rounded corners
+				.attr("ry",5)
+				.attr("fill","#797979")
+
+    //adding text to each toggle button group, centered 
+    //within the toggle button rect
+    levelButtonGroups.append("text")
+                .attr("class","buttonText")
+                .attr("font-family","FontAwesome")
+                .attr("x",function(d,i) {
+                    return x0 + (bWidth+bSpace)*i + bWidth/2;
+                })
+                .attr("y",y0+bHeight/2)
+                .attr("text-anchor","middle")
+                .attr("dominant-baseline","central")
+                .attr("fill","white")
+                .text(function(d) {return d;})
 }

@@ -15,66 +15,68 @@ var csvData;
     //drawNodeLinkTree(result_table, data.agg_distance_heatmap_dict);
     drawMap(result_table);
 
-    // dependent vars list
-    var dep_vars = data.dep_vars
-    d3.select("#dep_sel_button")
-        .selectAll('myOptions')
-        .data(dep_vars)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; }) 
-        .attr("value", function (d) { return d; })
-    
-    d3.select("#dep_sel_button").on("change", function(d) {
+    if (data.agg_distance_heatmap_dict[0].detail_view_type === 'scatter') {
+        // dependent vars list
+        var dep_vars = data.dep_vars
+        d3.select("#dep_sel_button")
+            .selectAll('myOptions')
+            .data(dep_vars)
+            .enter()
+            .append('option')
+            .text(function (d) { return d; }) 
+            .attr("value", function (d) { return d; })
+        
+        d3.select("#dep_sel_button").on("change", function(d) {
+                drawScatterplot(csvData, $('#indep_sel_button').val(), 
+                    $('#dep_sel_button').val(), $('#splitby_sel_button').val())            
+        })
+
+        // independent vars list
+        var indep_vars = data.indep_vars
+        d3.select("#indep_sel_button")
+            .selectAll('myOptions')
+            .data(indep_vars)
+            .enter()
+            .append('option')
+            .text(function (d) { return d; }) 
+            .attr("value", function (d) { return d; })
+
+        d3.select("#indep_sel_button").on("change", function(d) {
             drawScatterplot(csvData, $('#indep_sel_button').val(), 
                 $('#dep_sel_button').val(), $('#splitby_sel_button').val())            
-    })
+        })
 
-    // independent vars list
-    var indep_vars = data.indep_vars
-    d3.select("#indep_sel_button")
-        .selectAll('myOptions')
-        .data(indep_vars)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; }) 
-        .attr("value", function (d) { return d; })
+        // splitby vars list
+        var splitby_vars = data.splitby_vars
+        d3.select("#splitby_sel_button")
+            .selectAll('myOptions')
+            .data(splitby_vars)
+            .enter()
+            .append('option')
+            .text(function (d) { return d; }) 
+            .attr("value", function (d) { return d; })
 
-    d3.select("#indep_sel_button").on("change", function(d) {
-        drawScatterplot(csvData, $('#indep_sel_button').val(), 
-            $('#dep_sel_button').val(), $('#splitby_sel_button').val())            
-    })
+        d3.select("#splitby_sel_button").on("change", function(d) {
+            drawScatterplot(csvData, $('#indep_sel_button').val(), 
+                $('#dep_sel_button').val(), $('#splitby_sel_button').val())            
+        })
 
-    // splitby vars list
-    var splitby_vars = data.splitby_vars
-    d3.select("#splitby_sel_button")
-        .selectAll('myOptions')
-        .data(splitby_vars)
-        .enter()
-        .append('option')
-        .text(function (d) { return d; }) 
-        .attr("value", function (d) { return d; })
+        // create initial scatterplot
+        csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+        
+        // TODO---------date column----------->
+        var dateFlg = Object.keys(csvData[0]).includes("date");
+        if (dateFlg) {
+            csvData.forEach(function(d) {
+                d['date'] = d3.timeParse("%Y-%m-%d")(d['date']);
+            });
+        }
+        // TODO<-------------------
 
-    d3.select("#splitby_sel_button").on("change", function(d) {
-        drawScatterplot(csvData, $('#indep_sel_button').val(), 
-            $('#dep_sel_button').val(), $('#splitby_sel_button').val())            
-    })
+        drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
 
-    // create initial scatterplot
-    csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
-    
-    // TODO---------date column----------->
-    var dateFlg = Object.keys(csvData[0]).includes("date");
-    if (dateFlg) {
-        csvData.forEach(function(d) {
-            d['date'] = d3.timeParse("%Y-%m-%d")(d['date']);
-        });
+        addAggSlider();
     }
-    // TODO<-------------------
-
-    drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
-
-    addAggSlider();
 }
 
  
