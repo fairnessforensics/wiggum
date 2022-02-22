@@ -172,7 +172,7 @@ function drawNodeLinkTree(data) {
 		
 	// Second level - splitby
 	// Generate interactive buttons
-	levelLabels= ['\uf03a','SP1'];
+	levelLabels= ['\uf03a', 'SP1', 'SP2'];
 	var secondLevelG1 = g.select('.level-2');
 
 	const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
@@ -186,7 +186,7 @@ function drawNodeLinkTree(data) {
 	secondLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level2',
-		charts: ['list', 'scatterplot1d']
+		charts: ['list', 'scatterplot1d', 'scatterplot2d']
 	});
 
 	// Second level data
@@ -227,13 +227,24 @@ function drawNodeLinkTree(data) {
 					&& obj.independent === keyArray[1]
 		  })
 		var secondLevelG1 = g.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
-		secondLevelG1.call(oneDimensionalScatterPlot, {
+		/*secondLevelG1.call(oneDimensionalScatterPlot, {
 			yValue: d => d[yColumn],
 			circleRadius: secondLevelCircleRadius,
 			height,
 			chart_data,
 			level: 'level2'
-		});		  
+		});	*/	
+
+		secondLevelG1.call(oneDimensionalScatterPlot, {
+			xValue: d => d[yColumn],
+			yValue: d => d[yColumn],
+			circleRadius: secondLevelCircleRadius,
+			margin: { top: 10, right: 40, bottom: 88, left: 150 },
+			width: height,
+			height,
+			chart_data,
+			level: 'level2'
+		});
 
 	});
 
