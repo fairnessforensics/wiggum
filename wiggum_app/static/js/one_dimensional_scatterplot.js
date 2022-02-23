@@ -108,10 +108,12 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .attr('fill', 'black')
 		  .text(yAxisLabel);
 
-	selection.selectAll(".circle.middle")
+	selection.selectAll(xValue ? ".scatterplot2d.circle.middle" : ".scatterplot1d.circle.middle")
 		  .data(chart_data)
 		  .enter().append("circle")	    
 		  .attr("class", function(d) {
+			console.log('test');
+			console.log(xValue);
 			if (xValue) {
 				return level + " scatterplot2d middle circle " 
 					+ d.dependent + " " + d.independent + " " + d.splitby;
@@ -130,8 +132,8 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .attr("stroke", "black")
 		  .attr("stroke-width", 2)	  
 		  .style("fill", d => heatmapColorScale(d.mean_distance));
-
-	selection.selectAll("#text")
+	  
+	selection.selectAll(xValue ? ".scatterplot2d.text" : ".scatterplot1d.text")		
 		.data(chart_data)
 		.enter().append("text")	   
 		.attr("class", function(d) {
