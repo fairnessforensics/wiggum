@@ -256,9 +256,12 @@ def getAggregateSplitbyTableDict(labeled_df, cur_result_df):
     splitby_table_dict_list = []
 
     for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
-        grouped_df = trend_df.groupby(['dependent','independent','splitby']).agg(
-                                        {'distance': ['mean']}).reset_index()
-        grouped_df.columns = ['dependent', 'independent', 'splitby', 'mean_distance']
+        grouped_df = trend_df.groupby(
+                        ['dependent','independent','splitby']).agg(
+                        {'distance': ['mean'], 'subgroup_trend_strength': ['mean']}).reset_index()
+
+        grouped_df.columns = ['dependent', 'independent', 'splitby', 
+                                'mean_distance', 'mean_subgroup_trend_strength']
 
         splitby_table_dict = {}
 

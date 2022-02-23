@@ -462,12 +462,12 @@ div.tooltip {
     height: 100%;
     max-height: 100%;
     padding-right: 30px; 
-    margin-left: 85%; 
+    margin-left: 120%; 
     overflow:auto;
 }
 
 #node_link_tree {
-    width: 850px;
+    width: 1150px;
     display: inline-block;
     position: absolute;    
     background: white; 
@@ -498,7 +498,7 @@ div.tooltip {
     background: white; 
     padding-right: 30px; 
     margin-top: 40%;    
-    margin-left: 85%; 
+    margin-left: 120%; 
     overflow:auto;
 }
 

@@ -183,10 +183,17 @@ function drawNodeLinkTree(data) {
 						.attr("id","secondLevelButtons")
 						.attr("transform",  "translate(" + secondLevelG1_x + ", 0)");
 
+	// Compute extended width
+	// TODO now only consider same numbers of splitby vars in each branch, take the first branch
+	// In the future need to design if the numbers of splity vars are different.
+	var height = root.children[0].children[root.children[0].children.length - 1].x 
+		- root.children[0].children[0].x;
+
 	secondLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level2',
-		charts: ['list', 'scatterplot1d', 'scatterplot2d']
+		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
+		addWidth: height
 	});
 
 	// Second level data
@@ -226,18 +233,25 @@ function drawNodeLinkTree(data) {
 			return obj.dependent === keyArray[0]
 					&& obj.independent === keyArray[1]
 		  })
+
+		keyArray[0] = keyArray[0].replace(/\s+/g, '.');
+		keyArray[1] = keyArray[1].replace(/\s+/g, '.');
 		var secondLevelG1 = g.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
-		/*secondLevelG1.call(oneDimensionalScatterPlot, {
+		secondLevelG1.call(oneDimensionalScatterPlot, {
 			yValue: d => d[yColumn],
+			yAxisLabel: yColumn,
 			circleRadius: secondLevelCircleRadius,
 			height,
 			chart_data,
 			level: 'level2'
-		});	*/	
+		});		
 
+		var xColumn = 'mean_subgroup_trend_strength';
 		secondLevelG1.call(oneDimensionalScatterPlot, {
-			xValue: d => d[yColumn],
+			xValue: d => d[xColumn],
+			xAxisLabel: xColumn,
 			yValue: d => d[yColumn],
+			yAxisLabel: yColumn,
 			circleRadius: secondLevelCircleRadius,
 			margin: { top: 10, right: 40, bottom: 88, left: 150 },
 			width: height,
@@ -354,12 +368,15 @@ function drawNodeLinkTree(data) {
 						var dependent = d.target.data.dependent;
 						var independent = d.target.data.independent;
 						var splitby = d.target.data.splitby;
-						// TODO dep and independent also need to fix the space in class
+						// Fixed-TODO dep and independent also need to fix the space in class
 						splitby = splitby.replace(/\s+/g, '.');
+						dependent = dependent.replace(/\s+/g, '.');
+						independent = independent.replace(/\s+/g, '.');
 						var selectClass = '.level2.scatterplot1d.circle' + '.' + dependent
 											+ '.' + independent + '.' + splitby;
 						var y_position = parseFloat(d3.select(selectClass).attr('cy'));
 						var secondLevelG1 = g.select('.level-2' + '.' + dependent + '.' + independent);
+
 						const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 						const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
 
@@ -369,12 +386,17 @@ function drawNodeLinkTree(data) {
 					if (d.source.depth == 1) {
 						var keyArray = d.source.data.key.split(",");
 						var splitby = d.target.data.key;
-						// TODO dep and independent also need to fix the space in class
+						// Fixed-TODO dep and independent also need to fix the space in class
 						splitby = splitby.replace(/\s+/g, '.');
+						keyArray[0] = keyArray[0].replace(/\s+/g, '.');
+						keyArray[1] = keyArray[1].replace(/\s+/g, '.');
+
 						var selectClass = '.level2.scatterplot1d.circle' + '.' + keyArray[0]
 											+ '.' + keyArray[1] + '.' + splitby;
+
 						var y_position = parseFloat(d3.select(selectClass).attr('cy'));
 						var secondLevelG1 = g.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
+
 						const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 						const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
 						
@@ -683,7 +705,8 @@ const interactiveLevelButton = (selection, props) => {
 	const {
 		levelLabels,
 		level,
-		charts
+		charts,
+		addWidth
 	} = props;
 
 	var levelButtonGroups= selection.selectAll("g." + level + ".button")
@@ -698,11 +721,15 @@ const interactiveLevelButton = (selection, props) => {
 							// Visual Techniques
 							d3.selectAll('.'+level+'.' + charts[0])
 								.transition()
-								.style('visibility', i ? 'hidden' : 'visible');
+								.style('visibility', i == 0 ? 'visible' : 'hidden');
 								
 							d3.selectAll('.'+level + '.' + charts[1])
 								.transition()
-								.style('visibility', i ? 'visible' : 'hidden');
+								.style('visibility', i == 1 ? 'visible' : 'hidden');
+
+							d3.selectAll('.'+level + '.' + charts[2])
+								.transition()
+								.style('visibility', i == 2 ? 'visible' : 'hidden');								
 
 							// Path
 							if (level == "level1") {
@@ -742,6 +769,64 @@ const interactiveLevelButton = (selection, props) => {
 								}
 
 							} else if (level == "level2") {
+								if (i == 2) {
+									// Scatterplot2d
+									var width = 850;
+									var height = 2600;
+									var newWidth = width + addWidth;
+
+									// TODO not sure how tree layout will be affected
+									//treeLayout.size(newWidth, height);
+									
+									// Change SVG size
+									d3.select('#node_link_tree svg')
+										.attr('width', newWidth)
+										.attr('height', height);
+
+									// Adjust level 3 nodes x postion
+									d3.selectAll('.node.level-3')
+										.transition()
+										.attr("transform", function(d) { 
+											var postion_x = d.y + addWidth;
+											return "translate(" + postion_x + "," + d.x + ")"; });											
+								
+									// Move level 2 paths
+									d3.selectAll('.path.level2')
+										.each(function () {
+											d3.select(this)
+											.attr("transform",  "translate(" + addWidth + ", 0)")
+										});
+								} else {
+									// list and scatterplot1d 
+									// Check Level 2's visual technique
+									if (d3.select('.level2.scatterplot2d').style("visibility") == 'visible') {
+										// reset position for level3 nodes and level2 path
+										var width = 850;
+										var height = 2600;
+										
+										// TODO not sure how tree layout will be affected
+										//treeLayout.size(newWidth, height);
+										
+										// Change SVG size
+										d3.select('#node_link_tree svg')
+											.attr('width', width)
+											.attr('height', height);
+	
+										// Adjust level 3 nodes x postion
+										d3.selectAll('.node.level-3')
+											.transition()
+											.attr("transform", function(d) { 
+												return "translate(" + d.y + "," + d.x + ")"; });											
+									
+										// Move level 2 paths
+										d3.selectAll('.path.level2')
+											.each(function () {
+												d3.select(this)
+												.attr("transform",  "translate(0, 0)")
+											});									
+									}
+								}
+
 								// Hide all path for level 1 and level 2
 								d3.selectAll('.path.level1')
 										.transition()
@@ -756,7 +841,7 @@ const interactiveLevelButton = (selection, props) => {
 									// Level 1: list; level 2: list/scatterplot1d
 									d3.selectAll('.path.list.node.level1')
 										.transition()
-										.style('visibility', i ? 'hidden' : 'visible');
+										.style('visibility', i == 0 ? 'visible' : 'hidden');
 									d3.selectAll('.path.list.scatterplot1d.level1')
 										.transition()
 										.style('visibility', i ? 'visible' : 'hidden');	
@@ -764,7 +849,7 @@ const interactiveLevelButton = (selection, props) => {
 									// Level 1: heatmap; level 2: list/scatterplot1d
 									d3.selectAll('.path.heatmap.node.level1')
 										.transition()
-										.style('visibility', i ? 'hidden' : 'visible');	
+										.style('visibility', i == 0 ? 'visible' : 'hidden');	
 									d3.selectAll('.path.heatmap.scatterplot1d.level1')
 										.transition()
 										.style('visibility', i ? 'visible' : 'hidden');	
@@ -772,7 +857,7 @@ const interactiveLevelButton = (selection, props) => {
 								// Level 2 path
 								d3.selectAll('.path.list.node.level2')
 									.transition()
-									.style('visibility', i ? 'hidden' : 'visible');									
+									.style('visibility', i == 0 ? 'visible' : 'hidden');									
 								d3.selectAll('.path.scatterplot1d.level2')
 									.transition()
 									.style('visibility', i ? 'visible' : 'hidden');	
@@ -897,5 +982,6 @@ function initVisibility() {
 	d3.selectAll('.level2.list').transition().style('visibility', "visible");
 	d3.selectAll('.level2.scatterplot1d').transition().style('visibility', "hidden");	
 	d3.selectAll('.path.list.scatterplot1d').transition().style('visibility', "hidden");	
+	d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
 	
 }
