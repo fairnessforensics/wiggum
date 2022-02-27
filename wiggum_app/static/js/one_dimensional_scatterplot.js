@@ -112,8 +112,6 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .data(chart_data)
 		  .enter().append("circle")	    
 		  .attr("class", function(d) {
-			console.log('test');
-			console.log(xValue);
 			if (xValue) {
 				return level + " scatterplot2d middle circle " 
 					+ d.dependent + " " + d.independent + " " + d.splitby;
