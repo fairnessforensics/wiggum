@@ -166,6 +166,9 @@ def getDistanceHeatmapDict2D(labeled_df, cur_result_df):
         grouped_df["dep_indep"] = grouped_df['dependent'] + ' : ' + grouped_df['independent']
         heatmap = grouped_df.pivot(index='dep_indep', columns='splitby', values='mean_distance')
 
+        # replace Nan to 99
+        heatmap.fillna(99, inplace=True)
+
         distance_heatmap_dict = {}
 
         # trend display name
