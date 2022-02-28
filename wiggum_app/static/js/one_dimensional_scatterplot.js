@@ -54,7 +54,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			.data(chart_data)
 			.enter().append("path")	    
 			.attr("class", d => level + " scatterplot2d left circle " 
-						+ d.dependent + " " + d.independent + " " + d.splitby)	  
+						+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
 			.attr("d", d3.arc()
 						.innerRadius( 0 )
 						.outerRadius( 10 )
@@ -71,7 +71,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			.data(chart_data)
 			.enter().append("path")	    
 			.attr("class", d => level + " scatterplot2d right circle " 
-						+ d.dependent + " " + d.independent + " " + d.splitby)	  
+						+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
 			.attr("d", d3.arc()
 						.innerRadius( 0 )
 						.outerRadius( 10 )
@@ -113,11 +113,14 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .enter().append("circle")	    
 		  .attr("class", function(d) {
 			if (xValue) {
+				// Add splitby_ for differenctiate the varible in both
+				// the dependent var and splitby var case
 				return level + " scatterplot2d middle circle " 
-					+ d.dependent + " " + d.independent + " " + d.splitby;
+					+ d.dependent + " " + d.independent + " splitby_" + d.splitby;
 			  }
+
 			  return level + " scatterplot1d middle circle " 
-		  			+ d.dependent + " " + d.independent + " " + d.splitby;
+		  			+ d.dependent + " " + d.independent + " splitby_" + d.splitby;
 			})	  
 		  .attr("r", circleRadius)
 		  .attr("cx", function(d) {

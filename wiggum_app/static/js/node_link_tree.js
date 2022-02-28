@@ -17,13 +17,18 @@ function drawNodeLinkTree(data) {
 
 	var width = 850;
 	var height = 2600;
-	var margin = {top: 0, right: 40, bottom: 0, left: 60};
+	var margin = {top: 0, right: 120, bottom: 0, left: 60};
 	var innerWidth = width - margin.left - margin.right;
-	var innerHeight = height - margin.top - margin.bottom;
+	//var innerHeight = height - margin.top - margin.bottom;
+
+	// calculate the number of leaf nodes 
+	const num_leaf_nodes = result_table.length;
+
+	var treeHeight = 30 * num_leaf_nodes;
 
 	var treeLayout = d3.tree()
-					.size([innerHeight, innerWidth]);
-					//.nodeSize([25, innerWidth/4]);
+					.size([treeHeight, innerWidth]);
+					//.nodeSize([25, innerWidtjs h/4]);
 
 	var nested_data = d3.nest()
 						.key(d => [d.dependent, d.independent])
@@ -41,7 +46,7 @@ function drawNodeLinkTree(data) {
 	var svg = d3.select('#node_link_tree')
 				.append('svg');
 	var zoomG =	svg.attr('width', width)
-				.attr('height', height)
+				.attr('height', treeHeight)
 				.append('g')
 	var g = zoomG.append('g')
 				.attr('transform', `translate(${margin.left},${margin.top})`);
@@ -122,7 +127,8 @@ function drawNodeLinkTree(data) {
 	firstLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level1',
-		charts: ['list', 'heatmap']
+		charts: ['list', 'heatmap'],
+		treeHeight: treeHeight
 	});
 
 	// First level drawing
@@ -186,14 +192,29 @@ function drawNodeLinkTree(data) {
 	// Compute extended width
 	// TODO now only consider same numbers of splitby vars in each branch, take the first branch
 	// In the future need to design if the numbers of splity vars are different.
-	var height = root.children[0].children[root.children[0].children.length - 1].x 
-		- root.children[0].children[0].x;
+	//var height = root.children[0].children[root.children[0].children.length - 1].x 
+	//	- root.children[0].children[0].x;
+	var maxHeight = 300;
+	var height_array = new Array();
+	root.children.forEach(function(item, i) {
+		var height = item.children[item.children.length - 1].x 
+						- item.children[0].x;
+		// set max height
+		if (height > maxHeight) {
+			height = maxHeight;
+		}
+		var singleObj = {};
+		singleObj['key'] = item.data.key
+		singleObj['value'] = height;
+		height_array.push(singleObj);
+	});
 
 	secondLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level2',
 		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
-		addWidth: height
+		addWidthArray: height_array,
+		treeHeight: treeHeight
 	});
 
 	// Second level data
@@ -227,7 +248,7 @@ function drawNodeLinkTree(data) {
 	// Visual Tech 2: 1d scatter plot
 	root.children.forEach(function (d) {
 		var yColumn = 'mean_distance';
-		var height = d.children[d.children.length - 1].x - d.children[0].x;
+
 		var keyArray = d.data.key.split(",");
 		var chart_data = splitby_table.filter(obj => {
 			return obj.dependent === keyArray[0]
@@ -237,7 +258,27 @@ function drawNodeLinkTree(data) {
 		keyArray[0] = keyArray[0].replace(/\s+/g, '.');
 		keyArray[1] = keyArray[1].replace(/\s+/g, '.');
 		var secondLevelG1 = g.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
-		secondLevelG1.call(oneDimensionalScatterPlot, {
+
+		var secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
+		var secondLevelG1_x = parseFloat(secondLevelG1_position[1]);
+		var secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
+
+		var height = d.children[d.children.length - 1].x - d.children[0].x;
+		var offset_y;
+
+		if (height > maxHeight) {
+			offset_y = height/2 - maxHeight/2;
+			// set max height
+			height = maxHeight;
+			secondLevelG1_y = secondLevelG1_y + offset_y;
+
+		}
+
+		var secondLevelG1_visual_alter = g.append("g")
+			.attr("class", 'node level-2' + ' ' + keyArray[0] + ' ' + keyArray[1] + ' va')
+			.attr("transform", "translate(" + secondLevelG1_x + "," + secondLevelG1_y + ")");
+
+		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
 			yValue: d => d[yColumn],
 			yAxisLabel: yColumn,
 			circleRadius: secondLevelCircleRadius,
@@ -247,7 +288,7 @@ function drawNodeLinkTree(data) {
 		});		
 
 		var xColumn = 'mean_subgroup_trend_strength';
-		secondLevelG1.call(oneDimensionalScatterPlot, {
+		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
 			xValue: d => d[xColumn],
 			xAxisLabel: xColumn,
 			yValue: d => d[yColumn],
@@ -373,9 +414,9 @@ function drawNodeLinkTree(data) {
 						dependent = dependent.replace(/\s+/g, '.');
 						independent = independent.replace(/\s+/g, '.');
 						var selectClass = '.level2.scatterplot1d.circle' + '.' + dependent
-											+ '.' + independent + '.' + splitby;
+											+ '.' + independent + '.splitby_' + splitby;
 						var y_position = parseFloat(d3.select(selectClass).attr('cy'));
-						var secondLevelG1 = g.select('.level-2' + '.' + dependent + '.' + independent);
+						var secondLevelG1 = g.select('.level-2.va' + '.' + dependent + '.' + independent);
 
 						const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 						const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
@@ -392,10 +433,10 @@ function drawNodeLinkTree(data) {
 						keyArray[1] = keyArray[1].replace(/\s+/g, '.');
 
 						var selectClass = '.level2.scatterplot1d.circle' + '.' + keyArray[0]
-											+ '.' + keyArray[1] + '.' + splitby;
+											+ '.' + keyArray[1] + '.splitby_' + splitby;
 
 						var y_position = parseFloat(d3.select(selectClass).attr('cy'));
-						var secondLevelG1 = g.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
+						var secondLevelG1 = g.select('.level-2.va' + '.' + keyArray[0] + '.' + keyArray[1]);
 
 						const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 						const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
@@ -706,7 +747,8 @@ const interactiveLevelButton = (selection, props) => {
 		levelLabels,
 		level,
 		charts,
-		addWidth
+		addWidthArray,
+		treeHeight
 	} = props;
 
 	var levelButtonGroups= selection.selectAll("g." + level + ".button")
@@ -750,7 +792,8 @@ const interactiveLevelButton = (selection, props) => {
 									.style('visibility', i ? 'visible' : 'hidden');	
 								// Level 1 path
 								// Check Level 2's visual technique
-								if (d3.select('.level2.scatterplot1d').style("visibility") == 'hidden') {
+								if ((d3.select('.level2.scatterplot1d').style("visibility") == 'hidden')
+									&& (d3.select('.level2.scatterplot2d').style("visibility") == 'hidden')) {
 									// Level 1: list/heatmap; level 2: list
 									d3.selectAll('.path.list.node.level1')
 										.transition()
@@ -759,7 +802,7 @@ const interactiveLevelButton = (selection, props) => {
 										.transition()
 										.style('visibility', i ? 'visible' : 'hidden');	
 								} else {
-									// Level 1: list/heatmap; level 2: scatterplot1d
+									// Level 1: list/heatmap; level 2: scatterplot1d/scatterplot2d
 									d3.selectAll('.path.list.scatterplot1d.level1')
 										.transition()
 										.style('visibility', i ? 'hidden' : 'visible');	
@@ -772,8 +815,11 @@ const interactiveLevelButton = (selection, props) => {
 								if (i == 2) {
 									// Scatterplot2d
 									var width = 850;
-									var height = 2600;
-									var newWidth = width + addWidth;
+									var max_add_width = 
+										Math.max.apply(Math, addWidthArray.map(function(o) { 
+											return o.value; }))
+
+									var newWidth = width + max_add_width;
 
 									// TODO not sure how tree layout will be affected
 									//treeLayout.size(newWidth, height);
@@ -781,20 +827,26 @@ const interactiveLevelButton = (selection, props) => {
 									// Change SVG size
 									d3.select('#node_link_tree svg')
 										.attr('width', newWidth)
-										.attr('height', height);
+										.attr('height', treeHeight);
 
 									// Adjust level 3 nodes x postion
 									d3.selectAll('.node.level-3')
 										.transition()
-										.attr("transform", function(d) { 
-											var postion_x = d.y + addWidth;
+										.attr("transform", function(d,i) { 
+											var parentKey = d.parent.parent.data.key;
+											addWidth = addWidthArray.find( ({ key }) => key === parentKey );
+
+											var postion_x = d.y + addWidth.value;
 											return "translate(" + postion_x + "," + d.x + ")"; });											
 								
 									// Move level 2 paths
 									d3.selectAll('.path.level2')
-										.each(function () {
+										.each(function (d) {
+											var parentKey = d.source.parent.data.key;
+											addWidth = addWidthArray.find( ({ key }) => key === parentKey );
+
 											d3.select(this)
-											.attr("transform",  "translate(" + addWidth + ", 0)")
+												.attr("transform",  "translate(" + addWidth.value + ", 0)")
 										});
 								} else {
 									// list and scatterplot1d 
@@ -802,7 +854,6 @@ const interactiveLevelButton = (selection, props) => {
 									if (d3.select('.level2.scatterplot2d').style("visibility") == 'visible') {
 										// reset position for level3 nodes and level2 path
 										var width = 850;
-										var height = 2600;
 										
 										// TODO not sure how tree layout will be affected
 										//treeLayout.size(newWidth, height);
@@ -810,7 +861,7 @@ const interactiveLevelButton = (selection, props) => {
 										// Change SVG size
 										d3.select('#node_link_tree svg')
 											.attr('width', width)
-											.attr('height', height);
+											.attr('height', treeHeight);
 	
 										// Adjust level 3 nodes x postion
 										d3.selectAll('.node.level-3')
