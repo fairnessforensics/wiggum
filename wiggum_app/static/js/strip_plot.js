@@ -27,17 +27,23 @@ const stripPlot = (selection, props) => {
 		.attr("class", level + " stripplot x axis")
 		.attr("transform", "translate(0," + (-margin.top) + ")")
 		.call(xAxis)
-		.call(g => g.selectAll(".tick line").clone()
+		.call(selection => selection.selectAll(".tick line").clone()
+					.attr("class", level + " stripplot tick line")
 					.attr("stroke-opacity", 0.1)
 					.attr("y2", height + margin.top))
 		.call(selection => selection.selectAll(".domain").remove());
 
 	// y axis
-	const yAxis = d3.axisLeft(yScale);
+	const yAxis = d3.axisRight(yScale);
 	selection.append("g")
+		.attr("transform", "translate(" + width +", 0)")
 		.call(yAxis)
 		.call(selection => selection.selectAll(".tick line").clone()
-			.attr("stroke-opacity", 0.1).attr("x2", width))
+			.attr("class", level + " stripplot tick line")
+			.attr("stroke-opacity", 0.1).attr("x2", -width))
+		.call(selection => selection.selectAll(".tick")
+									.attr("class", level + " stripplot tick")
+									.style("font", "16px times"))	
 		.call(selection => selection.selectAll(".domain").remove())
 
 	selection.append("g")

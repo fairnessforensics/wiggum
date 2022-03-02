@@ -217,6 +217,7 @@ function drawNodeLinkTree(data) {
 		levelLabels,
 		level: 'level2',
 		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
+		width: width,
 		addWidthArray: height_array,
 		treeHeight: treeHeight
 	});
@@ -309,7 +310,7 @@ function drawNodeLinkTree(data) {
 
 	// Third level: subgroups
 	// Generate interactive buttons
-	var levelLabels= ['\uf0c9'];
+	var levelLabels= ['\uf03a', '\uf0c9'];
 	var thirdLevelG1 = g.select('.level-3');
 
 	const thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
@@ -323,14 +324,14 @@ function drawNodeLinkTree(data) {
 	thirdLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level3',
-		charts: ['stripplot']
+		charts: ['list', 'stripplot']
 	});
 
 	// Third level drawing
 	// Visual Tech 1: Tree nodes
 	thirdLevelG = g.selectAll('.level-3');
 	thirdLevelG.append('rect')
-		.attr("class", "cell")
+		.attr("class", "level3 list rect")
 		.attr("x", -rectWidth/2)
 		.attr("y", -rectHeight/2)		
 		.attr("width", rectWidth)
@@ -404,9 +405,9 @@ function drawNodeLinkTree(data) {
 			var height = d.children[d.children.length - 1].x - d.children[0].x;
 		
 			var thirdLevelG1_visual_alter = thirdLevelG1.append("g")
-				.attr("class", 'node level-3' + ' ' + dependent 
+				.attr("class", 'level-3' + ' ' + dependent 
 				+ ' ' + independent + ' splitby_' + splitby + ' va')
-				.attr("transform", "translate(" + 60 + "," + 0 + ")");
+				.attr("transform", "translate(" + (rectWidth + 5) + "," + 0 + ")");
 
 			thirdLevelG1_visual_alter.call(stripPlot, {
 				chart_data,
@@ -829,6 +830,7 @@ const interactiveLevelButton = (selection, props) => {
 		levelLabels,
 		level,
 		charts,
+		width,
 		addWidthArray,
 		treeHeight
 	} = props;
@@ -854,6 +856,14 @@ const interactiveLevelButton = (selection, props) => {
 							d3.selectAll('.'+level + '.' + charts[2])
 								.transition()
 								.style('visibility', i == 2 ? 'visible' : 'hidden');								
+
+							// TODO redesign for different interactions for visual alternative
+							// and visual detail view  
+							if (level == "level3") {
+								d3.selectAll('.'+level + '.rect')
+									.transition()
+									.style('visibility', 'visible');	
+							}
 
 							// Path
 							if (level == "level1") {
@@ -896,7 +906,6 @@ const interactiveLevelButton = (selection, props) => {
 							} else if (level == "level2") {
 								if (i == 2) {
 									// Scatterplot2d
-									var width = 850;
 									var max_add_width = 
 										Math.max.apply(Math, addWidthArray.map(function(o) { 
 											return o.value; }))
@@ -935,7 +944,6 @@ const interactiveLevelButton = (selection, props) => {
 									// Check Level 2's visual technique
 									if (d3.select('.level2.scatterplot2d').style("visibility") == 'visible') {
 										// reset position for level3 nodes and level2 path
-										var width = 850;
 										
 										// TODO not sure how tree layout will be affected
 										//treeLayout.size(newWidth, height);
@@ -1117,4 +1125,7 @@ function initVisibility() {
 	d3.selectAll('.path.list.scatterplot1d').transition().style('visibility', "hidden");	
 	d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
 	
+	// subgroup level
+	d3.selectAll('.level3.list').transition().style('visibility', "visible");
+	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
 }
