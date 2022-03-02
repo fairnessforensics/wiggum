@@ -1,5 +1,5 @@
 variable,dtype,var_type,role,isCount,weighting_var
-department,int64,categorical,"['groupby', 'trend']",,
-gender,object,categorical,"['groupby', 'trend']",,
-decision,int64,binary,trend,,
-race,object,categorical,"['groupby', 'trend']",,
+department,int64,categorical,"['independent', 'splitby']",False,
+gender,object,categorical,"['independent', 'splitby']",False,
+decision,int64,binary,['dependent'],False,
+race,object,categorical,"['independent', 'splitby']",False,

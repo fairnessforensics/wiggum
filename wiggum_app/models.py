@@ -396,6 +396,75 @@ def getRankTrendDetail(labeled_df, dependent, independent, splitby):
 
     return detail_df, count_df
 
+def getAllRankTrendDetail(labeled_df):
+    """
+    Extract all stats for rank trend detail view.
+
+    Parameters
+    -----------
+    labeled_df : DataFrame
+        LabeledDataFrame                          
+    Returns
+    --------
+    detail_df_dict_list: dict
+        detail stats
+    """
+
+    # trend dictionary
+    trend_idx_dict = {cur_trend.name: i for i, cur_trend in enumerate(labeled_df.trend_list)} 
+    # get index for rank trend
+    rank_trend_idx = trend_idx_dict.get("rank_trend")
+
+    trend_precompute = labeled_df.trend_list[rank_trend_idx].trend_precompute
+
+    detail_df_dict_list = []
+
+    sel_agg_trend = '_'.join(['rank_trend', 'agg_trend'])
+
+    for key1 in trend_precompute:
+        if key1.startswith(sel_agg_trend):
+            # subgroups' stats
+            sel_subgroup_trend_all = key1.replace("agg_trend", "subgroup_trend")
+            
+            temp_key = []
+
+            for key2 in trend_precompute:
+                # remove the last subgroup string
+                removed_string = key2.rsplit('_', 1)[0]
+                if key2.startswith(sel_subgroup_trend_all) and not(removed_string in temp_key):
+                    temp_key.append(removed_string)
+
+                    # create a new DataFrame for detail view
+                    detail_df = pd.DataFrame()
+
+                    # aggregate's stats
+                    detail_df['aggregate'] = trend_precompute[key1].stat
+
+                    dependent = key2.split('_')[-4]
+                    independent = key2.split('_')[-3]
+                    splitby = key2.split('_')[-2]
+
+                    sel_subgroup_trend = '_'.join([sel_subgroup_trend_all, splitby])
+                    for key3 in trend_precompute:
+                        if key3.startswith(sel_subgroup_trend):
+                            # get value of the last segment after '-'
+                            # subgroup' name can't have '_', otherwise partial subgroup name will be extracted
+                            subgroup = key3.split('_')[-1]
+                            detail_df[subgroup] = trend_precompute[key3].stat
+
+                    detail_df.fillna(0, inplace=True)
+
+                    detail_df_dict = {}
+                    detail_df_dict = {'trend_type' : 'rank_trend',
+                                'dependent' : dependent,
+                                'independent' : independent,                                
+                                'splitby' : splitby,
+                                'detail_df':detail_df.to_json(orient='index')}
+
+                    detail_df_dict_list.append(detail_df_dict)
+
+    return detail_df_dict_list
+
 def getMetaDict(labeled_df):
     """
     Get Display Dictitonary for index.html

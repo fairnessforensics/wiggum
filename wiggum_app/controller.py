@@ -59,6 +59,9 @@ def explore():
                 agg_splitby_table_dict = models.getAggregateSplitbyTableDict(
                                         labeled_df_setup, labeled_df_setup.result_df)
 
+                # Get details for subgroup level
+                rank_trend_detail_dict = models.getAllRankTrendDetail(labeled_df_setup)
+
             return jsonify(dep_vars = dep_vars,
                             indep_vars = indep_vars,
                             splitby_vars = splitby_vars,
@@ -66,7 +69,8 @@ def explore():
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
                             distance_heatmap_dict = distance_heatmap_dict,
                             agg_distance_heatmap_dict = agg_distance_heatmap_dict,
-                            agg_splitby_table_dict = agg_splitby_table_dict) 
+                            agg_splitby_table_dict = agg_splitby_table_dict,
+                            rank_trend_detail_dict = rank_trend_detail_dict) 
 
         if action == 'rect_select':
             selected_data = request.form['selected_data']

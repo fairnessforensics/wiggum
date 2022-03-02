@@ -15,16 +15,16 @@ function drawNodeLinkTree(data) {
 
     var result_table = JSON.parse(data.result_df);
 
-	var width = 850;
+	var width = 1150;
 	var height = 2600;
-	var margin = {top: 0, right: 120, bottom: 0, left: 60};
+	var margin = {top: 30, right: 420, bottom: 0, left: 60};
 	var innerWidth = width - margin.left - margin.right;
 	//var innerHeight = height - margin.top - margin.bottom;
 
 	// calculate the number of leaf nodes 
 	const num_leaf_nodes = result_table.length;
 
-	var treeHeight = 30 * num_leaf_nodes;
+	var treeHeight = 30 * num_leaf_nodes + margin.top;
 
 	var treeLayout = d3.tree()
 					.size([treeHeight, innerWidth]);
@@ -46,7 +46,7 @@ function drawNodeLinkTree(data) {
 	var svg = d3.select('#node_link_tree')
 				.append('svg');
 	var zoomG =	svg.attr('width', width)
-				.attr('height', treeHeight)
+				.attr('height', treeHeight + margin.top)
 				.append('g')
 	var g = zoomG.append('g')
 				.attr('transform', `translate(${margin.left},${margin.top})`);
@@ -66,6 +66,10 @@ function drawNodeLinkTree(data) {
 								// splitby level
 								var keyArray = d.parent.data.key.split(",");
 								return 'node level-' + d.depth + ' ' + keyArray[0] + ' ' + keyArray[1];
+							} else if (d.depth == 3) {
+								// subgroup level
+								return 'node level-' + d.depth + ' ' + d.data.dependent + ' ' 
+											+ d.data.independent + ' splitby_' + d.data.splitby;								
 							}
 							return 'node level-' + d.depth;
 						})
@@ -122,7 +126,7 @@ function drawNodeLinkTree(data) {
 	//container for all buttons
 	var firstLevelButtons= g.append("g")
 						.attr("id","firstLevelButtons")
-						.attr("transform",  "translate(" + firstLevelG1_x + ", 0)");
+						.attr("transform",  "translate(" + firstLevelG1_x + ", " + (-margin.top) + ")");
 
 	firstLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
@@ -187,7 +191,7 @@ function drawNodeLinkTree(data) {
 	//container for all buttons
 	var secondLevelButtons= g.append("g")
 						.attr("id","secondLevelButtons")
-						.attr("transform",  "translate(" + secondLevelG1_x + ", 0)");
+						.attr("transform",  "translate(" + secondLevelG1_x + ", " + (-margin.top) + ")");
 
 	// Compute extended width
 	// TODO now only consider same numbers of splitby vars in each branch, take the first branch
@@ -303,6 +307,25 @@ function drawNodeLinkTree(data) {
 
 	});
 
+	// Third level: subgroups
+	// Generate interactive buttons
+	var levelLabels= ['\uf0c9'];
+	var thirdLevelG1 = g.select('.level-3');
+
+	const thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
+	const thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
+
+	//container for all buttons
+	var thirdLevelButtons= g.append("g")
+						.attr("id","thirdLevelButtons")
+						.attr("transform",  "translate(" + thirdLevelG1_x + ", " + (-margin.top) + ")");
+
+	thirdLevelButtons.call(interactiveLevelButton, {
+		levelLabels,
+		level: 'level3',
+		charts: ['stripplot']
+	});
+
 	// Third level drawing
 	// Visual Tech 1: Tree nodes
 	thirdLevelG = g.selectAll('.level-3');
@@ -335,6 +358,65 @@ function drawNodeLinkTree(data) {
 		.style("pointer-events", function(d, i) {
 			return !d.depth ? "none" : "all";
 		}); 
+
+	// Visual Tech 2: strip plot
+	root.children.forEach(function (pattern) {
+		pattern.children.forEach(function (d) {
+			var dependent = d.data.values[0].dependent;
+			var independent = d.data.values[0].independent;
+			var splitby = d.data.values[0].splitby;
+			var thirdLevelG1 = g.select('.level-3' + '.' + dependent 
+									+ '.' + independent + '.splitby_' + splitby);
+
+			var detail_dict = data.rank_trend_detail_dict.find(obj => {
+				return obj.dependent === dependent
+						&& obj.independent === independent
+						&& obj.splitby === splitby
+			  });
+			var detail_dict = JSON.parse(detail_dict.detail_df);
+
+			var chart_data = [];
+			var agg_chart_data = [];
+
+			for (const [key1, value1] of Object.entries(detail_dict)) {
+				var agg_value = value1.aggregate;
+				for (const [key2, value2] of Object.entries(value1)) {
+					if (key2 != 'aggregate') {
+						var object = {};
+						object['name'] = key1;
+						object['subgroup'] = key2;		
+						object['value'] = value2;	
+						chart_data.push(object);	
+
+						var agg_object = {};
+						agg_object['name'] = key1;
+						agg_object['subgroup'] = key2;		
+						agg_object['value'] = agg_value;	
+						agg_chart_data.push(agg_object);	
+					} 
+				}
+			}
+
+			//var thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
+			//var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
+			//var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
+	
+			var height = d.children[d.children.length - 1].x - d.children[0].x;
+		
+			var thirdLevelG1_visual_alter = thirdLevelG1.append("g")
+				.attr("class", 'node level-3' + ' ' + dependent 
+				+ ' ' + independent + ' splitby_' + splitby + ' va')
+				.attr("transform", "translate(" + 60 + "," + 0 + ")");
+
+			thirdLevelG1_visual_alter.call(stripPlot, {
+				chart_data,
+				agg_chart_data,
+				width: 300,
+				height: height,
+				level: 'level3'
+			});		
+		})
+	})
 
 	// Generate links
 	var numrows = matrix_data.length;
