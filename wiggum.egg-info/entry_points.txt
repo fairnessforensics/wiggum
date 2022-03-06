@@ -1,0 +1,3 @@
+[console_scripts]
+wiggum-app = wiggum_app.command_line:main
+

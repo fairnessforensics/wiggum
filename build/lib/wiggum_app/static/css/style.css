@@ -212,22 +212,8 @@ line.slope-line4all{
     float: left;
 }
 
-.container {
+.row {
     height: 160px;
-    padding: 10px;
-}
-/* .row{
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 2px;
-} */
-
-/* Label for choosing file */
-#chooseFile{
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    left: 0;
 }
 
 #table {
