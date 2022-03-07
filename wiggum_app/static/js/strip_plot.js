@@ -21,6 +21,8 @@ const stripPlot = (selection, props) => {
 					
 	const color = d3.scaleOrdinal(d3.schemeCategory10);
 
+	var interval = yScale.step();
+
 	// x axis
 	const xAxis = d3.axisTop(xScale).ticks(5, "%");
 	selection.append("g")
@@ -30,7 +32,7 @@ const stripPlot = (selection, props) => {
 		.call(selection => selection.selectAll(".tick line").clone()
 					.attr("class", level + " stripplot tick line")
 					.attr("stroke-opacity", 0.1)
-					.attr("y2", height + margin.top))
+					.attr("y2", height + margin.top + interval/2))
 		.call(selection => selection.selectAll(".domain").remove());
 
 	// y axis
@@ -38,13 +40,28 @@ const stripPlot = (selection, props) => {
 	selection.append("g")
 		.attr("transform", "translate(" + width +", 0)")
 		.call(yAxis)
-		.call(selection => selection.selectAll(".tick line").clone()
-			.attr("class", level + " stripplot tick line")
-			.attr("stroke-opacity", 0.1).attr("x2", -width))
 		.call(selection => selection.selectAll(".tick")
 									.attr("class", level + " stripplot tick")
-									.style("font", "16px times"))	
-		.call(selection => selection.selectAll(".domain").remove())
+									.style("font", "16px times"))
+		.call(selection => selection.selectAll(".tick line").clone()
+									.attr("class", level + " stripplot tick sline")
+									.attr("stroke-opacity", 1)
+									.attr("x2", -width))
+		.call(selection => selection.selectAll(".domain").remove());
+
+	// Add a top line
+	selection.append('line')
+		.attr("class", level + " stripplot topline")
+		.style("stroke", "black")
+		.attr("stroke-opacity", 1)
+		.attr("x1", 0)
+		.attr("y1", -interval/2 + 1)
+		.attr("x2", width)
+		.attr("y2", -interval/2 + 1);
+
+	// Shift the separating line by half interval
+	selection.selectAll(".sline")
+		.attr("transform", "translate(0, " + interval/2 +")");
 
 	selection.append("g")
 		.selectAll(".circle.subgroup")
