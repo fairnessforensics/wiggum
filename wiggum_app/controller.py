@@ -59,8 +59,13 @@ def explore():
                 agg_splitby_table_dict = models.getAggregateSplitbyTableDict(
                                         labeled_df_setup, labeled_df_setup.result_df)
 
+                trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
                 # Get details for subgroup level
-                rank_trend_detail_dict = models.getAllRankTrendDetail(labeled_df_setup)
+                # TODO fix the hard code
+                if 'rank_trend' in list(trend_type_list):
+                    rank_trend_detail_dict = models.getAllRankTrendDetail(labeled_df_setup)
+                else:
+                    rank_trend_detail_dict = ''
 
             return jsonify(dep_vars = dep_vars,
                             indep_vars = indep_vars,
