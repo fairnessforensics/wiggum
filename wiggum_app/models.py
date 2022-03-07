@@ -440,6 +440,8 @@ def getAllRankTrendDetail(labeled_df):
                     # aggregate's stats
                     detail_df['aggregate'] = trend_precompute[key1].stat
 
+                    # TODO if those variables already have underscore symbol,
+                    # the index will be wrong
                     dependent = key2.split('_')[-4]
                     independent = key2.split('_')[-3]
                     splitby = key2.split('_')[-2]
