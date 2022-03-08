@@ -83,7 +83,10 @@ const districtMap = (selection, props) => {
 						var link = leaf_node_links.find(obj => {
 							return obj.target.data.subgroup === district_id
 						  })
-
+						if (link == null) {
+							// e.g., Florida case, missing district 25
+							return [path.centroid(d)[0], path.centroid(d)[1]];
+						}
 						return [0, link.target.x - offset_y];
 					}).target(function(d) {
 						return [path.centroid(d)[0], path.centroid(d)[1]];
