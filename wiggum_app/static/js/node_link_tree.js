@@ -17,7 +17,7 @@ function drawNodeLinkTree(data) {
 
 	var width = 1150;
 	var height = 2600;
-	var margin = {top: 30, right: 420, bottom: 0, left: 60};
+	var margin = {top: 40, right: 420, bottom: 0, left: 60};
 	var innerWidth = width - margin.left - margin.right;
 	//var innerHeight = height - margin.top - margin.bottom;
 
