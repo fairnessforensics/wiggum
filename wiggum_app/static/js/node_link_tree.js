@@ -968,7 +968,14 @@ const interactiveLevelButton = (selection, props) => {
 
 											var postion_x = d.y + addWidth.value;
 											return "translate(" + postion_x + "," + d.x + ")"; });											
-								
+
+									// Adjust level 3 button x postion
+									d3.selectAll('.button.level3')
+										.each(function () {
+											d3.select(this)
+												.attr("transform",  "translate(" + addWidth.value + ", 0)")
+										});												
+
 									// Move level 2 paths
 									d3.selectAll('.path.level2')
 										.each(function (d) {
@@ -998,6 +1005,13 @@ const interactiveLevelButton = (selection, props) => {
 											.attr("transform", function(d) { 
 												return "translate(" + d.y + "," + d.x + ")"; });											
 									
+										// Adjust level 3 button x postion
+										d3.selectAll('.button.level3')
+											.each(function () {
+												d3.select(this)
+													.attr("transform",  "translate(0, 0)")
+											});	
+
 										// Move level 2 paths
 										d3.selectAll('.path.level2')
 											.each(function () {
