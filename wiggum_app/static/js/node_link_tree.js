@@ -310,7 +310,7 @@ function drawNodeLinkTree(data) {
 
 	// Third level: subgroups
 	// Generate interactive buttons
-	var levelLabels= ['\uf03a', '\uf0c9'];
+	var levelLabels= ['\uf03a', '\uf0c9', '\uf279'];
 	var thirdLevelG1 = g.select('.level-3');
 
 	const thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
@@ -324,7 +324,7 @@ function drawNodeLinkTree(data) {
 	thirdLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level3',
-		charts: ['list', 'stripplot']
+		charts: ['list', 'stripplot', 'districtmap']
 	});
 
 	// Third level drawing
@@ -360,7 +360,7 @@ function drawNodeLinkTree(data) {
 			return !d.depth ? "none" : "all";
 		}); 
 
-	// Visual Tech 2: strip plot
+	// Visual Alternatives
 	root.children.forEach(function (pattern) {
 		pattern.children.forEach(function (d) {
 			var dependent = d.data.values[0].dependent;
@@ -409,11 +409,44 @@ function drawNodeLinkTree(data) {
 				+ ' ' + independent + ' splitby_' + splitby + ' va')
 				.attr("transform", "translate(" + (rectWidth + 5) + "," + 0 + ")");
 
+			// Visual Tech 2: strip plot
 			thirdLevelG1_visual_alter.call(stripPlot, {
 				chart_data,
 				agg_chart_data,
 				width: 300,
 				height: height,
+				level: 'level3'
+			});	
+
+			// Visual Tech 3: map
+			var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
+				.attr("class", 'level-3' + ' ' + dependent 
+				+ ' ' + independent + ' splitby_' + splitby + ' va map')
+				.attr("transform", "translate(" + (rectWidth + 5) + ", 0)");
+				//.attr("transform", "translate(" + (rectWidth + 5) + "," + (-rectHeight) + ")");
+
+			// extract leaf nodes
+			var leaf_node_links = links.filter(obj => {
+				return obj.target.data.dependent === dependent
+						&& obj.target.data.independent === independent
+						&& obj.target.data.splitby === splitby
+			  })
+
+			var thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
+			var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
+			var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
+
+			// get state name from df
+			var df_data = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+			var state_name = df_data[0].state;
+
+			thirdLevelG1_visual_alter_map.call(districtMap, {
+				chart_data,
+				state_name,
+				leaf_node_links,
+				width: height + rectHeight,
+				height: height + rectHeight,
+				offset_y: thirdLevelG1_y,
 				level: 'level3'
 			});		
 		})
@@ -863,6 +896,12 @@ const interactiveLevelButton = (selection, props) => {
 								d3.selectAll('.'+level + '.rect')
 									.transition()
 									.style('visibility', 'visible');	
+								if (i == 2) {
+									// Map button clicked
+									d3.selectAll('.'+level + '.text')
+									.transition()
+									.style('visibility', 'visible');	
+								}
 							}
 
 							// Path
@@ -1128,4 +1167,5 @@ function initVisibility() {
 	// subgroup level
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
 	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.districtmap').transition().style('visibility', "hidden");	
 }
