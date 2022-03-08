@@ -1,4 +1,4 @@
-state,district,precinct,party_simplified,candidate,votes
+state,district,precinct,party,candidate,votes
 OKLAHOMA,1,190415,DEMOCRAT,KOJO ASAMOA-CAESAR,66
 OKLAHOMA,1,190415,REPUBLICAN,KEVIN HERN,395
 OKLAHOMA,1,190416,DEMOCRAT,KOJO ASAMOA-CAESAR,108
