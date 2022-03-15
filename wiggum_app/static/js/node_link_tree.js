@@ -360,97 +360,106 @@ function drawNodeLinkTree(data) {
 			return !d.depth ? "none" : "all";
 		}); 
 
-	// Visual Alternatives
-	root.children.forEach(function (pattern) {
-		pattern.children.forEach(function (d) {
-			var dependent = d.data.values[0].dependent;
-			var independent = d.data.values[0].independent;
-			var splitby = d.data.values[0].splitby;
-			var thirdLevelG1 = g.select('.level-3' + '.' + dependent 
-									+ '.' + independent + '.splitby_' + splitby);
+	// TODO rank trend has va
+	if (agg_data.detail_view_type == 'rank') {	
+		// Visual Alternatives
+		root.children.forEach(function (pattern) {
+			pattern.children.forEach(function (d) {
+				var dependent = d.data.values[0].dependent;
+				var independent = d.data.values[0].independent;
+				var splitby = d.data.values[0].splitby;
+				var thirdLevelG1 = g.select('.level-3' + '.' + dependent 
+										+ '.' + independent + '.splitby_' + splitby);
 
-			var detail_dict = data.rank_trend_detail_dict.find(obj => {
-				return obj.dependent === dependent
-						&& obj.independent === independent
-						&& obj.splitby === splitby
-			  });
-			var detail_dict = JSON.parse(detail_dict.detail_df);
+				var detail_dict = data.rank_trend_detail_dict.find(obj => {
+					return obj.dependent === dependent
+							&& obj.independent === independent
+							&& obj.splitby === splitby
+				});
+				var detail_dict = JSON.parse(detail_dict.detail_df);
 
-			var chart_data = [];
-			var agg_chart_data = [];
+				var chart_data = [];
+				var agg_chart_data = [];
 
-			for (const [key1, value1] of Object.entries(detail_dict)) {
-				var agg_value = value1.aggregate;
-				for (const [key2, value2] of Object.entries(value1)) {
-					if (key2 != 'aggregate') {
-						var object = {};
-						object['name'] = key1;
-						object['subgroup'] = key2;		
-						object['value'] = value2;	
-						chart_data.push(object);	
+				for (const [key1, value1] of Object.entries(detail_dict)) {
+					var agg_value = value1.aggregate;
+					for (const [key2, value2] of Object.entries(value1)) {
+						if (key2 != 'aggregate') {
+							var object = {};
+							object['name'] = key1;
+							object['subgroup'] = key2;		
+							object['value'] = value2;	
+							chart_data.push(object);	
 
-						var agg_object = {};
-						agg_object['name'] = key1;
-						agg_object['subgroup'] = key2;		
-						agg_object['value'] = agg_value;	
-						agg_chart_data.push(agg_object);	
-					} 
+							var agg_object = {};
+							agg_object['name'] = key1;
+							agg_object['subgroup'] = key2;		
+							agg_object['value'] = agg_value;	
+							agg_chart_data.push(agg_object);	
+						} 
+					}
 				}
-			}
 
-			//var thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
-			//var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
-			//var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
-	
-			var height = d.children[d.children.length - 1].x - d.children[0].x;
+				//var thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
+				//var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
+				//var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
 		
-			var thirdLevelG1_visual_alter = thirdLevelG1.append("g")
-				.attr("class", 'level-3' + ' ' + dependent 
-				+ ' ' + independent + ' splitby_' + splitby + ' va')
-				.attr("transform", "translate(" + (rectWidth + 5) + "," + 0 + ")");
+				var height = d.children[d.children.length - 1].x - d.children[0].x;
+			
+				var thirdLevelG1_visual_alter = thirdLevelG1.append("g")
+					.attr("class", 'level-3' + ' ' + dependent 
+					+ ' ' + independent + ' splitby_' + splitby + ' va')
+					.attr("transform", "translate(" + (rectWidth + 5) + "," + 0 + ")");
 
-			// Visual Tech 2: strip plot
-			thirdLevelG1_visual_alter.call(stripPlot, {
-				chart_data,
-				agg_chart_data,
-				width: 300,
-				height: height,
-				level: 'level3'
-			});	
+				// Visual Tech 2: strip plot
+				thirdLevelG1_visual_alter.call(stripPlot, {
+					chart_data,
+					agg_chart_data,
+					width: 300,
+					height: height,
+					level: 'level3'
+				});	
 
-			// Visual Tech 3: map
-			var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
-				.attr("class", 'level-3' + ' ' + dependent 
-				+ ' ' + independent + ' splitby_' + splitby + ' va map')
-				.attr("transform", "translate(" + (rectWidth + 5) + ", 0)");
-				//.attr("transform", "translate(" + (rectWidth + 5) + "," + (-rectHeight) + ")");
+				// Visual Tech 3: map
+				var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
+					.attr("class", 'level-3' + ' ' + dependent 
+					+ ' ' + independent + ' splitby_' + splitby + ' va map')
+					.attr("transform", "translate(" + (rectWidth + 5) + ", 0)");
+					//.attr("transform", "translate(" + (rectWidth + 5) + "," + (-rectHeight) + ")");
 
-			// extract leaf nodes
-			var leaf_node_links = links.filter(obj => {
-				return obj.target.data.dependent === dependent
-						&& obj.target.data.independent === independent
-						&& obj.target.data.splitby === splitby
-			  })
+				// extract leaf nodes
+				var leaf_node_links = links.filter(obj => {
+					return obj.target.data.dependent === dependent
+							&& obj.target.data.independent === independent
+							&& obj.target.data.splitby === splitby
+				})
 
-			var thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
-			var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
-			var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
+				var thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
+				var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
+				var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
 
-			// get state name from df
-			var df_data = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
-			var state_name = df_data[0].state;
+				// get state name from df
+				var df_data = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+				var state_name = df_data[0].state;
 
-			thirdLevelG1_visual_alter_map.call(districtMap, {
-				chart_data,
-				state_name,
-				leaf_node_links,
-				width: height + rectHeight,
-				height: height + rectHeight,
-				offset_y: thirdLevelG1_y,
-				level: 'level3'
-			});		
+				var map_data = result_table.filter(obj => {
+					return obj.dependent === dependent
+							&& obj.independent === independent
+							&& obj.splitby === splitby
+				  });
+
+				thirdLevelG1_visual_alter_map.call(districtMap, {
+					chart_data: map_data,
+					state_name,
+					leaf_node_links,
+					width: height + rectHeight,
+					height: height + rectHeight,
+					offset_y: thirdLevelG1_y,
+					level: 'level3'
+				});		
+			})
 		})
-	})
+	}
 
 	// Generate links
 	var numrows = matrix_data.length;

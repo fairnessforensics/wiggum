@@ -63,7 +63,21 @@ const districtMap = (selection, props) => {
 			.data(state_districts)
 			.enter().append("path")
 			.attr("d", path)
-			.attr("fill", "#fff")
+			//.attr("fill", "#fff")
+			.style("fill", function(d) {
+				console.log(chart_data);
+				console.log(d);
+				var district_id = d.id % 100;
+				var row = chart_data.find(obj => {
+					return obj.subgroup === district_id
+				  })
+
+				if (row != null) {
+					return heatmapColorScale(row.distance);
+				} else {
+					return '#fff';
+				} 
+			})
 			.attr("stroke", "black");
 			
 		mapG.selectAll('circle')
