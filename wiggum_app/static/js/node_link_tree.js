@@ -17,7 +17,7 @@ function drawNodeLinkTree(data) {
 
 	var width = 1150;
 	var height = 2600;
-	var margin = {top: 40, right: 420, bottom: 0, left: 60};
+	var margin = {top: 50, right: 420, bottom: 0, left: 60};
 	var innerWidth = width - margin.left - margin.right;
 	//var innerHeight = height - margin.top - margin.bottom;
 
@@ -124,9 +124,10 @@ function drawNodeLinkTree(data) {
 	const firstLevelG1_x = parseFloat(firstLevelG1_position[1]);
 
 	//container for all buttons
+	var button_offset_x = 37;
 	var firstLevelButtons= g.append("g")
 						.attr("id","firstLevelButtons")
-						.attr("transform",  "translate(" + firstLevelG1_x + ", " + (-margin.top) + ")");
+						.attr("transform",  "translate(" + (firstLevelG1_x-button_offset_x) + ", " + (-margin.top) + ")");
 
 	firstLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
@@ -191,7 +192,7 @@ function drawNodeLinkTree(data) {
 	//container for all buttons
 	var secondLevelButtons= g.append("g")
 						.attr("id","secondLevelButtons")
-						.attr("transform",  "translate(" + secondLevelG1_x + ", " + (-margin.top) + ")");
+						.attr("transform",  "translate(" + (secondLevelG1_x-button_offset_x) + ", " + (-margin.top) + ")");
 
 	// Compute extended width
 	// TODO now only consider same numbers of splitby vars in each branch, take the first branch
@@ -310,7 +311,7 @@ function drawNodeLinkTree(data) {
 
 	// Third level: subgroups
 	// Generate interactive buttons
-	var levelLabels= ['\uf03a', '\uf0c9', '\uf279'];
+	var levelLabels= ['\uf03a', '\uf0c9', '\uf279', '\uf080'];
 	var thirdLevelG1 = g.select('.level-3');
 
 	const thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
@@ -319,12 +320,12 @@ function drawNodeLinkTree(data) {
 	//container for all buttons
 	var thirdLevelButtons= g.append("g")
 						.attr("id","thirdLevelButtons")
-						.attr("transform",  "translate(" + thirdLevelG1_x + ", " + (-margin.top) + ")");
+						.attr("transform",  "translate(" + (thirdLevelG1_x-button_offset_x) + ", " + (-margin.top) + ")");
 
 	thirdLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level3',
-		charts: ['list', 'stripplot', 'districtmap']
+		charts: ['list', 'stripplot', 'districtmap', 'barchart']
 	});
 
 	// Third level drawing
@@ -362,6 +363,29 @@ function drawNodeLinkTree(data) {
 
 	// TODO rank trend has va
 	if (agg_data.detail_view_type == 'rank') {	
+		// Prepare the transition position
+		// Calculate the distance between the first node and the last node
+		//var tree_height = (root.x - margin.top) * 2;
+		var actual_tree_height = treeHeight - margin.top;
+
+		// Calculate the number of charts
+		var num_charts = 0;
+		root.children.forEach(function (pattern) {
+			pattern.children.forEach(function (d) {
+				num_charts = num_charts + 1;
+			})
+		});
+
+		// TODO input by user 
+		var chart_height = treeHeight / num_charts;
+		var chart_height = 150;
+		var total_height = chart_height * num_charts;	
+		var diff_height = actual_tree_height - total_height;
+
+		var used_height = 0;
+		var relative_translate_y = 0;
+		var absolute_translate_y = 0;
+
 		// Visual Alternatives
 		root.children.forEach(function (pattern) {
 			pattern.children.forEach(function (d) {
@@ -440,23 +464,78 @@ function drawNodeLinkTree(data) {
 
 				// get state name from df
 				var df_data = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
-				var state_name = df_data[0].state;
+				
+				// TODO temporarily using state to check
+				if (df_data[0].state != undefined) {
+					var state_name = df_data[0].state;
 
-				var map_data = result_table.filter(obj => {
-					return obj.dependent === dependent
-							&& obj.independent === independent
-							&& obj.splitby === splitby
-				  });
+					var map_data = result_table.filter(obj => {
+						return obj.dependent === dependent
+								&& obj.independent === independent
+								&& obj.splitby === splitby
+					});
 
-				thirdLevelG1_visual_alter_map.call(districtMap, {
-					chart_data: map_data,
-					state_name,
-					leaf_node_links,
-					width: height + rectHeight,
-					height: height + rectHeight,
-					offset_y: thirdLevelG1_y,
+					thirdLevelG1_visual_alter_map.call(districtMap, {
+						chart_data: map_data,
+						state_name,
+						leaf_node_links,
+						width: height + rectHeight,
+						height: height + rectHeight,
+						offset_y: thirdLevelG1_y,
+						level: 'level3'
+					});		
+				}
+
+				// Visual Tech 4: grouped bar chart
+				var first_node_y = d.children[0].x;
+
+				if (used_height == 0) {
+					relative_translate_y = diff_height / 2;
+				} else {
+					relative_translate_y = absolute_translate_y + chart_height - first_node_y;
+				}
+
+				used_height = used_height + chart_height;
+				absolute_translate_y = thirdLevelG1_y + relative_translate_y;
+
+				var thirdLevelG1_visual_alter_barchart = thirdLevelG1.append("g")
+					.attr("class", 'level-3' + ' ' + dependent 
+					+ ' ' + independent + ' splitby_' + splitby + ' va barchart')
+					.attr("transform", "translate(" + (rectWidth + 30) + ", " + relative_translate_y +")");
+
+				var bar_chart_data = [];
+
+				d.data.values.forEach(function (item) {
+					var singleObj = {};
+					singleObj['subgroup'] = item.subgroup;
+					for (var i = 0; i < chart_data.length; i++){
+						if (item.subgroup == chart_data[i].subgroup) {
+							var key = chart_data[i].name;
+							singleObj[key] = chart_data[i].value;
+						}
+					}
+					bar_chart_data.push(singleObj);
+				});
+				const xValue = chart_data => chart_data['value'];
+				var xDomain = [0, d3.max(chart_data, xValue)];
+
+				thirdLevelG1_visual_alter_barchart.call(barChart, {
+					chart_data: bar_chart_data,
+					width: 300,
+					height: chart_height,
+					xDomain,
 					level: 'level3'
-				});		
+				});	
+
+				/*thirdLevelG1_visual_alter_barchart
+					.append("rect")
+					.attr("width", 20)
+					.attr("height",20)
+					.attr("x",0)
+					.attr("y",0)
+					.attr("fill","red")
+				*/
+		
 			})
 		})
 	}
@@ -899,13 +978,17 @@ const interactiveLevelButton = (selection, props) => {
 								.transition()
 								.style('visibility', i == 2 ? 'visible' : 'hidden');								
 
+							d3.selectAll('.'+level + '.' + charts[3])
+								.transition()
+								.style('visibility', i == 3 ? 'visible' : 'hidden');
+
 							// TODO redesign for different interactions for visual alternative
 							// and visual detail view  
 							if (level == "level3") {
 								d3.selectAll('.'+level + '.rect')
 									.transition()
 									.style('visibility', 'visible');	
-								if (i == 2) {
+								if (i == 2 || i == 3) {
 									// Map button clicked
 									d3.selectAll('.'+level + '.text')
 									.transition()
@@ -1154,8 +1237,10 @@ const interactiveLevelButton = (selection, props) => {
 				.attr("class","buttonRect")
 				.attr("width",bWidth)
 				.attr("height",bHeight)
-				.attr("x",function(d,i) {return x0+(bWidth+bSpace)*i;})
-				.attr("y",y0)
+				//.attr("x",function(d,i) {return x0+(bWidth+bSpace)*i;})
+				//.attr("y",y0)				
+				.attr("x",function(d,i) {var col = i%2; return x0+(bWidth+bSpace)*col;})
+				.attr("y",function(d,i) {var row = Math.floor(i/2); return y0 + (bHeight+bSpace)*row })
 				.attr("rx",5) //rx and ry give the buttons rounded corners
 				.attr("ry",5)
 				.attr("fill","#797979")
@@ -1166,9 +1251,15 @@ const interactiveLevelButton = (selection, props) => {
                 .attr("class","buttonText")
                 .attr("font-family","FontAwesome")
                 .attr("x",function(d,i) {
-                    return x0 + (bWidth+bSpace)*i + bWidth/2;
+					//return x0 + (bWidth+bSpace)*i + bWidth/2;
+					var index = i%2;
+                    return x0 + (bWidth+bSpace)*index + bWidth/2;
                 })
-                .attr("y",y0+bHeight/2)
+				//.attr("y",y0+bHeight/2)
+                .attr("y",function(d,i) {
+					var row = Math.floor(i/2);
+					return y0+bHeight/2 + (bHeight+bSpace)*row;
+				})
                 .attr("text-anchor","middle")
                 .attr("dominant-baseline","central")
                 .attr("fill","white")
@@ -1191,4 +1282,5 @@ function initVisibility() {
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
 	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.districtmap').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.barchart').transition().style('visibility', "hidden");	
 }

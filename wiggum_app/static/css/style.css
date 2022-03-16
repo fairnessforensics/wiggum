@@ -471,7 +471,7 @@ div.tooltip {
     display: inline-block;
     position: absolute;    
     background: white; 
-    height: 600px;
+    height: 100%;
     max-height: 100%;
     padding-right: 30px; 
     margin-left: 28%; 
