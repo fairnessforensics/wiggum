@@ -3,13 +3,14 @@
 <head>
 	<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Wiggum: Data Configuration</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Wiggum: Data Configuration</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link href=
-    "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
               rel="stylesheet">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script>
         function validate() {
             var trend_type_selection = document.getElementById("trend_type_selection");   
@@ -490,32 +491,28 @@
 </head>
 <body class="index_center">
  <!--  <form id="upload-file" method="post" enctype="multipart/form-data">   -->
-  <form id="open-file" action="/visualize" method="post" onsubmit="return validate();"> 
-    
-    <div class= "container-fluid">
+   
+    <form id="open-file" action="/visualize" method="post" onsubmit="return validate();"> 
         <div id="extra">
             <br>
             <!-- First Row take file inputs from user -->
-            <div class="row">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <label style="font-size: 14px;" id="chooseFile" class="col-sm">Choose one file to load a new dataset or a directory with previously saved metadata</label><br>
+            <label style="font-size: 14px;" id="chooseFile" >Choose one file to load a new dataset or a directory with previously saved metadata</label><br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <input name="file" type="file" id="myFile" style = "width:170px" onchange="clearFolder()" accept=".csv">
-            <input name="file" type="file" id="myFolder" class="col-sm" onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
-            <button id="open-file-btn" type="button" value="open" class="col-sm">Open</button>&nbsp;&nbsp;&nbsp;&nbsp;
-            <select id = "trend_type_selection" multiple="multiple" class="col-sm">
+            <input name="file" type="file" id="myFolder"  onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
+            <button id="open-file-btn" type="button" value="open" style = "width:170px" >Open</button>&nbsp;&nbsp;&nbsp;&nbsp;
+            <select id = "trend_type_selection" multiple="multiple">
             </select>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <br>
-            </div>
+        </div> 
+
             <!-- Second Row set parameters-->
-            <div class="w-100 d-none d-md-block"></div>
-            <div class="row">
             <div id="control_table">
                 <table class="rankingparam" cellspacing="0" cellpadding="0" align="center">
-                    <tr class = "paramtr" class="col-sm-3">
+                    <tr class = "paramtr">
                         <!-- Input for Quantiles -->
                         <td class="param">            
                             <input name="user_cutoffs" type="text" id="user_cutoffs" placeholder="Quantiles(e.g., 0.25,0.75)">
@@ -531,7 +528,7 @@
                             <button id="visualize-btn" type="submit" value="visualize">Visualize Trends</button> 
                         </td>                                         
                     </tr>
-                    <tr class = "paramtr" class="col-sm-3">
+                    <tr class = "paramtr">
                         <!-- Range Slider to set Threshold -->
                         <td class="param">
                             <input type="range" style = "width: 115px;" min="0" max="1" step="0.01" id="qual_thresh" value = "0.2" onchange="update_qual_thresh(this.value);">
@@ -542,7 +539,7 @@
                             <button id="clustering-btn" type="button" value="clustering">Clustering</button> 
                         </td>                    
                     </tr>
-                    <tr class = "paramtr" class="col-sm-3">
+                    <tr class = "paramtr" >
                         <!-- User input to Set Number of Variables for Intersection -->
                         <td class="param">            
                             <input name="tuple_lens" type="text" id="tuple_lens" style = "width: 192px;" title="e.g., 3 or 2,3" placeholder="Number of Variables per Intersection">
@@ -552,7 +549,7 @@
                             <button id="intersection-btn" type="button" value="intersection">Add Intersection</button>
                         </td>                 
                     </tr>                        
-                    <tr class = "paramtr" class="col-sm-3">
+                    <tr class = "paramtr">
                         <!-- User input for Project Name -->
                         <td class="param">
                                 <input name="projectName" type="text" id="projectName" placeholder="Project Name">                        
@@ -565,8 +562,7 @@
                     </tr>                                    
                 </table>
             </div>
-        </div>
-        </div> 
+
         <!-- Add spaces -->
         <div id="typeSelector">
             <br/>
@@ -574,7 +570,7 @@
         </div>
         <div id="roleSelection">
         </div>             
-    </div>
+    
     <script src="{{ url_for('static', filename='js/table.js') }}"></script>    
     </form>
 
