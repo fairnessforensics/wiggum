@@ -356,19 +356,14 @@ div.tooltip {
     display:inline-block;
 }
 #trend_type_selection {
-    /* position: absolute; */
-    /* top: 50px; */
     width: 206px;
     margin-top: 10px;
     margin: 20px;
 }
 
 #control_table {
-    /* position: absolute; */
     display: inline-block;
-
     left: 0;
-    /* margin-left: 660px; */
 }
 
 #groupedbarchart {
