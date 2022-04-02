@@ -1,6 +1,0 @@
-matplotlib
-Numpy
-Scipy
-seaborn
-pandas
-flask

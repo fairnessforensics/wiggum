@@ -1,2 +1,0 @@
-wiggum
-wiggum_app
