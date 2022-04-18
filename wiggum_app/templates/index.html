@@ -8,8 +8,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-              rel="stylesheet">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script>
         function validate() {
@@ -496,17 +494,12 @@
         <div id="extra">
             <br>
             <!-- First Row take file inputs from user -->
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <label style="font-size: 14px;" id="chooseFile" >Choose one file to load a new dataset or a directory with previously saved metadata</label><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input name="file" type="file" id="myFile" style = "width:170px" onchange="clearFolder()" accept=".csv">
+            <label style="font-size: 14px;" id="chooseFile" >Choose one file to load a new dataset or a directory with previously saved metadata</label>
+            <br><input name="file" type="file" id="myFile" style = "width:170px" onchange="clearFolder()" accept=".csv">
             <input name="file" type="file" id="myFolder"  onchange="getFolder(event)" style = "width:170px" multiple webkitdirectory mozdirectory msdirectory odirectory directory>
-            <button id="open-file-btn" type="button" value="open" style = "width:170px" >Open</button>&nbsp;&nbsp;&nbsp;&nbsp;
-            <select id = "trend_type_selection" multiple="multiple">
+            <button id="open-file-btn" type="button" value="open" style = "width:170px" >Open</button>
+            <br><select id = "trend_type_selection" multiple="multiple"><br>
             </select>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </div> 
 
             <!-- Second Row set parameters-->

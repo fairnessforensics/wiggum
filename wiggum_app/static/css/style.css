@@ -245,6 +245,7 @@ line.slope-line4all{
 /* Label for choosing file */
 #chooseFile{
     left: 0;
+    margin: 2px;
 }
 
 #table {
@@ -357,8 +358,7 @@ div.tooltip {
 }
 #trend_type_selection {
     width: 206px;
-    margin-top: 10px;
-    margin: 20px;
+    margin: 5px;
 }
 
 #control_table {
