@@ -181,105 +181,208 @@ class _TrendDetectors():
 
 
 
+    # def get_subgroup_trends_1lev(self,trend_types, replace=False):
+    #     """
+    #     find subgroup and aggregate trends in the dataset, return a DataFrame that
+    #     contains information necessary to filter for SP and relaxations
+    #     computes for 1 level grouby (eg correlation and linear trends)
+
+    #     Parameters
+    #     -----------
+    #     labeled_df : LabeledDataFrame
+    #         data to find SP in, must be tidy
+    #     trend_types: list of strings or list trend objects
+    #         info on what trends to compute and the variables to use, dict is of form
+    #     {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
+
+    #     """
+    #     data_df = self.df
+    #     groupby_vars = self.get_vars_per_role('groupby')
+
+
+    #     if type(trend_types[0]) is str:
+    #         # instantiate objects
+    #         self.trend_list.extend([all_trend_types[trend]()
+    #                                                 for trend in trend_types])
+    #     else:
+    #         # use provided, must be instantiated
+    #         self.trend_list.extend(trend_types)
+
+    #     # prep the result df to add data to later
+    #     if self.result_df.empty:
+    #         self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
+
+    #     # create empty lists
+    #     all_trends = []
+    #     subgroup_trends = []
+
+    #     # precomputed trends
+    #     precomputed_trends = set(self.result_df['trend_type'])
+
+    #     for cur_trend in self.trend_list:
+
+    #         # only compute if the current trend is not in the result_df already
+    #         # or replace is true
+    #         if not(cur_trend.name in precomputed_trends) or replace:
+    #             cur_trend.get_trend_vars(self)
+
+    #             # augment the data with precomputed parts if needed
+
+
+    #             if cur_trend.preaugment == 'confusion':
+    #                 acc_pairs = itert.product(cur_trend.groundtruth,
+    #                                             cur_trend.prediction)
+
+    #                 for var_pair in acc_pairs:
+    #                     # TODO: only if col not there already
+    #                     self.add_acc(*var_pair)
+
+
+    #             # Tabulate aggregate statistics
+    #             agg_trends = cur_trend.get_trends(self.df,'agg_trend')
+
+    #             all_trends.append(agg_trends)
+
+    #             # iterate over groupby attributes
+    #             for groupbyAttr in groupby_vars:
+
+    #                 #condition the data
+    #                 cur_grouping = self.df.groupby(groupbyAttr)
+
+    #                 # get subgoup trends
+    #                 curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+
+    #                 # append
+    #                 subgroup_trends.append(curgroup_corr)
+
+
+
+
+    #     # condense and merge all trends with subgroup trends
+    #     subgroup_trends = pd.concat(subgroup_trends, sort=True)
+    #     all_trends = pd.concat(all_trends, sort=True)
+    #     new_res = pd.merge(subgroup_trends,all_trends)
+
+    #     # remove rows where a trend is undefined
+    #     new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+
+    #     new_res[result_df_type_col_name] = 'aggregate-subgroup'
+
+    #     if self.result_df.empty or replace:
+    #         # print('replacing',self.result_df.empty,replace)
+    #         self.result_df = new_res
+    #     else:
+
+    #         # print('appending ',len(new_res), ' to ',len(self.result_df))
+    #         self.result_df = pd.concat([self.result_df,new_res], sort=True)
+    #     # ,on=['feat1','feat2'], how='left
+
+
+
+    #     return self.result_df
+
+    """
+    CHANGE LAST FUNCTION TO USE GENERATOR 
+    """
     def get_subgroup_trends_1lev(self,trend_types, replace=False):
-        """
-        find subgroup and aggregate trends in the dataset, return a DataFrame that
-        contains information necessary to filter for SP and relaxations
-        computes for 1 level grouby (eg correlation and linear trends)
+            """
+            find subgroup and aggregate trends in the dataset, return a DataFrame that
+            contains information necessary to filter for SP and relaxations
+            computes for 1 level grouby (eg correlation and linear trends)
 
-        Parameters
-        -----------
-        labeled_df : LabeledDataFrame
-            data to find SP in, must be tidy
-        trend_types: list of strings or list trend objects
-            info on what trends to compute and the variables to use, dict is of form
-        {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
+            Parameters
+            -----------
+            labeled_df : LabeledDataFrame
+                data to find SP in, must be tidy
+            trend_types: list of strings or list trend objects
+                info on what trends to compute and the variables to use, dict is of form
+            {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
 
-        """
-        data_df = self.df
-        groupby_vars = self.get_vars_per_role('groupby')
-
-
-        if type(trend_types[0]) is str:
-            # instantiate objects
-            self.trend_list.extend([all_trend_types[trend]()
-                                                    for trend in trend_types])
-        else:
-            # use provided, must be instantiated
-            self.trend_list.extend(trend_types)
-
-        # prep the result df to add data to later
-        if self.result_df.empty:
-            self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
-
-        # create empty lists
-        all_trends = []
-        subgroup_trends = []
-
-        # precomputed trends
-        precomputed_trends = set(self.result_df['trend_type'])
-
-        for cur_trend in self.trend_list:
-
-            # only compute if the current trend is not in the result_df already
-            # or replace is true
-            if not(cur_trend.name in precomputed_trends) or replace:
-                cur_trend.get_trend_vars(self)
-
-                # augment the data with precomputed parts if needed
+            """
+            data_df = self.df
+            groupby_vars = self.get_vars_per_role('groupby')
 
 
-                if cur_trend.preaugment == 'confusion':
-                    acc_pairs = itert.product(cur_trend.groundtruth,
-                                                cur_trend.prediction)
+            if type(trend_types[0]) is str:
+                # instantiate objects
+                self.trend_list.extend([all_trend_types[trend]()
+                                                        for trend in trend_types])
+            else:
+                # use provided, must be instantiated
+                self.trend_list.extend(trend_types)
 
-                    for var_pair in acc_pairs:
-                        # TODO: only if col not there already
-                        self.add_acc(*var_pair)
+            # prep the result df to add data to later
+            if self.result_df.empty:
+                self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
+
+            # create empty lists
+            all_trends = []
+            subgroup_trends = []
+
+            # precomputed trends
+            precomputed_trends = set(self.result_df['trend_type'])
+
+            for cur_trend in self.trend_list:
+
+                # only compute if the current trend is not in the result_df already
+                # or replace is true
+                if not(cur_trend.name in precomputed_trends) or replace:
+                    cur_trend.get_trend_vars(self)
+
+                    # augment the data with precomputed parts if needed
 
 
-                # Tabulate aggregate statistics
-                agg_trends = cur_trend.get_trends(self.df,'agg_trend')
+                    if cur_trend.preaugment == 'confusion':
+                        acc_pairs = itert.product(cur_trend.groundtruth,
+                                                    cur_trend.prediction)
 
-                all_trends.append(agg_trends)
-
-                # iterate over groupby attributes
-                for groupbyAttr in groupby_vars:
-
-                    #condition the data
-                    cur_grouping = self.df.groupby(groupbyAttr)
-
-                    # get subgoup trends
-                    curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
-
-                    # append
-                    subgroup_trends.append(curgroup_corr)
+                        for var_pair in acc_pairs:
+                            # TODO: only if col not there already
+                            self.add_acc(*var_pair)
 
 
+                    # Tabulate aggregate statistics
+                    agg_trends = cur_trend.get_trends(self.df,'agg_trend')
 
+                    all_trends.append(agg_trends)
 
-        # condense and merge all trends with subgroup trends
-        subgroup_trends = pd.concat(subgroup_trends, sort=True)
-        all_trends = pd.concat(all_trends, sort=True)
-        new_res = pd.merge(subgroup_trends,all_trends)
+                    # iterate over groupby attributes
+                    for groupbyAttr in groupby_vars:
 
-        # remove rows where a trend is undefined
-        new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+                        #condition the data
+                        cur_grouping = self.df.groupby(groupbyAttr)
 
-        new_res[result_df_type_col_name] = 'aggregate-subgroup'
+                        # get subgoup trends
+                        curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
 
-        if self.result_df.empty or replace:
-            # print('replacing',self.result_df.empty,replace)
-            self.result_df = new_res
-        else:
-
-            # print('appending ',len(new_res), ' to ',len(self.result_df))
-            self.result_df = pd.concat([self.result_df,new_res], sort=True)
-        # ,on=['feat1','feat2'], how='left
+                        # append
+                        subgroup_trends.append(curgroup_corr)
 
 
 
-        return self.result_df
+
+            # condense and merge all trends with subgroup trends
+            subgroup_trends = pd.concat(subgroup_trends, sort=True)
+            all_trends = pd.concat(all_trends, sort=True)
+            new_res = pd.merge(subgroup_trends,all_trends)
+
+            # remove rows where a trend is undefined
+            new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+
+            new_res[result_df_type_col_name] = 'aggregate-subgroup'
+
+            if self.result_df.empty or replace:
+                # print('replacing',self.result_df.empty,replace)
+                self.result_df = new_res
+            else:
+
+                # print('appending ',len(new_res), ' to ',len(self.result_df))
+                self.result_df = pd.concat([self.result_df,new_res], sort=True)
+            # ,on=['feat1','feat2'], how='left
+            for new_res in self.result_df:
+
+                yield self.result_df
+
 
 
     def get_pairwise_trends_1lev(self,trend_types, replace=False):

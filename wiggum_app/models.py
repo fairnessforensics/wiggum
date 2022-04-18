@@ -158,7 +158,7 @@ def getInfoTable(data_df, std_weights, std_weights_view, view_score_param, indiv
     """
     # get subgroup trends' info
     initial_result_df = wg.get_subgroup_trends_1lev(data_df,['pearson_corr'])
-
+    
     # add slope
     initial_result_df = wg.add_slope_cols(data_df,initial_result_df)
 
