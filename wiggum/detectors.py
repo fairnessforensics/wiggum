@@ -280,6 +280,7 @@ class _TrendDetectors():
 
 
     #     return self.result_df
+ 
 
     """
     CHANGE LAST FUNCTION TO USE GENERATOR 
@@ -356,11 +357,8 @@ class _TrendDetectors():
                         curgroup_corr = cur_trend.get_trends(cur_grouping,'subgroup_trend')
 
                         # append
-                        subgroup_trends.append(curgroup_corr)
-
-
-
-
+                        subgroup_trends.append(curgroup_corr)                     
+                # yield cur_trend
             # condense and merge all trends with subgroup trends
             subgroup_trends = pd.concat(subgroup_trends, sort=True)
             all_trends = pd.concat(all_trends, sort=True)
@@ -374,16 +372,15 @@ class _TrendDetectors():
             if self.result_df.empty or replace:
                 # print('replacing',self.result_df.empty,replace)
                 self.result_df = new_res
+                
             else:
-
                 # print('appending ',len(new_res), ' to ',len(self.result_df))
                 self.result_df = pd.concat([self.result_df,new_res], sort=True)
+                
             # ,on=['feat1','feat2'], how='left
-            for new_res in self.result_df:
-
-                yield self.result_df
-
-
+            
+            yield self.result_df
+ 
 
     def get_pairwise_trends_1lev(self,trend_types, replace=False):
         """

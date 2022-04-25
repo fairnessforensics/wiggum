@@ -157,19 +157,28 @@ def getInfoTable(data_df, std_weights, std_weights_view, view_score_param, indiv
         a DataFrame that contains ranking information
     """
     # get subgroup trends' info
-    initial_result_df = wg.get_subgroup_trends_1lev(data_df,['pearson_corr'])
-    
-    # add slope
+    # initial_result_df = wg.get_subgroup_trends_1lev(data_df,['pearson_corr'])
+
+    initial_result_df = (wg.get_subgroup_trends_1lev(data_df,['pearson_corr']) for data in data_df)
+
+    # for result in (wg.get_subgroup_trends_1lev(data_df,['pearson_corr'])):
+    #     return result
+    # for df in data_df:
+    #     initial_result_df = wg.get_subgroup_trends_1lev(data_df,['pearson_corr'])
+# add slope
     initial_result_df = wg.add_slope_cols(data_df,initial_result_df)
 
     # add angle
     initial_result_df = wg.add_angle_col(initial_result_df)
+
 
     # get ranking info
     initial_result_df, ranking_view_df = getInitialRankInfo(initial_result_df,
                                                 data_df, std_weights, std_weights_view, view_score_param,
                                                 individual_weight_name, view_weight_name)
 
+    
+   
     return initial_result_df, ranking_view_df
 
 def getInitialRankInfo(result_df,data_df, std_weights, std_weights_view, view_score_param, individual_weight_name, view_weight_name):
