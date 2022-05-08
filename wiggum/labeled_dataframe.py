@@ -559,3 +559,5 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
         sns.regplot(x_col, y_col, data=self.df, color='black', scatter=False, ci=ci)
 
         plt.axis(domain_range)
+
+
