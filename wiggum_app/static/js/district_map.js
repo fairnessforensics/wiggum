@@ -65,8 +65,8 @@ const districtMap = (selection, props) => {
 			.attr("d", path)
 			//.attr("fill", "#fff")
 			.style("fill", function(d) {
-				console.log(chart_data);
-				console.log(d);
+				//console.log(chart_data);
+				//console.log(d);
 				var district_id = d.id % 100;
 				var row = chart_data.find(obj => {
 					return obj.subgroup === district_id
