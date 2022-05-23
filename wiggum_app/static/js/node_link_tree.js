@@ -69,7 +69,8 @@ function drawNodeLinkTree(data) {
 							} else if (d.depth == 3) {
 								// subgroup level
 								return 'node level-' + d.depth + ' ' + d.data.dependent + ' ' 
-											+ d.data.independent + ' splitby_' + d.data.splitby;								
+											+ d.data.independent + ' splitby_' + d.data.splitby
+											+ ' subgroup_' + d.data.subgroup;								
 							}
 							return 'node level-' + d.depth;
 						})
@@ -332,7 +333,10 @@ function drawNodeLinkTree(data) {
 	// Visual Tech 1: Tree nodes
 	thirdLevelG = g.selectAll('.level-3');
 	thirdLevelG.append('rect')
-		.attr("class", "level3 list rect")
+		.attr("class", function(d) {
+			return "level3 list rect " + d.data.dependent 
+					+ " " + d.data.independent + " splitby_" + d.data.splitby
+					+ " subgroup_" + d.data.subgroup;})
 		.attr("x", -rectWidth/2)
 		.attr("y", -rectHeight/2)		
 		.attr("width", rectWidth)
@@ -378,7 +382,7 @@ function drawNodeLinkTree(data) {
 
 		// TODO input by user 
 		var chart_height = treeHeight / num_charts;
-		var chart_height = 150;
+		//var chart_height = 150;
 		var total_height = chart_height * num_charts;	
 		var diff_height = actual_tree_height - total_height;
 
@@ -475,15 +479,17 @@ function drawNodeLinkTree(data) {
 								&& obj.splitby === splitby
 					});
 
-					thirdLevelG1_visual_alter_map.call(districtMap, {
+					thirdLevelG1_visual_alter_map.call(districtStateMap, {
 						chart_data: map_data,
 						state_name,
 						leaf_node_links,
-						width: height + rectHeight,
+						width: 1.5 * height + rectHeight,
 						height: height + rectHeight,
 						offset_y: thirdLevelG1_y,
-						level: 'level3'
-					});		
+						level: 'level3',
+						splitby
+					});	
+
 				}
 
 				// Visual Tech 4: grouped bar chart
@@ -714,7 +720,7 @@ function drawNodeLinkTree(data) {
 		})
 		.style("visibility", "hidden");
 
-		initVisibility();
+	initVisibility();
 
 }
 
@@ -781,7 +787,7 @@ function getMatrixIndex(details, dep, indep) {
  * @param options - Data containing matrix information.
  * @returns none.
  */
- function drawHeatmap(options) {
+function drawHeatmap(options) {
 
 	var margin = {top: 93, right: 20, bottom: 30, left: 133},
 	    width = 90,
@@ -988,6 +994,19 @@ const interactiveLevelButton = (selection, props) => {
 								d3.selectAll('.'+level + '.rect')
 									.transition()
 									.style('visibility', 'visible');	
+								d3.selectAll('.'+level + '.singledistrictmap')
+										.transition()
+										.style('visibility', 'hidden');	
+								
+								if (i == 2) {	
+									d3.selectAll('.'+level + '.rect')
+									.transition()
+									.style('visibility', 'hidden');	
+									d3.selectAll('.'+level + '.singledistrictmap')
+										.transition()
+										.style('visibility', 'visible');	
+								}
+
 								if (i == 2 || i == 3) {
 									// Map button clicked
 									d3.selectAll('.'+level + '.text')
@@ -1282,5 +1301,6 @@ function initVisibility() {
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
 	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.districtmap').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.singledistrictmap').transition().style('visibility', "hidden");
 	d3.selectAll('.level3.barchart').transition().style('visibility', "hidden");	
 }
