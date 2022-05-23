@@ -174,7 +174,7 @@ function drawMapState(data) {
 	const pathGenerator = d3.geoPath().projection(projection);
 
 	//d3.json("../static/map_data/ok_2010_congress_2011-05-10_2021-12-31.json", function(json_data){
-	d3.json("../static/map_data/ok_district2010.json", function(json_data){
+	d3.json("../static/map_data/OKLAHOMA_district2010.json", function(json_data){
 	//d3.json("../static/map_data/tx_2010_congress_2011-07-18_2012-02-28.json", function(json_data){
 	//d3.json("../static/map_data/tx_2020_congress_2021-10-25_2031-06-30.json", function(json_data){
 

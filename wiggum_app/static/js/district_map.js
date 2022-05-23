@@ -1,6 +1,7 @@
 const districtStateMap = (selection, props) => {
 	const {
 		chart_data,
+		state_name,
 		width,
 		height,
 		level,
@@ -14,7 +15,7 @@ const districtStateMap = (selection, props) => {
 
 	const projection = d3.geoMercator();	
 	const path = d3.geoPath().projection(projection);
-	const map_file = "../static/map_data/ok_" + splitby + ".json";
+	const map_file = "../static/map_data/" + state_name + "_" + splitby + ".json";
 
 	// TODO Async issue for d3.json----------------->
 	for (var i = 0; i < chart_data.length; i++){
