@@ -97,7 +97,7 @@ const districtStateMap = (selection, props) => {
 	});
 	
 	function drawNodebyShape(chart_data, districts_data, level) {
-		selection.append('g').attr('class', 'test');
+
 		for (var i = 0; i < chart_data.length; i++){
 			var node_data = chart_data[i];
 			// TODO Async issue for d3.json----------------->
