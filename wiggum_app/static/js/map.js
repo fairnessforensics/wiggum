@@ -155,3 +155,60 @@ function drawMap1(data) {
 
 	});
 }
+
+/**
+ * Draw map
+ * 
+ * @param data - result table.
+ * @returns none.
+*/
+function drawMapState(data) {
+
+	var svg = d3.select('#map')
+				.append('svg')
+				.attr("width", 960)
+				.attr("height", 500);
+
+	//const projection = d3.geoAlbersUsa().scale(1500);
+	const projection = d3.geoAlbersUsa();
+	const pathGenerator = d3.geoPath().projection(projection);
+
+	//d3.json("../static/map_data/ok_2010_congress_2011-05-10_2021-12-31.json", function(json_data){
+	d3.json("../static/map_data/ok_district2010.json", function(json_data){
+	//d3.json("../static/map_data/tx_2010_congress_2011-07-18_2012-02-28.json", function(json_data){
+	//d3.json("../static/map_data/tx_2020_congress_2021-10-25_2031-06-30.json", function(json_data){
+
+//		const counties = topojson.feature(json_data, json_data.objects.counties);
+
+//		const states = topojson.feature(json_data, json_data.objects.states);
+//		const state = states.features.filter(function(d) { return d.id === '40'; });
+		/*var width = 200;
+		var height = 100;
+		projection.scale(1)
+				.translate([0, 0]);
+		var b = pathGenerator.bounds(json_data),
+		s = 0.95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+		t = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+	    
+	  	projection.scale(s)
+			.translate(t);
+*/
+		svg.selectAll("path")
+//		.data(state)
+		.data(json_data.features)
+		.enter()
+		.append("path")
+		.attr("d", pathGenerator)
+		.attr("fill", "none")
+		.attr("stroke", "black");
+		//.attr("stroke-width", "1px");
+
+
+//		svg.selectAll('path')
+//			.data(counties.features)
+//			.enter().append('path')
+//			.attr('class', 'country')
+//			.attr('d', pathGenerator);
+
+	});
+}
