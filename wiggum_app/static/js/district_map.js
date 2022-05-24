@@ -93,7 +93,7 @@ const districtStateMap = (selection, props) => {
 					return '#fff';
 				} 
 			})
-			.attr("stroke", "black");
+			.attr("stroke", "#929292");
 	});
 	
 	function drawNodebyShape(chart_data, districts_data, level) {
@@ -136,7 +136,6 @@ const districtStateMap = (selection, props) => {
 				.enter()
 				.append("path")
 				.attr("d", path)
-				.style("fill", '#fff')
 				.style("fill", function(d) {
 					var district_id = d.properties.District;
 					var row = chart_data.find(obj => {
@@ -149,7 +148,7 @@ const districtStateMap = (selection, props) => {
 						return '#fff';
 					} 
 				})				
-				.attr("stroke", "black");				
+				.attr("stroke", "#929292");				
 		}
 
 	}
