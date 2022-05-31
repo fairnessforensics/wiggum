@@ -1,0 +1,7 @@
+variable,dtype,var_type,role,isCount,weighting_var
+FriendlyId,object,categorical,['ignore'],False,
+district2020,float64,ordinal,['splitby'],False,
+district2022,float64,ordinal,['splitby'],False,
+party,object,categorical,['independent'],False,
+votes,int64,continuous,['dependent'],False,
+state,object,categorical,['ignore'],False,
