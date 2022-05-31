@@ -141,12 +141,12 @@ function updateDetailView() {
 
 		updateTabulate(vars_table);
 	} else if (d.detail_view_type == 'rank') {
-
 		$.ajax({
 			type: 'POST',
 			url: '/',
 			data: {'action' : "detail_ranktrend", 'dependent': d.dependentVar, 
-						'independent': d.independentVar, 'splitby': d.categoryAttr},     
+						'independent': d.independentVar, 'splitby': d.categoryAttr, 
+						'trend_type': d.trend_type},     
 			success: function(data) {
 				//updateRankChart(d);
 				updateParallelCoordinates(data, d);

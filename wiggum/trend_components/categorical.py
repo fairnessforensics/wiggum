@@ -443,3 +443,220 @@ class StatRankTrend():
         # scale and flip to normalize in [0,1] and round for display
         tau_dist = np.round(1- (tau+1)/2,4)
         return tau_dist
+
+
+class PercentageRankTrend():
+    """
+    Compute a trend that is the ascending ranking of categorical variables,
+    quality based on the trend vs actual kendall tau distance and the distance
+    in subgroup vs aggregtae is 1-tau
+
+    the distances are a continuous value
+
+    """
+    overview_legend = 'continuous'
+
+    def is_computable(self,labeled_df=None):
+        """
+        check if this trend can be computed based on data and metadata available
+
+        Parameters
+        ----------
+        self : Trend
+            a trend object with a set_vars Parameters
+        labeled_df : LabeledDataFrame {None} (optional)
+            data to use if trend is not already configured
+
+
+        Returns
+        -------
+        computable : bool
+            True if requirements of get_trends are filled
+
+        See also:
+        get_trends() for description of how this trend computes and
+        """
+        if not( self.set_vars):
+            self.get_trend_vars(labeled_df)
+
+        vart_test_list = [bool(self.my_stat),
+                        bool(self.trendgroup),
+                        bool(self.target)]
+
+        return np.product([vartest for vartest in vart_test_list])
+
+    def get_trends(self,data_df,trend_col_name):
+        """
+        Compute a trend that is the ascending ranking of categorical variables
+
+
+        Parameters
+        ----------
+        data_df : DataFrame or DataFrameGroupBy
+            data to compute trends on, may be a whole, unmodified DataFrame or
+        a grouped DataFrame as passed by LabeledDataFrame get trend functions
+        trend_col_name : {'subgroup_trend','agg_trend'}
+            which type of trend is to be computed
+            TODO: could infer this by type of above?
+
+
+        Required properties
+        --------------------
+        name : string
+            used in the trend_type column of result_df and by viz
+        my_stat : function handle
+            statistic to compute, must be compatible with DataFrame.apply and
+            have the interface (self,df,statfeat) and return a Series
+            with 'stat' value defining the statistic
+        trendgroup : list of strings
+            list of variable names to be ranked (and used for grouping in this
+            method)
+        target : list of strings
+            list of variable names to compute a statistic of in order to rank
+            the above
+
+        Returns
+        -------
+        reg_df : DataFrame
+            partial result_df, multiple can be merged together to form
+            a complete result_df
+
+
+        """
+        # use all
+        cur_trendgroup = self.trendgroup
+
+        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+            # remove the grouping var from trendgroup this roung
+            rmv_var = data_df.count().index.name
+            cur_trendgroup = [gv for gv in cur_trendgroup if not(gv==rmv_var)]
+        else:
+
+            # make it tupe-like so that the loop can work
+            data_df = [('',data_df)]
+
+        rank_res =[]
+
+        for groupby_lev,df in data_df:
+
+            views = itertools.product(self.target,cur_trendgroup)
+
+            for statfeat,rankfeat  in views:
+
+                stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat)
+                
+                # compute the percentage
+                stat_df = stat_df.assign(stat=stat_df.div(stat_df.sum()).round(3))
+
+                stat_df.sort_values('stat',inplace=True)
+
+                # save detailed precompute
+                # if groupby add subgroup info
+                if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+                    splitby = data_df.count().index.name
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat,
+                                            splitby, str(groupby_lev)])
+                else:
+                    trend_name = '_'.join([self.name , trend_col_name,statfeat,rankfeat])
+
+                self.trend_precompute[trend_name] = stat_df
+
+                # extract for result_df
+                ordered_rank_feat = stat_df.index.values
+
+                # TODO: reconsider what is the strength or other stats used for
+                # percentage rank trend
+                
+                # quality is kendall tau distance between the data and a list
+                # of that length sorted accordingn to the trend
+                # this calculation is VERY slow for large weights, need to fix
+
+                # sort the whole data by statfeat, extract rankfeat
+                actual_order = df.sort_values(statfeat)[rankfeat]
+
+                # TODO: make this case faster for large datasets later
+                counts = df.groupby([rankfeat])[statfeat].count()
+
+                # TODO: make weights not required to be integers
+                #repeat the trend sorted rankfeats by the number that were used
+                # in the stat
+                rep_counts = [int(counts[ov]) for ov in ordered_rank_feat]
+                trend_order = np.repeat(ordered_rank_feat,rep_counts)
+
+                # map the possibly string order lists into numbers
+                numeric_map = {a:i for i,a in enumerate(actual_order)}
+                num_acutal = [numeric_map[a] for a in actual_order]
+                num_trend = [numeric_map[b] for b in trend_order]
+                # compute and round
+                tau,p = stats.kendalltau(num_trend,num_acutal)
+                tau_qual = np.abs(np.round(tau,4))
+
+                # create row
+                rank_res.append([rankfeat,statfeat,ordered_rank_feat,tau_qual,
+                                        groupby_lev])
+
+
+        # if groupby add subgroup indicator columns
+        if type(data_df) is pd.core.groupby.DataFrameGroupBy:
+            reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
+                                                    trend_col_name,
+                                                    trend_col_name +'_strength',
+                                                    'subgroup'])
+            #same for all
+            reg_df['splitby'] = data_df.count().index.name
+        else:
+            reg_df = pd.DataFrame(data = rank_res, columns = ['independent','dependent',
+                                                    trend_col_name,
+                                                    trend_col_name +'_strength',
+                                                    'empty'])
+            reg_df.drop('empty',axis=1,inplace=True)
+
+
+        reg_df['trend_type'] = self.name
+        return reg_df
+
+    def get_distance(self,row,col_a='subgroup_trend',col_b='agg_trend'):
+        """
+        kendalltau distance as a permuation distance
+
+        Parameters
+        ----------
+        row : pd.Series
+            row of a result_df DataFrame. the `agg_trend` and `subgroup_trend`
+            columns must contain lists
+
+        Returns
+        -------
+        tau_dist : float
+            perumation distance between the subgroup_trend and agg_trend
+            compatible with assignment to a cell of a result_df
+        """
+        # make a numeric map for all possible values
+        a_vals = list(row[col_a])
+        b_vals = list(row[col_b])
+        # set(sum) gives nonrepeating union of lists
+        all_vals = set(a_vals + b_vals)
+        # make numeric dict
+        trend_numeric_map = {val:i for i,val in enumerate(all_vals)}
+
+        # make numeric lists for each column
+        numeric_a = [trend_numeric_map[val] for val in row[col_a]]
+        numeric_b = [trend_numeric_map[val] for val in row[col_b]]
+
+        # if not the same length, append to shorter to match
+        #     add high numbers to end to minimially impact sort
+        n_a = len(numeric_a)
+        n_b = len(numeric_b)
+        if n_a < n_b:
+            append_nums = list(range(n_a,n_b))
+            numeric_a.extend(append_nums)
+        if n_a > n_b:
+            append_nums = list(range(n_b,n_a))
+            numeric_b.extend(append_nums)
+
+        # compute correlation of prepared numerical lists
+        tau,p = stats.kendalltau(numeric_a,numeric_b)
+        # scale and flip to normalize in [0,1] and round for display
+        tau_dist = np.round(1- (tau+1)/2,4)
+        return tau_dist
+

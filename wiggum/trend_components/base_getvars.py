@@ -307,7 +307,38 @@ def w_avg(df,avcol,wcol):
     return pd.Series([wmean ,wmean+std,wmean-std,count],
             index=['stat','max','min','count'])
 
+def sum(df,avcol):
+    """
+    commpute a sum and use the std to define confidence interval
+     compatible with DataFrame.apply() and get_trends functions in
+     wiggum.trend_components.categorical
 
+    Parameters
+    ----------
+    df : DataFrame or DataFrameGroupBy
+        passed as the source of apply, the data to extract columns from for
+        computing a sum
+    avcol : string
+        name of column in df to take the average of
+
+    Returns
+    -------
+    stat_data : pandas Series
+        with 'stat' value defining the statistic
+        and 'count' defining the power of the computation
+    stat : float
+        sum of df[avcol] 
+    count : int
+        sum of df[avcol] 
+    """
+    n_df = df.dropna(axis=0,subset=[avcol])
+    if len(n_df):
+        sum = n_df[avcol].sum()
+    else:
+        sum =0
+
+    return pd.Series([sum, sum],
+            index=['stat','count'])
 
 
 
@@ -380,3 +411,21 @@ class PredictionClass():
 
         self.set_vars = True
         return self.groundtruth, self.prediction
+
+class PercentageRank():
+    """
+    common parts for percentage trends
+    """
+    trend_value_type = str
+    detail_view = 'rank'
+
+    def get_trend_vars(self,labeled_df):
+        """
+        """
+        # maybe not counts
+
+        self.target = labeled_df.get_vars_per_roletype('dependent','continuous')
+        self.trendgroup = labeled_df.get_vars_per_roletype('independent','categorical')
+
+        self.set_vars = True
+        return self.target, self.trendgroup

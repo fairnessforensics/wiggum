@@ -62,8 +62,10 @@ def explore():
                 trend_type_list = pd.unique(labeled_df_setup.result_df['trend_type'])
                 # Get details for subgroup level
                 # TODO fix the hard code
-                if 'rank_trend' in list(trend_type_list):
-                    rank_trend_detail_dict = models.getAllRankTrendDetail(labeled_df_setup)
+                if ('rank_trend' in list(trend_type_list)) or \
+                    ('percentage_rank' in list(trend_type_list)):
+                    rank_trend_detail_dict = models.getAllRankTrendDetail(
+                                                labeled_df_setup, trend_type_list)
                 else:
                     rank_trend_detail_dict = ''
 
@@ -407,9 +409,10 @@ def main():
             independent = request.form['independent']
             dependent = request.form['dependent']
             splitby = request.form['splitby']
+            trend_type = request.form['trend_type']
 
             rank_trend_detail, rank_trend_count = models.getRankTrendDetail(labeled_df_setup, 
-                                                            dependent, independent, splitby)
+                                                    trend_type, dependent, independent, splitby)
 
             # covert row label to string to avoid jsonify error, e.g., department: 1
             rank_trend_count = rank_trend_count.rename(columns=lambda x: str(x))

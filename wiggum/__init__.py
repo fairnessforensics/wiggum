@@ -26,7 +26,7 @@ from .labeled_dataframe import (LabeledDataFrame, possible_roles, var_types,
 from .trends import (All_Pearson, Continuous_Pearson, Spearman_Correlation,
                     Kendall_Correlation, Mean_Rank_Trend,Linear_Trend,
                     All_Linear_Trend,Binary_Pearson_Trend,Binary_Mean_Rank_Trend,
-                    Median_Rank_Trend,Binary_Median_Rank_Trend,
+                    Median_Rank_Trend,Percentage_Rank_Trend,Binary_Median_Rank_Trend,
                     Binary_Accuracy_Trend, Binary_TPR_Trend,Binary_PPV_Trend,
                     Binary_TNR_Trend, Binary_FDR_Trend, Binary_F1_Trend,
                     Binary_Error_Trend,Binary_FNR_Trend)
