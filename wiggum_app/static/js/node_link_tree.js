@@ -221,7 +221,7 @@ function drawNodeLinkTree(data) {
 		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
 		width: width,
 		addWidthArray: height_array,
-		treeHeight: treeHeight
+		treeHeight: treeHeight + margin.top
 	});
 
 	// Second level data
