@@ -543,6 +543,12 @@ class PercentageRankTrend():
 
             for statfeat,rankfeat  in views:
 
+                if trend_col_name == 'agg_trend':
+                    # remove duplicated rows for sum due to n.a.
+                    if df.isnull().values.any():
+                        na_columns = df.columns[df.isna().any()]
+                        df = df[df[na_columns[0]].notna()]
+
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat)
                 
                 # compute the percentage
@@ -564,35 +570,12 @@ class PercentageRankTrend():
                 # extract for result_df
                 ordered_rank_feat = stat_df.index.values
 
-                # TODO: reconsider what is the strength or other stats used for
-                # percentage rank trend
-                
-                # quality is kendall tau distance between the data and a list
-                # of that length sorted accordingn to the trend
-                # this calculation is VERY slow for large weights, need to fix
-
-                # sort the whole data by statfeat, extract rankfeat
-                actual_order = df.sort_values(statfeat)[rankfeat]
-
-                # TODO: make this case faster for large datasets later
-                counts = df.groupby([rankfeat])[statfeat].count()
-
-                # TODO: make weights not required to be integers
-                #repeat the trend sorted rankfeats by the number that were used
-                # in the stat
-                rep_counts = [int(counts[ov]) for ov in ordered_rank_feat]
-                trend_order = np.repeat(ordered_rank_feat,rep_counts)
-
-                # map the possibly string order lists into numbers
-                numeric_map = {a:i for i,a in enumerate(actual_order)}
-                num_acutal = [numeric_map[a] for a in actual_order]
-                num_trend = [numeric_map[b] for b in trend_order]
-                # compute and round
-                tau,p = stats.kendalltau(num_trend,num_acutal)
-                tau_qual = np.abs(np.round(tau,4))
+                # Using the difference between two parties' voting share percentage
+                # as the strength for percentage rank trend
+                diff_vsp = np.abs(np.round((stat_df['stat'][0] - stat_df['stat'][1]),4))
 
                 # create row
-                rank_res.append([rankfeat,statfeat,ordered_rank_feat,tau_qual,
+                rank_res.append([rankfeat,statfeat,ordered_rank_feat,diff_vsp,
                                         groupby_lev])
 
 
