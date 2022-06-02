@@ -307,7 +307,7 @@ def w_avg(df,avcol,wcol):
     return pd.Series([wmean ,wmean+std,wmean-std,count],
             index=['stat','max','min','count'])
 
-def sum(df,avcol):
+def sum(df,sumcol):
     """
     commpute a sum and use the std to define confidence interval
      compatible with DataFrame.apply() and get_trends functions in
@@ -318,8 +318,8 @@ def sum(df,avcol):
     df : DataFrame or DataFrameGroupBy
         passed as the source of apply, the data to extract columns from for
         computing a sum
-    avcol : string
-        name of column in df to take the average of
+    sumcol : string
+        name of column in df to take the sum of
 
     Returns
     -------
@@ -327,13 +327,14 @@ def sum(df,avcol):
         with 'stat' value defining the statistic
         and 'count' defining the power of the computation
     stat : float
-        sum of df[avcol] 
+        sum of df[sumcol] 
     count : int
-        sum of df[avcol] 
+        sum of df[sumcol] 
     """
-    n_df = df.dropna(axis=0,subset=[avcol])
+    n_df = df.dropna(axis=0,subset=[sumcol])
+
     if len(n_df):
-        sum = n_df[avcol].sum()
+        sum = n_df[sumcol].sum()
     else:
         sum =0
 
