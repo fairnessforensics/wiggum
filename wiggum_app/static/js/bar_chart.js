@@ -4,7 +4,8 @@ const barChart = (selection, props) => {
 	  width,
 	  height,
 	  xDomain,
-	  level
+	  level,
+	  largerFlag
 	} = props;
 
 	var subgroups = Object.keys(chart_data[0]).filter(item => {
@@ -13,10 +14,16 @@ const barChart = (selection, props) => {
 
 	var groups = d3.map(chart_data, function(d){return(d.subgroup)}).keys();
 
-	const margin = { top: 10, right: 0, bottom: 20, left: 10 };
+	const margin = { top: 8, right: 0, bottom: 20, left: 10 };
 	const innerWidth = width - margin.left - margin.right;
-	const innerHeight = height - margin.top - margin.bottom;
 	
+	var innerHeight;
+	if (!largerFlag) {
+		innerHeight = height + 15;
+	} else {
+		innerHeight =  height - margin.top - margin.bottom;
+	}
+
 	const xScale = d3.scaleLinear()
 	  //.domain([0, d3.max(chart_data, xValue)])
 	  //.domain([0, 1])
@@ -50,7 +57,8 @@ const barChart = (selection, props) => {
 	  .call(d3.axisLeft(yScale))
 	  .call(selection => selection.selectAll(".tick")
 		.attr("class", level + " barchart tick")
-		.style("font", "16px times"))
+		.style("font", "16px times")
+		.style("display",  "none"))
 	  .selectAll('.domain, .tick line')
 		.remove();
 	

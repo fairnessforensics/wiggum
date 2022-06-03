@@ -17,7 +17,7 @@ function drawNodeLinkTree(data) {
 
 	var width = 1150;
 	var height = 2600;
-	var margin = {top: 50, right: 420, bottom: 0, left: 60};
+	var margin = {top: 50, right: 420, bottom: 5, left: 60};
 	var innerWidth = width - margin.left - margin.right;
 	//var innerHeight = height - margin.top - margin.bottom;
 
@@ -46,7 +46,7 @@ function drawNodeLinkTree(data) {
 	var svg = d3.select('#node_link_tree')
 				.append('svg');
 	var zoomG =	svg.attr('width', width)
-				.attr('height', treeHeight + margin.top)
+				.attr('height', treeHeight + margin.top + margin.bottom)
 				.append('g')
 	var g = zoomG.append('g')
 				.attr('transform', `translate(${margin.left},${margin.top})`);
@@ -493,21 +493,31 @@ function drawNodeLinkTree(data) {
 				}
 
 				// Visual Tech 4: grouped bar chart
-				var first_node_y = d.children[0].x;
 
-				if (used_height == 0) {
-					relative_translate_y = diff_height / 2;
+				// if chart height is higher than the branch heght
+				var largerFlag = false;
+				if (chart_height > (treeHeight / num_charts)) {
+					largerFlag = true;
+					var first_node_y = d.children[0].x;
+
+					if (used_height == 0) {
+						relative_translate_y = diff_height / 2;
+					} else {
+						relative_translate_y = absolute_translate_y + chart_height - first_node_y;
+					}
+
+					used_height = used_height + chart_height;
+					absolute_translate_y = thirdLevelG1_y + relative_translate_y;
 				} else {
-					relative_translate_y = absolute_translate_y + chart_height - first_node_y;
+					// if chart height is same as the branch height
+					relative_translate_y = diff_height / 2;
+					chart_height = height + rectHeight;
 				}
-
-				used_height = used_height + chart_height;
-				absolute_translate_y = thirdLevelG1_y + relative_translate_y;
 
 				var thirdLevelG1_visual_alter_barchart = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va barchart')
-					.attr("transform", "translate(" + (rectWidth + 30) + ", " + relative_translate_y +")");
+					.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
 
 				var bar_chart_data = [];
 
@@ -530,7 +540,8 @@ function drawNodeLinkTree(data) {
 					width: 300,
 					height: chart_height,
 					xDomain,
-					level: 'level3'
+					level: 'level3',
+					largerFlag
 				});	
 
 				/*thirdLevelG1_visual_alter_barchart
