@@ -88,17 +88,24 @@ const stripPlot = (selection, props) => {
 		.style("opacity", "0.3")
 		.attr("pointer-events", "all");
 
-	/* circle
-	selection.append("g")
-		.selectAll(".circle.agg")
-		.data(agg_chart_data)
-		.enter().append("circle")	  
-		.attr("class", level + " stripplot agg circle")  
+	// Legend       
+	var legend = selection.selectAll(".legend")
+					.data(color.domain())
+					.enter().append("g")
+					.attr("class", level + " stripplot legend")
+					.attr("transform", function(d, i) { return "translate("+ (width + 40) +"," + (i * 15 - 20) + ")"; });
+
+	legend.append("circle")
 		.attr("r", 3.5)
-		.attr("cx", d => xScale(d.value))
-		.attr("cy", d => yScale(d.subgroup))
-		.attr("fill", d => color(d.name))
-		.style("opacity", "0.3")
-		.attr("pointer-events", "all");
-	*/
+		.attr("cx", 0)
+		.attr("cy", 0)
+		.style("fill", color);
+
+	legend.append("text")
+		.attr("x", 10)
+		.attr("y", 3)
+		//.attr("dy", ".35em")
+		.style("font-size", "12px")                     
+		.style("text-anchor", "start")
+		.text(function(d) { return d; });
   };
