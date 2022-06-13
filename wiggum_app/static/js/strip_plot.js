@@ -4,7 +4,8 @@ const stripPlot = (selection, props) => {
 		agg_chart_data,
 		width,
 		height,
-		level
+		level,
+		x_axis_label
 	} = props;
 	var margin = ({top: 10, right: 0, bottom: 0, left: 0});
 
@@ -35,8 +36,19 @@ const stripPlot = (selection, props) => {
 					.attr("y2", height + margin.top + interval/2))
 		.call(selection => selection.selectAll(".domain").remove());
 
+	// x-axis label
+	selection.select(".tick:last-of-type text").clone()
+		.attr("x", 15)
+		.attr("text-anchor", "start")
+		.attr("font-weight", "bold")
+		.text(x_axis_label);
+
 	// y axis
 	const yAxis = d3.axisRight(yScale);
+
+	// TODO it is a bug that data have .0
+	yAxis.tickFormat(d3.format("d"));
+
 	selection.append("g")
 		.attr("transform", "translate(" + width +", 0)")
 		.call(yAxis)
@@ -93,7 +105,7 @@ const stripPlot = (selection, props) => {
 					.data(color.domain())
 					.enter().append("g")
 					.attr("class", level + " stripplot legend")
-					.attr("transform", function(d, i) { return "translate("+ (width + 40) +"," + (i * 15 - 20) + ")"; });
+					.attr("transform", function(d, i) { return "translate("+ (width + 30) +"," + (i * 15) + ")"; });
 
 	legend.append("circle")
 		.attr("r", 3.5)
