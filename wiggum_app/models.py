@@ -263,6 +263,20 @@ def getAggregateSplitbyTableDict(labeled_df, cur_result_df):
                         ['dependent','independent','splitby']).agg(
                         {'distance': ['mean'], 'subgroup_trend_strength': ['mean']}).reset_index()
 
+        # Competitive
+        # TODO append subgroups as array into each range for interaction
+        bins = [-1, 0.1, 0.2, np.inf]
+        labels = ['[0, 10%]',
+                  '(10%, 20%]',
+                  '(20%, 100%]']
+        competitive_df = trend_df.groupby(
+                ['dependent','independent','splitby', 
+                pd.cut(trend_df['subgroup_trend_strength'], 
+                bins=bins, labels=labels)]).size().reset_index(name='count')
+
+        competitive_df.columns = ['dependent', 'independent', 'splitby', 
+                                'winning_margin', 'count']
+
         grouped_df.columns = ['dependent', 'independent', 'splitby', 
                                 'mean_distance', 'mean_subgroup_trend_strength']
 
@@ -281,7 +295,8 @@ def getAggregateSplitbyTableDict(labeled_df, cur_result_df):
                     'trend_display_name': trend_display_name,
                     'detail_view_type': detail_view_type,
                     'overview_legend_type': overview_legend_type,
-                    'splitby_table':grouped_df.to_json(orient='records')}
+                    'splitby_table':grouped_df.to_json(orient='records'),
+                    'competitive_table': competitive_df.to_json(orient='records')}
 
         splitby_table_dict_list.append(splitby_table_dict)
 

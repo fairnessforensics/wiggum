@@ -144,7 +144,7 @@ function drawNodeLinkTree(data) {
 		charts: ['list', 'heatmap', 'heatmaplist'],
 		width: width,
 		addWidthArray: 120,
-		treeHeight: treeHeight + margin.top
+		treeHeight: treeHeight + margin.top + margin.bottom
 	});
 
 	// First level drawing
@@ -195,7 +195,7 @@ function drawNodeLinkTree(data) {
 		
 	// Second level - splitby
 	// Generate interactive buttons
-	levelLabels= ['\uf03a', 'SP1', 'SP2'];
+	levelLabels= ['\uf03a', 'SP1', 'SP2', '\uf080' ];
 	var secondLevelG1 = g.select('.level-2');
 
 	const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
@@ -226,19 +226,21 @@ function drawNodeLinkTree(data) {
 		height_array.push(singleObj);
 	});
 
+	// TODO add width varies for bar chart
 	secondLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level2',
-		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
+		charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
 		width: width,
 		addWidthArray: height_array,
-		treeHeight: treeHeight + margin.top
+		treeHeight: treeHeight + margin.top + margin.bottom
 	});
 
 	// Second level data
 	var agg_splitby_table_dict = data.agg_splitby_table_dict;
 	var splitby_data = agg_splitby_table_dict[0];
 	var splitby_table = JSON.parse(splitby_data.splitby_table);
+	var competitive_table = JSON.parse(splitby_data.competitive_table);
 
 	// Second level drawing
 	// Visual Tech 1: Tree nodes	
@@ -263,7 +265,7 @@ function drawNodeLinkTree(data) {
 			return !d.depth ? "none" : "all";
 		}); 			
 
-	// Visual Tech 2: 1d scatter plot
+	// Visual Alternatives
 	root.children.forEach(function (d) {
 		var yColumn = 'mean_distance';
 
@@ -297,6 +299,7 @@ function drawNodeLinkTree(data) {
 			.attr("transform", "translate(0,0)");
 			//.attr("transform", "translate(" + secondLevelG1_x + "," + secondLevelG1_y + ")");
 
+		// Visual Tech 2: 1d scatter plot	
 		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
 			yValue: d => d[yColumn],
 			yAxisLabel: yColumn,
@@ -306,6 +309,7 @@ function drawNodeLinkTree(data) {
 			level: 'level2'
 		});		
 
+		// Visual Tech 3: 2d scatter plot	
 		var xColumn = 'mean_subgroup_trend_strength';
 		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
 			xValue: d => d[xColumn],
@@ -320,6 +324,45 @@ function drawNodeLinkTree(data) {
 			level: 'level2'
 		});
 
+		// Visual Tech 4: grouped bar chart
+		var competitive_chart_data = competitive_table.filter(obj => {
+			return obj.dependent === keyArray[0]
+					&& obj.independent === keyArray[1]
+		  })
+
+		var competitive_bar_chart_data = [];
+
+		d.data.values.forEach(function (item) {
+			var singleObj = {};
+			singleObj['subgroup'] = item.key;
+			for (var i = 0; i < competitive_chart_data.length; i++){
+				if (item.key == competitive_chart_data[i].splitby) {
+					var key = competitive_chart_data[i].winning_margin;
+					singleObj[key] = competitive_chart_data[i].count;
+				}
+			}
+			competitive_bar_chart_data.push(singleObj);
+		});
+
+		const xValue = competitive_table => competitive_table['count'];
+		var xDomain = [0, d3.max(competitive_table, xValue)];
+
+		secondLevelG1_visual_alter.call(barChart, {
+			chart_data: competitive_bar_chart_data,
+			width: height,
+			height: height,
+			xDomain: xDomain,
+			level: 'level2',
+			largerFlag: false,
+			keys: ['[0, 10%]', '(10%, 20%]', '(20%, 100%]'],
+			percentageFlag: false,
+			parentIdentityFlag: true,
+			childrenIdentityFlag: true,
+			circleRadius: secondLevelCircleRadius,
+			identity_data: chart_data,
+			x_axis_label: 'Number of Districts',
+			legend_title: 'Winning Margin'
+		});	
 	});
 
 	// Third level: subgroups
@@ -457,7 +500,8 @@ function drawNodeLinkTree(data) {
 					agg_chart_data,
 					width: 300,
 					height: height,
-					level: 'level3'
+					level: 'level3',
+					x_axis_label: 'Vote Share'
 				});	
 
 				// Visual Tech 3: map
@@ -544,6 +588,7 @@ function drawNodeLinkTree(data) {
 					}
 					bar_chart_data.push(singleObj);
 				});
+
 				const xValue = chart_data => chart_data['value'];
 				var xDomain = [0, d3.max(chart_data, xValue)];
 
@@ -551,9 +596,11 @@ function drawNodeLinkTree(data) {
 					chart_data: bar_chart_data,
 					width: 300,
 					height: chart_height,
-					xDomain,
+					xDomain: xDomain,
 					level: 'level3',
-					largerFlag
+					largerFlag: largerFlag,
+					percentageFlag: true,
+					x_axis_label: 'Vote Share'
 				});	
 
 				/*thirdLevelG1_visual_alter_barchart
@@ -647,7 +694,7 @@ function drawNodeLinkTree(data) {
 						dependent = dependent.replace(/\s+/g, '.');
 						independent = independent.replace(/\s+/g, '.');
 						var selectClass = '.level2.scatterplot1d.circle' + '.' + dependent
-											+ '.' + independent + '.splitby_' + splitby;
+											+ '.' + independent + '.splitby_' + splitby;																						
 						var y_position = parseFloat(d3.select(selectClass).attr('cy'));
 						var secondLevelG1 = g.select('.level-2' + '.' + dependent + '.' + independent);
 
@@ -679,6 +726,64 @@ function drawNodeLinkTree(data) {
 						return [d.target.y - rectWidth / 2, d.target.x];
 					}else {}
 				});	
+
+	var barchartLinkPathGenerator 
+		= d3.linkHorizontal()
+			.source(function(d, i, type, matrixHeight) {
+				if (d.source.depth == 1) {
+					if (type === 'heatmap') {
+						var keyArray = d.source.data.key.split(",");
+						var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
+						return [d.source.y + x(c) + x.bandwidth()-3, d.source.x + y(r)+y.bandwidth()/2 - matrixHeight/2];
+					}
+					return [d.source.y + rectWidth / 2, d.source.x];
+				} else if (d.source.depth == 2) { 
+
+					var dependent = d.target.data.dependent;
+					var independent = d.target.data.independent;
+					var splitby = d.target.data.splitby;
+					// Fixed-TODO dep and independent also need to fix the space in class
+					splitby = splitby.replace(/\s+/g, '.');
+					dependent = dependent.replace(/\s+/g, '.');
+					independent = independent.replace(/\s+/g, '.');
+					var selectClass = '.level2.barchart.circle' + '.' + dependent
+										+ '.' + independent + '.splitby_' + splitby;	
+
+					var circle_position = d3.select(selectClass).attr('transform').split(/[\s,()]+/);
+					y_position = parseFloat(circle_position[2]);
+
+					var secondLevelG1 = g.select('.level-2' + '.' + dependent + '.' + independent);
+					const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
+					const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
+
+					return [d.source.y + secondLevelCircleRadius, secondLevelG1_y + y_position + secondLevelCircleRadius - 2];
+				}else {}
+			}).target(function(d, i) {
+				if (d.source.depth == 1) {
+					var keyArray = d.source.data.key.split(",");
+					var splitby = d.target.data.key;
+					// Fixed-TODO dep and independent also need to fix the space in class
+					splitby = splitby.replace(/\s+/g, '.');
+					keyArray[0] = keyArray[0].replace(/\s+/g, '.');
+					keyArray[1] = keyArray[1].replace(/\s+/g, '.');
+
+					var selectClass = '.level2.barchart.circle' + '.' + keyArray[0]
+										+ '.' + keyArray[1] + '.splitby_' + splitby;
+
+					var circle_position = d3.select(selectClass).attr('transform').split(/[\s,()]+/);
+					y_position = parseFloat(circle_position[2]);
+
+					var secondLevelG1 = g.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
+
+					const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
+					const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
+
+					return [d.target.y - secondLevelCircleRadius, secondLevelG1_y + y_position + secondLevelCircleRadius - 2];
+				} else if (d.source.depth == 2) { 
+					return [d.target.y - rectWidth / 2, d.target.x];
+				}else {}
+			});	
+	
 
 	// Path for heatmap
 	g.selectAll('.path heatmap node').data(links)
@@ -742,6 +847,40 @@ function drawNodeLinkTree(data) {
 			return !d.source.depth ? "none" : "all";
 		})
 		.style("visibility", "hidden");
+
+	// Path for barchart
+	// list to barchart
+	g.selectAll('.path list barchart').data(links)
+		.enter().append('path')
+		.attr('d', function(d, i) {
+			if (d.source.depth == 1 || d.source.depth == 2) {
+				return barchartLinkPathGenerator(d, i);
+			}
+		})
+		.attr("class", d =>"path list barchart level" + d.source.depth)
+		.attr('fill', 'none')
+		.attr('stroke', 'black')
+		.style("stroke-width", "1px")
+		.style("pointer-events", function(d, i) {
+			return !d.source.depth ? "none" : "all";
+		});		
+
+	// heatmap to barchart
+	// TODO
+	g.selectAll('.path heatmap barchart').data(links)
+		.enter().append('path')
+		.attr('d', function(d, i) {
+			if (d.source.depth == 1) {
+				return barchartLinkPathGenerator(d, i, 'heatmap', matrixHeight);
+			}
+		})
+		.attr("class", d =>"path heatmap barchart level" + d.source.depth)
+		.attr('fill', 'none')
+		.attr('stroke', 'black')
+		.style("stroke-width", "1px")
+		.style("pointer-events", function(d, i) {
+			return !d.source.depth ? "none" : "all";
+		});					
 
 	initVisibility();
 
@@ -1192,13 +1331,25 @@ const interactiveLevelButton = (selection, props) => {
 								// Check Level 2's visual technique
 								if ((d3.select('.level2.scatterplot1d').style("visibility") == 'hidden')
 									&& (d3.select('.level2.scatterplot2d').style("visibility") == 'hidden')) {
-									// Level 1: list/heatmap; level 2: list
-									d3.selectAll('.path.list.node.level1')
-										.transition()
-										.style('visibility', i ? 'hidden' : 'visible');
-									d3.selectAll('.path.heatmap.node.level1')
-										.transition()
-										.style('visibility', i ? 'visible' : 'hidden');	
+									// Level 1: list/heatmap; 
+									if (d3.select('.level2.barchart').style("visibility") == 'hidden') {
+										// Level 2: list
+										d3.selectAll('.path.list.node.level1')
+											.transition()
+											.style('visibility', i ? 'hidden' : 'visible');
+										d3.selectAll('.path.heatmap.node.level1')
+											.transition()
+											.style('visibility', i ? 'visible' : 'hidden');	
+									} else {
+										// Level 2: barchart
+										d3.selectAll('.path.list.barchart.level1')
+											.transition()
+											.style('visibility', i ? 'hidden' : 'visible');
+										d3.selectAll('.path.heatmap.barchart.level1')
+											.transition()
+											.style('visibility', i ? 'visible' : 'hidden');	
+									}
+
 								} else {
 									// Level 1: list/heatmap; level 2: scatterplot1d/scatterplot2d
 									d3.selectAll('.path.list.scatterplot1d.level1')
@@ -1220,13 +1371,25 @@ const interactiveLevelButton = (selection, props) => {
 										
 									if ((d3.select('.level2.scatterplot1d').style("visibility") == 'hidden')
 										&& (d3.select('.level2.scatterplot2d').style("visibility") == 'hidden')) {
-										// Level 1: list/heatmap; level 2: list
-										d3.selectAll('.path.list.node.level1')
-											.transition()
-											.style('visibility', 'visible');
-										d3.selectAll('.path.heatmap.node.level1')
-											.transition()
-											.style('visibility', 'hidden');	
+										// Level 1: list/heatmap; 
+										if (d3.select('.level2.barchart').style("visibility") == 'hidden') {
+											// Level 2: list
+											d3.selectAll('.path.list.node.level1')
+												.transition()
+												.style('visibility', 'visible');
+											d3.selectAll('.path.heatmap.node.level1')
+												.transition()
+												.style('visibility', 'hidden');	
+										} else {
+											// Level 2: barchart
+											d3.selectAll('.path.list.barchart.level1')
+												.transition()
+												.style('visibility', 'visible');
+											d3.selectAll('.path.heatmap.barchart.level1')
+												.transition()
+												.style('visibility', 'hidden');	
+										}
+
 									} else {
 										// Level 1: list/heatmap; level 2: scatterplot1d/scatterplot2d
 										d3.selectAll('.path.list.scatterplot1d.level1')
@@ -1239,7 +1402,7 @@ const interactiveLevelButton = (selection, props) => {
 								}
 
 							} else if (level == "level2") {
-								if (i == 2) {
+								if (i == 2 || i ==3) {
 									// Scatterplot2d
 									secondLevelWidth = 
 										Math.max.apply(Math, addWidthArray.map(function(o) { 
@@ -1287,7 +1450,8 @@ const interactiveLevelButton = (selection, props) => {
 									secondLevelWidth = 0;
 
 									// Check Level 2's visual technique
-									if (d3.select('.level2.scatterplot2d').style("visibility") == 'visible') {
+									if (d3.select('.level2.scatterplot2d').style("visibility") == 'visible'
+										|| d3.select('.level2.barchart').style("visibility") == 'visible') {
 										// reset position for level3 nodes and level2 path
 										
 										// TODO not sure how tree layout will be affected
@@ -1331,22 +1495,30 @@ const interactiveLevelButton = (selection, props) => {
 								// Level 1 path
 								// Check Level 1's visual technique
 								if (d3.select('.level1.heatmap').style("visibility") == 'hidden') {
-									// Level 1: list; level 2: list/scatterplot1d
+									// Level 1: list; 
+									// level 2: list/scatterplot1d/scatterplot2d/barchart
 									d3.selectAll('.path.list.node.level1')
 										.transition()
 										.style('visibility', i == 0 ? 'visible' : 'hidden');
 									d3.selectAll('.path.list.scatterplot1d.level1')
 										.transition()
-										.style('visibility', i ? 'visible' : 'hidden');	
+										.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');
+									d3.selectAll('.path.list.barchart.level1')
+											.transition()
+											.style('visibility', i == 3 ? 'visible' : 'hidden');												
 								} else {
-									// Level 1: heatmap; level 2: list/scatterplot1d
+									// Level 1: heatmap; 
+									// level 2: list/scatterplot1d/scatterplot2d/barchart
 									d3.selectAll('.path.heatmap.node.level1')
 										.transition()
 										.style('visibility', i == 0 ? 'visible' : 'hidden');	
 									d3.selectAll('.path.heatmap.scatterplot1d.level1')
 										.transition()
-										.style('visibility', i ? 'visible' : 'hidden');
-									
+										.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');
+									d3.selectAll('.path.heatmap.barchart.level1')
+										.transition()
+										.style('visibility', i == 3 ? 'visible' : 'hidden');
+
 									if (d3.select('.level1.list').style("visibility") == 'visible') {
 										d3.selectAll('.path.heatmap.scatterplot1d.level1')
 											.transition()
@@ -1362,9 +1534,16 @@ const interactiveLevelButton = (selection, props) => {
 										
 										d3.selectAll('.path.list.scatterplot1d.level1')
 											.transition()
-											.style('visibility', i ? 'visible' : 'hidden');
-									}
+											.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');										
+										
+										d3.selectAll('.path.list.barchart.level1')
+											.transition()
+											.style('visibility', i == 3 ? 'visible' : 'hidden');
 											
+										d3.selectAll('.path.heatmap.barchart.level1')
+											.transition()
+											.style('visibility', 'hidden');
+									}		
 								}
 								// Level 2 path
 								d3.selectAll('.path.list.node.level2')
@@ -1372,8 +1551,10 @@ const interactiveLevelButton = (selection, props) => {
 									.style('visibility', i == 0 ? 'visible' : 'hidden');									
 								d3.selectAll('.path.scatterplot1d.level2')
 									.transition()
-									.style('visibility', i ? 'visible' : 'hidden');	
-
+									.style('visibility', (i == 1 || i == 2 )? 'visible' : 'hidden');	
+								d3.selectAll('.path.barchart.level2')
+									.transition()
+									.style('visibility', i == 3 ? 'visible' : 'hidden');
 							}
 						});
 
@@ -1429,7 +1610,9 @@ function initVisibility() {
 	d3.selectAll('.level2.scatterplot1d').transition().style('visibility', "hidden");	
 	d3.selectAll('.path.list.scatterplot1d').transition().style('visibility', "hidden");	
 	d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
-	
+	d3.selectAll('.level2.barchart').transition().style('visibility', "hidden");	
+	d3.selectAll('.path.list.barchart').transition().style('visibility', "hidden");	
+
 	// subgroup level
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
 	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
