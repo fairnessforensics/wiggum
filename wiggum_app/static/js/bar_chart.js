@@ -236,3 +236,116 @@ const barChart = (selection, props) => {
 		.text(legend_title);	
 
   };
+
+const coloredBarChart = (selection, props) => {
+	const {
+	  chart_data,
+	  width,
+	  height,
+	  parentIdentityFlag,
+	  childrenIdentityFlag,	  
+	  rectWidth,
+	  rectHeight,
+	  identity_data,
+	  yAxisLabel,
+	  level
+	} = props;
+
+	var margin = { left: 50, top: 0, right: 0, bottom: 30 };
+	var innerWidth  = width  - margin.left - margin.right;
+	var innerHeight = height - margin.top  - margin.bottom;
+
+	const g = selection.append('g')
+	  .attr('transform', `translate(${margin.left},${-height/2})`);
+
+	var xAxisG = g.append("g")
+	  .attr("class", level + " coloredbarchart x axis")
+	  .attr("transform", "translate(0," + innerHeight + ")");
+
+	var yAxisG = g.append("g")
+	  .attr("class", level + " coloredbarchart y axis");
+
+	var xScale = d3.scaleBand()
+					//.domain(groups)
+					.range([0, innerWidth])
+					.padding(0.3);
+
+	var yScale = d3.scaleLinear()
+					.range([innerHeight, 0]);
+
+	const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+	var xAxis = d3.axisBottom(xScale);
+
+	var yAxis = d3.axisLeft(yScale)
+	  				.ticks(5,"%");	
+
+	xScale.domain(chart_data.map( function (d){ return d.name; }));
+	yScale.domain([0, d3.max(chart_data, function (d){ return d.value; })]).nice();
+	color.domain(chart_data.map(function (d){ return d.name; }));
+
+	xAxisG.call(xAxis)
+		.selectAll("text")  
+		.attr("dx", "-0.1em")
+		.attr("dy", "0.8em");
+
+	yAxisG.call(yAxis)
+		.append("text")
+		.attr("class", level + " coloredbarchart y axis label")	  
+		.attr("x", 0)
+		.attr("y", -10)
+		.attr("text-anchor", "end")
+		.attr('fill', 'black')
+		.text(yAxisLabel);
+
+	g.selectAll(".bar.rect")
+		.data(chart_data)
+		.enter()
+		.append("rect")
+		.attr("class", level + " coloredbarchart bar")   
+		.attr("width", xScale.bandwidth())
+		.attr("x", function (d){ return xScale(d.name); })
+		.attr("y", function (d){ return yScale(d.value); })
+		.attr("height", function (d){ return innerHeight - yScale(d.value); })
+		.attr("fill", function (d){ return color(d.name); });
+
+	// Parent Identity
+	if (parentIdentityFlag) {
+		g.selectAll(".rect")
+			.data(identity_data)
+			.enter()    
+			.append("rect")	
+			.attr("class", d => level + " coloredbarchart left rect " 
+						+ d.dependent + " " + d.independent)	  
+			.attr("transform", function(d) {
+				var y_position = height/2;
+				return "translate(" + (-margin.left) +"," + y_position + ")";
+			})						
+			.attr("x", -10)
+			.attr("y", -10)						
+			.attr("width", rectWidth)
+			.attr("height", rectHeight)
+			.style("stroke", "black")
+			.style("stroke-width", "2px")
+			.style("fill-opacity", 1)
+			.style("fill", d => heatmapColorScale(d.value));
+
+		// Text for identity portion  
+		g.selectAll(".text")
+			.data(identity_data)
+			.enter()    		
+			.append("text")	   
+			.attr("class", d => level + " coloredbarchart left text " 
+						+ d.dependent + " " + d.independent)	
+			.attr("transform", function(d) {
+				var y_position = height/2;
+				return "translate(" + (-margin.left) +"," + y_position + ")";
+			})		
+			.attr("dx", '.6em')			  
+			//.attr("dy", rectHeight + 5)	
+			.attr('dy', '1.5em')																
+			.style("text-anchor", "end")
+			.text(d => d.dependent + "," + d.independent);
+	}
+
+}
