@@ -76,6 +76,20 @@ var csvData;
         drawScatterplot(csvData, indep_vars[0],dep_vars[0], splitby_vars[0]);
 
         addAggSlider();
+    } else {
+        // hide all button for interactive scatterplot
+        d3.select("#dep_sel_button")
+            .style("visibility", "hidden");
+
+        d3.select("#indep_sel_button")
+            .style("visibility", "hidden");
+            
+        d3.select("#splitby_sel_button")
+            .style("visibility", "hidden");    
+
+        // adjust the postion for node link tree
+        d3.select("#node_link_tree")
+            .style("margin-left", "10%");
     }
 }
 
