@@ -94,6 +94,31 @@ const districtStateMap = (selection, props) => {
 				} 
 			})
 			.attr("stroke", "#929292");
+
+		// Keep the code of drawing circle
+		// for testing the text position	
+		/*mapG.selectAll('circle')
+			.data(districts_fixed)
+			.enter()
+			.append('circle')
+			.attr('class', 'districtmap district')
+			.attr('cx', d => path.centroid(d)[0])
+			.attr('cy', d => path.centroid(d)[1])
+			.attr('r', 3);	*/
+
+		// Draw district number in the map center
+		mapG.selectAll('text')
+			.data(districts_fixed)
+			.enter()
+			.append('text')
+			.attr('class', 'districtmap district text')
+			.attr("transform", function(d) {
+				return "translate(" + path.centroid(d)[0] +"," + path.centroid(d)[1] + ")";
+			})		
+			.attr('dy', '.3em')															
+			.style("text-anchor", "middle")	
+			.text(d => d.properties.District);			
+
 	});
 	
 	function drawNodebyShape(chart_data, districts_data, level) {
