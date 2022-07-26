@@ -19,9 +19,14 @@ function drawNodeLinkTree(data) {
 
     var result_table = JSON.parse(data.result_df);
 
-	var width = 1150;
+	// TODO width for big state
+	//var width = 1150;
+	var width = 2500;
 	var height = 2600;
-	var margin = {top: 50, right: 420, bottom: 10, left: 60};
+	// TODO width for big state
+	//var margin = {top: 50, right: 420, bottom: 10, left: 60};
+	var margin = {top: 50, right: 1800, bottom: 10, left: 60};
+
 	var innerWidth = width - margin.left - margin.right;
 	//var innerHeight = height - margin.top - margin.bottom;
 
@@ -578,7 +583,8 @@ function drawNodeLinkTree(data) {
 						chart_data: map_data,
 						state_name,
 						leaf_node_links,
-						width: 1.5 * height + rectHeight,
+						//width: 1.5 * height + rectHeight,
+						width: height + rectHeight,
 						height: height + rectHeight,
 						offset_y: thirdLevelG1_y,
 						level: 'level3',
