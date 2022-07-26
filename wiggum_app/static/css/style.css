@@ -474,7 +474,7 @@ div.tooltip {
     padding-right: 30px; 
     margin-left: 28%; 
     margin-top: 3%; 
-    overflow:auto;
+    overflow:hidden;
 }
 
 #map {
