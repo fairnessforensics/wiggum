@@ -357,9 +357,9 @@ function drawNodeLinkTree(data) {
 		var xColumn = 'mean_subgroup_trend_strength';
 		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
 			xValue: d => d[xColumn],
-			xAxisLabel: xColumn,
+			xAxisLabel: 'The Mean of Winning Margins',
 			yValue: d => d[yColumn],
-			yAxisLabel: yColumn,
+			yAxisLabel: 'The Mean of Distances',
 			circleRadius: secondLevelCircleRadius,
 			margin: { top: 10, right: 40, bottom: 88, left: 150 },
 			width: height,
