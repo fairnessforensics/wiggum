@@ -12,10 +12,11 @@ const stripPlot = (selection, props) => {
 	var total_data = chart_data.concat(agg_chart_data);
 
 	const xScale = d3.scaleLinear()
-					.domain(d3.extent(total_data, d => d.value))
+					//.domain(d3.extent(total_data, d => d.value))
+					.domain([0, 1])
 					.rangeRound([0, width])
 					.nice();
-	
+
 	const yScale = d3.scalePoint()
 					.domain(chart_data.map(d => d.subgroup))
 					.rangeRound([0, height]);	
@@ -25,7 +26,7 @@ const stripPlot = (selection, props) => {
 	var interval = yScale.step();
 
 	// x axis
-	const xAxis = d3.axisTop(xScale).ticks(5, "%");
+	const xAxis = d3.axisTop(xScale).ticks(10, "%");
 	selection.append("g")
 		.attr("class", level + " stripplot x axis")
 		.attr("transform", "translate(0," + (-margin.top) + ")")
