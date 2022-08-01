@@ -5,6 +5,11 @@ var heatmapColorScale = d3.scaleQuantize()
 						.domain([0, 1])
 						.range(heatmapConColors);
 
+// Specify the color for two parties
+var twoPartyColor = d3.scaleOrdinal()
+						.domain(["Dem", "Rep"])
+						.range(["#145fa8", "#c91919"]);
+
 // initiate the first and second level width
 var firstLevelWidth = 0;
 var secondLevelWidth = 0;
@@ -232,7 +237,8 @@ function drawNodeLinkTree(data) {
 			rectHeight: rectHeight,
 			identity_data: identity_data,
 			yAxisLabel: 'Vote Share',		
-			level: 'level1'
+			level: 'level1',
+			myColor: twoPartyColor
 		});
 
 	})
@@ -545,7 +551,8 @@ function drawNodeLinkTree(data) {
 					width: 300,
 					height: height,
 					level: 'level3',
-					x_axis_label: 'Vote Share'
+					x_axis_label: 'Vote Share',
+					myColor: twoPartyColor
 				});	
 
 				// Visual Tech 3: map
@@ -645,7 +652,8 @@ function drawNodeLinkTree(data) {
 					level: 'level3',
 					largerFlag: largerFlag,
 					percentageFlag: true,
-					x_axis_label: 'Vote Share'
+					x_axis_label: 'Vote Share',
+					myColor: twoPartyColor
 				});	
 
 				/*thirdLevelG1_visual_alter_barchart

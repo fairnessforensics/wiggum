@@ -13,7 +13,8 @@ const barChart = (selection, props) => {
 	  circleRadius,
 	  identity_data,
 	  x_axis_label,
-	  legend_title
+	  legend_title,
+	  myColor
 	} = props;
 
 	var subgroups;
@@ -65,7 +66,12 @@ const barChart = (selection, props) => {
 	//  .domain(subgroups)
 	//  .range(['#e41a1c','#377eb8','#4daf4a'])
 
-	const color = d3.scaleOrdinal(d3.schemeCategory10);
+	var color;
+	if (myColor == undefined) {
+		color = d3.scaleOrdinal(d3.schemeCategory10);
+	} else {
+		color = myColor;
+	}
 
 	const g = selection.append('g')
 	  .attr('transform', `translate(${margin.left},${margin.top})`);
@@ -248,7 +254,8 @@ const coloredBarChart = (selection, props) => {
 	  rectHeight,
 	  identity_data,
 	  yAxisLabel,
-	  level
+	  level,
+	  myColor
 	} = props;
 
 	var margin = { left: 50, top: 0, right: 0, bottom: 30 };
@@ -273,7 +280,12 @@ const coloredBarChart = (selection, props) => {
 	var yScale = d3.scaleLinear()
 					.range([innerHeight, 0]);
 
-	const color = d3.scaleOrdinal(d3.schemeCategory10);
+	var color;
+	if (myColor == undefined) {
+		color = d3.scaleOrdinal(d3.schemeCategory10);
+	} else {
+		color = myColor;
+	}
 
 	var xAxis = d3.axisBottom(xScale);
 

@@ -5,7 +5,8 @@ const stripPlot = (selection, props) => {
 		width,
 		height,
 		level,
-		x_axis_label
+		x_axis_label,
+		myColor
 	} = props;
 	var margin = ({top: 10, right: 0, bottom: 0, left: 0});
 
@@ -21,7 +22,12 @@ const stripPlot = (selection, props) => {
 					.domain(chart_data.map(d => d.subgroup))
 					.rangeRound([0, height]);	
 					
-	const color = d3.scaleOrdinal(d3.schemeCategory10);
+	var color;
+	if (myColor == undefined) {
+		color = d3.scaleOrdinal(d3.schemeCategory10);
+	} else {
+		color = myColor;
+	}
 
 	var interval = yScale.step();
 
