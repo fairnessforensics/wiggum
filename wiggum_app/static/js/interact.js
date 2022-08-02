@@ -89,7 +89,7 @@ var csvData;
 
         // adjust the postion for node link tree
         d3.select("#node_link_tree")
-            .style("margin-left", "10%");
+            .style("margin-left", "12%");
     }
 }
 

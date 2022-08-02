@@ -936,6 +936,62 @@ function drawNodeLinkTree(data) {
 
 	initVisibility();
 
+	// Draw node link tree legend
+	drawNodeLinkLegend();
+}
+
+/**
+ * Draw node-linked diagram legend
+ *
+ * @param none.
+ * @returns none.
+ */
+ function drawNodeLinkLegend() {
+
+	var margin = {top: 30, right: 50, bottom: 120, left: 30};
+
+	var svg = d3.select("#node_link_tree_legend")
+				.append("svg")		
+				.attr("width", 250)
+				.attr("height", 350)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
+
+	var colorLegend = d3.legendColor()
+						.labelFormat(d3.format(".1f"))
+						.scale(heatmapColorScale)
+						.shapePadding(3)
+						.shapeWidth(20)
+						.shapeHeight(20)
+						.labelOffset(10)
+						.ascending(true);
+		
+	svg.append("g")
+		.attr("transform", "translate(-20, 0)")
+		.call(colorLegend);
+
+	svg.append("text")
+		.attr("x", 55)
+		.attr("y", -10)
+		.attr("text-anchor", "middle")  
+		.style("font-size", "15px") 
+		.text("Distance / Mean Distance");	
+
+	svg.append("text")
+		.attr("x", -margin.left)
+		.attr("y", 265)
+		.attr("dy", "0em")
+		.attr("text-anchor", "start")  
+		.style("font-size", "15px") 
+		.text("If same pattern, distance = 0.");	
+		
+	svg.append("text")
+		.attr("x", -margin.left)
+		.attr("y", 265)
+		.attr("dy", "1.2em")
+		.attr("text-anchor", "start")  
+		.style("font-size", "15px") 
+		.text("If reverse pattern, distance = 1.");			
 }
 
 function getMatrixIndex(details, dep, indep) {

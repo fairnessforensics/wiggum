@@ -13,6 +13,7 @@
     <script src="https://unpkg.com/topojson@3.0.2/dist/topojson.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/5.1.5/turf.min.js"></script>
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.13.0/d3-legend.js"></script>
     <script>     
         $(function() {
             // initial draw
@@ -22,7 +23,7 @@
                     url: "/explore",
                     data: {'action':'page_load'},
                     success: function(data){
-                        init(data)
+                        init(data);
 
                         //drawDistanceHeatmap2D(data.distance_heatmap_dict);
 
@@ -47,6 +48,7 @@
           </div>   
         <div id = "subgroup_distance"></div>  
         <div id="map"></div>     
+        <div id="node_link_tree_legend"></div>
         <div id="node_link_tree"></div>    
         <!--<div id="distance_matrix_2d"></div>   
         <div id="bipartite_graph">
