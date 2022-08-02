@@ -283,6 +283,7 @@ const coloredBarChart = (selection, props) => {
 	var color;
 	if (myColor == undefined) {
 		color = d3.scaleOrdinal(d3.schemeCategory10);
+		color.domain(chart_data.map(function (d){ return d.name; }));
 	} else {
 		color = myColor;
 	}
@@ -294,7 +295,6 @@ const coloredBarChart = (selection, props) => {
 
 	xScale.domain(chart_data.map( function (d){ return d.name; }));
 	yScale.domain([0, d3.max(chart_data, function (d){ return d.value; })]).nice();
-	color.domain(chart_data.map(function (d){ return d.name; }));
 
 	xAxisG.call(xAxis)
 		.selectAll("text")  
