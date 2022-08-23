@@ -1,5 +1,10 @@
 // continous color for overview
-var heatmapConColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
+//var heatmapConColors = ['#ffffe0', '#caefdf','#abdad9','#93c4d2', '#7daeca','#6997c2', '#5681b9','#426cb0', '#2b57a7','#00429d'];
+// Option 2: Green
+//var heatmapConColors = ['#eaf7e6', '#d8f0d2', '#c1e6ba', '#a4da9e', '#84cc83', '#62bb6d', '#3fa85b', '#289049', '#107a37', '#006227'];
+// Option 3: Yellow Green
+var heatmapConColors = ['#f9fdc5', '#eaf7af', '#d2eda0', '#b1df90', '#8bce81', '#64bc6f', '#3fa85b', '#288a47', '#10743c', '#005e33'];
+
 // continous color scale for overview
 var heatmapColorScale = d3.scaleQuantize()
 						.domain([0, 1])
