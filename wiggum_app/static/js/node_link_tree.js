@@ -401,6 +401,10 @@ function drawNodeLinkTree(data) {
 
 		const xValue = competitive_table => competitive_table['count'];
 		var xDomain = [0, d3.max(competitive_table, xValue)];
+		var competitive_color = d3.scaleOrdinal()
+									//.range(["#a6cee3", "#fb9a99", "#cab2d6"]);
+									//.range(["#80b1d3", "#fb8072", "#bc80bd"]);
+									.range(["#8dd3c7", "#fdb462", "#bc80bd"]);
 
 		secondLevelG1_visual_alter.call(barChart, {
 			chart_data: competitive_bar_chart_data,
@@ -416,7 +420,8 @@ function drawNodeLinkTree(data) {
 			circleRadius: secondLevelCircleRadius,
 			identity_data: chart_data,
 			x_axis_label: 'Number of Districts',
-			legend_title: 'Winning Margin'
+			legend_title: 'Winning Margin',
+			myColor: competitive_color
 		});	
 	});
 
