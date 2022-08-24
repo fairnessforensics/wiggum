@@ -963,7 +963,7 @@ function drawNodeLinkTree(data) {
 	var svg = d3.select("#node_link_tree_legend")
 				.append("svg")		
 				.attr("width", 250)
-				.attr("height", 350)
+				.attr("height", 500)
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");	
 
@@ -1001,7 +1001,47 @@ function drawNodeLinkTree(data) {
 		.attr("dy", "1.2em")
 		.attr("text-anchor", "start")  
 		.style("font-size", "15px") 
-		.text("If reverse pattern, distance = 1.");			
+		.text("If reverse pattern, distance = 1.");	
+		
+	svg.append("text")
+		.attr("x", -margin.left)
+		.attr("y", 265)
+		.attr("dy", "2.4em")
+		.attr("text-anchor", "start")  
+		.style("font-size", "15px") 
+		.text("The distances encoded in the");
+	
+	svg.append("text")
+		.attr("x", -margin.left)
+		.attr("y", 265)
+		.attr("dy", "3.4em")
+		.attr("text-anchor", "start")  
+		.style("font-size", "15px") 		
+		.text("leaf nodes are {0, 1}.");	
+		
+	svg.append("text")
+		.attr("x", -margin.left)
+		.attr("y", 265)
+		.attr("dy", "4.4em")
+		.attr("text-anchor", "start")  
+		.style("font-size", "15px") 
+		.text("The mean distances encoded");	
+		
+	svg.append("text")
+		.attr("x", -margin.left)
+		.attr("y", 265)
+		.attr("dy", "5.4em")
+		.attr("text-anchor", "start")  
+		.style("font-size", "15px") 		
+		.text("in the non-leaf nodes are");	
+		
+	svg.append("text")
+		.attr("x", -margin.left)
+		.attr("y", 265)
+		.attr("dy", "6.4em")
+		.attr("text-anchor", "start")  
+		.style("font-size", "15px") 		
+		.text("in the range of [0, 1].");			
 }
 
 function getMatrixIndex(details, dep, indep) {
