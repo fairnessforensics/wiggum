@@ -136,9 +136,9 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .append('title')
 		  .text(function(d) {
 			if (xValue) {
-				return `(${xValue(d)}, ${yValue(d)})`;
+				return `(${d3.format(".3f")(xValue(d))}, ${d3.format(".3f")(yValue(d))})`;
 			} else {
-				return `${yValue(d)}`;
+				return `${d3.format(".3f")(yValue(d))}`;
 			}});
 	  
 	selection.selectAll(xValue ? ".scatterplot2d.text" : ".scatterplot1d.text")		
