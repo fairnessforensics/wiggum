@@ -1187,14 +1187,20 @@ function drawHeatmap(options) {
 			}
 			return level + " heatmap cell";
 		})
-    	.transition()
+		// Remove transition() for adding title
+    	//.transition()
 		.style("fill", function(d, i) {
 			if (d.value == 99) {
 				return '#808080';
 			} else {
 				return heatmapColorScale(d.value);
 			}
+		})
+		.append('title')
+		.text(function(d) {
+			return `The mean distance is ${d3.format(".3f")(d.value)}.`;
 		});
+
 	
 	if (level == "level1") {
 		cells.style("opacity", function(d) {

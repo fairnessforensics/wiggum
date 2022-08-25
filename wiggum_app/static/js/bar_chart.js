@@ -163,7 +163,11 @@ const barChart = (selection, props) => {
 			.style('stroke', 'black')
 			.style('stroke-width', '2px')
 			.style("fill-opacity", 1) 
-			.style("fill", d => heatmapColorScale(d.mean_distance));
+			.style("fill", d => heatmapColorScale(d.mean_distance))
+			.append('title')
+			.text(function(d) {
+				return `The mean distance is ${d3.format(".3f")(d.mean_distance)}.`
+			});
 
 		// Text for identity portion  
 		g.selectAll(".left.text")		
@@ -196,7 +200,11 @@ const barChart = (selection, props) => {
 			.style('stroke', 'black')
 			.style('stroke-width', '2px')
 			.style("fill-opacity", 1) 
-			.style("fill", d => heatmapColorScale(d.mean_distance));
+			.style("fill", d => heatmapColorScale(d.mean_distance))
+			.append('title')
+			.text(function(d) {
+				return `The mean distance is ${d3.format(".3f")(d.mean_distance)}.`
+			});
 
 		// Text for identity portion  
 		g.selectAll(".right.text")		
@@ -345,7 +353,11 @@ const coloredBarChart = (selection, props) => {
 			.style("stroke", "black")
 			.style("stroke-width", "2px")
 			.style("fill-opacity", 1)
-			.style("fill", d => heatmapColorScale(d.value));
+			.style("fill", d => heatmapColorScale(d.value))
+			.append('title')
+			.text(function(d) {
+				return `The mean distance is ${d3.format(".3f")(d.value)}.`
+			});
 
 		// Text for identity portion  
 		g.selectAll(".text")
