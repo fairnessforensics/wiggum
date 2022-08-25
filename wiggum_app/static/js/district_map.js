@@ -93,7 +93,15 @@ const districtStateMap = (selection, props) => {
 					return '#fff';
 				} 
 			})
-			.attr("stroke", "#929292");
+			.attr("stroke", "#929292")
+			.append('title')
+			.text(function(d) {
+				var district_id = d.properties.District;
+				var row = chart_data.find(obj => {
+					return obj.subgroup == district_id
+				  })
+				return `The distance is ${row.distance}.`
+			}); 
 
 		// Keep the code of drawing circle
 		// for testing the text position	
@@ -173,7 +181,15 @@ const districtStateMap = (selection, props) => {
 						return '#fff';
 					} 
 				})				
-				.attr("stroke", "#929292");				
+				.attr("stroke", "#929292")
+				.append('title')
+				.text(function(d) {
+					var district_id = d.properties.District;
+					var row = chart_data.find(obj => {
+						return obj.subgroup == district_id
+					  })
+					return `The distance is ${row.distance}.`
+				});				
 		}
 
 	}

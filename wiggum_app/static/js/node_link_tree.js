@@ -186,7 +186,13 @@ function drawNodeLinkTree(data) {
 		})
 		.style("stroke", "black")
 	    .style("stroke-width", "2px")
-		.style("visibility", "hidden");
+		.style("visibility", "hidden")
+		.append('title')
+		.text(function(d) {
+			var keyArray = d.data.key.split(",");
+			var value = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
+			return `The mean distance is ${d3.format(".3f")(value)}.`
+		});
 
 	// Visual Alternatives
 	firstLevelG.each(function (d) {
@@ -318,6 +324,15 @@ function drawNodeLinkTree(data) {
 		.style("fill-opacity", 1)
 		.style("pointer-events", function(d) {
 			return !d.depth ? "none" : "all";
+		})
+		.append('title')
+		.text(function(d) {
+			var row = splitby_table.find(obj => {
+				return obj.dependent === d.data.values[0].dependent 
+						&& obj.independent === d.data.values[0].independent
+						&& obj.splitby === d.data.key
+			  })
+			return `The mean distance is ${d3.format(".3f")(row.mean_distance)}.`
 		}); 			
 
 	// Visual Alternatives
@@ -461,7 +476,11 @@ function drawNodeLinkTree(data) {
 			return heatmapColorScale(d.data.distance);
 		})
 		.style("stroke", "black")
-		.style("stroke-width", "2px");
+		.style("stroke-width", "2px")
+		.append('title')
+		.text(function(d) {
+			return `The distance is ${d.data.distance}.`
+		}); 			
 
 	nodeEnter.append('text')
 		.attr('dx', d => d.children ? '0em' : '1em')
