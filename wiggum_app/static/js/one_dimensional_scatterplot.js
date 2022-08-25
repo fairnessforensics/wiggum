@@ -132,7 +132,14 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .attr("cy", d => yScale(yValue(d)))
 		  .attr("stroke", "black")
 		  .attr("stroke-width", 2)	  
-		  .style("fill", d => heatmapColorScale(d.mean_distance));
+		  .style("fill", d => heatmapColorScale(d.mean_distance))
+		  .append('title')
+		  .text(function(d) {
+			if (xValue) {
+				return `(${xValue(d)}, ${yValue(d)})`;
+			} else {
+				return `${yValue(d)}`;
+			}});
 	  
 	selection.selectAll(xValue ? ".scatterplot2d.text" : ".scatterplot1d.text")		
 		.data(chart_data)

@@ -14,7 +14,8 @@ const barChart = (selection, props) => {
 	  identity_data,
 	  x_axis_label,
 	  legend_title,
-	  myColor
+	  myColor,
+	  tooltipValueFormatFlag
 	} = props;
 
 	var subgroups;
@@ -142,7 +143,9 @@ const barChart = (selection, props) => {
 		  .attr("y", function(d){ return ySubgroup(d.key); })
 		  .attr("width", function(d) { return xScale(d.value); })
 		  .attr("height", ySubgroup.bandwidth())
-		  .attr("fill", function(d) { return color(d.key); });		
+		  .attr("fill", function(d) { return color(d.key); })
+		  .append('title')
+		  .text(d => tooltipValueFormatFlag ? `${d3.format(".1%")(d.value)}` : `${d.value}`);		
 
 	// Identity Potion
 	// Parent Identity
@@ -319,7 +322,9 @@ const coloredBarChart = (selection, props) => {
 		.attr("x", function (d){ return xScale(d.name); })
 		.attr("y", function (d){ return yScale(d.value); })
 		.attr("height", function (d){ return innerHeight - yScale(d.value); })
-		.attr("fill", function (d){ return color(d.name); });
+		.attr("fill", function (d){ return color(d.name); })
+		.append('title')
+		.text(d => `${d.name} : ${d3.format(".1%")(d.value)}` );
 
 	// Parent Identity
 	if (parentIdentityFlag) {

@@ -421,7 +421,8 @@ function drawNodeLinkTree(data) {
 			identity_data: chart_data,
 			x_axis_label: 'Number of Districts',
 			legend_title: 'Winning Margin',
-			myColor: competitive_color
+			myColor: competitive_color,
+			tooltipValueFormatFlag: false
 		});	
 	});
 
@@ -663,7 +664,8 @@ function drawNodeLinkTree(data) {
 					largerFlag: largerFlag,
 					percentageFlag: true,
 					x_axis_label: 'Vote Share',
-					myColor: twoPartyColor
+					myColor: twoPartyColor,
+					tooltipValueFormatFlag: true
 				});	
 
 				/*thirdLevelG1_visual_alter_barchart

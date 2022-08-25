@@ -91,7 +91,9 @@ const stripPlot = (selection, props) => {
 		.attr("cx", d => xScale(d.value))
 		.attr("cy", d => yScale(d.subgroup))
 		.attr("fill", d => color(d.name))
-		.attr("pointer-events", "all");
+		.attr("pointer-events", "all")
+		.append('title')
+		.text(d => `${d3.format(".1%")(d.value)}` );
 
 	// aggregate
 	var symbol_diamond = d3.symbol()
@@ -105,7 +107,9 @@ const stripPlot = (selection, props) => {
 		.attr("transform", d => "translate(" + xScale(d.value) + "," + yScale(d.subgroup) +")")
 		.attr("fill", d => color(d.name))
 		.style("opacity", "0.3")
-		.attr("pointer-events", "all");
+		.attr("pointer-events", "all")
+		.append('title')
+		.text(d => `${d3.format(".1%")(d.value)}`);
 
 	// Legend       
 	var legend = selection.selectAll(".legend")
