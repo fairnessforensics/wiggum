@@ -13,7 +13,8 @@ var heatmapColorScale = d3.scaleQuantize()
 // Specify the color for two parties
 var twoPartyColor = d3.scaleOrdinal()
 						.domain(["Dem", "Rep"])
-						.range(["#145fa8", "#c91919"]);
+//						.range(["#145fa8", "#c91919"]);
+						.range(["#6494c4", "#ff6868"]);
 
 // initiate the first and second level width
 var firstLevelWidth = 0;
