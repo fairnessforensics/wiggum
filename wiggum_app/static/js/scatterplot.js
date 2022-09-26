@@ -185,7 +185,7 @@ var updateScatterplot = function(data, vars) {
 	// Update legend
 	scatterplot.selectAll(".legend").remove();
 	var legend = scatterplot.selectAll(".legend")
-		  .data(color.domain())
+		  .data(color.domain().sort(d3.ascending))
 		.enter().append("g")
 		  .attr("class", "legend")
 		  .attr("transform", function(d, i) { return "translate("+margin.left+" ," + (margin.top+ i * 20) + ")"; });
