@@ -1,7 +1,7 @@
 # ignore built versions of docs
 /docs/html/
 /docs/doctrees/
-
+/build/lib/
 # ignore notebook checkpoints
 research_notebooks/.ipynb_checkpoints
 docs/source/notebooks/.ipynb_checkpoints
