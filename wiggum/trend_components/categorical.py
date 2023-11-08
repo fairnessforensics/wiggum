@@ -552,7 +552,9 @@ class PercentageRankTrend():
                 stat_df = df.groupby(rankfeat).apply(self.my_stat,statfeat)
                 
                 # compute the percentage
-                stat_df = stat_df.assign(stat=stat_df.div(stat_df.sum()).round(3))
+                # breakpoint()
+                stat_df = stat_df.div(stat_df.sum()).round(3)
+                # stat_df = stat_df.assign(stat=stat_df.div(stat_df.sum()).round(3))
 
                 stat_df.sort_values('stat',inplace=True)
 

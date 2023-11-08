@@ -1,11 +1,14 @@
-import wiggum as wg
-from itertools import combinations
-import pandas as pd
-import sys
-import logging
-from sklearn import mixture
-import numpy as np
 import json
+import logging
+import sys
+from itertools import combinations
+
+import numpy as np
+import pandas as pd
+from sklearn import mixture
+
+import wiggum as wg
+
 
 def updateMetaData(labeled_df, meta):
     """
@@ -159,6 +162,7 @@ def getDistanceHeatmapDict2D(labeled_df, cur_result_df):
 
     distance_heatmap_dict_list = []
 
+    # breakpoint()
     for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
         grouped_df = trend_df.groupby(['dependent','independent','splitby']).agg(
                                         {'distance': ['mean']}).reset_index()
@@ -170,6 +174,10 @@ def getDistanceHeatmapDict2D(labeled_df, cur_result_df):
         heatmap.fillna(99, inplace=True)
 
         distance_heatmap_dict = {}
+
+        # FIXME: hack correct later
+        if type(trend_type) is tuple:
+            trend_type = trend_type[0]
 
         # trend display name
         trend_display_name = labeled_df.get_trend_display_name(trend_type)
@@ -220,6 +228,10 @@ def getAggregateDistanceHeatmapDict(labeled_df, cur_result_df):
         heatmap.fillna(99, inplace=True)
         
         distance_heatmap_dict = {}
+
+        # FIXME fix later
+        if type(trend_type) is tuple:
+            trend_type = trend_type[0]
 
         # trend display name
         trend_display_name = labeled_df.get_trend_display_name(trend_type)
@@ -281,6 +293,10 @@ def getAggregateSplitbyTableDict(labeled_df, cur_result_df):
                                 'mean_distance', 'mean_subgroup_trend_strength']
 
         splitby_table_dict = {}
+
+        # FIXME fix later
+        if type(trend_type) is tuple:
+            trend_type = trend_type[0]
 
         # trend display name
         trend_display_name = labeled_df.get_trend_display_name(trend_type)

@@ -245,6 +245,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData):
             name that appears in result_df
         '''
         trend_dict = {t.name:i for i,t in enumerate(self.trend_list)}
+        print(f"{trend_res_name=}, {trend_dict=}")
         return self.trend_list[trend_dict[trend_res_name]].display_name
 
     def get_overview_legend_type(self,trend_res_name):

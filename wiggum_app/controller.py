@@ -6,6 +6,7 @@ import json
 import wiggum as wg
 import numpy as np
 from .models import Decoder
+import pdb
 
 @app.route("/")
 def index():
@@ -357,6 +358,8 @@ def main():
             user_trends = user_trends.split(",")
 
             # check user trend list
+            for trend in user_trends:
+                print("trends: [" + trend + "] ")
             if len(user_trends) > 0:
                 trend_list = [wg.all_trend_types[trend]() for trend in user_trends]
 
