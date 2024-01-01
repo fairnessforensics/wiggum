@@ -44,7 +44,7 @@ function drawNodeLinkTree(data) {
 	// calculate the number of leaf nodes 
 	const num_leaf_nodes = result_table.length;
 
-	var treeHeight = 30 * num_leaf_nodes + margin.top;
+	var treeHeight = 50 * num_leaf_nodes + margin.top;
 
 	var treeLayout = d3.tree()
 					.size([treeHeight, innerWidth]);
@@ -141,7 +141,21 @@ function drawNodeLinkTree(data) {
 
 	// First level - aggregate pattern
 	// Generate interactive buttons
-	var levelLabels= ['\uf03a','\uf009','\uf00a','\uf080'];
+	//var levelLabels= ['\uf03a','\uf009','\uf00a', '\uf080'];
+	//var chartList = ['list', 'heatmap', 'heatmaplist', 'barchart'];
+	var levelLabels= ['\uf03a','\uf009','\uf00a'];
+	var chartList = ['list', 'heatmap', 'heatmaplist'];
+	if (agg_data.trend_type == 'pearson_corr') {
+		levelLabels.push('SP2');
+		chartList.push('scatterplot')
+
+		levelLabels.push('\uf080');
+		chartList.push('doublehistogram')
+
+		levelLabels.push('HM');
+		chartList.push('heatmap4count')
+	}
+
 	var firstLevelG1 = g.select('.level-1');
 
 	const firstLevelG1_position = firstLevelG1.attr('transform').split(/[\s,()]+/);
@@ -157,9 +171,9 @@ function drawNodeLinkTree(data) {
 	firstLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level1',
-		charts: ['list', 'heatmap', 'heatmaplist', 'coloredbarchart'],
+		charts: chartList,
 		width: width,
-		addWidthArray: [120, 140],
+		addWidthArray: [120, 160],
 		treeHeight: treeHeight + margin.top + margin.bottom
 	});
 
@@ -215,43 +229,103 @@ function drawNodeLinkTree(data) {
 			level: 'level1'
 		});
 
-		// Visual Tech 3: colored bar chart
-		var detail_dict = data.rank_trend_detail_dict.find(obj => {
-			return obj.dependent === keyArray[0]
-					&& obj.independent === keyArray[1]
-		});
-		var detail_dict = JSON.parse(detail_dict.detail_df);
-		
-		var chart_data = [];
+		if (agg_data.trend_type == 'rank_trend') {
+			// Visual Tech 3: colored bar chart
+			var detail_dict = data.rank_trend_detail_dict.find(obj => {
+				return obj.dependent === keyArray[0]
+						&& obj.independent === keyArray[1]
+			});
+			var detail_dict = JSON.parse(detail_dict.detail_df);
+			
+			var chart_data = [];
 
-		for (const [key1, value1] of Object.entries(detail_dict)) {
-			var agg_object = {};
-			agg_object['name'] = key1;
-			agg_object['value'] = value1.aggregate;
-			chart_data.push(agg_object);	
+			for (const [key1, value1] of Object.entries(detail_dict)) {
+				var agg_object = {};
+				agg_object['name'] = key1;
+				agg_object['value'] = value1.aggregate;
+				chart_data.push(agg_object);	
+			}
+
+			var single_object = {};
+			var identity_data = [];
+			single_object['dependent'] = keyArray[0];
+			single_object['independent'] = keyArray[1];
+			single_object['value'] = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
+			identity_data.push(single_object);
+
+			// TODO width is using addWidthArray
+			// how to merge the chart width and the interactive width adjustment.
+			container.call(coloredBarChart, {
+				chart_data: chart_data,
+				width: 120,
+				height: 200,
+				parentIdentityFlag: true,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				yAxisLabel: 'Vote Share',		
+				level: 'level1',
+				myColor: twoPartyColor
+			});
 		}
 
-		var single_object = {};
-		var identity_data = [];
-		single_object['dependent'] = keyArray[0];
-		single_object['independent'] = keyArray[1];
-		single_object['value'] = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
-		identity_data.push(single_object);
+	
+		if (agg_data.trend_type == 'pearson_corr') {
+			// Visual Tech 1 for Pearson Corr: Scatterplot
+			csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+			var single_object = {};
+			var identity_data = [];
+			single_object['dependent'] = keyArray[0];
+			single_object['independent'] = keyArray[1];
+			single_object['value'] = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
+			identity_data.push(single_object);
 
-		// TODO width is using addWidthArray
-		// how to merge the chart width and the interactive width adjustment.
-		container.call(coloredBarChart, {
-			chart_data: chart_data,
-			width: 120,
-			height: 200,
-			parentIdentityFlag: true,
-			rectWidth: rectWidth,
-			rectHeight: rectHeight,
-			identity_data: identity_data,
-			yAxisLabel: 'Vote Share',		
-			level: 'level1',
-			myColor: twoPartyColor
-		});
+			container.call(scatterPlot, {
+				xValue: d => d[keyArray[1]],
+				xAxisLabel: keyArray[1],
+				yValue: d => d[keyArray[0]],
+				yAxisLabel: keyArray[0],
+				circleRadius: 3,
+				margin: { left: 40, top: 0, right: 0, bottom: 0 },
+				width: 100,
+				height: 100,
+				parentIdentityFlag: true,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				chart_data: csvData,
+				level: 'level1'
+			});
+
+			// Visual Tech 2 for Pearson Corr: double histogram
+			// Prepare data
+			var histrogram_data = [];
+			csvData.forEach(function (item) {
+				var singleObj_var1 = {};
+				singleObj_var1['type'] = keyArray[0];
+				singleObj_var1['value'] = item[keyArray[0]];
+				histrogram_data.push(singleObj_var1);
+
+				var singleObj_var2 = {};
+				singleObj_var2['type'] = keyArray[1];
+				singleObj_var2['value'] = item[keyArray[1]];
+				histrogram_data.push(singleObj_var2);
+			});
+
+			container.call(doubleHistogram, {
+				margin: { left: 40, top: 0, right: 0, bottom: 0 },
+				width: 100,
+				height: 100,
+				var1: keyArray[0],
+				var2: keyArray[1],
+				parentIdentityFlag: true,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				chart_data: histrogram_data,
+				level: 'level1'
+			});	
+		}
 
 	})
 		
@@ -382,6 +456,7 @@ function drawNodeLinkTree(data) {
 
 		// Visual Tech 3: 2d scatter plot	
 		var xColumn = 'mean_subgroup_trend_strength';
+
 		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
 			xValue: d => d[xColumn],
 			xAxisLabel: 'The Mean of Winning Margins',
@@ -395,56 +470,59 @@ function drawNodeLinkTree(data) {
 			level: 'level2'
 		});
 
-		// Visual Tech 4: grouped bar chart
-		var competitive_chart_data = competitive_table.filter(obj => {
-			return obj.dependent === keyArray[0]
-					&& obj.independent === keyArray[1]
-		  })
+		if (agg_data.trend_type == 'rank_trend') {
+			// Visual Tech 4: grouped bar chart
+			var competitive_chart_data = competitive_table.filter(obj => {
+				return obj.dependent === keyArray[0]
+						&& obj.independent === keyArray[1]
+			})
 
-		var competitive_bar_chart_data = [];
+			var competitive_bar_chart_data = [];
 
-		d.data.values.forEach(function (item) {
-			var singleObj = {};
-			singleObj['subgroup'] = item.key;
-			for (var i = 0; i < competitive_chart_data.length; i++){
-				if (item.key == competitive_chart_data[i].splitby) {
-					var key = competitive_chart_data[i].winning_margin;
-					singleObj[key] = competitive_chart_data[i].count;
+			d.data.values.forEach(function (item) {
+				var singleObj = {};
+				singleObj['subgroup'] = item.key;
+				for (var i = 0; i < competitive_chart_data.length; i++){
+					if (item.key == competitive_chart_data[i].splitby) {
+						var key = competitive_chart_data[i].winning_margin;
+						singleObj[key] = competitive_chart_data[i].count;
+					}
 				}
-			}
-			competitive_bar_chart_data.push(singleObj);
-		});
+				competitive_bar_chart_data.push(singleObj);
+			});
 
-		const xValue = competitive_table => competitive_table['count'];
-		var xDomain = [0, d3.max(competitive_table, xValue)];
-		var competitive_color = d3.scaleOrdinal()
-									//.range(["#a6cee3", "#fb9a99", "#cab2d6"]);
-									//.range(["#80b1d3", "#fb8072", "#bc80bd"]);
-									.range(["#8dd3c7", "#fdb462", "#bc80bd"]);
+			const xValue = competitive_table => competitive_table['count'];
+			var xDomain = [0, d3.max(competitive_table, xValue)];
+			var competitive_color = d3.scaleOrdinal()
+										//.range(["#a6cee3", "#fb9a99", "#cab2d6"]);
+										//.range(["#80b1d3", "#fb8072", "#bc80bd"]);
+										.range(["#8dd3c7", "#fdb462", "#bc80bd"]);
 
-		secondLevelG1_visual_alter.call(barChart, {
-			chart_data: competitive_bar_chart_data,
-			width: height,
-			height: height,
-			xDomain: xDomain,
-			level: 'level2',
-			largerFlag: false,
-			keys: ['[0, 10%]', '(10%, 20%]', '(20%, 100%]'],
-			percentageFlag: false,
-			parentIdentityFlag: true,
-			childrenIdentityFlag: true,
-			circleRadius: secondLevelCircleRadius,
-			identity_data: chart_data,
-			x_axis_label: 'Number of Districts',
-			legend_title: 'Winning Margin',
-			myColor: competitive_color,
-			tooltipValueFormatFlag: false
-		});	
+			secondLevelG1_visual_alter.call(barChart, {
+				chart_data: competitive_bar_chart_data,
+				width: height,
+				height: height,
+				xDomain: xDomain,
+				level: 'level2',
+				largerFlag: false,
+				keys: ['[0, 10%]', '(10%, 20%]', '(20%, 100%]'],
+				percentageFlag: false,
+				parentIdentityFlag: true,
+				childrenIdentityFlag: true,
+				circleRadius: secondLevelCircleRadius,
+				identity_data: chart_data,
+				x_axis_label: 'Number of Districts',
+				legend_title: 'Winning Margin',
+				myColor: competitive_color,
+				tooltipValueFormatFlag: false
+			});	
+		}
+
 	});
 
 	// Third level: subgroups
 	// Generate interactive buttons
-	var levelLabels= ['\uf03a', '\uf0c9', '\uf279', '\uf080'];
+	var levelLabels= ['\uf03a', '\uf0c9', '\uf279', '\uf080', 'SP1'];
 	var thirdLevelG1 = g.select('.level-3');
 
 	const thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
@@ -458,7 +536,7 @@ function drawNodeLinkTree(data) {
 	thirdLevelButtons.call(interactiveLevelButton, {
 		levelLabels,
 		level: 'level3',
-		charts: ['list', 'stripplot', 'districtmap', 'barchart']
+		charts: ['list', 'stripplot', 'districtmap', 'barchart', 'scatterplot']
 	});
 
 	// Third level drawing
@@ -483,6 +561,22 @@ function drawNodeLinkTree(data) {
 			return `The distance is ${d.data.distance}.`
 		}); 			
 
+	// Node Text Background color
+	var correspondColor = d3.scaleOrdinal()
+						.range(["#1f77b4","#ff7f0e","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#17becf"]);
+						
+	d3.selectAll('.node.level-3')
+		.append('rect')
+		.attr('class', 'level-3 background')
+		.attr("x", ".9em")
+		.attr("y", -rectHeight/2)	
+		.style('fill', function(d) {
+			return correspondColor(d.data.subgroup);
+		})
+		.style('opacity', 1)
+		.style("stroke", "grey")
+		.style("stroke-width", "1px");
+
 	nodeEnter.append('text')
 		.attr('dx', d => d.children ? '0em' : '1em')
 		.attr('dy', d => d.children ? '1.5em' : '0.32em')
@@ -499,8 +593,19 @@ function drawNodeLinkTree(data) {
 		})
 		.style("pointer-events", function(d, i) {
 			return !d.depth ? "none" : "all";
-		}); 
+		});
 
+    // Save the dimensions of the text elements
+    nodeEnter.selectAll("text")
+          .each(function(d) { d.bbox = this.getBBox(); });
+
+	const xMargin = 2
+	const yMargin = 2
+	svg.selectAll(".level-3.background")
+		.attr("width", d => d.bbox.width + 2 * xMargin)
+		.attr("height", d => d.bbox.height + 2 * yMargin);
+
+		
 	// TODO rank trend has va
 	if (agg_data.detail_view_type == 'rank') {	
 		// Prepare the transition position
@@ -696,7 +801,41 @@ function drawNodeLinkTree(data) {
 					.attr("y",0)
 					.attr("fill","red")
 				*/
-		
+
+			})
+		})
+	} else if (agg_data.detail_view_type == 'scatter') {	
+		// Visual Alternatives
+		root.children.forEach(function (pattern) {
+			pattern.children.forEach(function (d) {
+				var dependent = d.data.values[0].dependent;
+				var independent = d.data.values[0].independent;
+				var splitby = d.data.values[0].splitby;
+				var thirdLevelG1 = g.select('.level-3' + '.' + dependent 
+					+ '.' + independent + '.splitby_' + splitby);
+
+				// Visual Tech 5: scatterplot
+				var thirdLevelG1_visual_alter_scatterplot = thirdLevelG1.append("g")
+					.attr("class", 'level-3' + ' ' + dependent 
+					+ ' ' + independent + ' splitby_' + splitby + ' va scatterplot')
+					.attr("transform", "translate(" + (rectWidth + 5) + ", 0)");
+
+
+				thirdLevelG1_visual_alter_scatterplot.call(scatterPlot, {
+						xValue: d => d[independent],
+						xAxisLabel: independent,
+						yValue: d => d[dependent],
+						yAxisLabel: dependent,
+						splitby: splitby,
+						circleRadius: 3,
+						margin: { left: 120, top: 40, right: 0, bottom: 0 },
+						width: 100,
+						height: 100,
+						parentIdentityFlag: false,
+						chart_data: csvData,
+						level: 'level3',
+						myColor: correspondColor
+				});		
 			})
 		})
 	}
@@ -933,38 +1072,40 @@ function drawNodeLinkTree(data) {
 		})
 		.style("visibility", "hidden");
 
-	// Path for barchart
-	// list to barchart
-	g.selectAll('.path list barchart').data(links)
-		.enter().append('path')
-		.attr('d', function(d, i) {
-			if (d.source.depth == 1 || d.source.depth == 2) {
-				return barchartLinkPathGenerator(d, i);
-			}
-		})
-		.attr("class", d =>"path list barchart level" + d.source.depth)
-		.attr('fill', 'none')
-		.attr('stroke', 'black')
-		.style("stroke-width", "1px")
-		.style("pointer-events", function(d, i) {
-			return !d.source.depth ? "none" : "all";
-		});		
+	if (agg_data.trend_type == 'rank_trend') {	
+		// Path for barchart
+		// list to barchart
+		g.selectAll('.path list barchart').data(links)
+			.enter().append('path')
+			.attr('d', function(d, i) {
+				if (d.source.depth == 1 || d.source.depth == 2) {
+					return barchartLinkPathGenerator(d, i);
+				}
+			})
+			.attr("class", d =>"path list barchart level" + d.source.depth)
+			.attr('fill', 'none')
+			.attr('stroke', 'black')
+			.style("stroke-width", "1px")
+			.style("pointer-events", function(d, i) {
+				return !d.source.depth ? "none" : "all";
+			});		
 
-	// heatmap to barchart
-	g.selectAll('.path heatmap barchart').data(links)
-		.enter().append('path')
-		.attr('d', function(d, i) {
-			if (d.source.depth == 1) {
-				return barchartLinkPathGenerator(d, i, 'heatmap', matrixHeight);
-			}
-		})
-		.attr("class", d =>"path heatmap barchart level" + d.source.depth)
-		.attr('fill', 'none')
-		.attr('stroke', 'black')
-		.style("stroke-width", "1px")
-		.style("pointer-events", function(d, i) {
-			return !d.source.depth ? "none" : "all";
-		});					
+		// heatmap to barchart
+		g.selectAll('.path heatmap barchart').data(links)
+			.enter().append('path')
+			.attr('d', function(d, i) {
+				if (d.source.depth == 1) {
+					return barchartLinkPathGenerator(d, i, 'heatmap', matrixHeight);
+				}
+			})
+			.attr("class", d =>"path heatmap barchart level" + d.source.depth)
+			.attr('fill', 'none')
+			.attr('stroke', 'black')
+			.style("stroke-width", "1px")
+			.style("pointer-events", function(d, i) {
+				return !d.source.depth ? "none" : "all";
+			});					
+	}
 
 	initVisibility();
 
@@ -1339,11 +1480,15 @@ const interactiveLevelButton = (selection, props) => {
 								.transition()
 								.style('visibility', i == 3 ? 'visible' : 'hidden');
 
+							d3.selectAll('.'+level + '.' + charts[4])
+								.transition()
+								.style('visibility', i == 4 ? 'visible' : 'hidden');	
+
 							// Level 1 keep both view and identity
 							if (level == "level1") {
 								// set default position for list text
 								// TODO list text alignment
-								if (i == 3) {
+								if (i == 3 || i == 4) {
 									d3.selectAll('.'+level + '.list.text')
 										.transition()
 										.attr("x", "-10px")			
@@ -1355,29 +1500,25 @@ const interactiveLevelButton = (selection, props) => {
 										.style("text-anchor", "middle");
 								}										
 
-								if (i == 2 || i == 3) {
+								if (i == 2 || i == 3 || i == 4) {
 									d3.selectAll('.'+level+'.list')
 										.transition()
 										.style('visibility', 'visible');
-									
+
+									d3.selectAll('.'+level + '.list.text')
+										.transition()
+										.style('visibility', 'hidden');
+
 									if (i == 2) {
 										d3.selectAll('.'+level + '.heatmap')
 										.transition()
 										.style('visibility', 'visible');											
-									} else if (i == 3) {
-										d3.selectAll('.'+level + '.coloredbarchart')
-											.transition()
-											.style('visibility', 'visible');	
-									}
-
-									d3.selectAll('.'+level + '.list.text')
-										.transition()
-										.style('visibility', i == 2 ? 'hidden' : 'visible');
-
+									} 
+										
 									var addWidth = 0;
 									if (i == 2) {
 										addWidth = addWidthArray[0];
-									} else if (i == 3) {
+									} else if (i == 3 || i == 4) {
 										addWidth = addWidthArray[1];
 									}
 
@@ -1459,7 +1600,7 @@ const interactiveLevelButton = (selection, props) => {
 										.transition()
 										.attr("transform", function(d) { 
 											return "translate(" + d.y + "," + d.x + ")"; });											
-									
+
 									// Adjust level 3 nodes x postion
 									d3.selectAll('.node.level-3')
 										.transition()
@@ -1536,7 +1677,7 @@ const interactiveLevelButton = (selection, props) => {
 								// Level 0 path
 								d3.selectAll('.path.list.level0')
 									.transition()
-									.style('visibility', (i == 0 || i == 3) ? 'visible' : 'hidden');								
+									.style('visibility', (i == 0 || i == 3 || i == 4) ? 'visible' : 'hidden');								
 								d3.selectAll('.path.heatmap.level0')
 									.transition()
 									.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
@@ -1545,29 +1686,31 @@ const interactiveLevelButton = (selection, props) => {
 								if ((d3.select('.level2.scatterplot1d').style("visibility") == 'hidden')
 									&& (d3.select('.level2.scatterplot2d').style("visibility") == 'hidden')) {
 									// Level 1: list/heatmap; 
-									if (d3.select('.level2.barchart').style("visibility") == 'hidden') {
-										// Level 2: list
-										d3.selectAll('.path.list.node.level1')
-											.transition()
-											.style('visibility', (i == 0 || i == 3) ? 'visible' : 'hidden');
-										d3.selectAll('.path.heatmap.node.level1')
-											.transition()
-											.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
+									/* Fix Later TODO trend type condition
+									if (d3.select('.level2.barchart').style("visibility") == 'hidden') {*/
+									// Level 2: list
+									d3.selectAll('.path.list.node.level1')
+										.transition()
+										.style('visibility', (i == 0 || i == 3 || i == 4) ? 'visible' : 'hidden');
+									d3.selectAll('.path.heatmap.node.level1')
+										.transition()
+										.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
+									/*
 									} else {
 										// Level 2: barchart
 										d3.selectAll('.path.list.barchart.level1')
 											.transition()
-											.style('visibility', (i == 0 || i == 3) ? 'visible' : 'hidden');
+											.style('visibility', (i == 0 || i == 3 || i == 4) ? 'visible' : 'hidden');
 										d3.selectAll('.path.heatmap.barchart.level1')
 											.transition()
 											.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
-									}
+									}*/
 
 								} else {
 									// Level 1: list/heatmap; level 2: scatterplot1d/scatterplot2d
 									d3.selectAll('.path.list.scatterplot1d.level1')
 										.transition()
-										.style('visibility', (i == 0 || i == 3) ? 'visible' : 'hidden');
+										.style('visibility', (i == 0 || i == 3 || i == 4) ? 'visible' : 'hidden');
 									d3.selectAll('.path.heatmap.scatterplot1d.level1')
 										.transition()
 										.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
@@ -1585,7 +1728,16 @@ const interactiveLevelButton = (selection, props) => {
 									if ((d3.select('.level2.scatterplot1d').style("visibility") == 'hidden')
 										&& (d3.select('.level2.scatterplot2d').style("visibility") == 'hidden')) {
 										// Level 1: list/heatmap; 
-										if (d3.select('.level2.barchart').style("visibility") == 'hidden') {
+										// Level 2: list
+										d3.selectAll('.path.list.node.level1')
+											.transition()
+											.style('visibility', 'visible');
+										d3.selectAll('.path.heatmap.node.level1')
+											.transition()
+											.style('visibility', 'hidden');	
+										
+										// Todo fix later for level2 charts
+										/*if (d3.select('.level2.barchart').style("visibility") == 'hidden') {
 											// Level 2: list
 											d3.selectAll('.path.list.node.level1')
 												.transition()
@@ -1601,7 +1753,7 @@ const interactiveLevelButton = (selection, props) => {
 											d3.selectAll('.path.heatmap.barchart.level1')
 												.transition()
 												.style('visibility', 'hidden');	
-										}
+										}*/
 
 									} else {
 										// Level 1: list/heatmap; level 2: scatterplot1d/scatterplot2d
@@ -1704,7 +1856,7 @@ const interactiveLevelButton = (selection, props) => {
 								d3.selectAll('.path.level2')
 										.transition()
 										.style('visibility', 'hidden');
-								
+
 								// Level 1 path
 								// Check Level 1's visual technique
 								if (d3.select('.level1.heatmap').style("visibility") == 'hidden') {
@@ -1785,8 +1937,8 @@ const interactiveLevelButton = (selection, props) => {
 				.attr("height",bHeight)
 				//.attr("x",function(d,i) {return x0+(bWidth+bSpace)*i;})
 				//.attr("y",y0)				
-				.attr("x",function(d,i) {var col = i%2; return x0+(bWidth+bSpace)*col;})
-				.attr("y",function(d,i) {var row = Math.floor(i/2); return y0 + (bHeight+bSpace)*row })
+				.attr("x",function(d,i) {var col = i%3; return x0+(bWidth+bSpace)*col;})
+				.attr("y",function(d,i) {var row = Math.floor(i/3); return y0 + (bHeight+bSpace)*row })
 				.attr("rx",5) //rx and ry give the buttons rounded corners
 				.attr("ry",5)
 				.attr("fill","#797979")
@@ -1798,12 +1950,12 @@ const interactiveLevelButton = (selection, props) => {
                 .attr("font-family","FontAwesome")
                 .attr("x",function(d,i) {
 					//return x0 + (bWidth+bSpace)*i + bWidth/2;
-					var index = i%2;
+					var index = i%3;
                     return x0 + (bWidth+bSpace)*index + bWidth/2;
                 })
 				//.attr("y",y0+bHeight/2)
                 .attr("y",function(d,i) {
-					var row = Math.floor(i/2);
+					var row = Math.floor(i/3);
 					return y0+bHeight/2 + (bHeight+bSpace)*row;
 				})
                 .attr("text-anchor","middle")
@@ -1813,10 +1965,13 @@ const interactiveLevelButton = (selection, props) => {
 }
 
 function initVisibility() {
+	// TODO condition by trend type
 	// Aggregate level
 	d3.selectAll('.level1.list').transition().style('visibility', "visible");
 	d3.selectAll('.level1.heatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.coloredbarchart').transition().style('visibility', "hidden");	
+	d3.selectAll('.level1.scatterplot').transition().style('visibility', "hidden");	
+	d3.selectAll('.level1.doublehistogram').transition().style('visibility', "hidden");	
 	d3.selectAll('.path.list').transition().style('visibility', "visible");
 	d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
 

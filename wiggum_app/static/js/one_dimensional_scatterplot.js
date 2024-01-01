@@ -161,3 +161,144 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .attr("y", d => yScale(yValue(d)))
 		  .text(d => d.splitby);
   };
+
+  const scatterPlot = (selection, props) => {
+	const {
+	  xValue,
+	  xAxisLabel,
+	  yValue,
+	  yAxisLabel,
+	  splitby,
+	  circleRadius,
+	  margin,
+	  width,
+	  height,
+	  parentIdentityFlag,
+	  rectWidth,
+	  rectHeight,
+	  identity_data,
+	  chart_data,
+	  level,
+	  myColor
+	} = props;
+
+	const g = selection.append('g')
+	  .attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
+
+	const yScale = d3.scaleLinear();
+	yScale.domain(d3.extent(chart_data, yValue));
+	yScale.range([height, 0]);
+	yScale.nice();
+
+	const yAxis = d3.axisLeft(yScale).ticks(5);
+	
+	const xScale = d3.scaleLinear();
+	xScale.domain(d3.extent(chart_data, xValue));
+	xScale.range([0, width]);
+	xScale.nice();
+
+	const xAxis = d3.axisBottom(xScale).ticks(5);
+
+	// setup fill color
+	var cValue = function(d) { return d[splitby];};
+
+	var color;
+	if (myColor == undefined) {
+		color = d3.scaleOrdinal(d3.schemeCategory10);
+	} else {
+		color = myColor;
+	}
+
+	g.append("g")
+		.attr("class", level + " scatterplot x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis)
+	.append("text")
+		.attr("class", level + " scatterplot label")
+		.attr('fill', 'black')
+		.attr("x", width/2)
+		.attr("y", 26)
+		.text(xAxisLabel);	
+
+	g.append("g")
+		  .attr("class", function(d) {
+				return level + " scatterplot y left axis";
+			})	  
+		  .call(yAxis)
+		.append("text")
+		  .attr("class", function(d) {
+				return level + " scatterplot label";
+			})	  
+			.attr("x", 0)
+			.attr("y", -8)
+			.attr("text-anchor", "middle")
+		  .attr('fill', 'black')
+		  .text(yAxisLabel);
+
+	g.selectAll(".scatterplot.circle.middle")
+		  .data(chart_data)
+		  .enter().append("circle")	    
+		  .attr("class", function(d) {
+
+			return level + " scatterplot middle circle " 
+				+ d.dependent + " " + d.independent + " splitby_" + d.splitby;
+
+			})	  
+		  .attr("r", circleRadius)
+		  .attr("cx", function(d) {
+				return xScale(xValue(d));
+		  })
+		  .attr("cy", d => yScale(yValue(d)))
+		  .attr("stroke", "black")
+		  .attr("stroke-width", 1)	  
+		  .style("fill", function(d) { 
+			if (level == "level3") {
+				return color(cValue(d));}
+			return "#bebebe";
+			})
+		  .append('title');
+	  
+	// Parent Identity
+	if (parentIdentityFlag) {
+		g.selectAll(".rect")
+			.data(identity_data)
+			.enter()    
+			.append("rect")	
+			.attr("class", d => level + " scatterplot left rect " 
+						+ d.dependent + " " + d.independent)	  
+			.attr("transform", function(d) {
+				var y_position = height/2;
+				return "translate(" + (-margin.left) +"," + y_position + ")";
+			})						
+			.attr("x", -10)
+			.attr("y", -10)						
+			.attr("width", rectWidth)
+			.attr("height", rectHeight)
+			.style("stroke", "black")
+			.style("stroke-width", "2px")
+			.style("fill-opacity", 1)
+			.style("fill", d => heatmapColorScale(d.value))
+			.append('title')
+			.text(function(d) {
+				return `The mean distance is ${d3.format(".3f")(d.value)}.`
+			});
+
+		// Text for identity portion  
+		/*g.selectAll(".text")
+			.data(identity_data)
+			.enter()    		
+			.append("text")	   
+			.attr("class", d => level + " scatterplot left text " 
+						+ d.dependent + " " + d.independent)	
+			.attr("transform", function(d) {
+				var y_position = height/2;
+				return "translate(" + (-margin.left) +"," + y_position + ")";
+			})		
+			.attr("dx", '.6em')			  
+			//.attr("dy", rectHeight + 5)	
+			.attr('dy', '1.5em')																
+			.style("text-anchor", "end")
+			.text(d => d.dependent + "," + d.independent);*/
+	}
+
+  };

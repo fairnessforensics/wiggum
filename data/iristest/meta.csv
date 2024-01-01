@@ -1,6 +1,6 @@
 variable,dtype,var_type,role,isCount,weighting_var
-sepal length,float64,continuous,"['independent', 'dependent']",False,
-sepal width,float64,continuous,['dependent'],False,
-petal length,float64,continuous,['independent'],False,
-petal width,float64,continuous,['independent'],False,
-class,object,categorical,['splitby'],False,
+sepal_length,float64,continuous,"['independent', 'dependent']",FALSE,
+sepal_width,float64,continuous,['dependent'],FALSE,
+petal_length,float64,continuous,['independent'],FALSE,
+petal_width,float64,continuous,['independent'],FALSE,
+class,object,categorical,['splitby'],FALSE,
