@@ -19,6 +19,8 @@ var twoPartyColor = d3.scaleOrdinal()
 // initiate the first and second level width
 var firstLevelWidth = 0;
 var secondLevelWidth = 0;
+var firstLevelParentVLWidth = 0;
+var firstLevelChildrenVLWidth = 0;
 
 /**
  * Draw node link tree
@@ -160,10 +162,10 @@ function drawNodeLinkTree(data) {
 	}
 
 	// Left identity portion in virtual layer
-	var leftIdentityLabels= ['-', '='];
+	var leftIdentityLabels= ['I', 'II', 'III'];
 
 	// Right identity portion in virtual layer
-	var rightIdentityLabels= ['-', '='];
+	var rightIdentityLabels= ['I', 'II', 'III'];
 
 	var firstLevelG1 = g.select('.level-1');
 
@@ -334,7 +336,7 @@ function drawNodeLinkTree(data) {
 				height: 100,
 				var1: keyArray[0],
 				var2: keyArray[1],
-				parentIdentityFlag: true,
+				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
 				identity_data: identity_data,
@@ -351,7 +353,7 @@ function drawNodeLinkTree(data) {
 				yValue: d => d[keyArray[0]],
 				var1: keyArray[0],
 				var2: keyArray[1],
-				parentIdentityFlag: true,
+				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
 				identity_data: identity_data,
@@ -399,10 +401,10 @@ function drawNodeLinkTree(data) {
 	// Generate interactive buttons
 	levelLabels= ['\uf03a', 'SP1', 'SP2', '\uf080' ];
 	// Left identity portion in virtual layer
-	leftIdentityLabels = ['-', '='];
+	leftIdentityLabels = ['I', 'II', 'III'];
 
 	// Right identity portion in virtual layer
-	rightIdentityLabels = ['-', '='];
+	rightIdentityLabels = ['I', 'II', 'III'];
 	
 	var secondLevelG1 = g.select('.level-2');
 
@@ -598,10 +600,10 @@ function drawNodeLinkTree(data) {
 	// Generate interactive buttons
 	var levelLabels= ['\uf03a', '\uf0c9', '\uf279', '\uf080', 'SP1'];
 	// Left identity labels for virtual layer
-	leftIdentityLabels = ['-', '='];
+	leftIdentityLabels = ['I', 'II', 'III'];
 
 	// Right identity labels for virtual layer
-	rightIdentityLabels = ['-', '='];
+	rightIdentityLabels = ['I', 'II', 'III'];
 
 	var thirdLevelG1 = g.select('.level-3');
 
@@ -2039,6 +2041,7 @@ const interactiveLevelButton = (selection, props) => {
 
 	// Left Identity Button
 	bWidth= 22; 
+
 	var leftIdentityButtonGroups = 
 		selection.selectAll("g." + level + ".left.identity.button")
 				.data(leftIdentityLabels)
@@ -2047,94 +2050,116 @@ const interactiveLevelButton = (selection, props) => {
 				.attr("class", level + " left identity button")
 				.style("cursor","pointer")
 				.on("click",function(d, i) {
-					updateButtonColors(d3.select(this), d3.select(this.parentNode));
-					
-					var addWidth = 40;
 
+					updateButtonColors(d3.select(this), d3.select(this.parentNode));
+
+					// Reset
+					firstLevelParentVLWidth = 0;
+					// Reset left rect
+					d3.selectAll('.'+ level +'.list.cell')
+						.attr("y", -10)
+						.attr("height", 20);
+
+					// Remove existing virtual layer
+					d3.selectAll('.parent.virtuallayer').remove();
+
+					// Adjust first level width
 					adjustWidth({
 						firstLevelWidth: firstLevelWidth, 
-						addWidth: addWidth, 
+						addWidth: 0, 
 						level: 'level1'});
+					
+					if (i == 0) {
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: firstLevelChildrenVLWidth, 
+							level: 'level2'});
 
-					// Reset the x position for tree node in level 1
-					d3.selectAll('.level1.list.cell')
-						.transition()
-						.attr("transform", function(d,i) { 
-							return "translate(" + (-addWidth) + "," + 0 + ")"; });	
+						d3.selectAll('.'+ level +'.list.cell')
+							.transition()
+							.attr("y", 0)
+							.attr("height", height)
+							.attr('transform', `translate(${0},${-height/2})`);
+					}
 
-					levelG.each(function (d) {
-						var selectionLevelG = d3.select(this);
+					if (i == 1) {
+						firstLevelParentVLWidth = 40;
+						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
-						// Add a vertical line
-						//var height = 100;
-						var y = d3.scaleLinear()
-									.range([height, 0]);
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: firstLevelParentVLWidth, 
+							level: 'level1'}); 
 
-						var vl_axis = selectionLevelG.append("g")
-							.attr("class", level + " virtuallayer y axis")
-							.attr("transform", "translate(15," + (-height/2) + ")")
-							.call(d3.axisRight(y).tickSizeOuter(0));
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: addTotalWidthVL, 
+							level: 'level2'}); 
+	
+						// Reset the x position for tree node in level 1
+						d3.selectAll('.' + level + '.list.cell')
+							.transition()
+							.attr("transform", function(d,i) { 
+								return "translate(" + (-firstLevelParentVLWidth) + "," + 0 + ")"; });	
+	
+						levelG.each(function (d) {
+							var selectionLevelG = d3.select(this);
+	
+							// Add a vertical line
+							//var height = 100;
+							var y = d3.scaleLinear()
+										.range([height, 0]);
+	
+							var vl_axis = selectionLevelG.append("g")
+								.attr("class", level + " parent virtuallayer y axis")
+								.attr("transform", "translate(15," + (-height/2) + ")")
+								.call(d3.axisRight(y).tickSizeOuter(0));
+	
+							vl_axis.select(".domain")
+								.attr("stroke","black")
+								.attr("stroke-width","3");
+							vl_axis.selectAll("text").remove();
+							vl_axis.selectAll(".tick").remove();
+							
+	
+							// Add links
+							var linkData = [];
+	
+							selectionLevelG.selectAll(".doublehistogram.bar.var1,.doublehistogram.bar.var2")
+								.each(function () {
+									var bbox = this.getBBox();
+									var object = {};
+									if (bbox.height != 0) {
+										object['source'] = [0, -firstLevelParentVLWidth];
+										// TODO height hard code
+										y_position = 100/2 - bbox.height;
+										object['target'] = [y_position, 15];
+										// add color
+										object['color'] = this.style.fill;
+										linkData.push(object);
+									}
+							})
+	
+							selectionLevelG.call(link, {
+									data: linkData,
+									side: 'parent',
+									level: level
+							});		
+						});
+					}
 
-						vl_axis.select(".domain")
-							.attr("stroke","black")
-							.attr("stroke-width","3");
-						vl_axis.selectAll("text").remove();
-						vl_axis.selectAll(".tick").remove();
-						
+					if (i == 2) {
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: firstLevelChildrenVLWidth, 
+							level: 'level2'});
 
-						// Add links
-						var linkData = [];
-
-						selectionLevelG.selectAll(".doublehistogram.bar.var1,.doublehistogram.bar.var2")
-							.each(function () {
-								var bbox = this.getBBox();
-								var object = {};
-								if (bbox.height != 0) {
-									object['source'] = [0, -addWidth];
-									// TODO height hard code
-									y_position = 100/2 - bbox.height;
-									object['target'] = [y_position, 15];
-									// add color
-									object['color'] = this.style.fill;
-									linkData.push(object);
-								}
-						})
-
-						selectionLevelG.call(link, {
-								data: linkData,
-								level: level
-						});		
-					});
-
+						d3.selectAll('.'+ level +'.list.cell')
+							.transition()
+							.attr('transform', `translate(${0},${0})`);
+							//.attr("x", 30);
+					}
 				});
-
-	/*leftIdentityButtonGroups.append("rect")
-				.attr("class","buttonRect")
-				.attr("transform", "translate(" + (-bWidth - bSpace) + "," + 3 + ")")
-				.attr("width",bWidth)
-				.attr("height",bHeight)			
-				.attr("x",function(d,i) {var col = i%1; return x0+(bWidth+bSpace)*col;})
-				.attr("y",function(d,i) {var row = Math.floor(i/1); return y0 + (bHeight+bSpace)*row })
-				.attr("rx",5) 
-				.attr("ry",5)
-				.attr("fill","#797979");
-
-	leftIdentityButtonGroups.append("text")
-		.attr("class","buttonText")
-		.attr("transform", "translate(" + (-bWidth - bSpace) + "," + 3 + ")")
-		.attr("font-family","FontAwesome")
-		.attr("x",function(d,i) {
-			var index = i%1;
-			return x0 + (bWidth+bSpace)*index + bWidth/2;
-		})
-		.attr("y",function(d,i) {
-			var row = Math.floor(i/1);
-			return y0+bHeight/2 + (bHeight+bSpace)*row;
-		})
-		.attr("text-anchor","middle")
-		.attr("dominant-baseline","central")
-		.attr("fill","white")
-		.text(function(d) {return d;});*/
 
 	leftIdentityButtonGroups.call(button, {
 			bWidth: bWidth,
@@ -2156,116 +2181,164 @@ const interactiveLevelButton = (selection, props) => {
 				.on("click",function(d, i) {
 					updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
-					var addWidth = 40 + 60;
+					// Reset
+					firstLevelChildrenVLWidth = 0;
 
+					// Reset right rect
+					d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+					.attr("y", -10)
+					.attr("height", 20);
+
+					// Remove existing virtual layer
+					d3.selectAll('.children.virtuallayer').remove();
+
+					// Adjust first level width
 					adjustWidth({
 						firstLevelWidth: firstLevelWidth, 
-						addWidth: addWidth, 
+						addWidth: 0, 
 						level: 'level2'});
 
-					// Reset the x position for child nodes in level 1 Virtual Layer
-					d3.selectAll('.' + level + '.virtuallayer.right.rect')
+					if (i == 0) {
+
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: firstLevelParentVLWidth, 
+							level: 'level1'});
+
+						d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
 						.transition()
-						.attr("transform", function(d,i) { 
-							return "translate(" + 20 + "," + height/2 + ")"; });	
+						.attr("y", 0)
+						.attr("height", height)
+						.attr('transform', `translate(${-40},${0})`);
+					}
 
-					levelG.each(function (d) {
-						var selectionLevelG = d3.select(this);
+					if (i == 1) {
+						//var addRightWidth = 40 + 60;
+						firstLevelChildrenVLWidth = 60;
+						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
-						// Duplicate y axis
-						// Prepare data TODO duplicate issue
-						var keyArray = d.data.key.split(",");
-						var histrogram_data = [];
-						csvData.forEach(function (item) {
-							var singleObj_var1 = {};
-							singleObj_var1['type'] = keyArray[0];
-							singleObj_var1['value'] = item[keyArray[0]];
-							histrogram_data.push(singleObj_var1);
-
-							var singleObj_var2 = {};
-							singleObj_var2['type'] = keyArray[1];
-							singleObj_var2['value'] = item[keyArray[1]];
-							histrogram_data.push(singleObj_var2);
-						});
-
-						// TODO Duplicate code issue
-						var min_domain = d3.min(histrogram_data, function(d) { return +d.value });
-						var max_domain = d3.max(histrogram_data, function(d) { return +d.value });
-					
-						// X axis: scale and draw:
-						var x = d3.scaleLinear()
-									.domain([min_domain, max_domain])
-									.range([0, width]);
-
-						var histogram = d3.histogram()
-										.value(function(d) { return +d.value; })   
-										.domain(x.domain())  
-										.thresholds(x.ticks(10)); 
-
-						var bins1 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[0]} ));
-						var bins2 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[1]} ));
-					
-						// Y axis: 
-						var y_max = Math.max(d3.max(bins1, function(d) { return d.length; }), 
-											d3.max(bins2, function(d) { return d.length; }));
-
-						var y = d3.scaleLinear()
-								.domain([0, y_max])    
-								.range([100, 0]);
-
-						selectionLevelG.append("g")
-							.attr("class", level + " doublehistogram y axis right")
-							.attr("transform", "translate(" + 140 + ","+ (-100/2)+")")
-							.call(d3.axisRight(y));
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: addTotalWidthVL, 
+							level: 'level2'});
+	
+						// Reset the x position for child nodes in level 1 Virtual Layer
+						d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+							.transition()
+							.attr("transform", function(d,i) { 
+								return "translate(" + 20 + "," + height/2 + ")"; });	
+	
+						levelG.each(function (d) {
+							var selectionLevelG = d3.select(this);
+	
+							// Duplicate y axis
+							// Prepare data TODO duplicate issue
+							var keyArray = d.data.key.split(",");
+							var histrogram_data = [];
+							csvData.forEach(function (item) {
+								var singleObj_var1 = {};
+								singleObj_var1['type'] = keyArray[0];
+								singleObj_var1['value'] = item[keyArray[0]];
+								histrogram_data.push(singleObj_var1);
+	
+								var singleObj_var2 = {};
+								singleObj_var2['type'] = keyArray[1];
+								singleObj_var2['value'] = item[keyArray[1]];
+								histrogram_data.push(singleObj_var2);
+							});
+	
+							// TODO Duplicate code issue
+							var min_domain = d3.min(histrogram_data, function(d) { return +d.value });
+							var max_domain = d3.max(histrogram_data, function(d) { return +d.value });
 						
-						// Add a vertical line
-						//var height = 100;
-						var y = d3.scaleLinear()
-									.range([height, 0]);
-
-						var vl_axis = selectionLevelG.append("g")
-							.attr("class", level + " virtuallayer y axis child")
-							.attr("transform", "translate(" + (140 + 25)  + ","+  + (-height/2) + ")")
-							.call(d3.axisRight(y).tickSizeOuter(0));
-
-						vl_axis.select(".domain")
-							.attr("stroke","black")
-							.attr("stroke-width","3");
-						vl_axis.selectAll("text").remove();
-						vl_axis.selectAll(".tick").remove();
-
-
-						// Add links
-						var linkData = [];
-						//var selectionLevelG = d3.select(this);
-
-						selectionLevelG.selectAll(".doublehistogram.bar.var1,.doublehistogram.bar.var2")
-							.each(function () {
-
-								var bbox = this.getBBox();
+							// X axis: scale and draw:
+							var x = d3.scaleLinear()
+										.domain([min_domain, max_domain])
+										.range([0, width]);
+	
+							var histogram = d3.histogram()
+											.value(function(d) { return +d.value; })   
+											.domain(x.domain())  
+											.thresholds(x.ticks(10)); 
+	
+							var bins1 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[0]} ));
+							var bins2 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[1]} ));
 						
-								var object = {};
-								if (bbox.height != 0) {
+							// Y axis: 
+							var y_max = Math.max(d3.max(bins1, function(d) { return d.length; }), 
+												d3.max(bins2, function(d) { return d.length; }));
+	
+							var y = d3.scaleLinear()
+									.domain([0, y_max])    
+									.range([100, 0]);
+	
+							selectionLevelG.append("g")
+								.attr("class", level + " doublehistogram virtuallayer y axis children")
+								.attr("transform", "translate(" + 140 + ","+ (-100/2)+")")
+								.call(d3.axisRight(y));
+							
+							// Add a vertical line
+							//var height = 100;
+							var y = d3.scaleLinear()
+										.range([height, 0]);
+	
+							var vl_axis = selectionLevelG.append("g")
+								.attr("class", level + " virtuallayer y axis children")
+								.attr("transform", "translate(" + (140 + 25)  + ","+  + (-height/2) + ")")
+								.call(d3.axisRight(y).tickSizeOuter(0));
+	
+							vl_axis.select(".domain")
+								.attr("stroke","black")
+								.attr("stroke-width","3");
+							vl_axis.selectAll("text").remove();
+							vl_axis.selectAll(".tick").remove();
+	
+	
+							// Add links
+							var linkData = [];
+							//var selectionLevelG = d3.select(this);
+	
+							selectionLevelG.selectAll(".doublehistogram.bar.var1,.doublehistogram.bar.var2")
+								.each(function () {
+	
+									var bbox = this.getBBox();
+							
+									var object = {};
+									if (bbox.height != 0) {
+	
+										// TODO height hard code
+										y_position = 100/2 - bbox.height;
+										object['source'] = [y_position, 140 + 25];
+	
+										object['target'] = [0, 160 + 60];
+	
+										// add color
+										object['color'] = this.style.fill;
+	
+										linkData.push(object);
+									}
+								})
+	
+								selectionLevelG.call(link, {
+									data: linkData,
+									side: 'children',
+									level: level
+							});		
+						});	
+					}
 
-									// TODO height hard code
-									y_position = 100/2 - bbox.height;
-									object['source'] = [y_position, 140 + 25];
+					if (i == 2) {
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: firstLevelParentVLWidth, 
+							level: 'level1'});
 
-									object['target'] = [0, 160 + 60];
+						d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+						.transition()
+						.attr("height", 20)
+						.attr('transform', `translate(${-40},${height/2})`);
+					}
 
-									// add color
-									object['color'] = this.style.fill;
-
-									linkData.push(object);
-								}
-							})
-
-							selectionLevelG.call(link, {
-								data: linkData,
-								level: level
-						});		
-					});
-					
 				});
 
 	rightIdentityButtonGroups.call(button, {

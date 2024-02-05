@@ -6,11 +6,6 @@ const adjustWidth = (props) => {
 	} = props;
 
     if (level == 'level1') {
-        //d3.selectAll('.level1')
-        //    .transition()
-        //    .attr("transform", function() { 
-        //        return "translate(" + addWidth + "," + 0 + ")"; });	
-        
         // Adjust level 1 nodes x postion
         d3.selectAll('.node.level-1')
             .transition()
@@ -33,8 +28,6 @@ const adjustWidth = (props) => {
             .attr("transform", function(d,i) { 
                 var postion_x = d.y + firstLevelWidth + addWidth;
                 return "translate(" + postion_x + "," + d.x + ")"; });
-
-
     }
 
     // Move level 1 paths

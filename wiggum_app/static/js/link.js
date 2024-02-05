@@ -1,6 +1,7 @@
 const link = (selection, props) => {
 	const {
 		data,
+		side,
 	  	level
 	} = props;
 	
@@ -8,7 +9,7 @@ const link = (selection, props) => {
 	selection.selectAll('.path list node').data(data)
 		.enter().append('path')
 		.attr("d", linkHorizontal)
-		.attr("class", d => "path left vl level" + level)
+		.attr("class", d => "path " + side + " virtuallayer level" + level)
 		.attr('fill', 'none')
 		.attr('stroke', d => d.color)
 		//.style("stroke", "black")

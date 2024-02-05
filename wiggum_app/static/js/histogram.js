@@ -126,6 +126,7 @@ const doubleHistogram = (selection, props) => {
 	  var1,
 	  var2,
 	  parentIdentityFlag,
+	  childrenIdentityFlag,
 	  rectWidth,
 	  rectHeight,
 	  level,
@@ -248,12 +249,12 @@ const doubleHistogram = (selection, props) => {
 		.style('opacity', 0.6);  
 
 	// Children Identity
-	if (parentIdentityFlag) {
+	if (childrenIdentityFlag) {
 		g.selectAll(".rect")
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " doublehistogram virtuallayer right rect " 
+			.attr("class", d => level + " doublehistogram initialvirtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;
