@@ -178,8 +178,8 @@ const oneDimensionalScatterPlot = (selection, props) => {
 	  rectHeight,
 	  identity_data,
 	  chart_data,
-	  level,
-	  myColor
+	  myColor,
+	  level
 	} = props;
 
 	const g = selection.append('g')
@@ -254,7 +254,10 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .style("fill", function(d) { 
 			if (level == "level3") {
 				return color(cValue(d));}
-			return "#bebebe";
+			if (myColor == undefined) {
+				return "#bebebe";
+			} else { 
+				return myColor;}
 			})
 		  .append('title');
 	  
