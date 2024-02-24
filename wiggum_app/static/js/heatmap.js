@@ -51,7 +51,7 @@ const heatmapDensity = (selection, props) => {
 	// Add x axis label
 	g.select('.' + level + '.heatmapdensity.x.axis')
 		.append("text")
-		.attr("class", level + " heatmapdensity label")
+		.attr("class", level + " heatmapdensity x label")
 		.attr('fill', 'black')
 		.attr("x", width/2)
 		.attr("y", 26)
@@ -70,7 +70,7 @@ const heatmapDensity = (selection, props) => {
 	// Add y axis label
 	g.select('.' + level + '.heatmapdensity.y.axis')
 		.append("text")
-		.attr("class", level + " heatmapdensity label")
+		.attr("class", level + " heatmapdensity y label")
 		.attr("x", 0)
 		.attr("y", -8)
 		.attr("text-anchor", "middle")

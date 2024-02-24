@@ -2,14 +2,15 @@ const link = (selection, props) => {
 	const {
 		data,
 		side,
+		rowIndex,
 	  	level
 	} = props;
-	
 
-	selection.selectAll('.path list node').data(data)
+	selection.selectAll('.vpath list node').data(data)
 		.enter().append('path')
 		.attr("d", linkHorizontal)
-		.attr("class", d => "path " + side + " virtuallayer level" + level)
+		.attr("id", d => d.id + "_vpath")
+		.attr("class", d => level + " " + rowIndex + " vpath " + side + " virtuallayer")
 		.attr('fill', 'none')
 		.attr('stroke', d => d.color)
 		//.style("stroke", "black")

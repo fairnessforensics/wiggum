@@ -31,14 +31,14 @@ const adjustWidth = (props) => {
     }
 
     // Move level 1 paths
-    d3.selectAll('.path.level1')
+    d3.selectAll('.level1.path')
     .each(function (d) {
         d3.select(this)
             .attr("transform",  "translate(" + (firstLevelWidth + addWidth) + ", 0)")
     });	
 
     // Move level 2 paths
-    d3.selectAll('.path.level2')
+    d3.selectAll('.level2.path')
         .each(function (d) {
             d3.select(this)
                 .attr("transform",  

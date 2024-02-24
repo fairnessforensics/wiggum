@@ -132,6 +132,7 @@ const doubleHistogram = (selection, props) => {
 	  level,
 	  identity_data,
 	  chart_data,
+	  rowIndex,
 	  myColor
 	} = props;
 
@@ -184,20 +185,42 @@ const doubleHistogram = (selection, props) => {
 		.data(bins1)
 		.enter()
 		.append("rect")
-		.attr("class", level + " doublehistogram bar var1")
+		.attr("id", function(d, i) {
+			return level + "_" + rowIndex + "_doublehistogram_bar_var1_" + i;})
+		.attr("class", level + " " + rowIndex + " doublehistogram bar var1")
 			.attr("x", 1)
 			.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
 			.attr("width", function(d) { return x(d.x1) - x(d.x0) -1 ; })
 			.attr("height", function(d) { return height - y(d.length); })
 			.style("fill", "#69b3a2")
 			.style("opacity", 0.6)
+			.on("mouseover", function() {
+				d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.bar")
+					.style("opacity", 0.2);
+
+				// Virtual layer
+				d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
+					.style("opacity", 0.2);
+				d3.select(this).style("opacity", 1);
+				// Coordiate vitual layer
+				d3.select("#" + this.id + '_vpath').style("opacity", 1);
+			})
+			.on("mouseout", function() {
+				d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.bar")
+					.style("opacity", 0.6);
+
+				d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
+					.style("opacity", 0.6);
+			});
 
 	// append the bars for var 2
 	g.selectAll("rect2")
 		.data(bins2)
 		.enter()
 		.append("rect")
-		.attr("class", level + " doublehistogram bar var2")		
+		//.attr("class", level + " doublehistogram bar var2")		
+		.attr("id", level + "_" + rowIndex + "_doublehistogram_bar_var2")
+		.attr("class", level + " " + rowIndex + " doublehistogram bar var2")
 			.attr("x", 1)
 			.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
 			.attr("width", function(d) { return x(d.x1) - x(d.x0) -1 ; })

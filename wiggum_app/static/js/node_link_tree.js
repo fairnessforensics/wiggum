@@ -227,6 +227,7 @@ function drawNodeLinkTree(data) {
 		});
 
 	// Visual Alternatives
+	var rowIndex = 0;
 	firstLevelG.each(function (d) {
 
 		var keyArray = d.data.key.split(",");
@@ -341,8 +342,10 @@ function drawNodeLinkTree(data) {
 				rectHeight: rectHeight,
 				identity_data: identity_data,
 				chart_data: histrogram_data,
+				rowIndex: 'row' + rowIndex,
 				level: 'level1'
 			});	
+			rowIndex = rowIndex + 1;
 
 			// Visual Tech 3 for Pearson Corr: heatmap density
 			container.call(heatmapDensity, {
@@ -2055,6 +2058,10 @@ const interactiveLevelButton = (selection, props) => {
 
 					// Reset
 					firstLevelParentVLWidth = 0;
+
+					d3.selectAll('.'+ level +'.list.cell')
+						.transition().style('visibility', "visible");
+
 					// Reset left rect
 					d3.selectAll('.'+ level +'.list.cell')
 						.attr("y", -10)
@@ -2083,69 +2090,52 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 1) {
-						firstLevelParentVLWidth = 40;
+						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
+							firstLevelParentVLWidth = 40;
+						} 
+
 						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
+						// Adjust Space
 						adjustWidth({
 							firstLevelWidth: firstLevelWidth, 
 							addWidth: firstLevelParentVLWidth, 
 							level: 'level1'}); 
-
+					
 						adjustWidth({
 							firstLevelWidth: firstLevelWidth, 
 							addWidth: addTotalWidthVL, 
 							level: 'level2'}); 
-	
+					
 						// Reset the x position for tree node in level 1
 						d3.selectAll('.' + level + '.list.cell')
 							.transition()
 							.attr("transform", function(d,i) { 
 								return "translate(" + (-firstLevelParentVLWidth) + "," + 0 + ")"; });	
-	
-						levelG.each(function (d) {
-							var selectionLevelG = d3.select(this);
-	
-							// Add a vertical line
-							//var height = 100;
-							var y = d3.scaleLinear()
-										.range([height, 0]);
-	
-							var vl_axis = selectionLevelG.append("g")
-								.attr("class", level + " parent virtuallayer y axis")
-								.attr("transform", "translate(15," + (-height/2) + ")")
-								.call(d3.axisRight(y).tickSizeOuter(0));
-	
-							vl_axis.select(".domain")
-								.attr("stroke","black")
-								.attr("stroke-width","3");
-							vl_axis.selectAll("text").remove();
-							vl_axis.selectAll(".tick").remove();
-							
-	
-							// Add links
-							var linkData = [];
-	
-							selectionLevelG.selectAll(".doublehistogram.bar.var1,.doublehistogram.bar.var2")
-								.each(function () {
-									var bbox = this.getBBox();
-									var object = {};
-									if (bbox.height != 0) {
-										object['source'] = [0, -firstLevelParentVLWidth];
-										// TODO height hard code
-										y_position = 100/2 - bbox.height;
-										object['target'] = [y_position, 15];
-										// add color
-										object['color'] = this.style.fill;
-										linkData.push(object);
-									}
-							})
-	
-							selectionLevelG.call(link, {
-									data: linkData,
-									side: 'parent',
-									level: level
-							});		
-						});
+
+						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
+							// Call Virtual Layer
+							levelG.call(doubleHistogram_virtual_layer, {
+								width: firstLevelWidth,
+								height: height,
+								parentVLWidth: firstLevelParentVLWidth,
+								level: 'level1'
+							});	
+						}
+
+						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+							// Hide node
+							d3.selectAll('.'+ level +'.list.cell')
+								.transition().style('visibility', "hidden");
+
+							levelG.call(heatmapDensity_virtual_layer, {
+								width: 20,
+								height: 100,
+								chart_data: csvData,
+								side: 'parent',
+								level: 'level1'
+							});	
+						}
 					}
 
 					if (i == 2) {
@@ -2318,7 +2308,7 @@ const interactiveLevelButton = (selection, props) => {
 										linkData.push(object);
 									}
 								})
-	
+
 								selectionLevelG.call(link, {
 									data: linkData,
 									side: 'children',
