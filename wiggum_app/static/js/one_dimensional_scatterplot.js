@@ -173,7 +173,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 	  margin,
 	  width,
 	  height,
-	  parentIdentityFlag,
+	  childrenIdentityFlag,
 	  rectWidth,
 	  rectHeight,
 	  identity_data,
@@ -261,19 +261,19 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			})
 		  .append('title');
 	  
-	// Parent Identity
-	if (parentIdentityFlag) {
+	// Children Identity
+	if (childrenIdentityFlag) {
 		g.selectAll(".rect")
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " scatterplot left rect " 
+			.attr("class", d => level + " scatterplot initialvirtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})						
-			.attr("x", -10)
+			.attr("x", width + rectWidth + 30)
 			.attr("y", -10)						
 			.attr("width", rectWidth)
 			.attr("height", rectHeight)

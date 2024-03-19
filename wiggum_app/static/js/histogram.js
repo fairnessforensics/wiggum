@@ -13,11 +13,13 @@ const histogram = (selection, props) => {
 	  height,
 	  offset_y,
 	  xAxisLabel,
-	  parentIdentityFlag,
+	  childrenIdentityFlag,
 	  rectWidth,
 	  rectHeight,
 	  identity_data,
 	  chart_data,
+	  rowIndex,
+	  multi_no,
 	  myColor,
 	  level
 	} = props;
@@ -58,7 +60,7 @@ const histogram = (selection, props) => {
 	y.domain([0, d3.max(bins, function(d) { return d.length; })]);  
 
 	g.append("g")
-		.attr("class", level + " histogram y axis")
+		.attr("class", level + " " +  rowIndex + " " + multi_no + " histogram y axis")
 		.call(d3.axisLeft(y))
 		.append("text")
 		.attr("class", function(d) {
@@ -74,7 +76,9 @@ const histogram = (selection, props) => {
 		.data(bins)
 		.enter()
 		.append("rect")
-		.attr("class", level + " histogram bar")
+		.attr("id", function(d, i) {
+			return level + "_" + rowIndex + "_" + multi_no + "_doublehistogram_bar_" + i;})
+		.attr("class", level + " " + rowIndex + " " + multi_no + " histogram bar")
 		.attr("x", 1)
 		.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
 		.attr("width", d=> Math.max(0, (x(d.x1) - x(d.x0) - 1) ))
@@ -91,19 +95,19 @@ const histogram = (selection, props) => {
 				return myColor;}
 			});
 
-	// Parent Identity
-	if (parentIdentityFlag) {
+	// Children Identity
+	if (childrenIdentityFlag) {
 		g.selectAll(".rect")
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " histogram left rect " 
+			.attr("class", d => level + " histogram initialvirtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2 - offset_y;
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})						
-			.attr("x", -10)
+			.attr("x", width + rectWidth + 30)
 			.attr("y", -10)						
 			.attr("width", rectWidth)
 			.attr("height", rectHeight)
@@ -194,24 +198,42 @@ const doubleHistogram = (selection, props) => {
 			.attr("height", function(d) { return height - y(d.length); })
 			.style("fill", "#69b3a2")
 			.style("opacity", 0.6)
-			.on("mouseover", function() {
-				d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.bar")
-					.style("opacity", 0.2);
-
-				// Virtual layer
-				d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
-					.style("opacity", 0.2);
-				d3.select(this).style("opacity", 1);
-				// Coordiate vitual layer
-				d3.select("#" + this.id + '_vpath').style("opacity", 1);
+			.on("mouseover", function(d) {
+				onMouseOver(this, level, rowIndex);
 			})
-			.on("mouseout", function() {
-				d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.bar")
-					.style("opacity", 0.6);
+			.on("mouseout", function(d) {
+				onMouseOut(level, rowIndex)});
 
-				d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
-					.style("opacity", 0.6);
-			});
+	function onMouseOver(element, level, rowIndex) {
+		// reset first
+		d3.selectAll("." + level +  ".virtuallayer")
+		.style("opacity", 1);
+		d3.selectAll("." + level + ".doublehistogram.bar")
+			.style("opacity", 0.6);
+		d3.selectAll("." + level + ".doublehistogram.vpath")
+			.style("opacity", 0.6);
+		
+		d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.bar")
+		.style("opacity", 0.2);
+
+		// Virtual layer
+		d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
+			.style("opacity", 0.2);
+		d3.select(element).style("opacity", 1);
+		// Coordiate vitual layer
+		d3.select("#" + element.id + '_children_vpath').style("opacity", 1);
+		d3.select("#" + element.id + '_parent_vpath').style("opacity", 1);
+		d3.select("#" + element.id + '_aux_vpath').style("opacity", 1);
+	}
+
+	function onMouseOut(level, rowIndex) {
+		//d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
+		//	.style("opacity", 1);
+		d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.bar")
+			.style("opacity", 0.6);
+		d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.vpath")
+			.style("opacity", 0.6);
+	}
 
 	// append the bars for var 2
 	g.selectAll("rect2")
@@ -219,7 +241,10 @@ const doubleHistogram = (selection, props) => {
 		.enter()
 		.append("rect")
 		//.attr("class", level + " doublehistogram bar var2")		
-		.attr("id", level + "_" + rowIndex + "_doublehistogram_bar_var2")
+		//.attr("id", level + "_" + rowIndex + "_doublehistogram_bar_var2")
+		//.attr("class", level + " " + rowIndex + " doublehistogram bar var2")
+		.attr("id", function(d, i) {
+			return level + "_" + rowIndex + "_doublehistogram_bar_var2_" + i;})
 		.attr("class", level + " " + rowIndex + " doublehistogram bar var2")
 			.attr("x", 1)
 			.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
@@ -227,6 +252,11 @@ const doubleHistogram = (selection, props) => {
 			.attr("height", function(d) { return height - y(d.length); })
 			.style("fill", "#404080")
 			.style("opacity", 0.6)
+			.on("mouseover", function(d) {
+				onMouseOver(this, level, rowIndex);
+			})
+			.on("mouseout", function(d) {
+				onMouseOut(level, rowIndex)});
 
 	// Handmade legend
 	//g.append("circle").attr("cx",width).attr("cy",0).attr("r", 6).style("fill", "#69b3a2")

@@ -307,7 +307,7 @@ function drawNodeLinkTree(data) {
 				margin: { left: 40, top: 0, right: 0, bottom: 0 },
 				width: 100,
 				height: 100,
-				parentIdentityFlag: true,
+				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
 				identity_data: identity_data,
@@ -345,7 +345,6 @@ function drawNodeLinkTree(data) {
 				rowIndex: 'row' + rowIndex,
 				level: 'level1'
 			});	
-			rowIndex = rowIndex + 1;
 
 			// Visual Tech 3 for Pearson Corr: heatmap density
 			container.call(heatmapDensity, {
@@ -374,11 +373,13 @@ function drawNodeLinkTree(data) {
 				height: 30,
 				offset_y: -35,
 				xAxisLabel: keyArray[0],
-				parentIdentityFlag: true,
+				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
 				identity_data: identity_data,
 				chart_data: histrogram_var1,
+				rowIndex: 'row' + rowIndex,
+				multi_no: 'h1',
 				myColor: heatmapColorScale(identity_data[0].value),
 				level: 'level1'
 			});
@@ -390,12 +391,14 @@ function drawNodeLinkTree(data) {
 				height: 30,
 				offset_y: 35,
 				xAxisLabel: keyArray[1],
-				parentIdentityFlag: false,
+				childrenIdentityFlag: false,
 				chart_data: histrogram_var2,
+				rowIndex: 'row' + rowIndex,
+				multi_no: 'h2',
 				myColor: heatmapColorScale(identity_data[0].value),
 				level: 'level1'
 			});
-
+			rowIndex = rowIndex + 1;
 		}
 
 	})
@@ -1561,6 +1564,13 @@ const interactiveLevelButton = (selection, props) => {
 									.style('visibility', i == k ? 'visible' : 'hidden');
 							}
 
+							// Hide all virtual layer
+							for (var k = 0; k < charts.length; k++){
+								d3.selectAll('.'+level+'.' + charts[k]+'.virtuallayer')
+									.transition()
+									.style('visibility', 'hidden');
+							}
+
 							// Level 1 keep both view and identity
 							if (level == "level1") {
 								// set default position for list text
@@ -1614,7 +1624,24 @@ const interactiveLevelButton = (selection, props) => {
 									//	.transition()
 									//	.attr("transform", function() { 
 									//		return "translate(" + firstLevelWidth + "," + 0 + ")"; });		
-										
+
+									// Adjust level 1 nodes x postion
+									d3.selectAll('.node.level-1')
+										.transition()
+										.attr("transform", function(d,i) { 
+											return "translate(" + d.y + "," + d.x + ")"; });	
+
+									// Adjust level 1 nodes x postion
+									d3.selectAll('.level1.list')
+										.transition()
+										.attr("transform", "translate(0, 0)");
+
+
+									// Adjust level 1 children rect x postion
+									d3.selectAll('.level1.initialvirtuallayer.children.rect')
+										.transition()
+										.attr('transform', `translate(${-40},${height/2})`);
+
 									// Adjust level 2 nodes x postion
 									d3.selectAll('.node.level-2')
 										.transition()
@@ -2090,7 +2117,8 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 1) {
-						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
+						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+							|| d3.select('.level1.histogram').style("visibility") == 'visible') {
 							firstLevelParentVLWidth = 40;
 						} 
 
@@ -2119,6 +2147,9 @@ const interactiveLevelButton = (selection, props) => {
 								width: firstLevelWidth,
 								height: height,
 								parentVLWidth: firstLevelParentVLWidth,
+								axis_x_position: 15,
+								side: 'parent',
+								aux_flag: false,
 								level: 'level1'
 							});	
 						}
@@ -2136,6 +2167,34 @@ const interactiveLevelButton = (selection, props) => {
 								level: 'level1'
 							});	
 						}
+
+						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
+							// Call Virtual Layer
+							levelG.call(histogram_virtual_layer, {
+								width: firstLevelWidth,
+								height: 30,
+								offset_y: -35,
+								parentVLWidth: firstLevelParentVLWidth,
+								axis_x_position: 15,
+								side: 'parent',
+								multi_no: 'h1',
+								aux_flag: false,
+								level: 'level1'
+							});	
+
+							levelG.call(histogram_virtual_layer, {
+								width: firstLevelWidth,
+								height: 30,
+								offset_y: 35,
+								parentVLWidth: firstLevelParentVLWidth,
+								axis_x_position: 15,
+								side: 'parent',
+								multi_no: 'h2',
+								aux_flag: false,
+								level: 'level1'
+							});	
+						}
+
 					}
 
 					if (i == 2) {
@@ -2181,6 +2240,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					// Remove existing virtual layer
 					d3.selectAll('.children.virtuallayer').remove();
+					d3.selectAll('.aux.virtuallayer').remove();
 
 					// Adjust first level width
 					adjustWidth({
@@ -2218,103 +2278,194 @@ const interactiveLevelButton = (selection, props) => {
 							.attr("transform", function(d,i) { 
 								return "translate(" + 20 + "," + height/2 + ")"; });	
 	
-						levelG.each(function (d) {
-							var selectionLevelG = d3.select(this);
-	
-							// Duplicate y axis
-							// Prepare data TODO duplicate issue
-							var keyArray = d.data.key.split(",");
-							var histrogram_data = [];
-							csvData.forEach(function (item) {
-								var singleObj_var1 = {};
-								singleObj_var1['type'] = keyArray[0];
-								singleObj_var1['value'] = item[keyArray[0]];
-								histrogram_data.push(singleObj_var1);
-	
-								var singleObj_var2 = {};
-								singleObj_var2['type'] = keyArray[1];
-								singleObj_var2['value'] = item[keyArray[1]];
-								histrogram_data.push(singleObj_var2);
-							});
-	
-							// TODO Duplicate code issue
-							var min_domain = d3.min(histrogram_data, function(d) { return +d.value });
-							var max_domain = d3.max(histrogram_data, function(d) { return +d.value });
-						
-							// X axis: scale and draw:
-							var x = d3.scaleLinear()
-										.domain([min_domain, max_domain])
-										.range([0, width]);
-	
-							var histogram = d3.histogram()
-											.value(function(d) { return +d.value; })   
-											.domain(x.domain())  
-											.thresholds(x.ticks(10)); 
-	
-							var bins1 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[0]} ));
-							var bins2 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[1]} ));
-						
-							// Y axis: 
-							var y_max = Math.max(d3.max(bins1, function(d) { return d.length; }), 
-												d3.max(bins2, function(d) { return d.length; }));
-	
-							var y = d3.scaleLinear()
-									.domain([0, y_max])    
-									.range([100, 0]);
-	
-							selectionLevelG.append("g")
-								.attr("class", level + " doublehistogram virtuallayer y axis children")
-								.attr("transform", "translate(" + 140 + ","+ (-100/2)+")")
-								.call(d3.axisRight(y));
-							
-							// Add a vertical line
-							//var height = 100;
-							var y = d3.scaleLinear()
-										.range([height, 0]);
-	
-							var vl_axis = selectionLevelG.append("g")
-								.attr("class", level + " virtuallayer y axis children")
-								.attr("transform", "translate(" + (140 + 25)  + ","+  + (-height/2) + ")")
-								.call(d3.axisRight(y).tickSizeOuter(0));
-	
-							vl_axis.select(".domain")
-								.attr("stroke","black")
-								.attr("stroke-width","3");
-							vl_axis.selectAll("text").remove();
-							vl_axis.selectAll(".tick").remove();
-	
-	
-							// Add links
-							var linkData = [];
-							//var selectionLevelG = d3.select(this);
-	
-							selectionLevelG.selectAll(".doublehistogram.bar.var1,.doublehistogram.bar.var2")
-								.each(function () {
-	
-									var bbox = this.getBBox();
-							
-									var object = {};
-									if (bbox.height != 0) {
-	
-										// TODO height hard code
-										y_position = 100/2 - bbox.height;
-										object['source'] = [y_position, 140 + 25];
-	
-										object['target'] = [0, 160 + 60];
-	
-										// add color
-										object['color'] = this.style.fill;
-	
-										linkData.push(object);
-									}
-								})
+						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+							|| d3.select('.level1.histogram').style("visibility") == 'visible') {
 
-								selectionLevelG.call(link, {
-									data: linkData,
+
+								
+/*
+
+								// Add a vertical line
+								//var height = 100;
+								var y = d3.scaleLinear()
+											.range([height, 0]);
+		
+								var vl_axis = selectionLevelG.append("g")
+									.attr("class", level + " virtuallayer y axis children")
+									.attr("transform", "translate(" + (140 + 25)  + ","+  + (-height/2) + ")")
+									.call(d3.axisRight(y).tickSizeOuter(0));
+		
+								vl_axis.select(".domain")
+									.attr("stroke","black")
+									.attr("stroke-width","3");
+								vl_axis.selectAll("text").remove();
+								vl_axis.selectAll(".tick").remove();
+		
+		
+								// Add links
+								var linkData = [];
+								//var selectionLevelG = d3.select(this);
+		
+								selectionLevelG.selectAll(".doublehistogram.bar.var1,.doublehistogram.bar.var2")
+									.each(function () {
+		
+										var bbox = this.getBBox();
+								
+										var object = {};
+										if (bbox.height != 0) {
+		
+											// TODO height hard code
+											y_position = 100/2 - bbox.height;
+											object['source'] = [y_position, 140 + 25];
+		
+											object['target'] = [0, 160 + 60];
+		
+											// add color
+											object['color'] = this.style.fill;
+		
+											linkData.push(object);
+										}
+									})
+
+									selectionLevelG.call(link, {
+										data: linkData,
+										side: 'children',
+										level: level
+								});		*/
+						
+
+							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
+								levelG.each(function (d) {
+									var selectionLevelG = d3.select(this);
+			
+									// Duplicate y axis
+									// Prepare data TODO duplicate issue
+									var keyArray = d.data.key.split(",");
+									var histrogram_data = [];
+									csvData.forEach(function (item) {
+										var singleObj_var1 = {};
+										singleObj_var1['type'] = keyArray[0];
+										singleObj_var1['value'] = item[keyArray[0]];
+										histrogram_data.push(singleObj_var1);
+			
+										var singleObj_var2 = {};
+										singleObj_var2['type'] = keyArray[1];
+										singleObj_var2['value'] = item[keyArray[1]];
+										histrogram_data.push(singleObj_var2);
+									});
+			
+									// TODO Duplicate code issue
+									var min_domain = d3.min(histrogram_data, function(d) { return +d.value });
+									var max_domain = d3.max(histrogram_data, function(d) { return +d.value });
+								
+									// X axis: scale and draw:
+									var x = d3.scaleLinear()
+												.domain([min_domain, max_domain])
+												.range([0, width]);
+			
+									var histogram = d3.histogram()
+													.value(function(d) { return +d.value; })   
+													.domain(x.domain())  
+													.thresholds(x.ticks(10)); 
+			
+									var bins1 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[0]} ));
+									var bins2 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[1]} ));
+								
+									// Y axis: 
+									var y_max = Math.max(d3.max(bins1, function(d) { return d.length; }), 
+														d3.max(bins2, function(d) { return d.length; }));
+			
+									var y = d3.scaleLinear()
+											.domain([0, y_max])    
+											.range([100, 0]);
+			
+									selectionLevelG.append("g")
+										.attr("class", level + " doublehistogram virtuallayer y axis children")
+										.attr("transform", "translate(" + 140 + ","+ (-100/2)+")")
+										.call(d3.axisRight(y));
+								});	
+
+								// Call Virtual Layer
+								levelG.call(doubleHistogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: height,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 140 + 25,
 									side: 'children',
-									level: level
-							});		
-						});	
+									aux_flag: true,
+									level: 'level1'
+								});	
+							}
+
+							if (d3.select('.level1.histogram').style("visibility") == 'visible') {
+								levelG.each(function (d) {
+									var selectionLevelG = d3.select(this);
+
+									var keyArray = d.data.key.split(",");
+									var histrogram_data = [];
+									csvData.forEach(function (item) {
+										var singleObj_var = {};
+										singleObj_var['type'] = keyArray[0];
+										singleObj_var['value'] = item[keyArray[0]];
+										histrogram_data.push(singleObj_var);
+
+									});
+
+									// Duplicate y axis
+									selectionLevelG.call(axisHistogram, {
+										chart_data: histrogram_data,
+										width: firstLevelWidth,
+										height: 30,
+										offset_y: -35,
+										level: 'level1'
+									})
+
+									// Second chart
+									var histrogram_data = [];
+									csvData.forEach(function (item) {
+										var singleObj_var = {};
+										singleObj_var['type'] = keyArray[1];
+										singleObj_var['value'] = item[keyArray[1]];
+										histrogram_data.push(singleObj_var);
+									});
+
+									// Duplicate y axis
+									selectionLevelG.call(axisHistogram, {
+										chart_data: histrogram_data,
+										width: firstLevelWidth,
+										height: 30,
+										offset_y: 35,
+										level: 'level1'
+									})
+								})	
+
+								// Call Virtual Layer
+								levelG.call(histogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									offset_y: -35,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 140 + 25,
+									side: 'children',
+									multi_no: 'h1',
+									aux_flag: false,
+									level: 'level1'
+								});	
+	
+								levelG.call(histogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									offset_y: 35,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 140 + 25,
+									side: 'children',
+									multi_no: 'h2',
+									aux_flag: false,
+									level: 'level1'
+								});	
+							}
+						}
+
 					}
 
 					if (i == 2) {
