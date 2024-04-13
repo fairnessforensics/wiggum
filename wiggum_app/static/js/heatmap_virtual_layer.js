@@ -53,9 +53,22 @@ const heatmapDensity_virtual_layer = (selection, props) => {
 					.padding(0.1);
 
 		// Build color scale
-		var color = d3.scaleLinear()
-						.range(["white", "black"])
-						.domain([0, max_count]);
+		//var color = d3.scaleLinear()
+		//				.range(["white", "black"])
+		//				.domain([0, max_count]);
+
+		var color_range = ['#f7f7f7', '#f0f0f0', '#d9d9d9', '#bdbdbd', '#969696',
+							'#737373', '#525252', '#252525', '#000000'];
+		// Blue to Red
+		//var color_range = ['#053061', '#2166ac', '#4393c3', '#92c5de', '#d1e5f0',
+		//					'#fddbc7', '#f4a582', '#d6604d', '#b2182b', '#67001f'];
+		// Grey to Red
+		//var color_range = ['#1a1a1a', '#4d4d4d', '#878787', '#bababa', '#e0e0e0',
+		//					'#fddbc7', '#f4a582', '#d6604d', '#b2182b', '#67001f'];
+
+		var color = d3.scaleQuantize()
+						.domain([0, max_count])
+						.range(color_range);
 
 		g.selectAll()
 			.data(count_data)

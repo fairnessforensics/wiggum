@@ -1,0 +1,11 @@
+variable,dtype,var_type,role,isCount,weighting_var
+Year,int64,ordinal,['splitby'],False,
+Month,int64,ordinal,['ignore'],False,
+UnempoymentRate,float64,continuous,['independent'],False,
+CPI,float64,continuous,['independent'],False,
+Open,float64,continuous,['ignore'],False,
+High,float64,continuous,['ignore'],False,
+Low,float64,continuous,['ignore'],False,
+Close,float64,continuous,"['independent', 'dependent']",False,
+AdjClose,float64,continuous,['ignore'],False,
+Volume,float64,continuous,"['independent', 'dependent']",False,

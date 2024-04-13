@@ -1,3 +1,30 @@
+const adjustTotalWidth = (props) => {
+	const {
+        firstLevelWidth, 
+		firstLevelParentVLWidth,
+        addTotalWidthVL,
+        resetFlag
+	} = props;
+
+    adjustWidth({
+        firstLevelWidth: firstLevelWidth, 
+        addWidth: firstLevelParentVLWidth, 
+        level: 'level1'}); 
+
+    adjustWidth({
+        firstLevelWidth: firstLevelWidth, 
+        addWidth: addTotalWidthVL, 
+        level: 'level2'}); 
+
+    // Reset the x position for tree node in level 1
+    if (resetFlag == true) {
+        d3.selectAll('.' + level + '.list.cell')
+            .transition()
+            .attr("transform", function(d,i) { 
+                return "translate(" + (-firstLevelParentVLWidth) + "," + 0 + ")"; });	
+    }
+}
+
 const adjustWidth = (props) => {
 	const {
         firstLevelWidth, 

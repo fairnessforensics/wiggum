@@ -2,8 +2,9 @@ const histogram_virtual_layer = (selection, props) => {
 	const {
 	  width,
 	  height,
+	  source_offset_y,
 	  offset_y,
-	  parentVLWidth,
+	  virtualLayerWidth,
 	  axis_x_position,
 	  side,
 	  multi_no,
@@ -43,15 +44,15 @@ const histogram_virtual_layer = (selection, props) => {
 
 				if (bbox.height != 0) {
 					if (side == "parent" ) {
-						object['source'] = [0, -parentVLWidth];
+						object['source'] = [source_offset_y, -virtualLayerWidth + 10];
 						// TODO height hard code
 						y_position = (height/2 + offset_y) - bbox.height;
 						object['target'] = [y_position, axis_x_position];
-					} else {
+					} else if (side == "children") {
 						y_position = (height/2 + offset_y) - bbox.height;
 						object['source'] = [y_position, axis_x_position];
 
-						object['target'] = [0, 160 + 60];
+						object['target'] = [source_offset_y, 160 + 60 - 10];
 					}
 
 					if (aux_flag == true) {
