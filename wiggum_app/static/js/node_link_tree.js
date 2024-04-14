@@ -96,6 +96,14 @@ function drawNodeLinkTree(data) {
 							}
 							return 'node level-' + d.depth;
 						})
+						.attr("id", function(d) {
+							if (d.depth == 3) {
+								// subgroup level
+								return 'node_level-' + d.depth + '_' + d.data.dependent + '_' 
+											+ d.data.independent + '_' + d.data.splitby
+											+ '_' + d.data.subgroup;								
+							}
+						})
 						.attr("transform", function(d) { 
 							return "translate(" + d.y + "," + d.x + ")"; });
 
@@ -902,8 +910,9 @@ function drawNodeLinkTree(data) {
 				var dependent = d.data.values[0].dependent;
 				var independent = d.data.values[0].independent;
 				var splitby = d.data.values[0].splitby;
-				var thirdLevelG1 = g.select('.level-3' + '.' + dependent 
-					+ '.' + independent + '.splitby_' + splitby);
+				var subgroup = d.data.values[0].subgroup;
+				var thirdLevelG1 = g.select('#node_level-3' + '_' + dependent 
+					+ '_' + independent + '_' + splitby + '_' + subgroup);
 
 				// Visual Tech 5: scatterplot
 				var thirdLevelG1_visual_alter_scatterplot = thirdLevelG1.append("g")
