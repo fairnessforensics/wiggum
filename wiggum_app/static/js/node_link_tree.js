@@ -352,7 +352,8 @@ function drawNodeLinkTree(data) {
 				identity_data: identity_data,
 				chart_data: histrogram_data,
 				rowIndex: 'row' + rowIndex,
-				level: 'level1'
+				level: 'level1',
+				aux_flag: true
 			});	
 
 			// Visual Tech 3 for Pearson Corr: heatmap density

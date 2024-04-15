@@ -137,7 +137,8 @@ const doubleHistogram = (selection, props) => {
 	  identity_data,
 	  chart_data,
 	  rowIndex,
-	  myColor
+	  myColor,
+	  aux_flag
 	} = props;
 
 	const g = selection.append("g")
@@ -184,6 +185,40 @@ const doubleHistogram = (selection, props) => {
 		.attr('fill', 'black')
 		.text('count');
 
+	// Draw aux line
+	if (aux_flag == true) {
+		// Horizontal link generator
+		var linkHorizontal = d3.linkHorizontal()
+				.source(function(d) {
+					return [0, y(d.length)];
+				})
+				.target(function(d) {
+					return [width, y(d.length)];
+				});
+
+		g.selectAll('.auxpath var1').data(bins1)
+			.enter().append('path')
+			.attr("d", linkHorizontal)
+			.attr("id", function(d, i) {
+				return level + "_" + rowIndex + "_doublehistogram_bar_var1_" + i + "_aux_vpath";})
+			.attr("class", level + " " + rowIndex + " doublehistogram auxpath var1")
+			.attr('fill', 'none')
+			.attr('stroke', "#949494")
+			.style("opacity", 0.2)
+			.style("stroke-width", "1px");
+
+		g.selectAll('.auxpath var2').data(bins2)
+			.enter().append('path')
+			.attr("d", linkHorizontal)
+			.attr("id", function(d, i) {
+				return level + "_" + rowIndex + "_doublehistogram_bar_var2_" + i + "_aux_vpath";})
+			.attr("class", level + " " + rowIndex + " doublehistogram auxpath var2")
+			.attr('fill', 'none')
+			.attr('stroke', "#949494")
+			.style("opacity", 0.2)
+			.style("stroke-width", "1px");
+	}
+
 	// append the bars for var 1
 	g.selectAll("rect")
 		.data(bins1)
@@ -219,6 +254,9 @@ const doubleHistogram = (selection, props) => {
 		// Virtual layer
 		d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
 			.style("opacity", 0.2);
+		// Aux lines
+		d3.selectAll("." + level +"." + rowIndex +  ".auxpath")
+			.style("opacity", 0.2);
 		d3.select(element).style("opacity", 1);
 		// Coordiate vitual layer
 		d3.select("#" + element.id + '_children_vpath').style("opacity", 1);
@@ -233,6 +271,9 @@ const doubleHistogram = (selection, props) => {
 			.style("opacity", 0.6);
 		d3.selectAll("." + level +"." + rowIndex + ".doublehistogram.vpath")
 			.style("opacity", 0.6);
+		// Aux lines
+		d3.selectAll("." + level +"." + rowIndex +  ".auxpath")
+			.style("opacity", 0.2);
 	}
 
 	// append the bars for var 2
@@ -327,5 +368,4 @@ const doubleHistogram = (selection, props) => {
 				return `The mean distance is ${d3.format(".3f")(d.value)}.`
 			});
 	}
-
 }

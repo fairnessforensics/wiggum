@@ -157,6 +157,7 @@ const doubleHistogram_virtual_layer = (selection, props) => {
 						aux_object['source'] = [y_position, axis_x_position - 25];
 						aux_object['target'] = [y_position, axis_x_position - width + 36];
 						aux_object['color'] = "#949494";
+						aux_object['opacity'] = 0.2;
 						aux_object['id'] = this.id;
 						auxLinkData.push(aux_object);
 					}

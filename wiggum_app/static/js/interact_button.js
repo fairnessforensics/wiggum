@@ -990,7 +990,7 @@ const interactiveLevelButton = (selection, props) => {
 									parentVLWidth: firstLevelParentVLWidth,
 									axis_x_position: 140 + 25,
 									side: 'children',
-									aux_flag: true,
+									aux_flag: false,
 									level: 'level1'
 								});	
 							}

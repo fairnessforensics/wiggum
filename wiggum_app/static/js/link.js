@@ -60,6 +60,9 @@ function onMouseOver(element, level, rowIndex, side, multi_no, chartType) {
 	// Virtual layer
 	d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
 		.style("opacity", 0.2);
+	// Aux lines
+	d3.selectAll("." + level +"." + rowIndex +  ".auxpath")
+		.style("opacity", 0.2);
 	d3.select(element).style("opacity", 1);
 	var loc = element.id.lastIndexOf(side);
 	var view_elementId = element.id.substring(0, loc-1);
@@ -90,6 +93,10 @@ function onMouseOut(level, rowIndex, multi_no, chartType) {
 		.style("opacity", opacityValue);
 	d3.selectAll("." + level +"." + rowIndex + "."+ chartType + ".vpath")
 		.style("opacity", opacityValue);
+
+	// Aux lines
+	d3.selectAll("." + level +"." + rowIndex +  ".auxpath")
+		.style("opacity", 0.2);
 }
 
 // Horizontal link generator
