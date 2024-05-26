@@ -36,6 +36,16 @@ const interactiveLevelButton = (selection, props) => {
 									.style('visibility', 'hidden');
 							}
 
+							// Reset left rect
+							d3.selectAll('.'+ level +'.list.cell')
+								.attr("y", -10)
+								.attr("height", 20);
+
+							// Reset right rect
+							d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+								.attr("y", -10)
+								.attr("height", 20);
+
 							// Level 1 keep both view and identity
 							if (level == "level1") {
 								// set default position for list text
