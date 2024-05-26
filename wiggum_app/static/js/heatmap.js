@@ -36,6 +36,11 @@ const heatmapDensity = (selection, props) => {
 	var count_data_vl = countByTwoRanges(chart_data, var1, var2, ySequence, xSequence_vl);
 	var max_count = d3.max(count_data_vl, function(d) { return +d.value });
 
+	// Calculate the log base by max count
+	// Log b(a) = ln a / ln b, ln b = ln a / c
+	// b = exp(ln a / c)
+	var base = Math.floor(Math.exp(Math.log(max_count)/5));
+
 	// Label
 	var var1_label = d3.map(count_data, function(d){return d[var1];}).keys();
     var var2_label = d3.map(count_data, function(d){return d[var2];}).keys();
@@ -102,8 +107,9 @@ const heatmapDensity = (selection, props) => {
 	//				.range(["white", "black"])
 	//				.domain([0, max_count]);
 
-	var color_range = ['#f7f7f7', '#f0f0f0', '#d9d9d9', '#bdbdbd', '#969696',
-						'#737373', '#525252', '#252525', '#000000'];
+	// Grey
+	//var color_range = ['#f7f7f7', '#f0f0f0', '#d9d9d9', '#bdbdbd', '#969696',
+	//					'#737373', '#525252', '#252525', '#000000'];
 	// Blue to Red
 	//var color_range = ['#053061', '#2166ac', '#4393c3', '#92c5de', '#d1e5f0',
 	//					'#fddbc7', '#f4a582', '#d6604d', '#b2182b', '#67001f'];
@@ -111,8 +117,25 @@ const heatmapDensity = (selection, props) => {
 	//var color_range = ['#1a1a1a', '#4d4d4d', '#878787', '#bababa', '#e0e0e0',
 	//					'#fddbc7', '#f4a582', '#d6604d', '#b2182b', '#67001f'];
 
-	var color = d3.scaleQuantize()
-					.domain([0, max_count])
+
+	//var color_range = ['#ffffff', '#e0e0e0', '#c0c0c0', '#a0a0a0', '#808080',
+	//					'#606060','#404040', '#000000'];
+
+	//var color = d3.scaleQuantize()
+	//				.domain([0, max_count])
+	//				.range(color_range);
+
+	// Use 7 levels based on the log number
+	var color_range = ['#ffffff', '#e0e0e0', '#c0c0c0', '#a0a0a0', '#808080',
+						'#404040', '#000000'];
+	// TODO find the log number based on data max
+	//var color = d3.scaleThreshold()
+	//				.domain([1, 2, 4, 8, 16, 32, 64])
+	//				.range(color_range);
+
+	var heatmapDensityColor = d3.scaleThreshold()
+					.domain([1, Math.pow(base, 1), Math.pow(base, 2), Math.pow(base, 3), 
+								Math.pow(base, 4), Math.pow(base, 5)])
 					.range(color_range);
 
 	g.selectAll()
@@ -124,7 +147,7 @@ const heatmapDensity = (selection, props) => {
 		.attr("y", function(d) { return y(d[var1]) })
 		.attr("width", x.bandwidth() )
 		.attr("height", y.bandwidth() )
-		.style("fill", function(d) { return color(d.value)} )
+		.style("fill", function(d) { return heatmapDensityColor(d.value)} )
 		.style("stroke", "grey")
 		.style("stroke-width", "1px")
 		.append('title')

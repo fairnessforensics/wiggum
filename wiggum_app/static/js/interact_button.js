@@ -582,7 +582,8 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (i == 1) {
 						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-						|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+						|| d3.select('.level1.scatterplot').style("visibility") == 'visible'
+						|| d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth, 
@@ -658,9 +659,10 @@ const interactiveLevelButton = (selection, props) => {
 								.transition().style('visibility', "hidden");
 
 							levelG.call(heatmapDensity_virtual_layer, {
-								width: 20,
+								x_position: 0,
 								height: 100,
 								chart_data: csvData,
+								offset_flag: false,
 								side: 'parent',
 								level: 'level1'
 							});	
@@ -698,6 +700,35 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 3) {
+						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+
+							firstLevelParentVLWidth = 25;
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+							// Adjust Total Space
+							adjustTotalWidth({
+								firstLevelWidth: firstLevelWidth, 
+								firstLevelParentVLWidth: firstLevelParentVLWidth,
+								addTotalWidthVL: addTotalWidthVL,
+								resetFlag: false
+							})
+
+							d3.selectAll('.'+ level +'.list.cell')
+								.transition()
+								//.attr("x", -firstLevelParentVLWidth - 10)
+								.attr("y", 0)
+								.attr("height", height)
+								.attr('transform', `translate(${-firstLevelParentVLWidth},${-height/2})`);
+
+							levelG.call(heatmapDensity_virtual_layer, {
+									x_position: 0,
+									height: 100,
+									chart_data: csvData,
+									offset_flag: false,
+									side: 'parent',
+									level: 'level1'
+								});	
+						}
+
 						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
 							firstLevelParentVLWidth = 60;
 							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
@@ -794,10 +825,13 @@ const interactiveLevelButton = (selection, props) => {
 					// Reset
 					firstLevelChildrenVLWidth = 0;
 
+					d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+						.transition().style('visibility', "visible");
+
 					// Reset right rect
 					d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
-					.attr("y", -10)
-					.attr("height", 20);
+						.attr("y", -10)
+						.attr("height", 20);
 
 					// Remove existing virtual layer
 					d3.selectAll('.children.virtuallayer').remove();
@@ -824,7 +858,8 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (i == 1) {
 						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-						|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+						|| d3.select('.level1.scatterplot').style("visibility") == 'visible'
+						|| d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelParentVLWidth, 
@@ -914,15 +949,18 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 2) {
-						//var addRightWidth = 40 + 60;
-						firstLevelChildrenVLWidth = 60;
-						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-
-						adjustWidth({
-							firstLevelWidth: firstLevelWidth, 
-							addWidth: addTotalWidthVL, 
-							level: 'level2'});
+						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+						|| d3.select('.level1.histogram').style("visibility") == 'visible') {
+							//var addRightWidth = 40 + 60;
+							firstLevelChildrenVLWidth = 60;
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 	
+							adjustWidth({
+								firstLevelWidth: firstLevelWidth, 
+								addWidth: addTotalWidthVL, 
+								level: 'level2'});
+						} 
+
 						// Reset the x position for child nodes in level 1 Virtual Layer
 						d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
 							.transition()
@@ -1066,9 +1104,61 @@ const interactiveLevelButton = (selection, props) => {
 							}
 						}
 
+						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+
+							firstLevelChildrenVLWidth = 0;
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+	
+							adjustWidth({
+								firstLevelWidth: firstLevelWidth, 
+								addWidth: addTotalWidthVL, 
+								level: 'level2'});
+
+							// Hide node
+							d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+								.transition().style('visibility', "hidden");
+
+							levelG.call(heatmapDensity_virtual_layer, {
+								x_position: firstLevelWidth,
+								height: 100,
+								chart_data: csvData,
+								offset_flag: true,
+								side: 'children',
+								level: 'level1'
+							});	
+						}
+
 					}
 
 					if (i == 3) {
+						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+
+							firstLevelChildrenVLWidth = 25;
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+							// Adjust Total Space
+							adjustTotalWidth({
+								firstLevelWidth: firstLevelWidth, 
+								firstLevelParentVLWidth: firstLevelParentVLWidth,
+								addTotalWidthVL: addTotalWidthVL,
+								resetFlag: false
+							})
+
+							d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+								.transition()
+								.attr("y", 0)
+								.attr("height", height)
+								.attr('transform', `translate(${-14},${0})`);
+
+							levelG.call(heatmapDensity_virtual_layer, {
+								x_position: firstLevelWidth,
+								height: 100,
+								chart_data: csvData,
+								offset_flag: true,
+								side: 'children',
+								level: 'level1'
+							});	
+						}							
+
 						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
 							firstLevelChildrenVLWidth = 60 + 60;
 							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
