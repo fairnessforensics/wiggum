@@ -162,7 +162,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .text(d => d.splitby);
   };
 
-  const scatterPlot = (selection, props) => {
+const scatterPlot = (selection, props) => {
 	const {
 	  xValue,
 	  xAxisLabel,

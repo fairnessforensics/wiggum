@@ -1,7 +1,7 @@
 variable,dtype,var_type,role,isCount,weighting_var
 Year,int64,ordinal,['splitby'],False,
 Month,int64,ordinal,['ignore'],False,
-Unempoyment rate,float64,continuous,"['independent', 'dependent']",False,
+Unemployment rate,float64,continuous,"['independent', 'dependent']",False,
 CPI,object,categorical,"['independent', 'dependent']",False,
 Open,float64,continuous,['ignore'],False,
 High,float64,continuous,['ignore'],False,
