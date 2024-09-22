@@ -3,7 +3,9 @@
 // Option 2: Green
 //var heatmapConColors = ['#eaf7e6', '#d8f0d2', '#c1e6ba', '#a4da9e', '#84cc83', '#62bb6d', '#3fa85b', '#289049', '#107a37', '#006227'];
 // Option 3: Yellow Green
-var heatmapConColors = ['#f9fdc5', '#eaf7af', '#d2eda0', '#b1df90', '#8bce81', '#64bc6f', '#3fa85b', '#288a47', '#10743c', '#005e33'];
+//var heatmapConColors = ['#f9fdc5', '#eaf7af', '#d2eda0', '#b1df90', '#8bce81', '#64bc6f', '#3fa85b', '#288a47', '#10743c', '#005e33'];
+// Option 4: Gray
+var heatmapConColors = ['#ffffff', '#dddddd', '#cccccc', '#bbbbbb', '#aaaaaa', '#999999', '#888888', '#777777', '#666666','#333333'];
 
 // continous color scale for overview
 var heatmapColorScale = d3.scaleQuantize()
@@ -219,6 +221,7 @@ function drawNodeLinkTree(data) {
 
 			var value = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
 			if (value == 99) {
+				// TODO Grey color is used for distance, may change to white
 				return '#808080';
 			} else {
 				heatmapColorScale(value);
@@ -321,7 +324,8 @@ function drawNodeLinkTree(data) {
 				rectHeight: rectHeight,
 				identity_data: identity_data,
 				chart_data: csvData,
-				myColor: heatmapColorScale(identity_data[0].value),
+				//myColor: heatmapColorScale(identity_data[0].value),
+				myColor: '#ffffff',
 				level: 'level1'
 			});
 
@@ -390,7 +394,8 @@ function drawNodeLinkTree(data) {
 				chart_data: histrogram_var1,
 				rowIndex: 'row' + rowIndex,
 				multi_no: 'h1',
-				myColor: heatmapColorScale(identity_data[0].value),
+				//myColor: heatmapColorScale(identity_data[0].value),
+				myColor: '#ffffff',
 				level: 'level1'
 			});
 
@@ -405,7 +410,8 @@ function drawNodeLinkTree(data) {
 				chart_data: histrogram_var2,
 				rowIndex: 'row' + rowIndex,
 				multi_no: 'h2',
-				myColor: heatmapColorScale(identity_data[0].value),
+				//myColor: heatmapColorScale(identity_data[0].value),
+				myColor: '#ffffff',
 				level: 'level1'
 			});
 			rowIndex = rowIndex + 1;
@@ -662,8 +668,11 @@ function drawNodeLinkTree(data) {
 		}); 			
 
 	// Node Text Background color
+	//var correspondColor = d3.scaleOrdinal()
+	//					.range(["#1f77b4","#ff7f0e","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#17becf"]);
+	// TODO Only works for 3 subgroups
 	var correspondColor = d3.scaleOrdinal()
-						.range(["#1f77b4","#ff7f0e","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#17becf"]);
+							.range(["#FFEA00","#FFAC1C","#FF474C"]);
 						
 	d3.selectAll('.node.level-3')
 		.append('rect')
@@ -1421,7 +1430,13 @@ function drawHeatmap(options) {
 	cells.attr("width", x.bandwidth()-3)
 	    .attr("height", y.bandwidth()-3)
 	    .style("stroke-width", "1px")
-		.style("stroke", "black")
+		.style("stroke", function(d, i) {
+			if (d.value == 99) {
+				//return '#808080';
+				return '#ffffff';
+			} else {
+				return "#000000";
+			}})
 		.attr("class", function(d) {
 			if (options.selDep) {
 				if (d.dependentVar === options.selDep && d.independentVar === options.selIndep) {
@@ -1434,7 +1449,8 @@ function drawHeatmap(options) {
     	//.transition()
 		.style("fill", function(d, i) {
 			if (d.value == 99) {
-				return '#808080';
+				//return '#808080';
+				return '#ffffff';
 			} else {
 				return heatmapColorScale(d.value);
 			}

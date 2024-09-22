@@ -30,7 +30,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			.attr("class", level + " scatterplot2d x axis")
 			.attr("transform", "translate(0," + height + ")")
 			.call(xAxis)
-		.append("text")
+			.append("text")
 			.attr("class", level + " scatterplot2d label")
 			.attr('fill', 'black')
 			.attr("x", width/2)
@@ -186,18 +186,23 @@ const scatterPlot = (selection, props) => {
 	  .attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
 
 	const yScale = d3.scaleLinear();
-	yScale.domain(d3.extent(chart_data, yValue));
+	// Insert padding so that points do not overlap with y or x axis
+	yScale.domain(padLinear(d3.extent(chart_data, yValue), 0.1));
 	yScale.range([height, 0]);
 	yScale.nice();
 
 	const yAxis = d3.axisLeft(yScale).ticks(5);
+	yAxis.tickFormat(d3.format(".2s"));
 	
 	const xScale = d3.scaleLinear();
-	xScale.domain(d3.extent(chart_data, xValue));
+
+	// Insert padding so that points do not overlap with y or x axis
+	xScale.domain(padLinear(d3.extent(chart_data, xValue), 0.1));
 	xScale.range([0, width]);
 	xScale.nice();
 
 	const xAxis = d3.axisBottom(xScale).ticks(5);
+	xAxis.tickFormat(d3.format(".2s"));
 
 	// setup fill color
 	var cValue = function(d) { return d[splitby];};
@@ -209,15 +214,22 @@ const scatterPlot = (selection, props) => {
 		color = myColor;
 	}
 
-	g.append("g")
+	var x_axis = g.append("g")
 		.attr("class", level + " scatterplot x axis")
 		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis)
-	.append("text")
+		.call(xAxis);
+	
+	x_axis.selectAll("text")
+		.attr("transform", "rotate(-60)")
+		.attr("dx", "-.9em")
+		.attr("dy", ".1em")
+		.style("text-anchor", "end");
+
+	x_axis.append("text")
 		.attr("class", level + " scatterplot label")
 		.attr('fill', 'black')
 		.attr("x", width/2)
-		.attr("y", 26)
+		.attr("y", 45)
 		.text(xAxisLabel);	
 
 	g.append("g")
@@ -305,3 +317,8 @@ const scatterPlot = (selection, props) => {
 	}
 
   };
+
+function padLinear([x0, x1], k) {
+	const dx = (x1 - x0) * k / 2;
+	return [x0 - dx, x1 + dx];
+}
