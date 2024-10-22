@@ -192,7 +192,7 @@ const scatterPlot = (selection, props) => {
 	yScale.nice();
 
 	const yAxis = d3.axisLeft(yScale).ticks(5);
-	yAxis.tickFormat(d3.format(".2s"));
+	yAxis.tickFormat(d3.format(".3f"));
 	
 	const xScale = d3.scaleLinear();
 
@@ -202,7 +202,7 @@ const scatterPlot = (selection, props) => {
 	xScale.nice();
 
 	const xAxis = d3.axisBottom(xScale).ticks(5);
-	xAxis.tickFormat(d3.format(".2s"));
+	xAxis.tickFormat(d3.format(".3f"));
 
 	// setup fill color
 	var cValue = function(d) { return d[splitby];};
@@ -272,6 +272,20 @@ const scatterPlot = (selection, props) => {
 				return myColor;}
 			})
 		  .append('title');
+
+	g.selectAll(".scatterplot.text")
+		  .data(chart_data)
+		  .enter().append("text")	
+		  .attr("text-anchor", "middle")
+		  //.attr("dx", 7)
+		  .attr("dy", "1.2em")  
+		  .attr("x", d => xScale(xValue(d)))
+	  	  .attr("y", d => yScale(yValue(d)))
+		  .text(d => d.splitby + ': ' + d.subgroup)
+		  .attr("stroke", "black")
+		  .attr("stroke-width", 1)
+		  .style("opacity", 0.4)
+		  .style("font-size", "10px");
 	  
 	// Children Identity
 	if (childrenIdentityFlag) {

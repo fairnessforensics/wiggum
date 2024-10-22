@@ -1,5 +1,5 @@
 variable,dtype,var_type,role,isCount,weighting_var
-Page total likes,int64,continuous,"['independent', 'dependent']",False,
+Page_total_likes,int64,continuous,"['independent', 'dependent']",False,
 Type,object,categorical,['splitby'],False,
 Category,int64,categorical,['splitby'],False,
 Month,int64,categorical,['splitby'],False,

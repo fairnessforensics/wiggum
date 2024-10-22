@@ -11,9 +11,11 @@ var csvData;
 
     // Draw node link tree
     var result_table = JSON.parse(data.result_df);
-    drawNodeLinkTree(data);
+    //drawNodeLinkTree(data);
+
+    drawWiggum2(data);
     //drawNodeLinkTree(result_table, data.agg_distance_heatmap_dict);
-    drawMapState(result_table);
+    //drawMapState(result_table);
 
     if (data.agg_distance_heatmap_dict[0].detail_view_type === 'iscatter') {
         // dependent vars list
