@@ -15,7 +15,7 @@ var csvData;
     //drawNodeLinkTree(result_table, data.agg_distance_heatmap_dict);
     drawMapState(result_table);
 
-    if (data.agg_distance_heatmap_dict[0].detail_view_type === 'iscatter') {
+    if (data.agg_distance_heatmap_dict[0].detail_view_type === 'scatter') {
         // dependent vars list
         var dep_vars = data.dep_vars
         d3.select("#dep_sel_button")
@@ -89,7 +89,7 @@ var csvData;
 
         // adjust the postion for node link tree
         d3.select("#node_link_tree")
-            .style("margin-left", "15%");
+            .style("margin-left", "12%");
     }
 }
 

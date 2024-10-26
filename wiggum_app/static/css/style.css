@@ -473,12 +473,12 @@ div.tooltip {
     background: white; 
     padding-right: 30px; 
     margin-left: 28%; 
-    margin-top: 2%; 
+    margin-top: 3%; 
     overflow:hidden;
 }
 
 #node_link_tree_legend {
-    margin-top: 2%; 
+    margin-top: 3%; 
     margin-left: 2%;   
     display: inline-block;
     background: white;

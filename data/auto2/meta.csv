@@ -1,7 +1,0 @@
-variable,dtype,var_type,role,isCount,weighting_var
-mpg,float64,continuous,"['independent', 'dependent']",False,
-cylinders,int64,categorical,['splitby'],False,
-horsepower,float64,continuous,"['independent', 'dependent']",False,
-acceleration,float64,continuous,"['independent', 'dependent']",False,
-model year,int64,categorical,['splitby'],False,
-origin,int64,categorical,['splitby'],False,
