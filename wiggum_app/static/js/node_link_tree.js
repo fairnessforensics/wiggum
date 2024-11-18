@@ -5,7 +5,9 @@
 // Option 3: Yellow Green
 //var heatmapConColors = ['#f9fdc5', '#eaf7af', '#d2eda0', '#b1df90', '#8bce81', '#64bc6f', '#3fa85b', '#288a47', '#10743c', '#005e33'];
 // Option 4: Gray
-var heatmapConColors = ['#ffffff', '#dddddd', '#cccccc', '#bbbbbb', '#aaaaaa', '#999999', '#888888', '#777777', '#666666','#333333'];
+//var heatmapConColors = ['#ffffff', '#dddddd', '#cccccc', '#bbbbbb', '#aaaaaa', '#999999', '#888888', '#777777', '#666666','#333333'];
+// Option 5: Green
+var heatmapConColors = ["#f7fcf5","#e6f5e1","#cdebc7","#addea7","#88cd87","#5db96b","#38a055","#1b843f","#04672b","#00441b"];
 
 // continous color scale for overview
 var heatmapColorScale = d3.scaleQuantize()
@@ -671,8 +673,12 @@ function drawNodeLinkTree(data) {
 	//var correspondColor = d3.scaleOrdinal()
 	//					.range(["#1f77b4","#ff7f0e","#d62728","#9467bd","#8c564b","#e377c2","#7f7f7f","#17becf"]);
 	// TODO Only works for 3 subgroups
+	// Option 1
+	//var correspondColor = d3.scaleOrdinal()
+	//						.range(["#FFEA00","#FFAC1C","#FF474C"]);
+	// Option 2: bring down the brightness of yellow.
 	var correspondColor = d3.scaleOrdinal()
-							.range(["#FFEA00","#FFAC1C","#FF474C"]);
+							.range(["#ffeda0","#feb24c","#f03b20"]);
 						
 	d3.selectAll('.node.level-3')
 		.append('rect')

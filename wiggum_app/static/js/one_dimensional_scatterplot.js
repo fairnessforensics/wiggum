@@ -193,7 +193,7 @@ const scatterPlot = (selection, props) => {
 
 	const yAxis = d3.axisLeft(yScale).ticks(5);
 	yAxis.tickFormat(d3.format(".2s"));
-	
+
 	const xScale = d3.scaleLinear();
 
 	// Insert padding so that points do not overlap with y or x axis
@@ -263,6 +263,7 @@ const scatterPlot = (selection, props) => {
 		  .attr("cy", d => yScale(yValue(d)))
 		  .attr("stroke", "black")
 		  .attr("stroke-width", 1)	  
+		  .attr("stroke-opacity", 0.25)
 		  .style("fill", function(d) { 
 			if (level == "level3") {
 				return color(cValue(d));}

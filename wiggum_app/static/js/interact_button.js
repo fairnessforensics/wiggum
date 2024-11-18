@@ -579,21 +579,42 @@ const interactiveLevelButton = (selection, props) => {
 						level: 'level1'});
 					
 					if (i == 0) {
-						adjustWidth({
-							firstLevelWidth: firstLevelWidth, 
-							addWidth: firstLevelChildrenVLWidth, 
-							level: 'level2'});
+						var addWidth4Lable = 0;
+						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+							addWidth4Lable = 30;
+							firstLevelParentVLWidth = addWidth4Lable;
+
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+
+							// Adjust Total Space
+							adjustTotalWidth({
+								firstLevelWidth: firstLevelWidth, 
+								firstLevelParentVLWidth: firstLevelParentVLWidth,
+								addTotalWidthVL: addTotalWidthVL,
+								resetFlag: true
+							})
+
+							//adjustWidth({
+							//	firstLevelWidth: firstLevelWidth, 
+							//	addWidth: firstLevelParentVLWidth + firstLevelChildrenVLWidth, 
+							//	level: 'level1'});
+						} else {
+							adjustWidth({
+								firstLevelWidth: firstLevelWidth, 
+								addWidth: firstLevelChildrenVLWidth, 
+								level: 'level2'});
+						}
 
 						d3.selectAll('.'+ level +'.list.cell')
 							.transition()
-							.attr('transform', `translate(${0},${0})`);
+							.attr('transform', `translate(${0 - addWidth4Lable},${0})`);
 							//.attr("x", 30);
 					}
 
 					if (i == 1) {
 						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-						|| d3.select('.level1.scatterplot').style("visibility") == 'visible'
-						|| d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+						|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth, 
@@ -604,6 +625,27 @@ const interactiveLevelButton = (selection, props) => {
 								.attr("y", 0)
 								.attr("height", height)
 								.attr('transform', `translate(${0},${-height/2})`);
+
+						} else if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+
+							addWidth4Lable = 30;
+							firstLevelParentVLWidth = addWidth4Lable;
+							
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+
+							// Adjust Total Space
+							adjustTotalWidth({
+								firstLevelWidth: firstLevelWidth, 
+								firstLevelParentVLWidth: firstLevelParentVLWidth,
+								addTotalWidthVL: addTotalWidthVL,
+								resetFlag: true
+							})
+
+							d3.selectAll('.'+ level +'.list.cell')
+								.transition()
+								.attr("y", 0)
+								.attr("height", height)
+								.attr('transform', `translate(${-addWidth4Lable},${-height/2})`);
 						}
 
 						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
@@ -640,6 +682,11 @@ const interactiveLevelButton = (selection, props) => {
 							firstLevelParentVLWidth = 40;
 						} 
 
+						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+							addWidth4Lable = 30;
+							firstLevelParentVLWidth = addWidth4Lable;
+						} 
+
 						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
 						// Adjust Total Space
@@ -674,6 +721,7 @@ const interactiveLevelButton = (selection, props) => {
 								chart_data: csvData,
 								offset_flag: false,
 								side: 'parent',
+								parentVLWidth: firstLevelParentVLWidth,
 								level: 'level1'
 							});	
 						}
@@ -712,7 +760,8 @@ const interactiveLevelButton = (selection, props) => {
 					if (i == 3) {
 						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
 
-							firstLevelParentVLWidth = 25;
+							var addWidth4Lable = 30;
+							firstLevelParentVLWidth = addWidth4Lable + 25;
 							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 							// Adjust Total Space
 							adjustTotalWidth({
@@ -735,6 +784,7 @@ const interactiveLevelButton = (selection, props) => {
 									chart_data: csvData,
 									offset_flag: false,
 									side: 'parent',
+									parentVLWidth: addWidth4Lable,
 									level: 'level1'
 								});	
 						}

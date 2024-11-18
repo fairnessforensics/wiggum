@@ -27,7 +27,6 @@ const heatmapDensity = (selection, props) => {
 
 	var count_data = countByTwoRanges(chart_data, var1, var2, ySequence, xSequence);
 
-
 	// prepare for color considering aggregate heatmap in the virtual layer
 	//var max_count = d3.max(count_data, function(d) { return +d.value });
 	var min = Math.floor(d3.min(chart_data, function (d) { return d[var2]; } ));
@@ -35,11 +34,6 @@ const heatmapDensity = (selection, props) => {
 	var xSequence_vl = [min, max];
 	var count_data_vl = countByTwoRanges(chart_data, var1, var2, ySequence, xSequence_vl);
 	var max_count = d3.max(count_data_vl, function(d) { return +d.value });
-
-	// Calculate the log base by max count
-	// Log b(a) = ln a / ln b, ln b = ln a / c
-	// b = exp(ln a / c)
-	var base = Math.floor(Math.exp(Math.log(max_count)/5));
 
 	// Label
 	var var1_label = d3.map(count_data, function(d){return d[var1];}).keys();
@@ -58,8 +52,13 @@ const heatmapDensity = (selection, props) => {
 		.attr("class", level + " heatmapdensity x axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(d3.axisBottom(x).tickSize(0)
-		.tickFormat((d,i) => "[" + d.replace("-", ", ") + ")")
-		)
+		.tickFormat(function(d,i) {
+			var range = d.split('-')
+			var lowerBound = d3.format(".2s")(range[0]);
+			var upperBound = d3.format(".2s")(range[1]); 
+
+			return "[" + lowerBound + ", " + upperBound + ")"
+		}));
 		
 		xAxis.select(".domain").remove();
 		
@@ -75,8 +74,9 @@ const heatmapDensity = (selection, props) => {
 		.append("text")
 		.attr("class", level + " heatmapdensity x label")
 		.attr('fill', 'black')
-		.attr("x", width/2)
-		.attr("y", 45)
+		.attr("x", width - 10)
+		.attr("y", 40)
+		.style("text-anchor", "start")
 		.text(var2);	
 
 	// Build Y scales and axis:
@@ -89,7 +89,13 @@ const heatmapDensity = (selection, props) => {
 		.attr("class", level + " heatmapdensity y axis")
 		.call(d3.axisLeft(y)
 				.tickSize(0)
-				.tickFormat((d,i) => "[" + d.replace("-", ", ") + ")"))
+				.tickFormat(function(d,i) {
+					var range = d.split('-')
+					var lowerBound = d3.format(".2s")(range[0]);
+					var upperBound = d3.format(".2s")(range[1]); 
+		
+					return "[" + lowerBound + ", " + upperBound + ")"
+				}))
 		.select(".domain").remove()
 
 	// Add y axis label
@@ -97,7 +103,7 @@ const heatmapDensity = (selection, props) => {
 		.append("text")
 		.attr("class", level + " heatmapdensity y label")
 		.attr("x", 0)
-		.attr("y", -8)
+		.attr("y", -1)
 		.attr("text-anchor", "middle")
 		.attr('fill', 'black')
 	  	.text(var1);
@@ -116,27 +122,33 @@ const heatmapDensity = (selection, props) => {
 	// Grey to Red
 	//var color_range = ['#1a1a1a', '#4d4d4d', '#878787', '#bababa', '#e0e0e0',
 	//					'#fddbc7', '#f4a582', '#d6604d', '#b2182b', '#67001f'];
-
-
 	//var color_range = ['#ffffff', '#e0e0e0', '#c0c0c0', '#a0a0a0', '#808080',
 	//					'#606060','#404040', '#000000'];
 
-	//var color = d3.scaleQuantize()
-	//				.domain([0, max_count])
-	//				.range(color_range);
+	// Use 7 levels of purple
+	var color_range = ["#f2f0f7","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#4a1486"];
+	var heatmapDensityColor;
 
-	// Use 7 levels based on the log number
-	var color_range = ['#ffffff', '#e0e0e0', '#c0c0c0', '#a0a0a0', '#808080',
-						'#404040', '#000000'];
-	// TODO find the log number based on data max
-	//var color = d3.scaleThreshold()
-	//				.domain([1, 2, 4, 8, 16, 32, 64])
-	//				.range(color_range);
+	if (max_count <= 100) {
+		heatmapDensityColor = d3.scaleSequential()
+					.domain([0, max_count])
+					.interpolator(d3.interpolate("#f2f0f7", "#4a1486"));
+	} else {
+		// Use 7 levels based on the log number
+		// Calculate the log base by max count
+		// Log b(a) = ln a / ln b, ln b = ln a / c
+		// b = exp(ln a / c)
+		var base = Math.floor(Math.exp(Math.log(max_count)/5));
+		// TODO find the log number based on data max
+		//var color = d3.scaleThreshold()
+		//				.domain([1, 2, 4, 8, 16, 32, 64])
+		//				.range(color_range);
 
-	var heatmapDensityColor = d3.scaleThreshold()
-					.domain([1, Math.pow(base, 1), Math.pow(base, 2), Math.pow(base, 3), 
-								Math.pow(base, 4), Math.pow(base, 5)])
-					.range(color_range);
+		heatmapDensityColor = d3.scaleThreshold()
+						.domain([1, Math.pow(base, 1), Math.pow(base, 2), Math.pow(base, 3), 
+									Math.pow(base, 4), Math.pow(base, 5)])
+						.range(color_range);
+	}
 
 	g.selectAll()
 		.data(count_data)
@@ -203,6 +215,7 @@ function countByTwoRanges(data, var1, var2, var1_range, var2_range) {
 	  
 			single_object[var1] = `${var1_lowerBound}-${var1_upperBound}`;
 			single_object[var2] = `${var2_lowerBound}-${var2_upperBound}`;
+
 			single_object['value'] = filteredData.length;
 			counts.push(single_object);								
 						
