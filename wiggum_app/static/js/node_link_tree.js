@@ -6,8 +6,11 @@
 //var heatmapConColors = ['#f9fdc5', '#eaf7af', '#d2eda0', '#b1df90', '#8bce81', '#64bc6f', '#3fa85b', '#288a47', '#10743c', '#005e33'];
 // Option 4: Gray
 //var heatmapConColors = ['#ffffff', '#dddddd', '#cccccc', '#bbbbbb', '#aaaaaa', '#999999', '#888888', '#777777', '#666666','#333333'];
-// Option 5: Green
-var heatmapConColors = ["#f7fcf5","#e6f5e1","#cdebc7","#addea7","#88cd87","#5db96b","#38a055","#1b843f","#04672b","#00441b"];
+// Option 5: Green Discretee 10 from https://observablehq.com/@d3/color-schemes
+//var heatmapConColors = ["#f7fcf5","#e6f5e1","#cdebc7","#addea7","#88cd87","#5db96b","#38a055","#1b843f","#04672b","#00441b"];
+// Option 6: Green Discrete 11 pick 10 from https://observablehq.com/@d3/color-schemes
+var heatmapConColors = ["#f7fcf5","#e8f6e3","#d3eecd","#b7e2b1","#97d494","#73c378","#4daf62","#2f984f","#157f3b","#036429"];
+
 
 // continous color scale for overview
 var heatmapColorScale = d3.scaleQuantize()
@@ -226,12 +229,12 @@ function drawNodeLinkTree(data) {
 				// TODO Grey color is used for distance, may change to white
 				return '#808080';
 			} else {
-				heatmapColorScale(value);
 				return heatmapColorScale(value);
 			}
 		})
 		.style("stroke", "black")
 	    .style("stroke-width", "2px")
+		.attr("stroke-opacity", 0.3)
 		.style("visibility", "hidden")
 		.append('title')
 		.text(function(d) {
@@ -318,8 +321,8 @@ function drawNodeLinkTree(data) {
 				yValue: d => d[keyArray[0]],
 				yAxisLabel: keyArray[0],
 				circleRadius: 3,
-				margin: { left: 40, top: 0, right: 0, bottom: 0 },
-				width: 100,
+				margin: { left: 50, top: 0, right: 0, bottom: 0 },
+				width: 200,
 				height: 100,
 				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
@@ -328,6 +331,7 @@ function drawNodeLinkTree(data) {
 				chart_data: csvData,
 				//myColor: heatmapColorScale(identity_data[0].value),
 				myColor: '#ffffff',
+				rowIndex: 'row' + rowIndex,
 				level: 'level1'
 			});
 
@@ -496,6 +500,7 @@ function drawNodeLinkTree(data) {
 		})
 		.style('stroke', 'black')
 		.style('stroke-width', '2px')
+		.attr("stroke-opacity", 0.3)
 		.style("fill-opacity", 1)
 		.style("pointer-events", function(d) {
 			return !d.depth ? "none" : "all";
@@ -664,6 +669,7 @@ function drawNodeLinkTree(data) {
 		})
 		.style("stroke", "black")
 		.style("stroke-width", "2px")
+		.attr("stroke-opacity", 0.3)
 		.append('title')
 		.text(function(d) {
 			return `The distance is ${d.data.distance}.`
@@ -677,12 +683,41 @@ function drawNodeLinkTree(data) {
 	//var correspondColor = d3.scaleOrdinal()
 	//						.range(["#FFEA00","#FFAC1C","#FF474C"]);
 	// Option 2: bring down the brightness of yellow.
+	//var correspondColor = d3.scaleOrdinal()
+	//						.range(["#ffeda0","#feb24c","#f03b20"]);
+
+	// Option 3: pick color from d3.category20 without 
+	//			 green and purple:
+	//			 ["#2ca02c","#98df8a","#9467bd","#c5b0d5"]
+	// https://github.com/d3/d3-3.x-api-reference/blob/master/Ordinal-Scales.md#categorical-colors
+
+	//var correspondColor = d3.scaleOrdinal()
+	//.range(["#1f77b4","#aec7e8","#ff7f0e","#ffbb78",
+	//		"#d62728","#ff9896","#8c564b","#c49c94",
+	//		"#e377c2","#f7b6d2","#7f7f7f","#c7c7c7",
+	//		"#bcbd22","#dbdb8d","#17becf","#9edae5"
+	//		//"#2ca02c","#98df8a","#9467bd","#c5b0d5"
+	//		]);
+	
+	// first row: light color; second row: dark color
+	var category16 = ["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
+					  "#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"];
+				
 	var correspondColor = d3.scaleOrdinal()
-							.range(["#ffeda0","#feb24c","#f03b20"]);
-						
+							.range(category16);
+
 	d3.selectAll('.node.level-3')
 		.append('rect')
-		.attr('class', 'level-3 background')
+		.attr('class', d => 'level-3 background' 
+				+ ' ' + d.data.dependent
+				+ ' ' + d.data.independent
+				+ ' ' + d.data.splitby
+				+ ' subgroup_' + d.data.subgroup)
+		.attr('id', function(d) {
+			return 'level-3_background_' + d.data.dependent 
+					+ '_' + d.data.independent 
+					+ '_' + d.data.splitby
+					+ '_' + d.data.subgroup})
 		.attr("x", ".9em")
 		.attr("y", -rectHeight/2)	
 		.style('fill', function(d) {
@@ -692,10 +727,10 @@ function drawNodeLinkTree(data) {
 		.style("stroke", "grey")
 		.style("stroke-width", "1px");
 
-	nodeEnter.append('text')
+	var leafNodes = nodeEnter.append('text')
 		.attr('dx', d => d.children ? '0em' : '1em')
 		.attr('dy', d => d.children ? '1.5em' : '0.32em')
-		.attr('class', d => 'level'+d.depth + ' list text')
+		.attr('class', d => 'level' + d.depth + ' list text')
 		.attr('text-anchor', d => d.children ? 'middle' : 'start')
 		.attr('pointer-events', 'none')
 		.text(function(d) {
@@ -709,6 +744,90 @@ function drawNodeLinkTree(data) {
 		.style("pointer-events", function(d, i) {
 			return !d.depth ? "none" : "all";
 		});
+
+	// Add interaction
+	leafNodes.on('click', function(d) {
+
+		var subgroup = d.data.subgroup;
+		var splitby = d.data.splitby;
+		var selectedFlag = false;
+
+		var selectedLeaf = d3.select('#level-3_background_' + d.data.dependent 
+						+ '_' + d.data.independent 
+						+ '_' + d.data.splitby
+						+ '_' + d.data.subgroup);
+
+		if (selectedLeaf.style("stroke") == "black") {
+			selectedFlag = true;
+		}
+
+		d3.selectAll('.level-3.background'
+						+ '.' + d.data.dependent
+						+ '.' + d.data.independent
+						+ '.' + d.data.splitby)
+			.style("stroke", "grey");
+
+		var circles = d3.selectAll(".scatterplot.circle.middle.level" + d.depth
+									+ "." + d.data.dependent + "." + d.data.independent 
+									+ ".splitby_" + d.data.splitby)
+						.attr("r", 3)
+						.attr("stroke", "black")
+						.attr("stroke-width", 1)	  
+						.attr("stroke-opacity", 0.25);
+
+		if (selectedFlag == false) {
+			selectedLeaf.style("stroke", "black");
+
+			circles.filter((d) => d[splitby] === subgroup)
+				.attr("r", 4)
+				.attr('stroke', 'black')
+				.attr('stroke-width', 1)
+				.attr("stroke-opacity", 1)
+				.raise();
+		}
+	});
+
+	// Double click interaction
+	// Disable double click zoom feature
+	d3.select("svg").on("dblclick.zoom", null);
+
+	leafNodes.on('dblclick', function(d) {
+		var subgroup = d.data.subgroup;
+		var splitby = d.data.splitby;
+		var selectedFlag = false;
+
+		var selectedLeaf = d3.select('#level-3_background_' + d.data.dependent 
+						+ '_' + d.data.independent 
+						+ '_' + d.data.splitby
+						+ '_' + d.data.subgroup);
+
+		if (selectedLeaf.style("stroke-width") == "2") {
+			selectedFlag = true;
+		}
+
+		d3.selectAll('.level-3.background')
+			.style("stroke", "grey");
+
+		var circles = d3.selectAll(".scatterplot.circle.middle.level" + d.depth)
+						.attr("r", 3)
+						.attr("stroke", "black")
+						.attr("stroke-width", 1)	  
+						.attr("stroke-opacity", 0.25);
+
+		if (selectedFlag == false) {
+			d3.selectAll(".level-" + d.depth + ".background"
+							+ ".subgroup_" + subgroup)
+				.style("stroke-width", 2)
+				.style("stroke", "black");
+
+			circles.filter((d) => d[splitby] === subgroup)
+				.attr("r", 4)
+				.attr('stroke', 'black')
+				.attr('stroke-width', 1)
+				.attr("stroke-opacity", 1)
+				.raise();
+		}
+	});
 
     // Save the dimensions of the text elements
     nodeEnter.selectAll("text")
@@ -944,8 +1063,8 @@ function drawNodeLinkTree(data) {
 						yAxisLabel: dependent,
 						splitby: splitby,
 						circleRadius: 3,
-						margin: { left: 120, top: 40, right: 0, bottom: 0 },
-						width: 100,
+						margin: { left: 80, top: 40, right: 0, bottom: 0 },
+						width: 200,
 						height: 100,
 						parentIdentityFlag: false,
 						chart_data: csvData,
@@ -1227,6 +1346,57 @@ function drawNodeLinkTree(data) {
 
 	// Draw node link tree legend
 	drawNodeLinkLegend();
+
+	// Add interaction to the legend 
+	d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+		.on("mouseover", function(d) {
+			highlightLegend(d);
+		})
+		.on("mouseleave", function(d) {
+			doNotHighlightLegend(d);
+		})
+
+	// Highlight legend
+	var highlightLegend = function(d){
+		var dependent, independent, keyArray, distance;
+		if (d.depth == 1) {
+			keyArray = d.data.key.split(",");
+			dependent = keyArray[0];
+			independent = keyArray[1];
+
+			distance = getMatrixValue(matrix_data, dependent, independent);
+
+		} else if (d.depth == 2) {
+			var row = splitby_table.find(obj => {
+				return obj.dependent === d.data.values[0].dependent 
+						&& obj.independent === d.data.values[0].independent
+						&& obj.splitby === d.data.key
+			  })
+			  distance = row.mean_distance;
+		} else if (d.depth == 3) {
+			distance = d.data.distance;
+		} else {
+			// Level0 Heatmap cells
+			distance = d.value;
+		}
+
+		// Reset
+		d3.selectAll(".legend.rect")
+			.style("stroke", "none");
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+			.attr("stroke-opacity", 0.3);
+
+		d3.selectAll('.legend.rect.distcolor' 
+						+ heatmapColorScale(distance).substring(1))
+			.style("stroke", "black")
+			.attr("stroke-width", 2);
+	}
+	
+	var doNotHighlightLegend = function(d){
+		d3.selectAll('.legend.rect')
+			.attr("stroke-width", 0);
+	}
+
 }
 
 /**
@@ -1258,6 +1428,79 @@ function drawNodeLinkTree(data) {
 	svg.append("g")
 		.attr("transform", "translate(-20, 0)")
 		.call(colorLegend);
+
+	svg.selectAll(".swatch")
+		.attr("class", function(d) {
+			return "legend rect distcolor" + d.substring(1);
+		})
+		.on("click", function(d) {
+			if (d3.select(this).style("stroke") == 'black') {
+				d3.selectAll(".legend.rect").on("mouseover", highlightTree);
+				d3.selectAll(".legend.rect").on("mouseleave", doNotHighlightTree);
+			} else {
+				d3.selectAll(".legend.rect").on("mouseover", null);
+				d3.selectAll(".legend.rect").on("mouseleave", null);
+			}
+
+			highlightTreeByClick(d3.select(this), d);
+		})
+		.on("mouseover", function(d) {
+			highlightTree(d);
+		})
+		.on("mouseleave", function(d) {
+			doNotHighlightTree(d);
+		});
+	
+	// Highlight tree from legend
+	var highlightTreeByClick = function(element, d){
+		var filtercolor = d;
+		var selectedFlag = false;
+
+		if (element.style("stroke") == 'black') {
+			selectedFlag = true;
+		}
+
+		// Reset
+		d3.selectAll(".legend.rect")
+			.style("stroke", "none");
+
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+			.attr("stroke-opacity", 0.3);
+
+		//d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+		//	.filter(function() { 
+		//		return d3.color(d3.select(this).style("fill")).formatHex() == filtercolor; })
+		//	.attr("stroke-opacity", 0.3);
+
+		if (selectedFlag == false) {
+			element.style("stroke", "black")
+					.attr("stroke-width", 2);
+
+			d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+				.filter(function() { 
+					return d3.color(d3.select(this).style("fill")).formatHex() == filtercolor; })
+				.attr("stroke-opacity", 1);
+		}
+	}
+
+	var highlightTree = function(d){
+		// Reset
+		d3.selectAll(".legend.rect")
+			.style("stroke", "none");
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+			.attr("stroke-opacity", 0.3);
+
+		var filtercolor = d;
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+			.filter(function() { 
+				return d3.color(d3.select(this).style("fill")).formatHex() == filtercolor; })
+			.attr("stroke-opacity", 1);
+	}
+	
+	var doNotHighlightTree = function(d){
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+			.attr("stroke-opacity", 0.3);
+	}
 
 	svg.append("text")
 		.attr("x", 55)
@@ -1443,6 +1686,7 @@ function drawHeatmap(options) {
 			} else {
 				return "#000000";
 			}})
+		.attr("stroke-opacity", 0.3)
 		.attr("class", function(d) {
 			if (options.selDep) {
 				if (d.dependentVar === options.selDep && d.independentVar === options.selIndep) {

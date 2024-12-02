@@ -179,6 +179,7 @@ const scatterPlot = (selection, props) => {
 	  identity_data,
 	  chart_data,
 	  myColor,
+	  rowIndex,
 	  level
 	} = props;
 
@@ -194,15 +195,33 @@ const scatterPlot = (selection, props) => {
 	const yAxis = d3.axisLeft(yScale).ticks(5);
 	yAxis.tickFormat(d3.format(".2s"));
 
-	const xScale = d3.scaleLinear();
-
+	// TODO choose linear scale =====================================
+	/*const xScale = d3.scaleLinear();
 	// Insert padding so that points do not overlap with y or x axis
 	xScale.domain(padLinear(d3.extent(chart_data, xValue), 0.1));
 	xScale.range([0, width]);
 	xScale.nice();
-
+	
 	const xAxis = d3.axisBottom(xScale).ticks(5);
 	xAxis.tickFormat(d3.format(".2s"));
+	===============================================================*/
+
+	// TODO maybe check the data type by meta data
+	const xScale = d3.scaleTime();
+	
+	// Add padding: eg. [2010, 2019] => [2009, 2020]
+	xScale.domain(d3.extent(chart_data, xValue).map((num, index, array) => {
+													if (index == 0 ) {
+														return num - 1;
+													} else if (index == array.length - 1) {
+														return num + 1;
+													}
+												}));
+	xScale.range([0, width]);
+
+	const xAxis = d3.axisBottom(xScale);
+	xAxis.tickFormat(d3.format(".4"));
+
 
 	// setup fill color
 	var cValue = function(d) { return d[splitby];};
@@ -218,15 +237,22 @@ const scatterPlot = (selection, props) => {
 		.attr("class", level + " scatterplot x axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis);
-	
+
 	x_axis.selectAll("text")
 		.attr("transform", "rotate(-60)")
 		.attr("dx", "-.9em")
 		.attr("dy", ".1em")
 		.style("text-anchor", "end");
 
+	// Remove two end labels from x axis for time scale
+	x_axis.selectAll(".tick")
+		.filter(function(d, i) {
+			return i === 0 || i === xScale.ticks().length - 1;
+		})
+		.remove();
+
 	x_axis.append("text")
-		.attr("class", level + " scatterplot label")
+		.attr("class", level + " scatterplot x label")
 		.attr('fill', 'black')
 		.attr("x", width/2)
 		.attr("y", 45)
@@ -239,7 +265,7 @@ const scatterPlot = (selection, props) => {
 		  .call(yAxis)
 		.append("text")
 		  .attr("class", function(d) {
-				return level + " scatterplot label";
+				return level + " scatterplot y label";
 			})	  
 			.attr("x", 0)
 			.attr("y", -8)
@@ -251,11 +277,11 @@ const scatterPlot = (selection, props) => {
 		  .data(chart_data)
 		  .enter().append("circle")	    
 		  .attr("class", function(d) {
-
-			return level + " scatterplot middle circle " 
-				+ d.dependent + " " + d.independent + " splitby_" + d.splitby;
-
+			return level + " " +rowIndex + " scatterplot middle circle " 
+				+ yAxisLabel + " " + xAxisLabel + " splitby_" + splitby + " subgroup_" + cValue(d);
 			})	  
+		  .attr("id", function(d, i) {
+				return level + "_" + rowIndex + "_scatterplot_" + i;})
 		  .attr("r", circleRadius)
 		  .attr("cx", function(d) {
 				return xScale(xValue(d));
@@ -265,14 +291,22 @@ const scatterPlot = (selection, props) => {
 		  .attr("stroke-width", 1)	  
 		  .attr("stroke-opacity", 0.25)
 		  .style("fill", function(d) { 
-			if (level == "level3") {
-				return color(cValue(d));}
-			if (myColor == undefined) {
-				return "#bebebe";
-			} else { 
-				return myColor;}
-			})
+				if (level == "level3") {
+					return color(cValue(d));}
+				if (myColor == undefined) {
+					return "#bebebe";
+				} else { 
+					return myColor;}
+				})
+		  .on("mouseover", function(d) {
+				highlight(d);
+		  })
+		  .on("mouseleave", function(d) {
+				doNotHighlight(d);
+		  })
 		  .append('title');
+
+
 	  
 	// Children Identity
 	if (childrenIdentityFlag) {
@@ -315,6 +349,46 @@ const scatterPlot = (selection, props) => {
 			.attr('dy', '1.5em')																
 			.style("text-anchor", "end")
 			.text(d => d.dependent + "," + d.independent);*/
+	}
+
+
+	// Highlight the subgroup that is hovered
+	var highlight = function(d){
+
+		selected_subgroup = cValue(d);
+
+		selection.selectAll(".subgroup_" + selected_subgroup)
+			.attr("r", 4)
+			.attr('stroke', 'black')
+			.attr('stroke-width', 1)
+			.attr("stroke-opacity", 1)
+			.raise();
+
+			var correspondingLeaf = d3.select('#level-3_background_' + yAxisLabel
+										+ '_' + xAxisLabel
+										+ '_' + splitby
+										+ '_' + selected_subgroup);
+
+			correspondingLeaf.style("stroke", "black");
+	}
+
+	// Highlight the subgroup that is hovered
+	var doNotHighlight = function(d){
+
+		selected_subgroup = cValue(d);
+
+		selection.selectAll(".subgroup_" + selected_subgroup)
+				.attr("r", 3)
+				.attr("stroke", "black")
+				.attr("stroke-width", 1)	  
+				.attr("stroke-opacity", 0.25);
+
+		var correspondingLeaf = d3.select('#level-3_background_' + yAxisLabel
+									+ '_' + xAxisLabel
+									+ '_' + splitby
+									+ '_' + selected_subgroup);
+
+		correspondingLeaf.style("stroke", "grey");
 	}
 
   };

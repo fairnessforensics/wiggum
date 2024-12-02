@@ -13,6 +13,8 @@ const interactiveLevelButton = (selection, props) => {
 		matrix_data
 	} = props;
 
+	var selectedChart;
+
 	var levelButtonGroups= selection.selectAll("g." + level + ".button")
 						.data(levelLabels)
 						.enter()
@@ -21,6 +23,8 @@ const interactiveLevelButton = (selection, props) => {
 						.style("cursor","pointer")
 						.on("click",function(d, i) {
 							updateButtonColors(d3.select(this), d3.select(this.parentNode));
+
+							selectedChart = charts[i];
 
 							// Visual Techniques
 							for (var k = 0; k < charts.length; k++){
@@ -80,7 +84,10 @@ const interactiveLevelButton = (selection, props) => {
 									var addWidth = 0;
 									if (i == 2) {
 										addWidth = addWidthArray[0];
-									} else if (i == 3 || i == 4 || i == 5 || i == 6) {
+									} else if (i == 3) {
+										// Scatterplot
+										addWidth = addWidthArray[1] + 110;
+									} else if (i == 4 || i == 5 || i == 6) {
 										addWidth = addWidthArray[1];
 									}
 
@@ -678,7 +685,8 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (i == 2) {
 						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-							|| d3.select('.level1.histogram').style("visibility") == 'visible') {
+							|| d3.select('.level1.histogram').style("visibility") == 'visible'
+							|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 							firstLevelParentVLWidth = 40;
 						} 
 
@@ -751,6 +759,18 @@ const interactiveLevelButton = (selection, props) => {
 								side: 'parent',
 								multi_no: 'h2',
 								aux_flag: false,
+								level: 'level1'
+							});	
+						}
+
+						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+							// Call Virtual Layer
+							levelG.call(scatterplot_virtual_layer, {
+								width: firstLevelWidth,
+								height: height,
+								parentVLWidth: firstLevelParentVLWidth,
+								axis_x_position: 15,
+								side: 'parent',
 								level: 'level1'
 							});	
 						}
@@ -885,7 +905,7 @@ const interactiveLevelButton = (selection, props) => {
 					// Reset
 					firstLevelChildrenVLWidth = 0;
 
-					d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+					d3.selectAll('.' + level + '.' + selectedChart + '.initialvirtuallayer.children.rect')
 						.transition().style('visibility', "visible");
 
 					// Reset right rect
@@ -1010,9 +1030,15 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (i == 2) {
 						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-						|| d3.select('.level1.histogram').style("visibility") == 'visible') {
+						|| d3.select('.level1.histogram').style("visibility") == 'visible'
+						|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 							//var addRightWidth = 40 + 60;
-							firstLevelChildrenVLWidth = 60;
+							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+								firstLevelChildrenVLWidth = 70;
+							} else {
+								firstLevelChildrenVLWidth = 60;
+							}
+
 							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 	
 							adjustWidth({
@@ -1022,10 +1048,15 @@ const interactiveLevelButton = (selection, props) => {
 						} 
 
 						// Reset the x position for child nodes in level 1 Virtual Layer
+						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+							child_x_position = 30;
+						} else {
+							child_x_position = 20;
+						}
 						d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
 							.transition()
 							.attr("transform", function(d,i) { 
-								return "translate(" + 20 + "," + height/2 + ")"; });	
+								return "translate(" + child_x_position + "," + height/2 + ")"; });	
 	
 						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
 							|| d3.select('.level1.histogram').style("visibility") == 'visible') {
@@ -1188,6 +1219,40 @@ const interactiveLevelButton = (selection, props) => {
 							});	
 						}
 
+						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+							levelG.each(function (d) {
+								var selectionLevelG = d3.select(this);
+
+								yLable = selectionLevelG.select(".scatterplot.y.label").text();
+
+								// Duplicate y axis
+								// TODO Move to axis.js
+								const yScale = d3.scaleLinear();
+								// Insert padding so that points do not overlap with y or x axis
+								yScale.domain(padLinear(d3.extent(csvData, d => d[yLable]), 0.1));
+								yScale.range([height, 0]);
+								yScale.nice();
+
+								const yAxis = d3.axisRight(yScale).ticks(5);
+								yAxis.tickFormat(d3.format(".2s"));
+		
+								selectionLevelG.append("g")
+									.attr("class", level + " scatterplot virtuallayer y axis children")
+									.attr("transform", "translate(" + 250 + ","+ (-100/2)+")")
+									.call(yAxis);
+							});	
+
+							// Call Virtual Layer
+							levelG.call(scatterplot_virtual_layer, {
+								width: firstLevelWidth,
+								height: height,
+								parentVLWidth: firstLevelParentVLWidth,
+								axis_x_position: 250 + 35,
+								side: 'children',
+								aux_flag: false,
+								level: 'level1'
+							});	
+						}
 					}
 
 					if (i == 3) {

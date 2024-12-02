@@ -49,20 +49,25 @@ function onMouseOver(element, level, rowIndex, side, multi_no, chartType) {
 	d3.selectAll("." + level + "."+ chartType + ".vpath")
 		.style("opacity", opacityValue);
 */
-	if (multi_no != null) {
-		d3.selectAll("." + level +"." + rowIndex + "." + multi_no + "."+ chartType + ".bar")
-			.style("opacity", 0.2);
-	} else {
-		d3.selectAll("." + level + "." + rowIndex + "."+ chartType + ".bar")
-			.style("opacity", 0.2);	
+	if (chartType == 'histogram') {
+		if (multi_no != null) {
+			d3.selectAll("." + level +"." + rowIndex + "." + multi_no + "."+ chartType + ".bar")
+				.style("opacity", 0.1);
+		} else {
+			d3.selectAll("." + level + "." + rowIndex + "."+ chartType + ".bar")
+				.style("opacity", 0.1);	
+		}
+	} else if (chartType == 'scatterplot') {
+		d3.selectAll("." + level + "." + rowIndex + "."+ chartType + ".circle")
+			.style("opacity", 0.1);	
 	}
 
 	// Virtual layer
 	d3.selectAll("." + level +"." + rowIndex +  ".virtuallayer")
-		.style("opacity", 0.2);
+		.style("opacity", 0.1);
 	// Aux lines
 	d3.selectAll("." + level +"." + rowIndex +  ".auxpath")
-		.style("opacity", 0.2);
+		.style("opacity", 0.1);
 	d3.select(element).style("opacity", 1);
 	var loc = element.id.lastIndexOf(side);
 	var view_elementId = element.id.substring(0, loc-1);
@@ -96,7 +101,7 @@ function onMouseOut(level, rowIndex, multi_no, chartType) {
 
 	// Aux lines
 	d3.selectAll("." + level +"." + rowIndex +  ".auxpath")
-		.style("opacity", 0.2);
+		.style("opacity", 0.1);
 }
 
 // Horizontal link generator
