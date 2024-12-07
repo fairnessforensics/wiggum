@@ -306,8 +306,6 @@ const scatterPlot = (selection, props) => {
 		  })
 		  .append('title');
 
-
-	  
 	// Children Identity
 	if (childrenIdentityFlag) {
 		g.selectAll(".rect")
@@ -326,6 +324,7 @@ const scatterPlot = (selection, props) => {
 			.attr("height", rectHeight)
 			.style("stroke", "black")
 			.style("stroke-width", "2px")
+			.attr("stroke-opacity", 0.3)
 			.style("fill-opacity", 1)
 			.style("fill", d => heatmapColorScale(d.value))
 			.append('title')

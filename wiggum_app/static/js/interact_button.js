@@ -9,6 +9,7 @@ const interactiveLevelButton = (selection, props) => {
 		width,
 		height,
 		addWidthArray,
+		addHeightArray,
 		treeHeight,
 		matrix_data
 	} = props;
@@ -25,7 +26,7 @@ const interactiveLevelButton = (selection, props) => {
 							updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
 							selectedChart = charts[i];
-
+							
 							// Visual Techniques
 							for (var k = 0; k < charts.length; k++){
 								d3.selectAll('.'+level+'.' + charts[k])
@@ -118,11 +119,16 @@ const interactiveLevelButton = (selection, props) => {
 										.transition()
 										.attr("transform", "translate(0, 0)");
 
+									var addHeight = 0;
+									if (selectedChart == 'coloredbarchart') {
+										addHeight = addHeightArray[0];
+									}
+									newViewHeight = height + addHeight;
 
 									// Adjust level 1 children rect x postion
 									d3.selectAll('.level1.initialvirtuallayer.children.rect')
 										.transition()
-										.attr('transform', `translate(${-40},${height/2})`);
+										.attr('transform', `translate(${-40},${newViewHeight/2})`);
 
 									// Adjust level 2 nodes x postion
 									d3.selectAll('.node.level-2')

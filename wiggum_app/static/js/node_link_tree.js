@@ -45,7 +45,7 @@ function drawNodeLinkTree(data) {
 	var height = 2600;
 	// TODO width for big state
 	//var margin = {top: 50, right: 420, bottom: 10, left: 60};
-	var margin = {top: 100, right: 1800, bottom: 10, left: 60};
+	var margin = {top: 100, right: 1800, bottom: 30, left: 60};
 
 	var innerWidth = width - margin.left - margin.right;
 	//var innerHeight = height - margin.top - margin.bottom;
@@ -53,7 +53,7 @@ function drawNodeLinkTree(data) {
 	// calculate the number of leaf nodes 
 	const num_leaf_nodes = result_table.length;
 
-	var treeHeight = 50 * num_leaf_nodes + margin.top;
+	var treeHeight = 50 * num_leaf_nodes + margin.top + margin.bottom;
 
 	var treeLayout = d3.tree()
 					.size([treeHeight, innerWidth]);
@@ -174,6 +174,11 @@ function drawNodeLinkTree(data) {
 		
 		levelLabels.push('H2');
 		chartList.push('histogram')
+	} 
+
+	if (agg_data.trend_type == 'rank_trend') {
+		levelLabels.push('\uf080');
+		chartList.push('coloredbarchart')
 	}
 
 	// Left identity portion in virtual layer
@@ -208,6 +213,7 @@ function drawNodeLinkTree(data) {
 		width: width,
 		height: height,
 		addWidthArray: [120, 160],
+		addHeightArray: [60],
 		treeHeight: treeHeight + margin.top + margin.bottom,
 		matrix_data: matrix_data
 	});
@@ -270,8 +276,9 @@ function drawNodeLinkTree(data) {
 				return obj.dependent === keyArray[0]
 						&& obj.independent === keyArray[1]
 			});
+
 			var detail_dict = JSON.parse(detail_dict.detail_df);
-			
+
 			var chart_data = [];
 
 			for (const [key1, value1] of Object.entries(detail_dict)) {
@@ -290,20 +297,23 @@ function drawNodeLinkTree(data) {
 
 			// TODO width is using addWidthArray
 			// how to merge the chart width and the interactive width adjustment.
+			var countryColor = d3.scaleOrdinal()
+									.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
+
 			container.call(coloredBarChart, {
 				chart_data: chart_data,
-				width: 120,
-				height: 200,
-				parentIdentityFlag: true,
+				width: 200,
+				height: 160,
+				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
+				margin: { left: 50, top: 0, right: 0, bottom: 0 },
 				identity_data: identity_data,
-				yAxisLabel: 'Vote Share',		
+				yAxisLabel: keyArray[0],		
 				level: 'level1',
-				myColor: twoPartyColor
+				myColor: countryColor
 			});
 		}
-
 	
 		if (agg_data.trend_type == 'pearson_corr') {
 			// Visual Tech 1 for Pearson Corr: Scatterplot
@@ -575,6 +585,7 @@ function drawNodeLinkTree(data) {
 			level: 'level2'
 		});
 
+		/* Gerrymandering Only
 		if (agg_data.trend_type == 'rank_trend') {
 			// Visual Tech 4: grouped bar chart
 			var competitive_chart_data = competitive_table.filter(obj => {
@@ -622,6 +633,7 @@ function drawNodeLinkTree(data) {
 				tooltipValueFormatFlag: false
 			});	
 		}
+		*/
 
 	});
 
@@ -906,9 +918,9 @@ function drawNodeLinkTree(data) {
 				//var thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
 				//var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
 				//var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
-		
+
 				var height = d.children[d.children.length - 1].x - d.children[0].x;
-			
+
 				var thirdLevelG1_visual_alter = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va')
@@ -974,6 +986,7 @@ function drawNodeLinkTree(data) {
 
 				// if chart height is higher than the branch heght
 				var largerFlag = false;
+
 				if (chart_height > (treeHeight / num_charts)) {
 					largerFlag = true;
 					var first_node_y = d.children[0].x;
@@ -988,8 +1001,10 @@ function drawNodeLinkTree(data) {
 					absolute_translate_y = thirdLevelG1_y + relative_translate_y;
 				} else {
 					// if chart height is same as the branch height
-					relative_translate_y = diff_height / 2;
-					chart_height = height + rectHeight;
+					//relative_translate_y = diff_height / 2;
+					var paddingOuter = 20;
+					relative_translate_y = -rectHeight - paddingOuter/2;
+					chart_height = height + 2 * rectHeight + paddingOuter;
 				}
 
 				var thirdLevelG1_visual_alter_barchart = thirdLevelG1.append("g")
@@ -1014,16 +1029,20 @@ function drawNodeLinkTree(data) {
 				const xValue = chart_data => chart_data['value'];
 				var xDomain = [0, d3.max(chart_data, xValue)];
 
+				var countryColor = d3.scaleOrdinal()
+							.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
+
 				thirdLevelG1_visual_alter_barchart.call(barChart, {
 					chart_data: bar_chart_data,
 					width: 300,
 					height: chart_height,
+					margin: { top: 0, right: 0, bottom: 0, left: 20 },
 					xDomain: xDomain,
 					level: 'level3',
 					largerFlag: largerFlag,
-					percentageFlag: true,
-					x_axis_label: 'Vote Share',
-					myColor: twoPartyColor,
+					percentageFlag: false,
+					x_axis_label: dependent,
+					myColor: countryColor,
 					tooltipValueFormatFlag: true
 				});	
 
@@ -1307,9 +1326,11 @@ function drawNodeLinkTree(data) {
 		})
 		.style("visibility", "hidden");
 
+	/* Temporary comment out until barchart is fixed.
 	if (agg_data.trend_type == 'rank_trend') {	
 		// Path for barchart
 		// list to barchart
+
 		g.selectAll('.path list barchart').data(links)
 			.enter().append('path')
 			.attr('d', function(d, i) {
@@ -1341,6 +1362,7 @@ function drawNodeLinkTree(data) {
 				return !d.source.depth ? "none" : "all";
 			});					
 	}
+	*/
 
 	initVisibility();
 
@@ -1348,7 +1370,7 @@ function drawNodeLinkTree(data) {
 	drawNodeLinkLegend();
 
 	// Add interaction to the legend 
-	d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+	d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
 		.on("mouseover", function(d) {
 			highlightLegend(d);
 		})
@@ -1383,7 +1405,7 @@ function drawNodeLinkTree(data) {
 		// Reset
 		d3.selectAll(".legend.rect")
 			.style("stroke", "none");
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 
 		d3.selectAll('.legend.rect.distcolor' 
@@ -1464,7 +1486,7 @@ function drawNodeLinkTree(data) {
 		d3.selectAll(".legend.rect")
 			.style("stroke", "none");
 
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 
 		//d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
@@ -1476,7 +1498,7 @@ function drawNodeLinkTree(data) {
 			element.style("stroke", "black")
 					.attr("stroke-width", 2);
 
-			d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+			d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
 				.filter(function() { 
 					return d3.color(d3.select(this).style("fill")).formatHex() == filtercolor; })
 				.attr("stroke-opacity", 1);
@@ -1487,18 +1509,18 @@ function drawNodeLinkTree(data) {
 		// Reset
 		d3.selectAll(".legend.rect")
 			.style("stroke", "none");
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 
 		var filtercolor = d;
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
 			.filter(function() { 
 				return d3.color(d3.select(this).style("fill")).formatHex() == filtercolor; })
 			.attr("stroke-opacity", 1);
 	}
 	
 	var doNotHighlightTree = function(d){
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 	}
 

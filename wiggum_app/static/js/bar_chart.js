@@ -3,6 +3,7 @@ const barChart = (selection, props) => {
 	  chart_data,
 	  width,
 	  height,
+	  margin,
 	  xDomain,
 	  level,
 	  largerFlag,
@@ -29,8 +30,6 @@ const barChart = (selection, props) => {
 
 	var groups = d3.map(chart_data, function(d){return(d.subgroup)}).keys();
 
-	const margin = { top: 8, right: 0, bottom: 20, left: 10 };
-
 	if (parentIdentityFlag) {
 		margin.left = 20;
 	}
@@ -42,7 +41,8 @@ const barChart = (selection, props) => {
 	
 	var innerHeight;
 	if (!largerFlag) {
-		innerHeight = height + 15;
+		//innerHeight = height + 45;
+		innerHeight =  height;
 	} else {
 		innerHeight =  height - margin.top - margin.bottom;
 	}
@@ -56,7 +56,8 @@ const barChart = (selection, props) => {
 	const yScale = d3.scaleBand()
 	  .domain(groups)
 	  .range([0, innerHeight])
-	  .padding(0.3);
+	  .paddingInner(0.3)
+	  .paddingOuter(0.1);
 	
 	var ySubgroup = d3.scaleBand()
 	  .domain(subgroups)
@@ -102,7 +103,7 @@ const barChart = (selection, props) => {
 	} else {
 		xAxis = d3.axisBottom(xScale)
 			.tickSize(-innerHeight)
-			.ticks(5);
+			.tickFormat(d3.format(".2s"));
 	}
 
 	g.append('g')
@@ -122,11 +123,19 @@ const barChart = (selection, props) => {
 	
 	xAxisG.select('.domain').remove();
 
+	xAxisG.selectAll("text")
+		.attr("transform", "rotate(-60)")
+		.attr("dx", "-.9em")
+		.attr("dy", ".1em")
+		.style("text-anchor", "end");
+
 	// Label for x-axis
 	xAxisG.select(".tick:last-of-type text").clone()
-		.attr("x", 28 - margin.left)
+		.attr("x", 20)
 		.attr("text-anchor", "start")
 		.attr("font-weight", "bold")
+		.attr("transform", "rotate(0)")
+		.attr("dx", ".9em")
 		.text(x_axis_label);
 
 	g.append("g")
@@ -145,7 +154,7 @@ const barChart = (selection, props) => {
 		  .attr("height", ySubgroup.bandwidth())
 		  .attr("fill", function(d) { return color(d.key); })
 		  .append('title')
-		  .text(d => tooltipValueFormatFlag ? `${d3.format(".1%")(d.value)}` : `${d.value}`);		
+		  .text(d => tooltipValueFormatFlag ? `${d3.format(".2s")(d.value)}` : `${d.value}`);		
 
 	// Identity Potion
 	// Parent Identity
@@ -259,37 +268,37 @@ const coloredBarChart = (selection, props) => {
 	  chart_data,
 	  width,
 	  height,
-	  parentIdentityFlag,
 	  childrenIdentityFlag,	  
 	  rectWidth,
 	  rectHeight,
+	  margin,
 	  identity_data,
 	  yAxisLabel,
 	  level,
 	  myColor
 	} = props;
 
-	var margin = { left: 50, top: 0, right: 0, bottom: 30 };
-	var innerWidth  = width  - margin.left - margin.right;
-	var innerHeight = height - margin.top  - margin.bottom;
+	//var margin = { left: 50, top: 0, right: 0, bottom: 30 };
+	//var innerWidth  = width  - margin.left - margin.right;
+	//var innerHeight = height - margin.top  - margin.bottom;
 
 	const g = selection.append('g')
-	  .attr('transform', `translate(${margin.left},${-height/2})`);
+	  .attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
 
 	var xAxisG = g.append("g")
 	  .attr("class", level + " coloredbarchart x axis")
-	  .attr("transform", "translate(0," + innerHeight + ")");
+	  .attr("transform", "translate(0," + height + ")");
 
 	var yAxisG = g.append("g")
 	  .attr("class", level + " coloredbarchart y axis");
 
 	var xScale = d3.scaleBand()
 					//.domain(groups)
-					.range([0, innerWidth])
+					.range([0, width])
 					.padding(0.3);
 
 	var yScale = d3.scaleLinear()
-					.range([innerHeight, 0]);
+					.range([height, 0]);
 
 	var color;
 	if (myColor == undefined) {
@@ -302,7 +311,7 @@ const coloredBarChart = (selection, props) => {
 	var xAxis = d3.axisBottom(xScale);
 
 	var yAxis = d3.axisLeft(yScale)
-	  				.ticks(5,"%");	
+					.tickFormat(d3.format(".2s"));
 
 	xScale.domain(chart_data.map( function (d){ return d.name; }));
 	yScale.domain([0, d3.max(chart_data, function (d){ return d.value; })]).nice();
@@ -329,29 +338,31 @@ const coloredBarChart = (selection, props) => {
 		.attr("width", xScale.bandwidth())
 		.attr("x", function (d){ return xScale(d.name); })
 		.attr("y", function (d){ return yScale(d.value); })
-		.attr("height", function (d){ return innerHeight - yScale(d.value); })
+		.attr("height", function (d){ return height - yScale(d.value); })
 		.attr("fill", function (d){ return color(d.name); })
 		.append('title')
 		.text(d => `${d.name} : ${d3.format(".1%")(d.value)}` );
 
-	// Parent Identity
-	if (parentIdentityFlag) {
+	// Children Identity
+	if (childrenIdentityFlag) {
+
 		g.selectAll(".rect")
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " coloredbarchart left rect " 
+			.attr("class", d => level + " coloredbarchart initialvirtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})						
-			.attr("x", -10)
+			.attr("x", width + rectWidth + 30)
 			.attr("y", -10)						
 			.attr("width", rectWidth)
 			.attr("height", rectHeight)
 			.style("stroke", "black")
 			.style("stroke-width", "2px")
+			.attr("stroke-opacity", 0.3)
 			.style("fill-opacity", 1)
 			.style("fill", d => heatmapColorScale(d.value))
 			.append('title')
