@@ -431,60 +431,62 @@ def getAllRankTrendDetail(labeled_df, trend_type_list):
 
     # trend dictionary
     trend_idx_dict = {cur_trend.name: i for i, cur_trend in enumerate(labeled_df.trend_list)} 
-        
-    for trend_type in trend_type_list:   
-        # get index for rank trend
-        trend_idx = trend_idx_dict.get(trend_type)
 
-        trend_precompute = labeled_df.trend_list[trend_idx].trend_precompute
+    for trend_type in trend_type_list:  
+        if (trend_type == 'rank_trend') or \
+                (trend_type == 'percentage_rank'):   
+            # get index for rank trend
+            trend_idx = trend_idx_dict.get(trend_type)
 
-        detail_df_dict_list = []
+            trend_precompute = labeled_df.trend_list[trend_idx].trend_precompute
 
-        sel_agg_trend = '_'.join([trend_type, 'agg_trend'])
+            detail_df_dict_list = []
 
-        for key1 in trend_precompute:
-            if key1.startswith(sel_agg_trend):
-                # subgroups' stats
-                sel_subgroup_trend_all = key1.replace("agg_trend", "subgroup_trend")
-                
-                temp_key = []
+            sel_agg_trend = '_'.join([trend_type, 'agg_trend'])
 
-                for key2 in trend_precompute:
-                    # remove the last subgroup string
-                    removed_string = key2.rsplit('_', 1)[0]
-                    if key2.startswith(sel_subgroup_trend_all) and not(removed_string in temp_key):
-                        temp_key.append(removed_string)
+            for key1 in trend_precompute:
+                if key1.startswith(sel_agg_trend):
+                    # subgroups' stats
+                    sel_subgroup_trend_all = key1.replace("agg_trend", "subgroup_trend")
+                    
+                    temp_key = []
 
-                        # create a new DataFrame for detail view
-                        detail_df = pd.DataFrame()
+                    for key2 in trend_precompute:
+                        # remove the last subgroup string
+                        removed_string = key2.rsplit('_', 1)[0]
+                        if key2.startswith(sel_subgroup_trend_all) and not(removed_string in temp_key):
+                            temp_key.append(removed_string)
 
-                        # aggregate's stats
-                        detail_df['aggregate'] = trend_precompute[key1].stat
+                            # create a new DataFrame for detail view
+                            detail_df = pd.DataFrame()
 
-                        # TODO if those variables already have underscore symbol,
-                        # the index will be wrong
-                        dependent = key2.split('_')[-4]
-                        independent = key2.split('_')[-3]
-                        splitby = key2.split('_')[-2]
+                            # aggregate's stats
+                            detail_df['aggregate'] = trend_precompute[key1].stat
 
-                        sel_subgroup_trend = '_'.join([sel_subgroup_trend_all, splitby])
-                        for key3 in trend_precompute:
-                            if key3.startswith(sel_subgroup_trend):
-                                # get value of the last segment after '-'
-                                # subgroup' name can't have '_', otherwise partial subgroup name will be extracted
-                                subgroup = key3.split('_')[-1]
-                                detail_df[subgroup] = trend_precompute[key3].stat
+                            # TODO if those variables already have underscore symbol,
+                            # the index will be wrong
+                            dependent = key2.split('_')[-4]
+                            independent = key2.split('_')[-3]
+                            splitby = key2.split('_')[-2]
 
-                        detail_df.fillna(0, inplace=True)
+                            sel_subgroup_trend = '_'.join([sel_subgroup_trend_all, splitby])
+                            for key3 in trend_precompute:
+                                if key3.startswith(sel_subgroup_trend):
+                                    # get value of the last segment after '-'
+                                    # subgroup' name can't have '_', otherwise partial subgroup name will be extracted
+                                    subgroup = key3.split('_')[-1]
+                                    detail_df[subgroup] = trend_precompute[key3].stat
 
-                        detail_df_dict = {}
-                        detail_df_dict = {'trend_type' : trend_type,
-                                    'dependent' : dependent,
-                                    'independent' : independent,                                
-                                    'splitby' : splitby,
-                                    'detail_df':detail_df.to_json(orient='index')}
+                            detail_df.fillna(0, inplace=True)
 
-                        detail_df_dict_list.append(detail_df_dict)
+                            detail_df_dict = {}
+                            detail_df_dict = {'trend_type' : trend_type,
+                                        'dependent' : dependent,
+                                        'independent' : independent,                                
+                                        'splitby' : splitby,
+                                        'detail_df':detail_df.to_json(orient='index')}
+
+                            detail_df_dict_list.append(detail_df_dict)
 
     return detail_df_dict_list
 
