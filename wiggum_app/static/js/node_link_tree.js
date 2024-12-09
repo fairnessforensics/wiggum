@@ -202,6 +202,18 @@ function drawNodeLinkTree(data) {
 	var firstLevelG = g.selectAll('.level-1');
 
 	// TODO sovle hard code addWidthArray, height
+	if (agg_data.trend_type == 'pearson_corr') {
+		addWidthArray = [120, 160];
+	} else if (agg_data.trend_type == 'rank_trend') {
+		addWidthArray = [120, 160];
+	}
+
+	if (agg_data.trend_type == 'pearson_corr') {
+		addHeightArray = [100];
+	} else if (agg_data.trend_type == 'rank_trend') {
+		addHeightArray = [60];
+	}
+
 	var height = 100;
 	firstLevelButtons.call(interactiveLevelButton, {
 		levelLabels: levelLabels,
@@ -212,8 +224,8 @@ function drawNodeLinkTree(data) {
 		charts: chartList,
 		width: width,
 		height: height,
-		addWidthArray: [120, 160],
-		addHeightArray: [60],
+		addWidthArray: addWidthArray,
+		addHeightArray: addHeightArray,
 		treeHeight: treeHeight + margin.top + margin.bottom,
 		matrix_data: matrix_data
 	});
@@ -302,7 +314,7 @@ function drawNodeLinkTree(data) {
 
 			container.call(coloredBarChart, {
 				chart_data: chart_data,
-				width: 200,
+				width: 160,
 				height: 160,
 				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
@@ -333,7 +345,8 @@ function drawNodeLinkTree(data) {
 				circleRadius: 3,
 				margin: { left: 50, top: 0, right: 0, bottom: 0 },
 				width: 200,
-				height: 100,
+				height: 200,
+				relative_translate_y: -100,
 				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
@@ -711,33 +724,35 @@ function drawNodeLinkTree(data) {
 	//		//"#2ca02c","#98df8a","#9467bd","#c5b0d5"
 	//		]);
 	
-	// first row: light color; second row: dark color
-	var category16 = ["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
-					  "#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"];
-				
-	var correspondColor = d3.scaleOrdinal()
-							.range(category16);
+	if (agg_data.detail_view_type == 'scatter') {	
+		// first row: light color; second row: dark color
+		var category16 = ["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
+						"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"];
+					
+		var correspondColor = d3.scaleOrdinal()
+								.range(category16);
 
-	d3.selectAll('.node.level-3')
-		.append('rect')
-		.attr('class', d => 'level-3 background' 
-				+ ' ' + d.data.dependent
-				+ ' ' + d.data.independent
-				+ ' ' + d.data.splitby
-				+ ' subgroup_' + d.data.subgroup)
-		.attr('id', function(d) {
-			return 'level-3_background_' + d.data.dependent 
-					+ '_' + d.data.independent 
-					+ '_' + d.data.splitby
-					+ '_' + d.data.subgroup})
-		.attr("x", ".9em")
-		.attr("y", -rectHeight/2)	
-		.style('fill', function(d) {
-			return correspondColor(d.data.subgroup);
-		})
-		.style('opacity', 1)
-		.style("stroke", "grey")
-		.style("stroke-width", "1px");
+		d3.selectAll('.node.level-3')
+			.append('rect')
+			.attr('class', d => 'level-3 background' 
+					+ ' ' + d.data.dependent
+					+ ' ' + d.data.independent
+					+ ' ' + d.data.splitby
+					+ ' subgroup_' + d.data.subgroup)
+			.attr('id', function(d) {
+				return 'level-3_background_' + d.data.dependent 
+						+ '_' + d.data.independent 
+						+ '_' + d.data.splitby
+						+ '_' + d.data.subgroup})
+			.attr("x", ".9em")
+			.attr("y", -rectHeight/2)	
+			.style('fill', function(d) {
+				return correspondColor(d.data.subgroup);
+			})
+			.style('opacity', 1)
+			.style("stroke", "grey")
+			.style("stroke-width", "1px");
+	}
 
 	var leafNodes = nodeEnter.append('text')
 		.attr('dx', d => d.children ? '0em' : '1em')
@@ -757,89 +772,91 @@ function drawNodeLinkTree(data) {
 			return !d.depth ? "none" : "all";
 		});
 
-	// Add interaction
-	leafNodes.on('click', function(d) {
+	if (agg_data.detail_view_type == 'scatter') {	
+		// Add interaction
+		leafNodes.on('click', function(d) {
 
-		var subgroup = d.data.subgroup;
-		var splitby = d.data.splitby;
-		var selectedFlag = false;
+			var subgroup = d.data.subgroup;
+			var splitby = d.data.splitby;
+			var selectedFlag = false;
 
-		var selectedLeaf = d3.select('#level-3_background_' + d.data.dependent 
-						+ '_' + d.data.independent 
-						+ '_' + d.data.splitby
-						+ '_' + d.data.subgroup);
+			var selectedLeaf = d3.select('#level-3_background_' + d.data.dependent 
+							+ '_' + d.data.independent 
+							+ '_' + d.data.splitby
+							+ '_' + d.data.subgroup);
 
-		if (selectedLeaf.style("stroke") == "black") {
-			selectedFlag = true;
-		}
+			if (selectedLeaf.style("stroke") == "black") {
+				selectedFlag = true;
+			}
 
-		d3.selectAll('.level-3.background'
-						+ '.' + d.data.dependent
-						+ '.' + d.data.independent
-						+ '.' + d.data.splitby)
-			.style("stroke", "grey");
+			d3.selectAll('.level-3.background'
+							+ '.' + d.data.dependent
+							+ '.' + d.data.independent
+							+ '.' + d.data.splitby)
+				.style("stroke", "grey");
 
-		var circles = d3.selectAll(".scatterplot.circle.middle.level" + d.depth
-									+ "." + d.data.dependent + "." + d.data.independent 
-									+ ".splitby_" + d.data.splitby)
-						.attr("r", 3)
-						.attr("stroke", "black")
-						.attr("stroke-width", 1)	  
-						.attr("stroke-opacity", 0.25);
+			var circles = d3.selectAll(".scatterplot.circle.middle.level" + d.depth
+										+ "." + d.data.dependent + "." + d.data.independent 
+										+ ".splitby_" + d.data.splitby)
+							.attr("r", 3)
+							.attr("stroke", "black")
+							.attr("stroke-width", 1)	  
+							.attr("stroke-opacity", 0.25);
 
-		if (selectedFlag == false) {
-			selectedLeaf.style("stroke", "black");
+			if (selectedFlag == false) {
+				selectedLeaf.style("stroke", "black");
 
-			circles.filter((d) => d[splitby] === subgroup)
-				.attr("r", 4)
-				.attr('stroke', 'black')
-				.attr('stroke-width', 1)
-				.attr("stroke-opacity", 1)
-				.raise();
-		}
-	});
+				circles.filter((d) => d[splitby] === subgroup)
+					.attr("r", 4)
+					.attr('stroke', 'black')
+					.attr('stroke-width', 1)
+					.attr("stroke-opacity", 1)
+					.raise();
+			}
+		});
 
-	// Double click interaction
-	// Disable double click zoom feature
-	d3.select("svg").on("dblclick.zoom", null);
+		// Double click interaction
+		// Disable double click zoom feature
+		d3.select("svg").on("dblclick.zoom", null);
 
-	leafNodes.on('dblclick', function(d) {
-		var subgroup = d.data.subgroup;
-		var splitby = d.data.splitby;
-		var selectedFlag = false;
+		leafNodes.on('dblclick', function(d) {
+			var subgroup = d.data.subgroup;
+			var splitby = d.data.splitby;
+			var selectedFlag = false;
 
-		var selectedLeaf = d3.select('#level-3_background_' + d.data.dependent 
-						+ '_' + d.data.independent 
-						+ '_' + d.data.splitby
-						+ '_' + d.data.subgroup);
+			var selectedLeaf = d3.select('#level-3_background_' + d.data.dependent 
+							+ '_' + d.data.independent 
+							+ '_' + d.data.splitby
+							+ '_' + d.data.subgroup);
 
-		if (selectedLeaf.style("stroke-width") == "2") {
-			selectedFlag = true;
-		}
+			if (selectedLeaf.style("stroke-width") == "2") {
+				selectedFlag = true;
+			}
 
-		d3.selectAll('.level-3.background')
-			.style("stroke", "grey");
+			d3.selectAll('.level-3.background')
+				.style("stroke", "grey");
 
-		var circles = d3.selectAll(".scatterplot.circle.middle.level" + d.depth)
-						.attr("r", 3)
-						.attr("stroke", "black")
-						.attr("stroke-width", 1)	  
-						.attr("stroke-opacity", 0.25);
+			var circles = d3.selectAll(".scatterplot.circle.middle.level" + d.depth)
+							.attr("r", 3)
+							.attr("stroke", "black")
+							.attr("stroke-width", 1)	  
+							.attr("stroke-opacity", 0.25);
 
-		if (selectedFlag == false) {
-			d3.selectAll(".level-" + d.depth + ".background"
-							+ ".subgroup_" + subgroup)
-				.style("stroke-width", 2)
-				.style("stroke", "black");
+			if (selectedFlag == false) {
+				d3.selectAll(".level-" + d.depth + ".background"
+								+ ".subgroup_" + subgroup)
+					.style("stroke-width", 2)
+					.style("stroke", "black");
 
-			circles.filter((d) => d[splitby] === subgroup)
-				.attr("r", 4)
-				.attr('stroke', 'black')
-				.attr('stroke-width', 1)
-				.attr("stroke-opacity", 1)
-				.raise();
-		}
-	});
+				circles.filter((d) => d[splitby] === subgroup)
+					.attr("r", 4)
+					.attr('stroke', 'black')
+					.attr('stroke-width', 1)
+					.attr("stroke-opacity", 1)
+					.raise();
+			}
+		});
+	}
 
     // Save the dimensions of the text elements
     nodeEnter.selectAll("text")
@@ -1036,7 +1053,7 @@ function drawNodeLinkTree(data) {
 					chart_data: bar_chart_data,
 					width: 300,
 					height: chart_height,
-					margin: { top: 0, right: 0, bottom: 0, left: 20 },
+					margin: { top: 0, right: 0, bottom: 0, left: 30 },
 					xDomain: xDomain,
 					level: 'level3',
 					largerFlag: largerFlag,
@@ -1068,12 +1085,15 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1 = g.select('#node_level-3' + '_' + dependent 
 					+ '_' + independent + '_' + splitby + '_' + subgroup);
 
+				var chartHeight = 200;
+				var height = d.children[d.children.length - 1].x - d.children[0].x;
+				var relative_translate_y = (height - chartHeight) / 2;
+
 				// Visual Tech 5: scatterplot
 				var thirdLevelG1_visual_alter_scatterplot = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va scatterplot')
 					.attr("transform", "translate(" + (rectWidth + 5) + ", 0)");
-
 
 				thirdLevelG1_visual_alter_scatterplot.call(scatterPlot, {
 						xValue: d => d[independent],
@@ -1082,9 +1102,10 @@ function drawNodeLinkTree(data) {
 						yAxisLabel: dependent,
 						splitby: splitby,
 						circleRadius: 3,
-						margin: { left: 80, top: 40, right: 0, bottom: 0 },
+						margin: { left: 80, top: 0, right: 0, bottom: 0 },
 						width: 200,
-						height: 100,
+						height: chartHeight,
+						relative_translate_y: relative_translate_y,
 						parentIdentityFlag: false,
 						chart_data: csvData,
 						level: 'level3',

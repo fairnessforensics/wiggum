@@ -173,6 +173,7 @@ const scatterPlot = (selection, props) => {
 	  margin,
 	  width,
 	  height,
+	  relative_translate_y,
 	  childrenIdentityFlag,
 	  rectWidth,
 	  rectHeight,
@@ -184,7 +185,7 @@ const scatterPlot = (selection, props) => {
 	} = props;
 
 	const g = selection.append('g')
-	  .attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
+	  .attr('transform', `translate(${margin.left},${relative_translate_y})`);
 
 	const yScale = d3.scaleLinear();
 	// Insert padding so that points do not overlap with y or x axis

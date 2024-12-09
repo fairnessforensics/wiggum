@@ -83,9 +83,12 @@ const interactiveLevelButton = (selection, props) => {
 									} 
 										
 									var addWidth = 0;
+
 									if (i == 2) {
 										addWidth = addWidthArray[0];
-									} else if (i == 3) {
+									} else if (selectedChart == 'coloredbarchart' ) {
+										addWidth = addWidthArray[1] + 70;
+									} else if (selectedChart == 'scatterplot') {
 										// Scatterplot
 										addWidth = addWidthArray[1] + 110;
 									} else if (i == 4 || i == 5 || i == 6) {
@@ -120,7 +123,8 @@ const interactiveLevelButton = (selection, props) => {
 										.attr("transform", "translate(0, 0)");
 
 									var addHeight = 0;
-									if (selectedChart == 'coloredbarchart') {
+									if (selectedChart == 'coloredbarchart' ||
+										selectedChart == 'scatterplot') {
 										addHeight = addHeightArray[0];
 									}
 									newViewHeight = height + addHeight;
