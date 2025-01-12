@@ -179,6 +179,9 @@ function drawNodeLinkTree(data) {
 	if (agg_data.trend_type == 'rank_trend') {
 		levelLabels.push('\uf080');
 		chartList.push('coloredbarchart')
+
+		levelLabels.push('HM');
+		chartList.push('genericheatmap')
 	}
 
 	// Left identity portion in virtual layer
@@ -282,8 +285,10 @@ function drawNodeLinkTree(data) {
 			level: 'level1'
 		});
 
+		var csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+
 		if (agg_data.trend_type == 'rank_trend') {
-			// Visual Tech 3: colored bar chart
+			// Visual Tech 1: colored bar chart
 			var detail_dict = data.rank_trend_detail_dict.find(obj => {
 				return obj.dependent === keyArray[0]
 						&& obj.independent === keyArray[1]
@@ -325,11 +330,53 @@ function drawNodeLinkTree(data) {
 				level: 'level1',
 				myColor: countryColor
 			});
+
+			// Visual Tech 2: a heatmap with a new dimension
+			// Prepare data
+			// TODO hard code 'importer' can be from interaction
+			var aggResultArray = d3.nest()
+								.key(function(d) {return d[keyArray[1]]})
+								.key(function(d) {return d['importer']})
+								.rollup(function(v) {
+									return {
+										sum: d3.sum(v, function(d) {return d[keyArray[0]]})
+									}
+								})
+								.entries(csvData);
+
+			// Flattern the nested data
+			var chart_data = []
+				aggResultArray.forEach(function(row) {
+					row.values.forEach(function(cell) {
+						var singleObj = {};
+						singleObj[keyArray[1]] = row.key;
+						singleObj['importer'] = cell.key;
+						singleObj[keyArray[0]] = cell.value.sum;
+
+						chart_data.push(singleObj);
+					});
+				});
+
+			container.call(genericHeatmap, {
+				margin: { left: 50, top: 0, right: 0, bottom: 0 },
+				width: 90,
+				height: 100,
+				xValue: d => d[keyArray[1]],
+				yValue: d => d['importer'],
+				var1: keyArray[1],
+				var2: 'importer',
+				var3: keyArray[0],
+				childrenIdentityFlag: true,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				chart_data: chart_data,
+				level: 'level1'
+			});	
 		}
 	
 		if (agg_data.trend_type == 'pearson_corr') {
 			// Visual Tech 1 for Pearson Corr: Scatterplot
-			csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
 			var single_object = {};
 			var identity_data = [];
 			single_object['dependent'] = keyArray[0];
@@ -652,7 +699,7 @@ function drawNodeLinkTree(data) {
 
 	// Third level: subgroups
 	// Generate interactive buttons
-	var levelLabels= ['\uf03a', '\uf0c9', '\uf279', '\uf080', 'SP1'];
+	var levelLabels= ['\uf03a', '\uf279', '\uf080', 'SP1'];
 	// Left identity labels for virtual layer
 	leftIdentityLabels = ['I', 'II', 'III'];
 
@@ -669,13 +716,23 @@ function drawNodeLinkTree(data) {
 						.attr("id","thirdLevelButtons")
 						.attr("transform",  "translate(" + (thirdLevelG1_x-button_offset_x) + ", " + (-margin.top) + ")");
 
-	thirdLevelButtons.call(interactiveLevelButton, {
-		levelLabels: levelLabels,
-		leftIdentityLabels: leftIdentityLabels,
-		rightIdentityLabels: rightIdentityLabels,
-		level: 'level3',
-		charts: ['list', 'stripplot', 'districtmap', 'barchart', 'scatterplot']
-	});
+	if (agg_data.detail_view_type == 'scatter') {	
+		thirdLevelButtons.call(interactiveLevelButton, {
+			levelLabels: levelLabels,
+			leftIdentityLabels: leftIdentityLabels,
+			rightIdentityLabels: rightIdentityLabels,
+			level: 'level3',
+			charts: ['list', 'scatterplot']
+		});
+	} else if (agg_data.detail_view_type == 'rank') {
+		thirdLevelButtons.call(interactiveLevelButton, {
+			levelLabels: levelLabels,
+			leftIdentityLabels: leftIdentityLabels,
+			rightIdentityLabels: rightIdentityLabels,
+			level: 'level3',
+			charts: ['list', 'countrymap', 'barchart', 'scatterplot']
+		});
+	}
 
 	// Third level drawing
 	// Visual Tech 1: Tree nodes
@@ -943,6 +1000,7 @@ function drawNodeLinkTree(data) {
 					+ ' ' + independent + ' splitby_' + splitby + ' va')
 					.attr("transform", "translate(" + (rectWidth + 5) + "," + 0 + ")");
 
+				/* Gerrymandering 
 				// Visual Tech 2: strip plot
 				thirdLevelG1_visual_alter.call(stripPlot, {
 					chart_data,
@@ -953,13 +1011,7 @@ function drawNodeLinkTree(data) {
 					x_axis_label: 'Vote Share',
 					myColor: twoPartyColor
 				});	
-
-				// Visual Tech 3: map
-				var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
-					.attr("class", 'level-3' + ' ' + dependent 
-					+ ' ' + independent + ' splitby_' + splitby + ' va map')
-					.attr("transform", "translate(" + (rectWidth + 5) + ", 0)");
-					//.attr("transform", "translate(" + (rectWidth + 5) + "," + (-rectHeight) + ")");
+				*/
 
 				// extract leaf nodes
 				var leaf_node_links = links.filter(obj => {
@@ -972,34 +1024,36 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_x = parseFloat(thirdLevelG1_position[1]);
 				var thirdLevelG1_y = parseFloat(thirdLevelG1_position[2]);
 
-				// get state name from df
-				var df_data = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
-				
-				// TODO temporarily using state to check
-				if (df_data[0].state != undefined) {
-					var state_name = df_data[0].state;
 
-					var map_data = result_table.filter(obj => {
-						return obj.dependent === dependent
-								&& obj.independent === independent
-								&& obj.splitby === splitby
-					});
+				/* Gerrymandering District map
+						// get state name from df
+						var df_data = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+						
+						// TODO temporarily using state to check
+						if (df_data[0].state != undefined) {
+							var state_name = df_data[0].state;
 
-					thirdLevelG1_visual_alter_map.call(districtStateMap, {
-						chart_data: map_data,
-						state_name,
-						leaf_node_links,
-						//width: 1.5 * height + rectHeight,
-						width: height + rectHeight,
-						height: height + rectHeight,
-						offset_y: thirdLevelG1_y,
-						level: 'level3',
-						splitby
-					});	
+							var map_data = result_table.filter(obj => {
+								return obj.dependent === dependent
+										&& obj.independent === independent
+										&& obj.splitby === splitby
+							});
 
-				}
+							thirdLevelG1_visual_alter_map.call(districtStateMap, {
+								chart_data: map_data,
+								state_name,
+								leaf_node_links,
+								//width: 1.5 * height + rectHeight,
+								width: height + rectHeight,
+								height: height + rectHeight,
+								offset_y: thirdLevelG1_y,
+								level: 'level3',
+								splitby
+							});	
+					}
+				*/
 
-				// Visual Tech 4: grouped bar chart
+
 
 				// if chart height is higher than the branch heght
 				var largerFlag = false;
@@ -1024,6 +1078,28 @@ function drawNodeLinkTree(data) {
 					chart_height = height + 2 * rectHeight + paddingOuter;
 				}
 
+				// Visual Tech 2: map
+				var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
+					.attr("class", 'level-3' + ' ' + dependent 
+					+ ' ' + independent + ' splitby_' + splitby + ' va map')
+					//.attr("transform", "translate(" + (rectWidth + 10) + ", 0)");
+					.attr("transform", "translate(" + (rectWidth + 50) + "," + (-rectHeight) + ")");
+				var map_data = result_table.filter(obj => {
+					return obj.dependent === dependent
+							&& obj.independent === independent
+							&& obj.splitby === splitby
+				});
+
+				thirdLevelG1_visual_alter_map.call(countryMap, {
+					chart_data: map_data,
+					leaf_node_links,
+					width: chart_height,
+					height: chart_height,
+					level: 'level3',
+					splitby
+				});	
+
+				// Visual Tech 3: grouped bar chart
 				var thirdLevelG1_visual_alter_barchart = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va barchart')
@@ -1853,6 +1929,7 @@ function initVisibility() {
 	d3.selectAll('.level1.scatterplot').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.doublehistogram').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.heatmapdensity').transition().style('visibility', "hidden");	
+	d3.selectAll('.level1.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
 	d3.selectAll('.path.list').transition().style('visibility', "visible");
 	d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
@@ -1868,7 +1945,7 @@ function initVisibility() {
 	// Subgroup level
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
 	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
-	d3.selectAll('.level3.districtmap').transition().style('visibility', "hidden");	
-	d3.selectAll('.level3.singledistrictmap').transition().style('visibility', "hidden");
+	d3.selectAll('.level3.countrymap').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.singlecountrymap').transition().style('visibility', "hidden");
 	d3.selectAll('.level3.barchart').transition().style('visibility', "hidden");	
 }

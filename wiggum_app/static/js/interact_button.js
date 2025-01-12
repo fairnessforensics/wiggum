@@ -239,20 +239,22 @@ const interactiveLevelButton = (selection, props) => {
 								d3.selectAll('.'+level + '.rect')
 									.transition()
 									.style('visibility', 'visible');	
-								d3.selectAll('.'+level + '.singledistrictmap')
+								d3.selectAll('.'+level + '.singlecountrymap')
 										.transition()
 										.style('visibility', 'hidden');	
 								
-								if (i == 2) {	
-									d3.selectAll('.'+level + '.rect')
-									.transition()
-									.style('visibility', 'hidden');	
-									d3.selectAll('.'+level + '.singledistrictmap')
+								if (selectedChart == 'countrymap') {	
+									// TODO hardcode
+									d3.selectAll('.'+level + '.rect' + '.splitby_importer'
+										+',.'+level + '.rect' + '.splitby_exporter')
+										.transition()
+										.style('visibility', 'hidden');	
+									d3.selectAll('.'+level + '.singlecountrymap')
 										.transition()
 										.style('visibility', 'visible');	
 								}
 
-								if (i == 2 || i == 3) {
+								if (selectedChart == 'countrymap' || selectedChart == 'barchart') {
 									// Map button clicked
 									d3.selectAll('.'+level + '.text')
 									.transition()
