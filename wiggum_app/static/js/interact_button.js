@@ -254,8 +254,8 @@ const interactiveLevelButton = (selection, props) => {
 										.style('visibility', 'visible');	
 								}
 
-								if (selectedChart == 'countrymap' || selectedChart == 'barchart') {
-									// Map button clicked
+								if (selectedChart == 'countrymap' || selectedChart == 'barchart'
+									|| selectedChart == 'genericheatmap') {
 									d3.selectAll('.'+level + '.text')
 									.transition()
 									.style('visibility', 'visible');	
