@@ -341,7 +341,7 @@ const coloredBarChart = (selection, props) => {
 		.attr("height", function (d){ return height - yScale(d.value); })
 		.attr("fill", function (d){ return color(d.name); })
 		.append('title')
-		.text(d => `${d.name} : ${d3.format(".1%")(d.value)}` );
+		.text(d => `${d.name} : ${d3.format(".2s")(d.value)}` );
 
 	// Children Identity
 	if (childrenIdentityFlag) {
@@ -356,7 +356,9 @@ const coloredBarChart = (selection, props) => {
 				var y_position = height/2;
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})						
-			.attr("x", width + rectWidth + 30)
+			// Adjust for interactive menu
+			//.attr("x", width + rectWidth + 30)
+			.attr("x", width + rectWidth + 40)
 			.attr("y", -10)						
 			.attr("width", rectWidth)
 			.attr("height", rectHeight)

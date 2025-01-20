@@ -28,7 +28,8 @@ def explore():
 
             dep_vars = labeled_df_setup.get_vars_per_role('dependent')
             indep_vars = labeled_df_setup.get_vars_per_role('independent')
-            splitby_vars = labeled_df_setup.get_vars_per_role('splitby')            
+            splitby_vars = labeled_df_setup.get_vars_per_role('splitby')    
+            contextual_cat_vars = labeled_df_setup.get_vars_per_roletype('contextual', 'categorical')     
 
             # add id for future selection
             labeled_df_setup.df['id'] = labeled_df_setup.df.index
@@ -72,6 +73,7 @@ def explore():
             return jsonify(dep_vars = dep_vars,
                             indep_vars = indep_vars,
                             splitby_vars = splitby_vars,
+                            contextual_cat_vars = contextual_cat_vars,
                             df = df,
                             result_df = labeled_df_setup.result_df.to_json(orient='records'),
                             distance_heatmap_dict = distance_heatmap_dict,

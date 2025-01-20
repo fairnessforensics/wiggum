@@ -23,6 +23,7 @@ const interactiveLevelButton = (selection, props) => {
 						.attr("class", level + " button")
 						.style("cursor","pointer")
 						.on("click",function(d, i) {
+
 							updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
 							selectedChart = charts[i];
@@ -91,7 +92,9 @@ const interactiveLevelButton = (selection, props) => {
 									} else if (selectedChart == 'scatterplot') {
 										// Scatterplot
 										addWidth = addWidthArray[1] + 110;
-									} else if (i == 4 || i == 5 || i == 6) {
+									} else if (selectedChart == 'genericheatmap' ) {
+										addWidth = addWidthArray[1] + 70;
+									} else if (i == 5 || i == 6) {
 										addWidth = addWidthArray[1];
 									}
 
@@ -130,9 +133,10 @@ const interactiveLevelButton = (selection, props) => {
 									newViewHeight = height + addHeight;
 
 									// Adjust level 1 children rect x postion
-									d3.selectAll('.level1.initialvirtuallayer.children.rect')
-										.transition()
-										.attr('transform', `translate(${-40},${newViewHeight/2})`);
+									// Delete for interactive menu
+									//d3.selectAll('.level1.initialvirtuallayer.children.rect')
+									//	.transition()
+									//	.attr('transform', `translate(${-40},${newViewHeight/2})`);
 
 									// Adjust level 2 nodes x postion
 									d3.selectAll('.node.level-2')

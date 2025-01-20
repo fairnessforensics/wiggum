@@ -225,7 +225,7 @@ function countByTwoRanges(data, var1, var2, var1_range, var2_range) {
 	return counts;
   }
 
-  const genericHeatmap = (selection, props) => {
+const genericHeatmap = (selection, props) => {
 	const {
 	  margin,
 	  width,
@@ -376,4 +376,230 @@ function countByTwoRanges(data, var1, var2, var1_range, var2_range) {
 			});
 	}
 
+}
+
+const interactGenericHeatmap = (selection, props) => {
+	const {
+	  margin,
+	  width,
+	  height,
+	  xValue,
+	  yValue,
+	  var1,
+	  var2,
+	  var3,
+	  contextaul_vars,
+	  parentIdentityFlag,
+	  childrenIdentityFlag,
+	  rectWidth,
+	  rectHeight,
+	  identity_data,
+	  csvData,
+	  myColor,
+	  level
+	} = props;
+
+	selection.selectAll('#' + level + "_" + var1 +  "_genericheatmap_g")
+			 .remove();
+
+	// Processing the data
+	var aggResultArray = d3.nest()
+						.key(function(d) {return d[var1]})
+						.key(function(d) {return d[var2]})
+						.sortKeys(d3.ascending)
+						.rollup(function(v) {
+							return {
+								sum: d3.sum(v, function(d) {return d[var3]})
+							}
+						})
+						.entries(csvData);
+
+	// Flattern the nested data
+	var chart_data = []
+	aggResultArray.forEach(function(row) {
+		row.values.forEach(function(cell) {
+			var singleObj = {};
+			singleObj[var1] = row.key;
+			singleObj[var2] = cell.key;
+			singleObj[var3] = cell.value.sum;
+
+			chart_data.push(singleObj);
+		});
+	});
+
+
+	var xScale = d3.scaleLinear()
+					.domain(d3.extent(chart_data, xValue));
+	var xSequence = xScale.nice().ticks(5);
+
+	var yScale = d3.scaleLinear()
+					.domain(d3.extent(chart_data, yValue));
+	var ySequence = yScale.nice().ticks(5);
+
+	// prepare for color considering aggregate heatmap in the virtual layer
+	var min = Math.floor(d3.min(chart_data, function (d) { return d[var2]; } ));
+	var max = Math.ceil(d3.max(chart_data, function (d) { return d[var2]; } ));
+
+	//var xSequence_vl = [min, max];
+	//var count_data_vl = countByTwoRanges(chart_data, var1, var2, ySequence, xSequence_vl);
+	//var max_count = d3.max(count_data_vl, function(d) { return +d.value });
+
+	var maxValue = d3.max(chart_data, d => d[var3]);
+
+	// Label
+	var var1_label = d3.map(chart_data, function(d){return d[var1];}).keys().reverse();
+    var var2_label = d3.map(chart_data, function(d){return d[var2];}).keys();
+
+	const g = selection.append('g')
+					.attr("id", level + "_" + var1 +  "_genericheatmap_g")
+					.attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
+
+	// Build X scales and axis:
+	var x = d3.scaleBand()
+				.range([ 0, width ])
+				.domain(var2_label)
+				.padding(0.1);
+
+	var xAxis = g.append("g")
+		.attr("class", level + " genericheatmap x axis")
+		.attr("transform", "translate(0," + height + ")")
+		.call(d3.axisBottom(x).tickSize(0));
+		
+		xAxis.select(".domain").remove();
+		
+		xAxis.selectAll("text")
+			.attr("transform", "rotate(-60)")
+			.attr("dx", "-.3em")
+			.attr("dy", ".2em")
+			.style("text-anchor", "end");
+
+	// Add x axis label
+	/*g.select('.' + level + '.genericheatmap.x.axis')
+		.append("text")
+		.attr("class", level + " genericheatmap x label")
+		.attr('fill', 'black')
+		.attr("x", width - 5)
+		.attr("y", 20)
+		.style("text-anchor", "start")
+		.text(var2);	*/
+
+	var select = xAxis.append("foreignObject")
+					.attr("width", 100)
+					.attr("height", 100)
+					.attr("x", width - 5)
+					.attr("y", 5)
+					.append('xhtml:select')
+					.attr("class", level + " " + var1 + " genericheatmap x menu")
+					.attr("id", level + "_" + var1 +  "_genericheatmap_x_menu")
+					.on("mousedown", function() { d3.event.stopImmediatePropagation(); }) 
+					.on('change', (event) => {
+
+						var selected_option = $('#' + level + "_" + var1 +  "_genericheatmap_x_menu").val();
+						selection.call(interactGenericHeatmap, {
+							margin: margin,
+							width: width,
+							height: height,
+							xValue: xValue,
+							yValue: d => d[selected_option],
+							var1: var1,
+							var2: selected_option,
+							var3: var3,
+							contextaul_vars: contextaul_vars,
+							childrenIdentityFlag: childrenIdentityFlag,
+							rectWidth: rectWidth,
+							rectHeight: rectHeight,
+							identity_data: identity_data,
+							csvData: csvData,
+							level: level
+						});	
+					});
+
+	select.selectAll('option')
+			.data(contextaul_vars).enter()
+			.append('option')
+			.attr('value', d => d)
+			.text(function(d){return d;})
+			.property("selected", 
+				function(d){ 
+					if (var2.includes(d)) return d;});
+
+	// Build Y scales and axis:
+	var y = d3.scaleBand()
+				.range([ height, 0 ])
+				.domain(var1_label)
+				.padding(0.1);
+
+	g.append("g")
+		.attr("class", level + " genericheatmap y axis")
+		.call(d3.axisLeft(y)
+				.tickSize(0))
+		.select(".domain").remove()
+
+	// Add y axis label
+	g.select('.' + level + '.genericheatmap.y.axis')
+		.append("text")
+		.attr("class", level + " genericheatmap y label")
+		.attr("x", 0)
+		.attr("y", -1)
+		.attr("text-anchor", "middle")
+		.attr('fill', 'black')
+	  	.text(var1);
+
+	// Use 7 levels of purple
+	var color_range = ["#f2f0f7","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#4a1486"];
+	var heatmapDensityColor;
+
+	var base = Math.floor(Math.exp(Math.log(maxValue)/5));
+
+	heatmapDensityColor = d3.scaleThreshold()
+					.domain([1, Math.pow(base, 1), Math.pow(base, 2), Math.pow(base, 3), 
+								Math.pow(base, 4), Math.pow(base, 5)])
+					.range(color_range);
+
+	g.selectAll()
+		.data(chart_data)
+		.enter()
+		.append("rect")
+		.attr("class", level + " genericheatmap cell")
+		.attr("x", function(d) { return x(d[var2]) })
+		.attr("y", function(d) { return y(d[var1]) })
+		.attr("width", x.bandwidth() )
+		.attr("height", y.bandwidth() )
+		.style("fill", function(d) { return heatmapDensityColor(d[var3])} )
+		.style("stroke", "grey")
+		.style("stroke-width", "1px")
+		.append('title')
+		.text(d => `The ${var3} is ${d3.format(".2s")(d[var3])}.`);	
+
+	// Children Identity
+	// TODO merge all identity code to a class
+	if (childrenIdentityFlag) {
+
+		g.selectAll(".rect")
+			.data(identity_data)
+			.enter()    
+			.append("rect")	
+			.attr("class", d => level + " genericheatmap initialvirtuallayer children rect " 
+						+ d.dependent + " " + d.independent)	  
+			.attr("transform", function(d) {
+				var y_position = height/2;
+				return "translate(" + (-margin.left) +"," + y_position + ")";
+			})						
+			//.attr("x", -10)
+			// Adjust for interactive menu
+			//.attr("x", width + rectWidth + 30)
+			.attr("x", width + rectWidth + 40)
+			.attr("y", -10)						
+			.attr("width", rectWidth)
+			.attr("height", rectHeight)
+			.style("stroke", "black")
+			.style("stroke-width", "2px")
+			.attr("stroke-opacity", 0.3)
+			.style("fill-opacity", 1)
+			.style("fill", d => heatmapColorScale(d.value))
+			.append('title')
+			.text(function(d) {
+				return `The mean distance is ${d3.format(".3f")(d.value)}.`
+			});
+	}
 }

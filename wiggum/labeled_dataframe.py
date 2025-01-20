@@ -11,7 +11,7 @@ from pydoc import locate
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 possible_roles = ['independent','dependent','splitby','prediction',
-                'groundtruth','ignore']
+                'groundtruth','contextual','ignore']
 old_roles_map = {'groupby':'splitby','trend':['independent','dependent']}
 
 var_types = ['binary', 'ordinal', 'categorical', 'continuous']

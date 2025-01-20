@@ -38,6 +38,7 @@ var firstLevelChildrenVLWidth = 0;
 function drawNodeLinkTree(data) {
 
     var result_table = JSON.parse(data.result_df);
+	var contextual_cat_vars = data.contextual_cat_vars;
 
 	// TODO width for big state
 	//var width = 1150;
@@ -332,10 +333,17 @@ function drawNodeLinkTree(data) {
 
 			// Visual Tech 2: a heatmap with a new dimension
 			// Prepare data
-			// TODO hard code 'importer' can be from interaction
+			// Filter the independent var from contextual_cat_vars
+			var candidate_context_vars = contextual_cat_vars.filter(function(item) {
+				return item !== keyArray[1]
+			})
+
+			var first_candidate = candidate_context_vars[0];
+
+			/*
 			var aggResultArray = d3.nest()
 								.key(function(d) {return d[keyArray[1]]})
-								.key(function(d) {return d['importer']})
+								.key(function(d) {return d[first_candidate]})
 								.rollup(function(v) {
 									return {
 										sum: d3.sum(v, function(d) {return d[keyArray[0]]})
@@ -345,31 +353,33 @@ function drawNodeLinkTree(data) {
 
 			// Flattern the nested data
 			var chart_data = []
-				aggResultArray.forEach(function(row) {
-					row.values.forEach(function(cell) {
-						var singleObj = {};
-						singleObj[keyArray[1]] = row.key;
-						singleObj['importer'] = cell.key;
-						singleObj[keyArray[0]] = cell.value.sum;
+			aggResultArray.forEach(function(row) {
+				row.values.forEach(function(cell) {
+					var singleObj = {};
+					singleObj[keyArray[1]] = row.key;
+					singleObj[first_candidate] = cell.key;
+					singleObj[keyArray[0]] = cell.value.sum;
 
-						chart_data.push(singleObj);
-					});
+					chart_data.push(singleObj);
 				});
+			});
+				*/
 
-			container.call(genericHeatmap, {
+			container.call(interactGenericHeatmap, {
 				margin: { left: 50, top: 0, right: 0, bottom: 0 },
-				width: 90,
-				height: 100,
+				width: 160,
+				height: 160,
 				xValue: d => d[keyArray[1]],
-				yValue: d => d['importer'],
+				yValue: d => d[first_candidate],
 				var1: keyArray[1],
-				var2: 'importer',
+				var2: first_candidate,
 				var3: keyArray[0],
+				contextaul_vars: candidate_context_vars,
 				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
 				identity_data: identity_data,
-				chart_data: chart_data,
+				csvData: csvData,
 				level: 'level1'
 			});	
 		}
