@@ -332,38 +332,12 @@ function drawNodeLinkTree(data) {
 			});
 
 			// Visual Tech 2: a heatmap with a new dimension
-			// Prepare data
 			// Filter the independent var from contextual_cat_vars
 			var candidate_context_vars = contextual_cat_vars.filter(function(item) {
 				return item !== keyArray[1]
 			})
 
 			var first_candidate = candidate_context_vars[0];
-
-			/*
-			var aggResultArray = d3.nest()
-								.key(function(d) {return d[keyArray[1]]})
-								.key(function(d) {return d[first_candidate]})
-								.rollup(function(v) {
-									return {
-										sum: d3.sum(v, function(d) {return d[keyArray[0]]})
-									}
-								})
-								.entries(csvData);
-
-			// Flattern the nested data
-			var chart_data = []
-			aggResultArray.forEach(function(row) {
-				row.values.forEach(function(cell) {
-					var singleObj = {};
-					singleObj[keyArray[1]] = row.key;
-					singleObj[first_candidate] = cell.key;
-					singleObj[keyArray[0]] = cell.value.sum;
-
-					chart_data.push(singleObj);
-				});
-			});
-				*/
 
 			container.call(interactGenericHeatmap, {
 				margin: { left: 50, top: 0, right: 0, bottom: 0 },
