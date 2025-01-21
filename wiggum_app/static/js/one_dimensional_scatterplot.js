@@ -189,7 +189,7 @@ const scatterPlot = (selection, props) => {
 
 	const yScale = d3.scaleLinear();
 	// Insert padding so that points do not overlap with y or x axis
-	yScale.domain(padLinear(d3.extent(chart_data, yValue), 0.1));
+	yScale.domain(padLinear(d3.extent(chart_data, yValue), 0.05));
 	yScale.range([height, 0]);
 	yScale.nice();
 
@@ -222,7 +222,6 @@ const scatterPlot = (selection, props) => {
 
 	const xAxis = d3.axisBottom(xScale);
 	xAxis.tickFormat(d3.format(".4"));
-
 
 	// setup fill color
 	var cValue = function(d) { return d[splitby];};
@@ -295,10 +294,12 @@ const scatterPlot = (selection, props) => {
 				if (level == "level3") {
 					return color(cValue(d));}
 				if (myColor == undefined) {
-					return "#bebebe";
+					return '#ffffff';
+					//return "#bebebe";
 				} else { 
-					return myColor;}
-				})
+					return color(cValue(d));
+					//return myColor;}
+				}})
 		  .on("mouseover", function(d) {
 				highlight(d);
 		  })
@@ -319,7 +320,7 @@ const scatterPlot = (selection, props) => {
 				var y_position = height/2;
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})						
-			.attr("x", width + rectWidth + 30)
+			.attr("x", width + rectWidth + 40)
 			.attr("y", -10)						
 			.attr("width", rectWidth)
 			.attr("height", rectHeight)

@@ -39,6 +39,7 @@ function drawNodeLinkTree(data) {
 
     var result_table = JSON.parse(data.result_df);
 	var contextual_cat_vars = data.contextual_cat_vars;
+	var contextual_ord_vars = data.contextual_ord_vars;
 
 	// TODO width for big state
 	//var width = 1150;
@@ -183,6 +184,9 @@ function drawNodeLinkTree(data) {
 
 		levelLabels.push('HM');
 		chartList.push('genericheatmap')
+
+		levelLabels.push('SP2');
+		chartList.push('scatterplot')
 	}
 
 	// Left identity portion in virtual layer
@@ -332,8 +336,11 @@ function drawNodeLinkTree(data) {
 			});
 
 			// Visual Tech 2: a heatmap with a new dimension
-			// Filter the independent var from contextual_cat_vars
-			var candidate_context_vars = contextual_cat_vars.filter(function(item) {
+			// Merge contextual categorical vars and contextual ordinal vars
+			var candidate_context_vars = contextual_cat_vars.concat(contextual_ord_vars)
+
+			// Filter the independent var from contextual_context_vars
+			candidate_context_vars = candidate_context_vars.filter(function(item) {
 				return item !== keyArray[1]
 			})
 
@@ -356,6 +363,67 @@ function drawNodeLinkTree(data) {
 				csvData: csvData,
 				level: 'level1'
 			});	
+
+			// Visual Tech 3: Scatterplot
+			// Filter the independent var from contextual_cat_vars
+			var candidate_context_vars = contextual_ord_vars.filter(function(item) {
+				return item !== keyArray[1]
+			})
+
+			var first_candidate = candidate_context_vars[0];
+
+			// TODO corresponding to leaf level color if needed
+			//var category16 = ["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
+			//"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"];
+		
+			//var correspondColor = d3.scaleOrdinal()
+			//					.range(category16);
+
+			// Aggregate data
+			var aggResultArray = d3.nest()
+									.key(function(d) {return d[keyArray[1]]})
+									.key(function(d) {return d[first_candidate]})
+									.sortKeys(d3.ascending)
+									.rollup(function(v) {
+										return {
+											sum: d3.sum(v, function(d) {return d[keyArray[0]]})
+										}
+									})
+									.entries(csvData);
+
+			// Flattern the nested data
+			var scatterplot_data = []
+			aggResultArray.forEach(function(row) {
+				row.values.forEach(function(cell) {
+					var singleObj = {};
+					singleObj[keyArray[1]] = row.key;
+					singleObj[first_candidate] = Number(cell.key);
+					singleObj[keyArray[0]] = cell.value.sum;
+
+					scatterplot_data.push(singleObj);
+				});
+			});
+
+			container.call(scatterPlot, {
+				xValue: d => d[first_candidate],
+				xAxisLabel: first_candidate,
+				yValue: d => d[keyArray[0]],
+				yAxisLabel: keyArray[0],
+				splitby: keyArray[1],
+				circleRadius: 3,
+				margin: { left: 50, top: 0, right: 0, bottom: 0 },
+				width: 200,
+				height: 200,
+				relative_translate_y: -100,
+				childrenIdentityFlag: true,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				chart_data: scatterplot_data,
+				myColor: countryColor,
+				rowIndex: 'row' + rowIndex,
+				level: 'level1'
+			});
 		}
 	
 		if (agg_data.trend_type == 'pearson_corr') {
@@ -383,7 +451,7 @@ function drawNodeLinkTree(data) {
 				identity_data: identity_data,
 				chart_data: csvData,
 				//myColor: heatmapColorScale(identity_data[0].value),
-				myColor: '#ffffff',
+				//myColor: '#ffffff',
 				rowIndex: 'row' + rowIndex,
 				level: 'level1'
 			});
