@@ -77,7 +77,7 @@ const histogram = (selection, props) => {
 		.enter()
 		.append("rect")
 		.attr("id", function(d, i) {
-			return level + "_" + rowIndex + "_" + multi_no + "_doublehistogram_bar_" + i;})
+			return level + "_" + rowIndex + "_" + multi_no + "_histogram_bar_" + i;})
 		.attr("class", level + " " + rowIndex + " " + multi_no + " histogram bar")
 		.attr("x", 1)
 		.attr("transform", function(d) { return "translate(" + x(d.x0) + "," + y(d.length) + ")"; })
