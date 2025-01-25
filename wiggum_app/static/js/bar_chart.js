@@ -384,7 +384,6 @@ const coloredBarChart = (selection, props) => {
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})		
 			.attr("dx", '.6em')			  
-			//.attr("dy", rectHeight + 5)	
 			.attr('dy', '1.5em')																
 			.style("text-anchor", "end")
 			.text(d => d.dependent + "," + d.independent);

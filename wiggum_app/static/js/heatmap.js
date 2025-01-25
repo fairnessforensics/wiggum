@@ -601,5 +601,21 @@ const interactGenericHeatmap = (selection, props) => {
 			.text(function(d) {
 				return `The mean distance is ${d3.format(".3f")(d.value)}.`
 			});
+
+		// Text for identity portion  
+		g.selectAll(".text")
+			.data(identity_data)
+			.enter()    		
+			.append("text")	   
+			.attr("class", d => level + " genericheatmap left text " 
+						+ d.dependent + " " + d.independent)	
+			.attr("transform", function(d) {
+				var y_position = height/2;
+				return "translate(" + (-margin.left) +"," + y_position + ")";
+			})		
+			.attr("dx", '.6em')			  
+			.attr('dy', '1.5em')																
+			.style("text-anchor", "end")
+			.text(d => d.dependent + "," + d.independent);
 	}
 }
