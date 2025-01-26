@@ -175,6 +175,9 @@ const scatterPlot = (selection, props) => {
 	  height,
 	  relative_translate_y,
 	  childrenIdentityFlag,
+	  smallMultipleFlag,
+	  first_small_multiple_flag,
+	  last_small_multiple_flag,
 	  rectWidth,
 	  rectHeight,
 	  identity_data,
@@ -187,13 +190,19 @@ const scatterPlot = (selection, props) => {
 	const g = selection.append('g')
 	  .attr('transform', `translate(${margin.left},${relative_translate_y})`);
 
+	var chartHeight = height - margin.bottom;
+
 	const yScale = d3.scaleLinear();
 	// Insert padding so that points do not overlap with y or x axis
 	yScale.domain(padLinear(d3.extent(chart_data, yValue), 0.05));
-	yScale.range([height, 0]);
+	yScale.range([chartHeight, 0]);
 	yScale.nice();
 
-	const yAxis = d3.axisLeft(yScale).ticks(5);
+	var yAxis = d3.axisLeft(yScale).ticks(5);
+	if (smallMultipleFlag) {
+		yAxis = d3.axisLeft(yScale).ticks(3);
+	} 
+
 	yAxis.tickFormat(d3.format(".2s"));
 
 	// TODO choose linear scale =====================================
@@ -235,8 +244,10 @@ const scatterPlot = (selection, props) => {
 
 	var x_axis = g.append("g")
 		.attr("class", level + " scatterplot x axis")
-		.attr("transform", "translate(0," + height + ")")
-		.call(xAxis);
+		.attr("transform", "translate(0," + chartHeight + ")")
+		.call(
+			(smallMultipleFlag == false || last_small_multiple_flag == true) ? xAxis : xAxis.tickSize(0)
+		);
 
 	x_axis.selectAll("text")
 		.attr("transform", "rotate(-60)")
@@ -251,27 +262,44 @@ const scatterPlot = (selection, props) => {
 		})
 		.remove();
 
-	x_axis.append("text")
-		.attr("class", level + " scatterplot x label")
-		.attr('fill', 'black')
-		.attr("x", width/2)
-		.attr("y", 45)
-		.text(xAxisLabel);	
+	if (smallMultipleFlag) {
+		if (!last_small_multiple_flag) {
+			x_axis.selectAll('.tick').remove();
+			x_axis.select(".domain")
+					.attr("stroke", "black")
+					.attr("stroke-width", 1)	  
+					.attr("stroke-opacity", 0.3);
+		}
+	}
 
-	g.append("g")
+	if (smallMultipleFlag == false || last_small_multiple_flag == true) {
+		x_axis.append("text")
+			.attr("class", level + " scatterplot x label")
+			.attr('fill', 'black')
+			//.attr("x", width/2)
+			//.attr("y", 45)
+			.attr("x", width + 5)
+			.attr("y", 20)
+			.text(xAxisLabel);	
+	}
+
+	var y_axis = g.append("g")
 		  .attr("class", function(d) {
 				return level + " scatterplot y left axis";
 			})	  
-		  .call(yAxis)
-		.append("text")
-		  .attr("class", function(d) {
-				return level + " scatterplot y label";
-			})	  
-			.attr("x", 0)
-			.attr("y", -8)
-			.attr("text-anchor", "middle")
-		  .attr('fill', 'black')
-		  .text(yAxisLabel);
+		  .call(yAxis);
+
+	if (smallMultipleFlag == false || first_small_multiple_flag == true) {
+		y_axis.append("text")
+			.attr("class", function(d) {
+					return level + " scatterplot y label";
+				})	  
+				.attr("x", 0)
+				.attr("y", -8)
+				.attr("text-anchor", "middle")
+			.attr('fill', 'black')
+			.text(yAxisLabel);
+	}
 
 	g.selectAll(".scatterplot.circle.middle")
 		  .data(chart_data)
@@ -317,7 +345,7 @@ const scatterPlot = (selection, props) => {
 			.attr("class", d => level + " scatterplot initialvirtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
-				var y_position = height/2;
+				var y_position = chartHeight/2;
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})						
 			.attr("x", width + rectWidth + 40)
@@ -342,7 +370,7 @@ const scatterPlot = (selection, props) => {
 			.attr("class", d => level + " scatterplot left text " 
 						+ d.dependent + " " + d.independent)	
 			.attr("transform", function(d) {
-				var y_position = height/2;
+				var y_position = chartHeight/2;
 				return "translate(" + (-margin.left) +"," + y_position + ")";
 			})		
 			.attr("dx", '.6em')			  

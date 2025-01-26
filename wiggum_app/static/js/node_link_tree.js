@@ -416,6 +416,7 @@ function drawNodeLinkTree(data) {
 				height: 200,
 				relative_translate_y: -100,
 				childrenIdentityFlag: true,
+				smallMultipleFlag: false,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
 				identity_data: identity_data,
@@ -779,14 +780,14 @@ function drawNodeLinkTree(data) {
 		});
 	} else if (agg_data.detail_view_type == 'rank') {
 		// Generate interactive buttons
-		var levelLabels= ['\uf03a', '\uf279', '\uf080', 'HM'];
+		var levelLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'smS'];
 
 		thirdLevelButtons.call(interactiveLevelButton, {
 			levelLabels: levelLabels,
 			leftIdentityLabels: leftIdentityLabels,
 			rightIdentityLabels: rightIdentityLabels,
 			level: 'level3',
-			charts: ['list', 'countrymap', 'barchart', 'genericheatmap']
+			charts: ['list', 'countrymap', 'barchart', 'genericheatmap', 'scatterplot']
 		});
 	}
 
@@ -1249,6 +1250,86 @@ function drawNodeLinkTree(data) {
 					chart_data: heatmap_data,
 					level: 'level3'
 				});	
+
+				// Visual Tech 4: small multiples scatterplot
+				var thirdLevelG1_visual_alter_smscatterplot = thirdLevelG1.append("g")
+						.attr("class", 'level-3' + ' ' + dependent 
+						+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot')
+						.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
+
+				// Filter the independent var from contextual_cat_vars
+				var candidate_context_vars = contextual_ord_vars.filter(function(item) {
+					return item !== independent && item !== splitby
+				})
+
+				var first_candidate = candidate_context_vars[0];
+
+				var num_small_multiples = d.data.values.length;
+				var small_multiple_position = 0;
+				var padding = 10;
+				var small_multiple_height = (chart_height - padding)/num_small_multiples;
+				var last_small_multiple_flag = false;
+				var first_small_multiple_flag = true;
+
+				// Iterate through subgroup
+				for (var i = 0; i < num_small_multiples; i++) {
+					if (i == num_small_multiples - 1) {
+						last_small_multiple_flag = true;
+					}
+
+					var object = d.data.values[i];
+					var subject = object.subgroup;
+					var filter_csvData = csvData.filter(
+							function(d){ return d[splitby] === subject} );
+
+					// Aggregate data
+					var aggResultArray = d3.nest()
+									.key(function(d) {return d[independent]})
+									.key(function(d) {return d[first_candidate]})
+									.sortKeys(d3.ascending)
+									.rollup(function(v) {
+										return {
+											sum: d3.sum(v, function(d) {return d[dependent]})
+										}
+									})
+									.entries(filter_csvData);
+
+					// Flattern the nested data
+					var scatterplot_data = []
+					aggResultArray.forEach(function(row) {
+						row.values.forEach(function(cell) {
+									var singleObj = {};
+									singleObj[independent] = row.key;
+									singleObj[first_candidate] = Number(cell.key);
+									singleObj[dependent] = cell.value.sum;
+
+									scatterplot_data.push(singleObj);
+						});
+					});
+
+					thirdLevelG1_visual_alter_smscatterplot.call(scatterPlot, {
+						xValue: d => d[first_candidate],
+						xAxisLabel: first_candidate,
+						yValue: d => d[dependent],
+						yAxisLabel: dependent,
+						splitby: independent,
+						circleRadius: 3,
+						margin: { left: 60, top: 0, right: 0, bottom: 10 },
+						width: 200,
+						height: small_multiple_height,
+						relative_translate_y: small_multiple_position + 10,
+						parentIdentityFlag: false,
+						smallMultipleFlag: true,
+						first_small_multiple_flag: first_small_multiple_flag,
+						last_small_multiple_flag: last_small_multiple_flag,
+						chart_data: scatterplot_data,
+						level: 'level3',
+						myColor: countryColor
+					});	
+					small_multiple_position = small_multiple_position + small_multiple_height;
+
+					first_small_multiple_flag = false;
+				}
 
 			})
 		})
@@ -2051,4 +2132,5 @@ function initVisibility() {
 	d3.selectAll('.level3.singlecountrymap').transition().style('visibility', "hidden");
 	d3.selectAll('.level3.barchart').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.genericheatmap').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.scatterplot').transition().style('visibility', "hidden");	
 }

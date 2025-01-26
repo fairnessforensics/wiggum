@@ -259,7 +259,7 @@ const interactiveLevelButton = (selection, props) => {
 								}
 
 								if (selectedChart == 'countrymap' || selectedChart == 'barchart'
-									|| selectedChart == 'genericheatmap') {
+									|| selectedChart == 'genericheatmap' || selectedChart == 'scatterplot') {
 									d3.selectAll('.'+level + '.text')
 									.transition()
 									.style('visibility', 'visible');	
