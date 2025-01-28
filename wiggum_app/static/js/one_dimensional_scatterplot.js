@@ -301,6 +301,9 @@ const scatterPlot = (selection, props) => {
 			.text(yAxisLabel);
 	}
 
+	const subgroups = new Set(chart_data.map(obj => obj[xAxisLabel]));
+	const num_subgroups = subgroups.size;
+
 	g.selectAll(".scatterplot.circle.middle")
 		  .data(chart_data)
 		  .enter().append("circle")	    
@@ -309,7 +312,15 @@ const scatterPlot = (selection, props) => {
 				+ yAxisLabel + " " + xAxisLabel + " splitby_" + splitby + " subgroup_" + cValue(d);
 			})	  
 		  .attr("id", function(d, i) {
-				return level + "_" + rowIndex + "_scatterplot_" + i;})
+				var id;
+				if ((i+1) % num_subgroups == 0) {
+					id = 'last';
+				} else {
+					id = i % num_subgroups;
+				}
+				return level + "_" + rowIndex + "_scatterplot_middle_circle_"
+					+ yAxisLabel + "_" + xAxisLabel + "_splitby_" + splitby 
+					+ "_subgroup_" + cValue(d) + "_" + id;})
 		  .attr("r", circleRadius)
 		  .attr("cx", function(d) {
 				return xScale(xValue(d));
@@ -367,7 +378,7 @@ const scatterPlot = (selection, props) => {
 			.data(identity_data)
 			.enter()    		
 			.append("text")	   
-			.attr("class", d => level + " scatterplot left text " 
+			.attr("class", d => level + " scatterplot children text " 
 						+ d.dependent + " " + d.independent)	
 			.attr("transform", function(d) {
 				var y_position = chartHeight/2;

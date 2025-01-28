@@ -219,7 +219,7 @@ function drawNodeLinkTree(data) {
 	if (agg_data.trend_type == 'pearson_corr') {
 		addHeightArray = [100];
 	} else if (agg_data.trend_type == 'rank_trend') {
-		addHeightArray = [60];
+		addHeightArray = [60, 100];
 	}
 
 	var height = 100;
@@ -235,7 +235,8 @@ function drawNodeLinkTree(data) {
 		addWidthArray: addWidthArray,
 		addHeightArray: addHeightArray,
 		treeHeight: treeHeight + margin.top + margin.bottom,
-		matrix_data: matrix_data
+		matrix_data: matrix_data,
+		trendType: agg_data.trend_type
 	});
 
 	// Visual Tech 1: Tree nodes	
@@ -270,7 +271,7 @@ function drawNodeLinkTree(data) {
 		});
 
 	// Visual Alternatives
-	var csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+	csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
 	var rowIndex = 0;
 	firstLevelG.each(function (d) {
 
@@ -425,6 +426,8 @@ function drawNodeLinkTree(data) {
 				rowIndex: 'row' + rowIndex,
 				level: 'level1'
 			});
+
+			rowIndex = rowIndex + 1;
 		}
 	
 		if (agg_data.trend_type == 'pearson_corr') {

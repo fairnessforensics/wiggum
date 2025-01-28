@@ -11,10 +11,12 @@ const interactiveLevelButton = (selection, props) => {
 		addWidthArray,
 		addHeightArray,
 		treeHeight,
-		matrix_data
+		matrix_data,
+		trendType
 	} = props;
 
 	var selectedChart;
+	var newViewHeight;
 
 	var levelButtonGroups= selection.selectAll("g." + level + ".button")
 						.data(levelLabels)
@@ -126,10 +128,12 @@ const interactiveLevelButton = (selection, props) => {
 										.attr("transform", "translate(0, 0)");
 
 									var addHeight = 0;
-									if (selectedChart == 'coloredbarchart' ||
-										selectedChart == 'scatterplot') {
+									if (selectedChart == 'coloredbarchart') {
 										addHeight = addHeightArray[0];
+									} else if (selectedChart == 'scatterplot') {
+										addHeight = addHeightArray[1];
 									}
+
 									newViewHeight = height + addHeight;
 
 									// Adjust level 1 children rect x postion
@@ -603,29 +607,38 @@ const interactiveLevelButton = (selection, props) => {
 					
 					if (i == 0) {
 						var addWidth4Lable = 0;
-						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
-							addWidth4Lable = 30;
-							firstLevelParentVLWidth = addWidth4Lable;
 
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+						if (trendType == "pearson_corr") {
+							if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+								addWidth4Lable = 30;
+								firstLevelParentVLWidth = addWidth4Lable;
 
-							// Adjust Total Space
-							adjustTotalWidth({
-								firstLevelWidth: firstLevelWidth, 
-								firstLevelParentVLWidth: firstLevelParentVLWidth,
-								addTotalWidthVL: addTotalWidthVL,
-								resetFlag: true
-							})
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
-							//adjustWidth({
-							//	firstLevelWidth: firstLevelWidth, 
-							//	addWidth: firstLevelParentVLWidth + firstLevelChildrenVLWidth, 
-							//	level: 'level1'});
+								// Adjust Total Space
+								adjustTotalWidth({
+									firstLevelWidth: firstLevelWidth, 
+									firstLevelParentVLWidth: firstLevelParentVLWidth,
+									addTotalWidthVL: addTotalWidthVL,
+									resetFlag: true
+								})
+
+								//adjustWidth({
+								//	firstLevelWidth: firstLevelWidth, 
+								//	addWidth: firstLevelParentVLWidth + firstLevelChildrenVLWidth, 
+								//	level: 'level1'});
+							}
 						} else {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth, 
 								level: 'level2'});
+
+							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+								d3.selectAll('.'+ level +'.scatterplot.children.text')
+									.transition()
+									.attr("x", -firstLevelParentVLWidth)
+							}
 						}
 
 						d3.selectAll('.'+ level +'.list.cell')
@@ -700,15 +713,21 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 2) {
-						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-							|| d3.select('.level1.histogram').style("visibility") == 'visible'
-							|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-							firstLevelParentVLWidth = 40;
+
+						if (trendType == 'pearson_corr') {
+							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+									|| d3.select('.level1.histogram').style("visibility") == 'visible') {
+								firstLevelParentVLWidth = 40;
+							} 
+
+							if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+								addWidth4Lable = 30;
+								firstLevelParentVLWidth = addWidth4Lable;
+							} 
 						} 
 
-						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
-							addWidth4Lable = 30;
-							firstLevelParentVLWidth = addWidth4Lable;
+						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+							firstLevelParentVLWidth = 40;
 						} 
 
 						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
@@ -721,76 +740,95 @@ const interactiveLevelButton = (selection, props) => {
 							resetFlag: true
 						})
 
-						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
-							// Call Virtual Layer
-							levelG.call(doubleHistogram_virtual_layer, {
-								width: firstLevelWidth,
-								height: height,
-								parentVLWidth: firstLevelParentVLWidth,
-								axis_x_position: 15,
-								side: 'parent',
-								aux_flag: false,
-								level: 'level1'
-							});	
+						if (trendType == 'pearson_corr') {
+							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
+								// Call Virtual Layer
+								levelG.call(doubleHistogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: height,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 15,
+									side: 'parent',
+									aux_flag: false,
+									level: 'level1'
+								});	
+							}
+
+							if (d3.select('.level1.histogram').style("visibility") == 'visible') {
+								// Call Virtual Layer
+								levelG.call(histogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									source_offset_y: 0,
+									offset_y: -35,
+									virtualLayerWidth: firstLevelParentVLWidth,
+									axis_x_position: 15,
+									side: 'parent',
+									multi_no: 'h1',
+									aux_flag: false,
+									level: 'level1'
+								});	
+	
+								levelG.call(histogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									source_offset_y: 0,
+									offset_y: 35,
+									virtualLayerWidth: firstLevelParentVLWidth,
+									axis_x_position: 15,
+									side: 'parent',
+									multi_no: 'h2',
+									aux_flag: false,
+									level: 'level1'
+								});	
+
+								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+									// Call Virtual Layer
+									levelG.call(scatterplot_virtual_layer, {
+										width: firstLevelWidth,
+										height: height,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 15,
+										side: 'parent',
+										level: 'level1'
+									});	
+								}
+							}
+
+							if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+								// Hide node
+								d3.selectAll('.'+ level +'.list.cell')
+									.transition().style('visibility', "hidden");
+	
+								levelG.call(heatmapDensity_virtual_layer, {
+									x_position: 0,
+									height: 100,
+									chart_data: csvData,
+									offset_flag: false,
+									side: 'parent',
+									parentVLWidth: firstLevelParentVLWidth,
+									level: 'level1'
+								});	
+							}
 						}
 
-						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
-							// Hide node
-							d3.selectAll('.'+ level +'.list.cell')
-								.transition().style('visibility', "hidden");
+						if (trendType == 'rank_trend') {
+							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+								d3.selectAll('.'+ level +'.scatterplot.children.text')
+									.transition()
+									.attr("x", -firstLevelParentVLWidth)
 
-							levelG.call(heatmapDensity_virtual_layer, {
-								x_position: 0,
-								height: 100,
-								chart_data: csvData,
-								offset_flag: false,
-								side: 'parent',
-								parentVLWidth: firstLevelParentVLWidth,
-								level: 'level1'
-							});	
+								// Call Virtual Layer
+								levelG.call(agg_scatterplot_virtual_layer, {
+											width: firstLevelWidth,
+											height: newViewHeight,
+											parentVLWidth: firstLevelParentVLWidth,
+											axis_x_position: 15,
+											side: 'parent',
+											level: 'level1'
+								});	
+							}
 						}
-
-						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
-							// Call Virtual Layer
-							levelG.call(histogram_virtual_layer, {
-								width: firstLevelWidth,
-								height: 30,
-								source_offset_y: 0,
-								offset_y: -35,
-								virtualLayerWidth: firstLevelParentVLWidth,
-								axis_x_position: 15,
-								side: 'parent',
-								multi_no: 'h1',
-								aux_flag: false,
-								level: 'level1'
-							});	
-
-							levelG.call(histogram_virtual_layer, {
-								width: firstLevelWidth,
-								height: 30,
-								source_offset_y: 0,
-								offset_y: 35,
-								virtualLayerWidth: firstLevelParentVLWidth,
-								axis_x_position: 15,
-								side: 'parent',
-								multi_no: 'h2',
-								aux_flag: false,
-								level: 'level1'
-							});	
-						}
-
-						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-							// Call Virtual Layer
-							levelG.call(scatterplot_virtual_layer, {
-								width: firstLevelWidth,
-								height: height,
-								parentVLWidth: firstLevelParentVLWidth,
-								axis_x_position: 15,
-								side: 'parent',
-								level: 'level1'
-							});	
-						}
-
 					}
 
 					if (i == 3) {
@@ -946,10 +984,12 @@ const interactiveLevelButton = (selection, props) => {
 							addWidth: firstLevelParentVLWidth, 
 							level: 'level1'});
 
+						adjust_position = -50;
+
 						d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
-						.transition()
-						.attr("height", 20)
-						.attr('transform', `translate(${-40},${height/2})`);
+							.transition()
+							.attr("height", 20)
+							.attr('transform', `translate(${adjust_position},${newViewHeight/2})`);
 					}
 
 					if (i == 1) {
@@ -1045,208 +1085,266 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 2) {
-						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-						|| d3.select('.level1.histogram').style("visibility") == 'visible'
-						|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-							//var addRightWidth = 40 + 60;
+
+						if (trendType == 'pearson_corr') {
+							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+								|| d3.select('.level1.histogram').style("visibility") == 'visible'
+								|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+								//var addRightWidth = 40 + 60;
+								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+									firstLevelChildrenVLWidth = 70;
+								} else {
+									firstLevelChildrenVLWidth = 60;
+								}
+
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+		
+								adjustWidth({
+									firstLevelWidth: firstLevelWidth, 
+									addWidth: addTotalWidthVL, 
+									level: 'level2'});
+							} 
+						} else if (trendType == 'rank_trend') {
 							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-								firstLevelChildrenVLWidth = 70;
-							} else {
-								firstLevelChildrenVLWidth = 60;
-							}
+								//var addRightWidth = 40 + 60;
+								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+									firstLevelChildrenVLWidth = 70;
+								} else {
+									firstLevelChildrenVLWidth = 60;
+								}
 
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-	
-							adjustWidth({
-								firstLevelWidth: firstLevelWidth, 
-								addWidth: addTotalWidthVL, 
-								level: 'level2'});
-						} 
-
-						// Reset the x position for child nodes in level 1 Virtual Layer
-						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-							child_x_position = 30;
-						} else {
-							child_x_position = 20;
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+		
+								adjustWidth({
+									firstLevelWidth: firstLevelWidth, 
+									addWidth: addTotalWidthVL, 
+									level: 'level2'});
+							} 
 						}
+
+						// TODO not sure what the purpose is
+						// Reset the x position for child nodes in level 1 Virtual Layer
+						//if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+						//	child_x_position = 30;
+						//} else {
+						//	child_x_position = 20;
+						//}
+
+						child_x_position = 20;
+
 						d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
 							.transition()
 							.attr("transform", function(d,i) { 
-								return "translate(" + child_x_position + "," + height/2 + ")"; });	
+								return "translate(" + child_x_position + "," + newViewHeight/2 + ")"; });	
 	
-						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-							|| d3.select('.level1.histogram').style("visibility") == 'visible') {
-						
-							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
-								levelG.each(function (d) {
-									var selectionLevelG = d3.select(this);
-			
-									// Duplicate y axis
-									// Prepare data TODO duplicate issue
-									var keyArray = d.data.key.split(",");
-									var histrogram_data = [];
-									csvData.forEach(function (item) {
-										var singleObj_var1 = {};
-										singleObj_var1['type'] = keyArray[0];
-										singleObj_var1['value'] = item[keyArray[0]];
-										histrogram_data.push(singleObj_var1);
-			
-										var singleObj_var2 = {};
-										singleObj_var2['type'] = keyArray[1];
-										singleObj_var2['value'] = item[keyArray[1]];
-										histrogram_data.push(singleObj_var2);
-									});
-			
-									// TODO Duplicate code issue
-									var min_domain = d3.min(histrogram_data, function(d) { return +d.value });
-									var max_domain = d3.max(histrogram_data, function(d) { return +d.value });
-								
-									// X axis: scale and draw:
-									var x = d3.scaleLinear()
-												.domain([min_domain, max_domain])
-												.range([0, width]);
-			
-									var histogram = d3.histogram()
-													.value(function(d) { return +d.value; })   
-													.domain(x.domain())  
-													.thresholds(x.ticks(10)); 
-			
-									var bins1 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[0]} ));
-									var bins2 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[1]} ));
-								
-									// Y axis: 
-									var y_max = Math.max(d3.max(bins1, function(d) { return d.length; }), 
-														d3.max(bins2, function(d) { return d.length; }));
-			
-									var y = d3.scaleLinear()
-											.domain([0, y_max])    
-											.range([100, 0]);
-			
-									selectionLevelG.append("g")
-										.attr("class", level + " doublehistogram virtuallayer y axis children")
-										.attr("transform", "translate(" + 140 + ","+ (-100/2)+")")
-										.call(d3.axisRight(y));
-								});	
+						if (trendType == 'pearson_corr') {
+							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+								|| d3.select('.level1.histogram').style("visibility") == 'visible') {
+							
+								if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
+									levelG.each(function (d) {
+										var selectionLevelG = d3.select(this);
+				
+										// Duplicate y axis
+										// Prepare data TODO duplicate issue
+										var keyArray = d.data.key.split(",");
+										var histrogram_data = [];
+										csvData.forEach(function (item) {
+											var singleObj_var1 = {};
+											singleObj_var1['type'] = keyArray[0];
+											singleObj_var1['value'] = item[keyArray[0]];
+											histrogram_data.push(singleObj_var1);
+				
+											var singleObj_var2 = {};
+											singleObj_var2['type'] = keyArray[1];
+											singleObj_var2['value'] = item[keyArray[1]];
+											histrogram_data.push(singleObj_var2);
+										});
+				
+										// TODO Duplicate code issue
+										var min_domain = d3.min(histrogram_data, function(d) { return +d.value });
+										var max_domain = d3.max(histrogram_data, function(d) { return +d.value });
+									
+										// X axis: scale and draw:
+										var x = d3.scaleLinear()
+													.domain([min_domain, max_domain])
+													.range([0, width]);
+				
+										var histogram = d3.histogram()
+														.value(function(d) { return +d.value; })   
+														.domain(x.domain())  
+														.thresholds(x.ticks(10)); 
+				
+										var bins1 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[0]} ));
+										var bins2 = histogram(histrogram_data.filter( function(d){return d.type === keyArray[1]} ));
+									
+										// Y axis: 
+										var y_max = Math.max(d3.max(bins1, function(d) { return d.length; }), 
+															d3.max(bins2, function(d) { return d.length; }));
+				
+										var y = d3.scaleLinear()
+												.domain([0, y_max])    
+												.range([100, 0]);
+				
+										selectionLevelG.append("g")
+											.attr("class", level + " doublehistogram virtuallayer y axis children")
+											.attr("transform", "translate(" + 140 + ","+ (-100/2)+")")
+											.call(d3.axisRight(y));
+									});	
 
-								// Call Virtual Layer
-								levelG.call(doubleHistogram_virtual_layer, {
-									width: firstLevelWidth,
-									height: height,
-									parentVLWidth: firstLevelParentVLWidth,
-									axis_x_position: 140 + 25,
-									side: 'children',
-									aux_flag: false,
-									level: 'level1'
-								});	
-							}
+									// Call Virtual Layer
+									levelG.call(doubleHistogram_virtual_layer, {
+										width: firstLevelWidth,
+										height: height,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 140 + 25,
+										side: 'children',
+										aux_flag: false,
+										level: 'level1'
+									});	
+								}
 
-							if (d3.select('.level1.histogram').style("visibility") == 'visible') {
-								levelG.each(function (d) {
-									var selectionLevelG = d3.select(this);
+								if (d3.select('.level1.histogram').style("visibility") == 'visible') {
+									levelG.each(function (d) {
+										var selectionLevelG = d3.select(this);
 
-									var keyArray = d.data.key.split(",");
-									var histrogram_data = [];
-									csvData.forEach(function (item) {
-										var singleObj_var = {};
-										singleObj_var['type'] = keyArray[0];
-										singleObj_var['value'] = item[keyArray[0]];
-										histrogram_data.push(singleObj_var);
+										var keyArray = d.data.key.split(",");
+										var histrogram_data = [];
+										csvData.forEach(function (item) {
+											var singleObj_var = {};
+											singleObj_var['type'] = keyArray[0];
+											singleObj_var['value'] = item[keyArray[0]];
+											histrogram_data.push(singleObj_var);
 
-									});
+										});
 
-									// Duplicate y axis
-									selectionLevelG.call(axisHistogram, {
-										chart_data: histrogram_data,
+										// Duplicate y axis
+										selectionLevelG.call(axisHistogram, {
+											chart_data: histrogram_data,
+											width: firstLevelWidth,
+											height: 30,
+											offset_y: -35,
+											level: 'level1'
+										})
+
+										// Second chart
+										var histrogram_data = [];
+										csvData.forEach(function (item) {
+											var singleObj_var = {};
+											singleObj_var['type'] = keyArray[1];
+											singleObj_var['value'] = item[keyArray[1]];
+											histrogram_data.push(singleObj_var);
+										});
+
+										// Duplicate y axis
+										selectionLevelG.call(axisHistogram, {
+											chart_data: histrogram_data,
+											width: firstLevelWidth,
+											height: 30,
+											offset_y: 35,
+											level: 'level1'
+										})
+									})	
+
+									// Call Virtual Layer
+									levelG.call(histogram_virtual_layer, {
 										width: firstLevelWidth,
 										height: 30,
+										source_offset_y: 0,
 										offset_y: -35,
+										virtualLayerWidth: firstLevelChildrenVLWidth,
+										axis_x_position: 140 + 25,
+										side: 'children',
+										multi_no: 'h1',
+										aux_flag: false,
 										level: 'level1'
-									})
-
-									// Second chart
-									var histrogram_data = [];
-									csvData.forEach(function (item) {
-										var singleObj_var = {};
-										singleObj_var['type'] = keyArray[1];
-										singleObj_var['value'] = item[keyArray[1]];
-										histrogram_data.push(singleObj_var);
-									});
-
-									// Duplicate y axis
-									selectionLevelG.call(axisHistogram, {
-										chart_data: histrogram_data,
+									});	
+		
+									levelG.call(histogram_virtual_layer, {
 										width: firstLevelWidth,
 										height: 30,
+										source_offset_y: 0,
 										offset_y: 35,
+										virtualLayerWidth: firstLevelChildrenVLWidth,
+										axis_x_position: 140 + 25,
+										side: 'children',
+										multi_no: 'h2',
+										aux_flag: false,
 										level: 'level1'
-									})
-								})	
+									});	
+								}
+							}
 
-								// Call Virtual Layer
-								levelG.call(histogram_virtual_layer, {
-									width: firstLevelWidth,
-									height: 30,
-									source_offset_y: 0,
-									offset_y: -35,
-									virtualLayerWidth: firstLevelChildrenVLWidth,
-									axis_x_position: 140 + 25,
+							if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+
+								firstLevelChildrenVLWidth = 0;
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+		
+								adjustWidth({
+									firstLevelWidth: firstLevelWidth, 
+									addWidth: addTotalWidthVL, 
+									level: 'level2'});
+
+								// Hide node
+								d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+									.transition().style('visibility', "hidden");
+
+								levelG.call(heatmapDensity_virtual_layer, {
+									x_position: firstLevelWidth,
+									height: 100,
+									chart_data: csvData,
+									offset_flag: true,
 									side: 'children',
-									multi_no: 'h1',
-									aux_flag: false,
-									level: 'level1'
-								});	
-	
-								levelG.call(histogram_virtual_layer, {
-									width: firstLevelWidth,
-									height: 30,
-									source_offset_y: 0,
-									offset_y: 35,
-									virtualLayerWidth: firstLevelChildrenVLWidth,
-									axis_x_position: 140 + 25,
-									side: 'children',
-									multi_no: 'h2',
-									aux_flag: false,
 									level: 'level1'
 								});	
 							}
-						}
-
-						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
-
-							firstLevelChildrenVLWidth = 0;
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-	
-							adjustWidth({
-								firstLevelWidth: firstLevelWidth, 
-								addWidth: addTotalWidthVL, 
-								level: 'level2'});
-
-							// Hide node
-							d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
-								.transition().style('visibility', "hidden");
-
-							levelG.call(heatmapDensity_virtual_layer, {
-								x_position: firstLevelWidth,
-								height: 100,
-								chart_data: csvData,
-								offset_flag: true,
-								side: 'children',
-								level: 'level1'
-							});	
 						}
 
 						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-							levelG.each(function (d) {
+							levelG.each(function (d) {				
 								var selectionLevelG = d3.select(this);
 
 								yLable = selectionLevelG.select(".scatterplot.y.label").text();
+								xLable = selectionLevelG.select(".scatterplot.x.label").text();
+								var keyArray = d.data.key.split(",");
+
+								var chart_data;
+								if (trendType == 'pearson_corr') {
+									chart_data = csvData;
+								} else if (trendType == 'rank_trend') {
+
+									// Aggregate data
+									var aggResultArray = d3.nest()
+										.key(function(d) {return d[keyArray[1]]})
+										.key(function(d) {return d[xLable]})
+										.sortKeys(d3.ascending)
+										.rollup(function(v) {
+											return {
+												sum: d3.sum(v, function(d) {return d[keyArray[0]]})
+											}
+										})
+										.entries(csvData);
+
+									// Flattern the nested data
+									chart_data = []
+									aggResultArray.forEach(function(row) {
+										row.values.forEach(function(cell) {
+										var singleObj = {};
+										singleObj[keyArray[1]] = row.key;
+										singleObj[xLable] = Number(cell.key);
+										singleObj[keyArray[0]] = cell.value.sum;
+
+										chart_data.push(singleObj);
+										});
+									});
+								}
 
 								// Duplicate y axis
 								// TODO Move to axis.js
 								const yScale = d3.scaleLinear();
 								// Insert padding so that points do not overlap with y or x axis
-								yScale.domain(padLinear(d3.extent(csvData, d => d[yLable]), 0.1));
-								yScale.range([height, 0]);
+								yScale.domain(padLinear(d3.extent(chart_data, d => d[yLable]), 0.05));
+								yScale.range([newViewHeight, 0]);
 								yScale.nice();
 
 								const yAxis = d3.axisRight(yScale).ticks(5);
@@ -1254,20 +1352,32 @@ const interactiveLevelButton = (selection, props) => {
 		
 								selectionLevelG.append("g")
 									.attr("class", level + " scatterplot virtuallayer y axis children")
-									.attr("transform", "translate(" + 250 + ","+ (-100/2)+")")
+									.attr("transform", "translate(" + 250 + ","+ (-newViewHeight/2)+")")
 									.call(yAxis);
 							});	
 
 							// Call Virtual Layer
-							levelG.call(scatterplot_virtual_layer, {
-								width: firstLevelWidth,
-								height: height,
-								parentVLWidth: firstLevelParentVLWidth,
-								axis_x_position: 250 + 35,
-								side: 'children',
-								aux_flag: false,
-								level: 'level1'
-							});	
+							if (trendType == 'pearson_corr') {
+								levelG.call(scatterplot_virtual_layer, {
+									width: firstLevelWidth,
+									height: newViewHeight,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 250 + 35,
+									side: 'children',
+									aux_flag: false,
+									level: 'level1'
+								});	
+							} else if (trendType == 'rank_trend') {
+								levelG.call(agg_scatterplot_virtual_layer, {
+									width: firstLevelWidth,
+									height: newViewHeight,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 250 + 35,
+									side: 'children',
+									aux_flag: false,
+									level: 'level1'
+								});	
+							}
 						}
 					}
 

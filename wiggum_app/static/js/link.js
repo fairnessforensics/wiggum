@@ -23,7 +23,8 @@ const link = (selection, props) => {
 		})
 		.attr('fill', 'none')
 		.attr('stroke', d => d.color)
-		.style("opacity", 0.6)
+		//.style("opacity", 0.6)
+		.style("opacity", d => d.opacity)
 		.style("stroke-width", "1px")
 		.on("mouseover", function(d) {
 			if (side != "aux")
@@ -95,6 +96,8 @@ function onMouseOut(level, rowIndex, multi_no, chartType) {
 	}
 
 	d3.selectAll("." + level +"." + rowIndex + "."+ chartType + ".bar")
+		.style("opacity", opacityValue);
+	d3.selectAll("." + level +"." + rowIndex + "."+ chartType + ".circle")
 		.style("opacity", opacityValue);
 	d3.selectAll("." + level +"." + rowIndex + "."+ chartType + ".vpath")
 		.style("opacity", opacityValue);
