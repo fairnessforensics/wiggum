@@ -44,6 +44,10 @@ const interactiveLevelButton = (selection, props) => {
 									.style('visibility', 'hidden');
 							}
 
+							// reset VL width 
+							firstLevelParentVLWidth = 0;
+							firstLevelChildrenVLWidth = 0;
+
 							// Reset left rect
 							d3.selectAll('.'+ level +'.list.cell')
 								.attr("y", -10)
