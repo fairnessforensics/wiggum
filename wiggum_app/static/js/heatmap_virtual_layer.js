@@ -208,3 +208,59 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 	});
 }
 
+/**
+ * Reset virtual layering
+ * 
+ * @param none.
+ * @returns none.
+*/
+function resetVirtualLayering(level) {
+
+	// Reset the left VL similar to left button
+	firstLevelParentVLWidth = 0;
+
+	d3.selectAll('.'+ level +'.list.cell')
+		.transition().style('visibility', "visible");
+
+	// Reset left rect
+	d3.selectAll('.'+ level +'.list.cell')
+		.attr("y", -10)
+		.attr("height", 20);
+
+	// Remove existing virtual layer
+	d3.selectAll('.parent.virtuallayer').remove();
+
+	// Adjust first level width
+	adjustWidth({
+		firstLevelWidth: firstLevelWidth, 
+		addWidth: 0, 
+		level: 'level1'});
+
+	adjustWidth({
+		firstLevelWidth: firstLevelWidth, 
+		addWidth: 0, 
+		level: 'level2'});
+
+	// Reset the right VL similar to right button
+	firstLevelChildrenVLWidth = 0;
+
+	// Reset right rect
+	d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+			.attr("y", -10)
+			.attr("height", 20);
+
+	// Remove existing virtual layer
+	d3.selectAll('.children.virtuallayer').remove();
+
+	// Adjust second level width
+	adjustWidth({
+		firstLevelWidth: firstLevelWidth, 
+		addWidth: 0, 
+		level: 'level2'});
+
+	adjustWidth({
+		firstLevelWidth: firstLevelWidth, 
+		addWidth: 0, 
+		level: 'level1'});
+
+}

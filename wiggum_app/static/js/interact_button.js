@@ -139,10 +139,10 @@ const interactiveLevelButton = (selection, props) => {
 									newViewHeight = height + addHeight;
 
 									// Adjust level 1 children rect x postion
-									// Delete for interactive menu
-									//d3.selectAll('.level1.initialvirtuallayer.children.rect')
-									//	.transition()
-									//	.attr('transform', `translate(${-40},${newViewHeight/2})`);
+									// TODO may simplify
+									d3.selectAll('.level1.initialvirtuallayer.children.rect')
+										.transition()
+										.attr('transform', `translate(${-50},${newViewHeight/2})`);
 
 									// Adjust level 2 nodes x postion
 									d3.selectAll('.node.level-2')

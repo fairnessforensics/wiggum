@@ -494,6 +494,9 @@ const interactGenericHeatmap = (selection, props) => {
 					.on("mousedown", function() { d3.event.stopImmediatePropagation(); }) 
 					.on('change', (event) => {
 
+						// Reset VL
+						resetVirtualLayering(level);
+
 						var selected_option = $('#' + level + "_" + var1 +  "_genericheatmap_x_menu").val();
 						selection.call(interactGenericHeatmap, {
 							margin: margin,
