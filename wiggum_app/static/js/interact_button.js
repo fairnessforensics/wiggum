@@ -132,6 +132,8 @@ const interactiveLevelButton = (selection, props) => {
 										addHeight = addHeightArray[0];
 									} else if (selectedChart == 'scatterplot') {
 										addHeight = addHeightArray[1];
+									} else if (selectedChart == 'genericheatmap') {
+										addHeight = addHeightArray[0];
 									}
 
 									newViewHeight = height + addHeight;
@@ -726,6 +728,13 @@ const interactiveLevelButton = (selection, props) => {
 							} 
 						} 
 
+						if (trendType == 'rank_trend') {
+							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
+								addWidth4Lable = 20;
+								firstLevelParentVLWidth = addWidth4Lable;
+							} 
+						}
+
 						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 							firstLevelParentVLWidth = 40;
 						} 
@@ -813,6 +822,26 @@ const interactiveLevelButton = (selection, props) => {
 						}
 
 						if (trendType == 'rank_trend') {
+
+							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
+								// Hide node
+								d3.selectAll('.'+ level +'.list.cell')
+									.transition().style('visibility', "hidden");
+
+								d3.selectAll('.'+ level +'.genericheatmap.children.text')
+									.transition().style('visibility', "hidden");
+
+								levelG.call(generic_heatmap_virtual_layer, {
+									x_position: 0,
+									height: newViewHeight,
+									chart_data: csvData,
+									offset_flag: false,
+									side: 'parent',
+									parentVLWidth: firstLevelParentVLWidth,
+									level: 'level1'
+								});	
+							}
+
 							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 								d3.selectAll('.'+ level +'.scatterplot.children.text')
 									.transition()
@@ -1300,6 +1329,35 @@ const interactiveLevelButton = (selection, props) => {
 							}
 						}
 
+						// Charts in rank trend
+						if (trendType == 'rank_trend') {
+
+							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
+
+								firstLevelChildrenVLWidth = 30;
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+		
+								adjustWidth({
+									firstLevelWidth: firstLevelWidth, 
+									addWidth: addTotalWidthVL, 
+									level: 'level2'});
+
+								// Hide node
+								d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+									.transition().style('visibility', "hidden");
+
+								levelG.call(generic_heatmap_virtual_layer, {
+									x_position: firstLevelWidth + firstLevelChildrenVLWidth,
+									height: newViewHeight,
+									chart_data: csvData,
+									offset_flag: true,
+									side: 'children',
+									level: 'level1'
+								});	
+							}
+						}
+
+						// Charts in both trends
 						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 							levelG.each(function (d) {				
 								var selectionLevelG = d3.select(this);

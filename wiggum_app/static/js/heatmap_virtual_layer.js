@@ -106,3 +106,105 @@ const heatmapDensity_virtual_layer = (selection, props) => {
 	});
 }
 
+const generic_heatmap_virtual_layer = (selection, props) => {
+	const {
+	  x_position,
+	  height,
+	  chart_data,
+	  offset_flag,
+	  side,
+	  parentVLWidth,
+	  level
+	} = props;
+
+	var width;
+
+	selection.each(function (d) {
+		var selectionLevelG = d3.select(this);
+		selectionLevelG.select(".genericheatmap.cell")
+				.each(function () {
+					var bbox = this.getBBox();
+					width = bbox.width;
+				});
+
+		// Processing the data
+		var keyArray = d.data.key.split(",");
+		var dependent = keyArray[0];
+		var independent = keyArray[1];
+
+		var aggResultArray = d3.nest()
+							.key(function(d) {return d[keyArray[1]]})
+							.sortKeys(d3.ascending)
+							.rollup(function(v) {
+								return {
+									sum: d3.sum(v, function(d) {return d[keyArray[0]]})
+								}
+							})
+							.entries(csvData);
+
+		// Flattern the nested data
+		var chart_data = [];
+		aggResultArray.forEach(function(obj) {
+
+				var singleObj = {};
+				singleObj[independent] = obj.key;
+				singleObj[dependent] = obj.value.sum;
+
+				chart_data.push(singleObj);
+		});
+
+		var maxValue = d3.max(chart_data, d => d[dependent]);
+
+		// Label
+		var var1_label = d3.map(chart_data, function(d){return d[independent];}).keys().reverse();
+	
+		const g = selectionLevelG.append('g')
+				.attr('transform', `translate(${-10},${-height/2 })`);
+	
+		// Build Y scales and axis:
+		var y = d3.scaleBand()
+					.range([ height, 0 ])
+					.domain(var1_label)
+					.padding(0.1);
+	
+		// Use 7 levels of purple
+		var color_range = ["#f2f0f7","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#4a1486"];
+		var heatmapDensityColor;
+	
+		var base = Math.floor(Math.exp(Math.log(maxValue)/5));
+	
+		heatmapDensityColor = d3.scaleThreshold()
+						.domain([1, Math.pow(base, 1), Math.pow(base, 2), Math.pow(base, 3), 
+									Math.pow(base, 4), Math.pow(base, 5)])
+						.range(color_range);
+	
+		var offset_x = 0;
+		if (offset_flag == true) {
+			offset_x = 20 - width;
+		} 
+
+		g.selectAll()
+			.data(chart_data)
+			.enter()
+			.append("rect")
+			.attr("class", level + " " + side + " genericheatmap virtuallayer cell")
+			.attr("transform", function() {
+				if (side == "parent") {
+					return "translate(" + (x_position + offset_x - parentVLWidth) + ","+ (0)+")";
+				} else {
+					return "translate(" + (x_position + offset_x) + ","+ (0)+")"	
+				}
+			})
+			.attr("x", 0)
+			.attr("y", function(d) { return y(d[independent]) })
+			.attr("width", width )
+			.attr("height", y.bandwidth() )
+			.style("fill", function(d) { return heatmapDensityColor(d[dependent])} )
+			.style("stroke", "grey")
+			.style("stroke-width", "1px")
+			.append('title')
+			.text(d => `The ${dependent} is ${d3.format(".2s")(d[dependent])}.`);	
+
+	});
+}
+

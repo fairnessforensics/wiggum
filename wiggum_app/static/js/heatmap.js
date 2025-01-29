@@ -607,7 +607,7 @@ const interactGenericHeatmap = (selection, props) => {
 			.data(identity_data)
 			.enter()    		
 			.append("text")	   
-			.attr("class", d => level + " genericheatmap left text " 
+			.attr("class", d => level + " genericheatmap children text " 
 						+ d.dependent + " " + d.independent)	
 			.attr("transform", function(d) {
 				var y_position = height/2;
