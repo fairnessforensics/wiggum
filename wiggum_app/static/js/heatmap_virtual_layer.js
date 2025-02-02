@@ -205,6 +205,26 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 			.append('title')
 			.text(d => `The ${dependent} is ${d3.format(".2s")(d[dependent])}.`);	
 
+
+		if (side == "parent") {
+			// draw legend colored rectangles
+			g.append("rect")
+				.attr("class", level + " " + side + " genericheatmap virtuallayer label rect")
+				.attr("x", -20)
+				.attr("y", -10)
+				.attr("width", 10)
+				.attr("height", 10)
+				.style("fill", "#9e9ac8");
+
+			// draw legend text
+			g.append("text")
+				.attr("class", level + " " + side + " genericheatmap virtuallayer label text")
+				.attr("x", 24)
+				.attr("y", 0)
+				.style("text-anchor", "end")
+				.text(dependent);
+		}
+
 	});
 }
 
