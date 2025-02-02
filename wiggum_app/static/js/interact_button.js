@@ -646,6 +646,14 @@ const interactiveLevelButton = (selection, props) => {
 									.attr("x", -firstLevelParentVLWidth)
 							}
 
+							if (level == "level1") {
+								if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
+									d3.selectAll('.'+level + '.genericheatmap.children.text')
+										.transition()
+										.style('visibility', 'visible');
+								}
+							}
+
 							if (level == "level3") {
 
 								if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
