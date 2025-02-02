@@ -1,3 +1,5 @@
+var countriesToFilter;
+
 const countryMap = (selection, props) => {
 	const {
 		chart_data,
@@ -36,7 +38,7 @@ const countryMap = (selection, props) => {
 	}
 
 	//Some countries name may not match in geojson file.
-	const countriesToFilter = [
+	countriesToFilter = [
 		"Canada", "Mexico", "USA", "Belize", "Costa Rica", "El Salvador", 
 		"Guatemala", "Honduras", "Nicaragua", "Panama", "Antigua and Barbuda", 
 		"Bahamas", "Barbados", "Cuba", "Dominica", "Dominican Republic", 

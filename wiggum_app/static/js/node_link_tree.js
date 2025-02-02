@@ -755,10 +755,10 @@ function drawNodeLinkTree(data) {
 	// Third level: subgroups
 
 	// Left identity labels for virtual layer
-	leftIdentityLabels = ['I', 'II', 'III'];
+	leftIdentityLabels = ['0', 'I', 'II', 'III'];
 
 	// Right identity labels for virtual layer
-	rightIdentityLabels = ['I', 'II', 'III'];
+	rightIdentityLabels = [];
 
 	var thirdLevelG1 = g.select('.level-3');
 
@@ -769,6 +769,8 @@ function drawNodeLinkTree(data) {
 	var thirdLevelButtons= g.append("g")
 						.attr("id","thirdLevelButtons")
 						.attr("transform",  "translate(" + (thirdLevelG1_x-button_offset_x) + ", " + (-margin.top) + ")");
+
+	thirdLevelG = g.selectAll('.level-3');
 
 	if (agg_data.detail_view_type == 'scatter') {	
 		// Generate interactive buttons
@@ -789,14 +791,15 @@ function drawNodeLinkTree(data) {
 			levelLabels: levelLabels,
 			leftIdentityLabels: leftIdentityLabels,
 			rightIdentityLabels: rightIdentityLabels,
+			levelG: thirdLevelG,
 			level: 'level3',
-			charts: ['list', 'countrymap', 'barchart', 'genericheatmap', 'scatterplot']
+			charts: ['list', 'countrymap', 'barchart', 'genericheatmap', 'scatterplot'],
+			trendType: agg_data.trend_type
 		});
 	}
 
 	// Third level drawing
 	// Visual Tech 1: Tree nodes
-	thirdLevelG = g.selectAll('.level-3');
 	thirdLevelG.append('rect')
 		.attr("class", function(d) {
 			return "level3 list rect " + d.data.dependent 

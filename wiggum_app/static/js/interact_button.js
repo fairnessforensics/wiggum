@@ -257,7 +257,7 @@ const interactiveLevelButton = (selection, props) => {
 										.transition()
 										.style('visibility', 'hidden');	
 								
-								if (selectedChart == 'countrymap') {	
+								/*if (selectedChart == 'countrymap') {	
 									// TODO hardcode
 									d3.selectAll('.'+level + '.rect' + '.splitby_importer'
 										+',.'+level + '.rect' + '.splitby_exporter')
@@ -265,8 +265,8 @@ const interactiveLevelButton = (selection, props) => {
 										.style('visibility', 'hidden');	
 									d3.selectAll('.'+level + '.singlecountrymap')
 										.transition()
-										.style('visibility', 'visible');	
-								}
+										.style('visibility', 'hidden');	
+								}*/
 
 								if (selectedChart == 'countrymap' || selectedChart == 'barchart'
 									|| selectedChart == 'genericheatmap' || selectedChart == 'scatterplot') {
@@ -634,7 +634,7 @@ const interactiveLevelButton = (selection, props) => {
 								//	addWidth: firstLevelParentVLWidth + firstLevelChildrenVLWidth, 
 								//	level: 'level1'});
 							}
-						} else {
+						} else if (trendType == 'rank_trend') {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth, 
@@ -645,6 +645,20 @@ const interactiveLevelButton = (selection, props) => {
 									.transition()
 									.attr("x", -firstLevelParentVLWidth)
 							}
+
+							if (level == "level3") {
+
+								if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
+
+									d3.selectAll('.'+level + '.rect')
+										.transition()
+										.style('visibility', 'visible');	
+
+									d3.selectAll('.'+level + '.singlecountrymap')
+										.transition()
+										.style('visibility', 'hidden');	
+								}
+							}
 						}
 
 						d3.selectAll('.'+ level +'.list.cell')
@@ -654,67 +668,83 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 1) {
-						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-						|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+						if (trendType == 'pearson_corr') {
+							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+							|| d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 
-							adjustWidth({
-								firstLevelWidth: firstLevelWidth, 
-								addWidth: firstLevelChildrenVLWidth, 
-								level: 'level2'});
+								adjustWidth({
+									firstLevelWidth: firstLevelWidth, 
+									addWidth: firstLevelChildrenVLWidth, 
+									level: 'level2'});
 
-							d3.selectAll('.'+ level +'.list.cell')
-								.transition()
-								.attr("y", 0)
-								.attr("height", height)
-								.attr('transform', `translate(${0},${-height/2})`);
+								d3.selectAll('.'+ level +'.list.cell')
+									.transition()
+									.attr("y", 0)
+									.attr("height", height)
+									.attr('transform', `translate(${0},${-height/2})`);
 
-						} else if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+							} else if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
 
-							addWidth4Lable = 30;
-							firstLevelParentVLWidth = addWidth4Lable;
-							
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+								addWidth4Lable = 30;
+								firstLevelParentVLWidth = addWidth4Lable;
+								
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
-							// Adjust Total Space
-							adjustTotalWidth({
-								firstLevelWidth: firstLevelWidth, 
-								firstLevelParentVLWidth: firstLevelParentVLWidth,
-								addTotalWidthVL: addTotalWidthVL,
-								resetFlag: true
-							})
+								// Adjust Total Space
+								adjustTotalWidth({
+									firstLevelWidth: firstLevelWidth, 
+									firstLevelParentVLWidth: firstLevelParentVLWidth,
+									addTotalWidthVL: addTotalWidthVL,
+									resetFlag: true
+								})
 
-							d3.selectAll('.'+ level +'.list.cell')
-								.transition()
-								.attr("y", 0)
-								.attr("height", height)
-								.attr('transform', `translate(${-addWidth4Lable},${-height/2})`);
-						}
+								d3.selectAll('.'+ level +'.list.cell')
+									.transition()
+									.attr("y", 0)
+									.attr("height", height)
+									.attr('transform', `translate(${-addWidth4Lable},${-height/2})`);
+							}
 
-						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
-							firstLevelParentVLWidth = 60;
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-							// Adjust Total Space
-							adjustTotalWidth({
-								firstLevelWidth: firstLevelWidth, 
-								firstLevelParentVLWidth: firstLevelParentVLWidth,
-								addTotalWidthVL: addTotalWidthVL,
-								resetFlag: true
-							})
+							if (d3.select('.level1.histogram').style("visibility") == 'visible') {
+								firstLevelParentVLWidth = 60;
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+								// Adjust Total Space
+								adjustTotalWidth({
+									firstLevelWidth: firstLevelWidth, 
+									firstLevelParentVLWidth: firstLevelParentVLWidth,
+									addTotalWidthVL: addTotalWidthVL,
+									resetFlag: true
+								})
 
-							// Call Virtual Layer
-							levelG.call(small_multiples_virtual_layer, {
-								width: firstLevelWidth,
-								height: 30,
-								offset_x: -10,
-								offset_y: 35,
-								virtualLayerWidth: firstLevelParentVLWidth,
-								rectWidth: 20,
-								rectHeight: 20,
-								matrix_data: matrix_data,
-								side: 'parent',
-								level: 'level1'
-							});	
+								// Call Virtual Layer
+								levelG.call(small_multiples_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									offset_x: -10,
+									offset_y: 35,
+									virtualLayerWidth: firstLevelParentVLWidth,
+									rectWidth: 20,
+									rectHeight: 20,
+									matrix_data: matrix_data,
+									side: 'parent',
+									level: 'level1'
+								});	
 
+							}
+						} else if (trendType == 'rank_trend') {
+							if (level == "level3") {
+								if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
+									// TODO hardcode issue for exporter and importer
+									d3.selectAll('.'+level + '.rect' + '.splitby_importer'
+										+',.'+level + '.rect' + '.splitby_exporter')
+										.transition()
+										.style('visibility', 'hidden');	
+
+									d3.selectAll('.'+level + '.singlecountrymap')
+										.transition()
+										.style('visibility', 'visible');	
+								}
+							}
 						}
 					}
 
@@ -861,6 +891,16 @@ const interactiveLevelButton = (selection, props) => {
 											level: 'level1'
 								});	
 							}
+
+							// Leaf Level
+							if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
+
+								// Call Virtual Layer
+								levelG.call(country_map_virtual_layer, {
+									side: 'parent',
+									level: 'level3'
+								});	
+							} 
 						}
 					}
 
