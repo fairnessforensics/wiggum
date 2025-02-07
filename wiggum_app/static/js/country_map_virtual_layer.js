@@ -4,29 +4,51 @@ const country_map_virtual_layer = (selection, props) => {
 	  level
 	} = props;
 
-	var mapG = d3.select("." + level + ".countrymap");
-
-	map_width = mapG.attr('width');
-	map_height = mapG.attr('height');
-
-	const projection = d3.geoEquirectangular()
-	// const projection = d3.geoMercator()
-		.center([-90, 0])
-		.translate([map_width / 2, map_height / 2]);
-
 	d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson")
 		.then(geojson => {
 
 		var selectionLevelG1;
 		var interval = 0;
 		var poistion_y = 0;
+		var splitby;
+		var dependent;
+		var independent;
+		var subgroup;
 
 		selection.each(function (d) {
+			// Reset for a different branch
+			if (dependent != d.data.dependent
+					|| independent != d.data.independent
+					|| splitby != d.data.splitby) {
+				selectionLevelG1 = null;
+				poistion_y = 0;
+				interval = 0;
+			}
+
+			dependent = d.data.dependent;
+			independent = d.data.independent;
+			splitby = d.data.splitby;
+			subgroup = d.data.subgroup;
+
+			// TODO hardcode to exit
+			if (splitby != "importer" && splitby != "exporter") {
+				return;
+			}
+
 			if (selectionLevelG1 == null) {
 				selectionLevelG1 = d3.select(this);
 			}
 
-			var subgroup = d.data.subgroup;
+			var mapG = d3.select("." + level + ".countrymap" 
+							+ "." + dependent + "." + independent + "." + splitby);
+
+			map_width = mapG.attr('width');
+			map_height = mapG.attr('height');
+
+			var projection = d3.geoEquirectangular()
+			// const projection = d3.geoMercator()
+				.center([-90, 0])
+				.translate([map_width / 2, map_height / 2]);
 
 			// Filter for the Western Hemisphere
 			var country = geojson.features.filter(feature => {

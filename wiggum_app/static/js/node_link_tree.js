@@ -1158,8 +1158,10 @@ function drawNodeLinkTree(data) {
 					leaf_node_links,
 					width: chart_height,
 					height: chart_height,
-					level: 'level3',
-					splitby
+					dependent: dependent,
+					independent: independent,
+					splitby: splitby,
+					level: 'level3'
 				});	
 
 				// Visual Tech 3: grouped bar chart

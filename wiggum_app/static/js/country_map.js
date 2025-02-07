@@ -5,12 +5,15 @@ const countryMap = (selection, props) => {
 		chart_data,
 		width,
 		height,
-		level,
-		splitby
+		dependent,
+		independent,
+		splitby,
+		level
 	} = props;
 
 	var mapG = selection.append("g")
-				.attr("class", level + " countrymap")
+				.attr("class", level + " countrymap " 
+					+ dependent + " " + independent + " " + splitby)
 				.attr("width", width)
 				.attr("height", height);
 
