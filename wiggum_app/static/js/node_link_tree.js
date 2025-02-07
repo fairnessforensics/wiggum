@@ -351,11 +351,11 @@ function drawNodeLinkTree(data) {
 				margin: { left: 50, top: 0, right: 0, bottom: 0 },
 				width: 160,
 				height: 160,
-				xValue: d => d[keyArray[1]],
-				yValue: d => d[first_candidate],
-				var1: keyArray[1],
-				var2: first_candidate,
-				var3: keyArray[0],
+				xValue: d => d[first_candidate],
+				yValue: d => d[keyArray[1]],
+				x_var: first_candidate,
+				y_var: keyArray[1],
+				z_var: keyArray[0],
 				contextaul_vars: candidate_context_vars,
 				childrenIdentityFlag: true,
 				rectWidth: rectWidth,
@@ -1241,15 +1241,19 @@ function drawNodeLinkTree(data) {
 					});
 				});
 
+				// Adjustment height for vertical alignment
+				var adjustHeight = 20;
+
 				thirdLevelG1_visual_alter_genericheatmap.call(genericHeatmap, {
-					margin: { left: 50, top: 0, right: 0, bottom: 0 },
-					width: height,
-					height: height,
+					margin: { left: 30, top: 0, right: 0, bottom: 0 },
+					width: height + rectHeight + adjustHeight,
+					height: height + rectHeight + adjustHeight,
 					xValue: d => d[independent],
 					yValue: d => d[splitby],
-					var1: independent,
-					var2: splitby,
-					var3: dependent,
+					x_var: independent,
+					y_var: splitby,
+					z_var: dependent,
+					parentIdentityFlag: true,
 					childrenIdentityFlag: false,
 					rectWidth: rectWidth,
 					rectHeight: rectHeight,

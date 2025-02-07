@@ -232,9 +232,9 @@ const genericHeatmap = (selection, props) => {
 	  height,
 	  xValue,
 	  yValue,
-	  var1,
-	  var2,
-	  var3,
+	  x_var,
+	  y_var,
+	  z_var,
 	  parentIdentityFlag,
 	  childrenIdentityFlag,
 	  rectWidth,
@@ -254,18 +254,14 @@ const genericHeatmap = (selection, props) => {
 	var ySequence = yScale.nice().ticks(5);
 
 	// prepare for color considering aggregate heatmap in the virtual layer
-	var min = Math.floor(d3.min(chart_data, function (d) { return d[var2]; } ));
-	var max = Math.ceil(d3.max(chart_data, function (d) { return d[var2]; } ));
+	var min = Math.floor(d3.min(chart_data, function (d) { return d[x_var]; } ));
+	var max = Math.ceil(d3.max(chart_data, function (d) { return d[x_var]; } ));
 
-	//var xSequence_vl = [min, max];
-	//var count_data_vl = countByTwoRanges(chart_data, var1, var2, ySequence, xSequence_vl);
-	//var max_count = d3.max(count_data_vl, function(d) { return +d.value });
-
-	var maxValue = d3.max(chart_data, d => d[var3]);
+	var maxValue = d3.max(chart_data, d => d[z_var]);
 
 	// Label
-	var var1_label = d3.map(chart_data, function(d){return d[var1];}).keys().reverse();
-    var var2_label = d3.map(chart_data, function(d){return d[var2];}).keys();
+	var y_var_label = d3.map(chart_data, function(d){return d[y_var];}).keys().reverse();
+    var x_var_label = d3.map(chart_data, function(d){return d[x_var];}).keys();
 
 	const g = selection.append('g')
 	  .attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
@@ -273,8 +269,9 @@ const genericHeatmap = (selection, props) => {
 	// Build X scales and axis:
 	var x = d3.scaleBand()
 				.range([ 0, width ])
-				.domain(var2_label)
-				.padding(0.1);
+				.domain(x_var_label)
+				.paddingInner(0.1)
+				.paddingOuter(0);
 
 	var xAxis = g.append("g")
 		.attr("class", level + " genericheatmap x axis")
@@ -286,7 +283,7 @@ const genericHeatmap = (selection, props) => {
 		xAxis.selectAll("text")
 			.attr("transform", "rotate(-60)")
 			.attr("dx", "-.3em")
-			.attr("dy", ".2em")
+			.attr("dy", ".8em")
 			.style("text-anchor", "end");
 
 	// Add x axis label
@@ -297,29 +294,35 @@ const genericHeatmap = (selection, props) => {
 		.attr("x", width - 5)
 		.attr("y", 20)
 		.style("text-anchor", "start")
-		.text(var2);	
+		.text(x_var);	
 
 	// Build Y scales and axis:
 	var y = d3.scaleBand()
 				.range([ height, 0 ])
-				.domain(var1_label)
-				.padding(0.1);
+				.domain(y_var_label)
+				.paddingInner(0.1)
+				.paddingOuter(0);
 
 	g.append("g")
 		.attr("class", level + " genericheatmap y axis")
 		.call(d3.axisLeft(y)
 				.tickSize(0))
-		.select(".domain").remove()
+		.select(".domain").remove();
 
-	// Add y axis label
-	g.select('.' + level + '.genericheatmap.y.axis')
-		.append("text")
-		.attr("class", level + " genericheatmap y label")
-		.attr("x", 0)
-		.attr("y", -1)
-		.attr("text-anchor", "middle")
-		.attr('fill', 'black')
-	  	.text(var1);
+	if (parentIdentityFlag == true) {
+		// Remove all tick labels
+		g.selectAll(".y.axis .tick").remove();
+	} else {
+		// Add y axis label
+		g.select('.' + level + '.genericheatmap.y.axis')
+			.append("text")
+			.attr("class", level + " genericheatmap y label")
+			.attr("x", 0)
+			.attr("y", -1)
+			.attr("text-anchor", "middle")
+			.attr('fill', 'black')
+			.text(y_var);
+	}
 
 	// Use 7 levels of purple
 	var color_range = ["#f2f0f7","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#4a1486"];
@@ -337,15 +340,15 @@ const genericHeatmap = (selection, props) => {
 		.enter()
 		.append("rect")
 		.attr("class", level + " genericheatmap cell")
-		.attr("x", function(d) { return x(d[var2]) })
-		.attr("y", function(d) { return y(d[var1]) })
+		.attr("x", function(d) { return x(d[x_var]) })
+		.attr("y", function(d) { return y(d[y_var]) })
 		.attr("width", x.bandwidth() )
 		.attr("height", y.bandwidth() )
-		.style("fill", function(d) { return heatmapDensityColor(d[var3])} )
+		.style("fill", function(d) { return heatmapDensityColor(d[z_var])} )
 		.style("stroke", "grey")
 		.style("stroke-width", "1px")
 		.append('title')
-		.text(d => `The ${var3} is ${d3.format(".2s")(d[var3])}.`);	
+		.text(d => `The ${z_var} is ${d3.format(".2s")(d[z_var])}.`);	
 
 	// Children Identity
 	// TODO merge all identity code to a class
@@ -385,9 +388,9 @@ const interactGenericHeatmap = (selection, props) => {
 	  height,
 	  xValue,
 	  yValue,
-	  var1,
-	  var2,
-	  var3,
+	  x_var,
+	  y_var,
+	  z_var,
 	  contextaul_vars,
 	  parentIdentityFlag,
 	  childrenIdentityFlag,
@@ -399,17 +402,17 @@ const interactGenericHeatmap = (selection, props) => {
 	  level
 	} = props;
 
-	selection.selectAll('#' + level + "_" + var1 +  "_genericheatmap_g")
+	selection.selectAll('#' + level + "_" + y_var +  "_genericheatmap_g")
 			 .remove();
 
 	// Processing the data
 	var aggResultArray = d3.nest()
-						.key(function(d) {return d[var1]})
-						.key(function(d) {return d[var2]})
+						.key(function(d) {return d[y_var]})
+						.key(function(d) {return d[x_var]})
 						.sortKeys(d3.ascending)
 						.rollup(function(v) {
 							return {
-								sum: d3.sum(v, function(d) {return d[var3]})
+								sum: d3.sum(v, function(d) {return d[z_var]})
 							}
 						})
 						.entries(csvData);
@@ -419,9 +422,9 @@ const interactGenericHeatmap = (selection, props) => {
 	aggResultArray.forEach(function(row) {
 		row.values.forEach(function(cell) {
 			var singleObj = {};
-			singleObj[var1] = row.key;
-			singleObj[var2] = cell.key;
-			singleObj[var3] = cell.value.sum;
+			singleObj[y_var] = row.key;
+			singleObj[x_var] = cell.key;
+			singleObj[z_var] = cell.value.sum;
 
 			chart_data.push(singleObj);
 		});
@@ -437,27 +440,23 @@ const interactGenericHeatmap = (selection, props) => {
 	var ySequence = yScale.nice().ticks(5);
 
 	// prepare for color considering aggregate heatmap in the virtual layer
-	var min = Math.floor(d3.min(chart_data, function (d) { return d[var2]; } ));
-	var max = Math.ceil(d3.max(chart_data, function (d) { return d[var2]; } ));
+	var min = Math.floor(d3.min(chart_data, function (d) { return d[x_var]; } ));
+	var max = Math.ceil(d3.max(chart_data, function (d) { return d[x_var]; } ));
 
-	//var xSequence_vl = [min, max];
-	//var count_data_vl = countByTwoRanges(chart_data, var1, var2, ySequence, xSequence_vl);
-	//var max_count = d3.max(count_data_vl, function(d) { return +d.value });
-
-	var maxValue = d3.max(chart_data, d => d[var3]);
+	var maxValue = d3.max(chart_data, d => d[z_var]);
 
 	// Label
-	var var1_label = d3.map(chart_data, function(d){return d[var1];}).keys().reverse();
-    var var2_label = d3.map(chart_data, function(d){return d[var2];}).keys();
+	var y_var_label = d3.map(chart_data, function(d){return d[y_var];}).keys().reverse();
+    var x_var_label = d3.map(chart_data, function(d){return d[x_var];}).keys();
 
 	const g = selection.append('g')
-					.attr("id", level + "_" + var1 +  "_genericheatmap_g")
+					.attr("id", level + "_" + y_var +  "_genericheatmap_g")
 					.attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
 
 	// Build X scales and axis:
 	var x = d3.scaleBand()
 				.range([ 0, width ])
-				.domain(var2_label)
+				.domain(x_var_label)
 				.padding(0.1);
 
 	var xAxis = g.append("g")
@@ -473,40 +472,30 @@ const interactGenericHeatmap = (selection, props) => {
 			.attr("dy", ".2em")
 			.style("text-anchor", "end");
 
-	// Add x axis label
-	/*g.select('.' + level + '.genericheatmap.x.axis')
-		.append("text")
-		.attr("class", level + " genericheatmap x label")
-		.attr('fill', 'black')
-		.attr("x", width - 5)
-		.attr("y", 20)
-		.style("text-anchor", "start")
-		.text(var2);	*/
-
 	var select = xAxis.append("foreignObject")
 					.attr("width", 100)
 					.attr("height", 100)
 					.attr("x", width - 5)
 					.attr("y", 5)
 					.append('xhtml:select')
-					.attr("class", level + " " + var1 + " genericheatmap x menu")
-					.attr("id", level + "_" + var1 +  "_genericheatmap_x_menu")
+					.attr("class", level + " " + y_var + " genericheatmap x menu")
+					.attr("id", level + "_" + y_var +  "_genericheatmap_x_menu")
 					.on("mousedown", function() { d3.event.stopImmediatePropagation(); }) 
 					.on('change', (event) => {
 
 						// Reset VL
 						resetVirtualLayering(level);
 
-						var selected_option = $('#' + level + "_" + var1 +  "_genericheatmap_x_menu").val();
+						var selected_option = $('#' + level + "_" + y_var +  "_genericheatmap_x_menu").val();
 						selection.call(interactGenericHeatmap, {
 							margin: margin,
 							width: width,
 							height: height,
 							xValue: xValue,
 							yValue: d => d[selected_option],
-							var1: var1,
-							var2: selected_option,
-							var3: var3,
+							x_var: selected_option,
+							y_var: y_var,
+							z_var: z_var,
 							contextaul_vars: contextaul_vars,
 							childrenIdentityFlag: childrenIdentityFlag,
 							rectWidth: rectWidth,
@@ -524,12 +513,12 @@ const interactGenericHeatmap = (selection, props) => {
 			.text(function(d){return d;})
 			.property("selected", 
 				function(d){ 
-					if (var2.includes(d)) return d;});
+					if (x_var.includes(d)) return d;});
 
 	// Build Y scales and axis:
 	var y = d3.scaleBand()
 				.range([ height, 0 ])
-				.domain(var1_label)
+				.domain(y_var_label)
 				.padding(0.1);
 
 	g.append("g")
@@ -546,7 +535,7 @@ const interactGenericHeatmap = (selection, props) => {
 		.attr("y", -1)
 		.attr("text-anchor", "middle")
 		.attr('fill', 'black')
-	  	.text(var1);
+	  	.text(y_var);
 
 	// Use 7 levels of purple
 	var color_range = ["#f2f0f7","#dadaeb","#bcbddc","#9e9ac8","#807dba","#6a51a3","#4a1486"];
@@ -564,15 +553,15 @@ const interactGenericHeatmap = (selection, props) => {
 		.enter()
 		.append("rect")
 		.attr("class", level + " genericheatmap cell")
-		.attr("x", function(d) { return x(d[var2]) })
-		.attr("y", function(d) { return y(d[var1]) })
+		.attr("x", function(d) { return x(d[x_var]) })
+		.attr("y", function(d) { return y(d[y_var]) })
 		.attr("width", x.bandwidth() )
 		.attr("height", y.bandwidth() )
-		.style("fill", function(d) { return heatmapDensityColor(d[var3])} )
+		.style("fill", function(d) { return heatmapDensityColor(d[z_var])} )
 		.style("stroke", "grey")
 		.style("stroke-width", "1px")
 		.append('title')
-		.text(d => `The ${var3} is ${d3.format(".2s")(d[var3])}.`);	
+		.text(d => `The ${z_var} is ${d3.format(".2s")(d[z_var])}.`);	
 
 	// Children Identity
 	// TODO merge all identity code to a class
