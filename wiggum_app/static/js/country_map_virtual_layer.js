@@ -147,13 +147,14 @@ const country_map_virtual_layer = (selection, props) => {
 
 			var selectionLevelG = d3.select(this);
 
-			var transformMatrix = selectionLevelG.node().getCTM();
-			
+			var g_node_position = selectionLevelG.attr('transform').split(/[\s,()]+/);
+			var g_node_position_y = parseFloat(g_node_position[2]);
+
 			if (interval != 0) {
-				interval = transformMatrix.f - interval;
+				interval = g_node_position_y - interval;
 			}
 			poistion_y += interval;
-
+			
 			// Draw curve area
 			var curve_point = [
 				{ start1: { x: -(rectWidth/2 + 50), y: 10 + poistion_y }, 
@@ -162,7 +163,7 @@ const country_map_virtual_layer = (selection, props) => {
 					end2: { x: bottomRightPoint_x, y: bottomRightPoint_y } }
 			];
 
-			interval = transformMatrix.f;
+			interval = g_node_position_y;
 
 			// Bézier curve
 			var area = virtual_layer_g.selectAll(".area")
