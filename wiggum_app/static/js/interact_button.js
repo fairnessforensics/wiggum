@@ -913,105 +913,120 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 3) {
-						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+						if (trendType == 'pearson_corr') {
+							if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
 
-							var addWidth4Lable = 30;
-							firstLevelParentVLWidth = addWidth4Lable + 25;
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-							// Adjust Total Space
-							adjustTotalWidth({
-								firstLevelWidth: firstLevelWidth, 
-								firstLevelParentVLWidth: firstLevelParentVLWidth,
-								addTotalWidthVL: addTotalWidthVL,
-								resetFlag: false
-							})
+								var addWidth4Lable = 30;
+								firstLevelParentVLWidth = addWidth4Lable + 25;
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+								// Adjust Total Space
+								adjustTotalWidth({
+									firstLevelWidth: firstLevelWidth, 
+									firstLevelParentVLWidth: firstLevelParentVLWidth,
+									addTotalWidthVL: addTotalWidthVL,
+									resetFlag: false
+								})
 
-							d3.selectAll('.'+ level +'.list.cell')
-								.transition()
-								//.attr("x", -firstLevelParentVLWidth - 10)
-								.attr("y", 0)
-								.attr("height", height)
-								.attr('transform', `translate(${-firstLevelParentVLWidth},${-height/2})`);
+								d3.selectAll('.'+ level +'.list.cell')
+									.transition()
+									//.attr("x", -firstLevelParentVLWidth - 10)
+									.attr("y", 0)
+									.attr("height", height)
+									.attr('transform', `translate(${-firstLevelParentVLWidth},${-height/2})`);
 
-							levelG.call(heatmapDensity_virtual_layer, {
-									x_position: 0,
-									height: 100,
-									chart_data: csvData,
-									offset_flag: false,
+								levelG.call(heatmapDensity_virtual_layer, {
+										x_position: 0,
+										height: 100,
+										chart_data: csvData,
+										offset_flag: false,
+										side: 'parent',
+										parentVLWidth: addWidth4Lable,
+										level: 'level1'
+									});	
+							}
+
+							if (d3.select('.level1.histogram').style("visibility") == 'visible') {
+								firstLevelParentVLWidth = 60;
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+								// Adjust Total Space
+								adjustTotalWidth({
+									firstLevelWidth: firstLevelWidth, 
+									firstLevelParentVLWidth: firstLevelParentVLWidth,
+									addTotalWidthVL: addTotalWidthVL,
+									resetFlag: true
+								})
+
+								// Call Virtual Layer
+								levelG.call(small_multiples_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									offset_x: -10,
+									offset_y: 35,
+									virtualLayerWidth: firstLevelParentVLWidth,
+									rectWidth: 20,
+									rectHeight: 20,
+									matrix_data: matrix_data,
 									side: 'parent',
-									parentVLWidth: addWidth4Lable,
 									level: 'level1'
 								});	
+
+								firstLevelParentVLWidth = 100;
+								addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+
+								// Adjust Total Space
+								adjustTotalWidth({
+									firstLevelWidth: firstLevelWidth, 
+									firstLevelParentVLWidth: firstLevelParentVLWidth,
+									addTotalWidthVL: addTotalWidthVL,
+									resetFlag: true
+								})
+
+								// Reset the x position for first virtual layer
+								d3.selectAll('.' + level + '.smallmultiple.g')
+									.transition()
+									.attr("transform", function(d,i) { 
+										return "translate(" + (-40) + "," + 0 + ")"; });	
+
+								// Call Histogram Virtual Layer
+								levelG.call(histogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									source_offset_y: -35,
+									offset_y: -35,
+									virtualLayerWidth: 40,
+									axis_x_position: 15,
+									side: 'parent',
+									multi_no: 'h1',
+									aux_flag: false,
+									level: 'level1'
+								});	
+
+								levelG.call(histogram_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									source_offset_y: 35,
+									offset_y: 35,
+									virtualLayerWidth: 40,
+									axis_x_position: 15,
+									side: 'parent',
+									multi_no: 'h2',
+									aux_flag: false,
+									level: 'level1'
+								});	
+							}
 						}
 
-						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
-							firstLevelParentVLWidth = 60;
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-							// Adjust Total Space
-							adjustTotalWidth({
-								firstLevelWidth: firstLevelWidth, 
-								firstLevelParentVLWidth: firstLevelParentVLWidth,
-								addTotalWidthVL: addTotalWidthVL,
-								resetFlag: true
-							})
+						if (trendType == 'rank_trend') {
 
-							// Call Virtual Layer
-							levelG.call(small_multiples_virtual_layer, {
-								width: firstLevelWidth,
-								height: 30,
-								offset_x: -10,
-								offset_y: 35,
-								virtualLayerWidth: firstLevelParentVLWidth,
-								rectWidth: 20,
-								rectHeight: 20,
-								matrix_data: matrix_data,
-								side: 'parent',
-								level: 'level1'
-							});	
+							// Leaf Level
+							if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
 
-							firstLevelParentVLWidth = 100;
-							addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-
-							// Adjust Total Space
-							adjustTotalWidth({
-								firstLevelWidth: firstLevelWidth, 
-								firstLevelParentVLWidth: firstLevelParentVLWidth,
-								addTotalWidthVL: addTotalWidthVL,
-								resetFlag: true
-							})
-
-							// Reset the x position for first virtual layer
-							d3.selectAll('.' + level + '.smallmultiple.g')
-								.transition()
-								.attr("transform", function(d,i) { 
-									return "translate(" + (-40) + "," + 0 + ")"; });	
-
-							// Call Histogram Virtual Layer
-							levelG.call(histogram_virtual_layer, {
-								width: firstLevelWidth,
-								height: 30,
-								source_offset_y: -35,
-								offset_y: -35,
-								virtualLayerWidth: 40,
-								axis_x_position: 15,
-								side: 'parent',
-								multi_no: 'h1',
-								aux_flag: false,
-								level: 'level1'
-							});	
-
-							levelG.call(histogram_virtual_layer, {
-								width: firstLevelWidth,
-								height: 30,
-								source_offset_y: 35,
-								offset_y: 35,
-								virtualLayerWidth: 40,
-								axis_x_position: 15,
-								side: 'parent',
-								multi_no: 'h2',
-								aux_flag: false,
-								level: 'level1'
-							});	
+								// Call Virtual Layer
+								levelG.call(country_map_projection_virtual_layer, {
+									side: 'parent',
+									level: 'level3'
+								});	
+							} 
 						}
 
 					}

@@ -13,7 +13,7 @@ const countryMap = (selection, props) => {
 
 	var mapG = selection.append("g")
 				.attr("class", level + " countrymap " 
-					+ dependent + " " + independent + " " + splitby)
+					+ dependent + " " + independent + " splitby_" + splitby)
 				.attr("width", width)
 				.attr("height", height);
 
@@ -75,6 +75,7 @@ const countryMap = (selection, props) => {
 				.enter()
 				.append("path")
 				.attr("d", path)
+				.attr("class", d => "country " + d.id)
 				.style("fill", function(d) {
 					var country_id = d.id;
 					var row = chart_data.find(obj => {
