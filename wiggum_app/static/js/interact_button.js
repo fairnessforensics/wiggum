@@ -615,6 +615,7 @@ const interactiveLevelButton = (selection, props) => {
 						level: 'level1'});
 					
 					// Reset third level
+					thirdLevelParentVLWidth = 0;
 					d3.selectAll('.'+ level +'.list.rect')
 						.transition().style('visibility', "visible");
 
