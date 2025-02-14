@@ -1006,10 +1006,11 @@ function drawNodeLinkTree(data) {
 		});
 
 		// TODO input by user 
-		var chart_height = treeHeight / num_charts;
+		//var chart_height = treeHeight / num_charts;
 		//var chart_height = 150;
-		var total_height = chart_height * num_charts;	
-		var diff_height = actual_tree_height - total_height;
+		//var total_height = chart_height * num_charts;	
+
+		var diff_height = actual_tree_height - treeHeight;
 
 		var used_height = 0;
 		var relative_translate_y = 0;
@@ -1121,6 +1122,8 @@ function drawNodeLinkTree(data) {
 
 				// if chart height is higher than the branch heght
 				var largerFlag = false;
+
+				chart_height = d.children[d.children.length - 1].x - d.children[0].x;
 
 				if (chart_height > (treeHeight / num_charts)) {
 					largerFlag = true;
