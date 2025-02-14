@@ -321,7 +321,9 @@ function drawNodeLinkTree(data) {
 			// TODO width is using addWidthArray
 			// how to merge the chart width and the interactive width adjustment.
 			var countryColor = d3.scaleOrdinal()
-									.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
+			//						.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
+							.range(["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
+							"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]);
 
 			container.call(coloredBarChart, {
 				chart_data: chart_data,
@@ -1192,7 +1194,9 @@ function drawNodeLinkTree(data) {
 				var xDomain = [0, d3.max(chart_data, xValue)];
 
 				var countryColor = d3.scaleOrdinal()
-							.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
+				//			.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
+				.range(["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
+						"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]);
 
 				thirdLevelG1_visual_alter_barchart.call(barChart, {
 					chart_data: bar_chart_data,
@@ -1204,6 +1208,7 @@ function drawNodeLinkTree(data) {
 					largerFlag: largerFlag,
 					percentageFlag: false,
 					x_axis_label: dependent,
+					legend_title: independent,
 					myColor: countryColor,
 					tooltipValueFormatFlag: true
 				});	

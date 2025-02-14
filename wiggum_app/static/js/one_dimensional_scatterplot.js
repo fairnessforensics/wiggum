@@ -347,6 +347,86 @@ const scatterPlot = (selection, props) => {
 		  })
 		  .append('title');
 
+	// Draw legend
+	var legend_g = g.append("g");
+	if (smallMultipleFlag == false) {	  
+		var num = color.domain().length;
+		var row_num = num / 4;
+		var legend;
+
+		legend = legend_g.selectAll(".legend")
+						.data(color.domain())
+						.enter()
+						.append("g")
+						.attr("class", d => level + " scatterplot legend " + d)
+						.attr("transform", 
+							function (d, i) {
+								row = Math.floor(i / 4) + 1;
+								y_offset = (row - row_num) * 12;
+								x_offset = (i % 4) * 40;
+								return `translate(${x_offset}, ${y_offset})`
+							} )
+						//.attr("transform", function(d, i) { return "translate(10," + i * 15 + ")"; });
+
+		// draw legend colored rectangles
+		legend.append("circle")
+			.attr("cx", 10)
+			.attr("cy", 10)
+			.attr("r", 5)
+			.style("fill", color);
+
+		// draw legend text
+		legend.append("text")
+			.attr("x", 17)
+			.attr("y", 14)
+			.style("text-anchor", "start")
+			.style("font-size", "10px") 
+			.text(function(d) { return d;});
+
+		var legendWidth = legend_g.node().getBBox().width;
+		legend_g.attr("transform", `translate(${(width - legendWidth) / 2}, -20)`);
+
+		// add legend label
+		legend_g.append("text")
+			.attr("class", level + " scatterplot legend label")
+			.attr("x", legendWidth / 2)
+			.attr("y", -(row_num-1) * 12 - 3)
+			.style("text-anchor", "middle")
+			.style("font-size", "12px") 
+			.text(splitby);
+	}
+
+	if (first_small_multiple_flag == true) {	     
+		var legend = legend_g.selectAll(".legend")
+						.data(color.domain())
+						.enter().append("g")
+						.attr("class", level + " scatterplot legend")
+						.attr("transform", function(d, i) { 
+							return "translate("+ (width) 
+								+"," + (i * 15 + 5) + ")"; });
+
+		legend.append("circle")
+			.attr("cx", 10)
+			.attr("cy", 8)
+			.attr("r", 5)
+			.style("fill", color);
+
+		legend.append("text")
+			.attr("x", 17)
+			.attr("y", 11)
+			.style("text-anchor", "start")
+			.style("font-size", "10px") 
+			.text(function(d) { return d;});
+
+		legend_g.append("text")
+			.attr("class", level + " scatterplot legend title")		
+			.attr("x", width + 5)
+			.attr("y", 0)
+			.style("font-size", "12px")                     
+			.style("text-anchor", "start")
+			.text(splitby);		
+	}
+
 	// Children Identity
 	if (childrenIdentityFlag) {
 		g.selectAll(".rect")

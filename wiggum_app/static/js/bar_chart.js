@@ -237,7 +237,7 @@ const barChart = (selection, props) => {
 					.data(subgroups)
 					.enter().append("g")
 					.attr("class", level + " barchart legend")
-					.attr("transform", function(d, i) { return "translate("+ (width - margin.right - margin.left + 10) +"," + (i * 15 - 5) + ")"; });
+					.attr("transform", function(d, i) { return "translate("+ (width - margin.right - margin.left + 10) +"," + (i * 15 + 5) + ")"; });
 
 	legend.append("rect")
 		.attr("x", 0)
@@ -256,7 +256,7 @@ const barChart = (selection, props) => {
 	g.append("text")
 		.attr("class", level + " barchart legend title")		
 		.attr("x", width - margin.left - margin.right + 10)
-		.attr("y", -10)
+		.attr("y", 0)
 		.style("font-size", "12px")                     
 		.style("text-anchor", "start")
 		.text(legend_title);	
