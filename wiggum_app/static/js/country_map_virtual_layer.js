@@ -40,7 +40,7 @@ const country_map_virtual_layer = (selection, props) => {
 			}
 
 			var mapG = d3.select("." + level + ".countrymap" 
-							+ "." + dependent + "." + independent + "." + splitby);
+							+ "." + dependent + "." + independent + ".splitby_" + splitby);
 
 			map_width = mapG.attr('width');
 			map_height = mapG.attr('height');
