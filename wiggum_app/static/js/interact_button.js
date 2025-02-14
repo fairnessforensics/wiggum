@@ -253,6 +253,8 @@ const interactiveLevelButton = (selection, props) => {
 							// TODO redesign for different interactions for visual alternative
 							// and visual detail view  
 							if (level == "level3") {
+								thirdLevelParentVLWidth = 0;
+
 								d3.selectAll('.'+level + '.rect')
 									.transition()
 									.style('visibility', 'visible');	
@@ -260,6 +262,18 @@ const interactiveLevelButton = (selection, props) => {
 										.transition()
 										.style('visibility', 'hidden');	
 								
+								d3.selectAll('.node.level-3')
+									.transition()
+									.attr("transform", function(d,i) { 
+										var postion_x = d.y + firstLevelWidth 
+										+ secondLevelWidth + thirdLevelParentVLWidth;
+
+										return "translate(" + postion_x + "," + d.x + ")"; });		
+
+								d3.selectAll('.' + level + '.list.rect, ' + '.' + level + '.list.text')
+									.attr("transform", function(d,i) { 
+									return "translate(" + 0 + "," + 0 + ")"; });									
+
 								/*if (selectedChart == 'countrymap') {	
 									// TODO hardcode
 									d3.selectAll('.'+level + '.rect' + '.splitby_importer'
@@ -1043,7 +1057,8 @@ const interactiveLevelButton = (selection, props) => {
 								d3.selectAll('.node.level-3')
 									.transition()
 									.attr("transform", function(d,i) { 
-										var postion_x = d.y + thirdLevelParentVLWidth;
+										var postion_x = d.y + firstLevelWidth 
+														+ secondLevelWidth + thirdLevelParentVLWidth;
 										return "translate(" + postion_x + "," + d.x + ")"; });	
 
 								d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
