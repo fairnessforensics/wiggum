@@ -396,6 +396,7 @@ const country_map_projection_virtual_layer = (selection, props) => {
 							.attr("opacity", 0.5);
 
 			area.on("mouseover", function (d) {
+					d3.select(this.parentNode).raise(); 
 					d3.select(this).attr("opacity", 0.8)
 						.attr("fill", "#fdbf6f"); 
 
