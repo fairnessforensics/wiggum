@@ -1,0 +1,6 @@
+variable,dtype,var_type,role,isCount,weighting_var
+exporter,object,categorical,"['independent', 'splitby', 'contextual']",False,
+importer,object,categorical,"['independent', 'splitby', 'contextual']",False,
+sector,int64,categorical,"['splitby', 'contextual']",False,
+year,int64,ordinal,['contextual'],False,
+trade,float64,continuous,['dependent'],False,
