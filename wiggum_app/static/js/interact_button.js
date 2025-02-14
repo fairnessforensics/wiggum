@@ -104,7 +104,7 @@ const interactiveLevelButton = (selection, props) => {
 										addWidth = addWidthArray[1];
 									}
 
-									var newWidth = width + addWidth + secondLevelWidth;
+									var newWidth = width + addWidth + secondLevelWidth + thirdLevelParentVLWidth;
 									
 									// Change the global variable firstLevelWidth
 									firstLevelWidth = addWidth;
@@ -159,7 +159,8 @@ const interactiveLevelButton = (selection, props) => {
 									d3.selectAll('.node.level-3')
 										.transition()
 										.attr("transform", function(d,i) { 
-											var postion_x = d.y + firstLevelWidth + secondLevelWidth;
+											var postion_x = d.y + firstLevelWidth 
+														+ secondLevelWidth + thirdLevelParentVLWidth;
 											return "translate(" + postion_x + "," + d.x + ")"; });	
 
 									// Adjust level 2 button x postion
@@ -174,7 +175,8 @@ const interactiveLevelButton = (selection, props) => {
 										.each(function () {
 											d3.select(this)
 												.attr("transform",  
-												"translate(" + (firstLevelWidth + secondLevelWidth) + ", 0)")
+												"translate(" + (firstLevelWidth 
+														+ secondLevelWidth) + ", 0)")
 										});	
 
 									// Move level 1 paths
@@ -215,7 +217,8 @@ const interactiveLevelButton = (selection, props) => {
 									d3.selectAll('.node.level-3')
 										.transition()
 										.attr("transform", function(d) { 
-											return "translate(" + (d.y + secondLevelWidth) + "," + d.x + ")"; });											
+											return "translate(" + (d.y + secondLevelWidth 
+												+ thirdLevelParentVLWidth) + "," + d.x + ")"; });											
 
 									// Adjust level 2 button x postion
 									d3.selectAll('.button.level2')
@@ -611,6 +614,18 @@ const interactiveLevelButton = (selection, props) => {
 						addWidth: 0, 
 						level: 'level1'});
 					
+					// Reset third level
+					d3.selectAll('.'+ level +'.list.rect')
+						.transition().style('visibility', "visible");
+
+					d3.selectAll('.'+level + '.singlecountrymap')
+						.transition()
+						.style('visibility', 'hidden');	
+
+					d3.selectAll('.' + level + '.list.rect, ' + '.' + level + '.list.text')
+						.attr("transform", function(d,i) { 
+						return "translate(" + 0 + "," + 0 + ")"; });
+
 					if (i == 0) {
 						var addWidth4Lable = 0;
 
@@ -652,6 +667,7 @@ const interactiveLevelButton = (selection, props) => {
 										.transition()
 										.style('visibility', 'visible');
 								}
+
 							}
 
 							if (level == "level3") {
@@ -1021,9 +1037,23 @@ const interactiveLevelButton = (selection, props) => {
 							// Leaf Level
 							if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
 
+								// Adjust level 3 nodes x postion
+								thirdLevelParentVLWidth = 100;
+								d3.selectAll('.node.level-3')
+									.transition()
+									.attr("transform", function(d,i) { 
+										var postion_x = d.y + thirdLevelParentVLWidth;
+										return "translate(" + postion_x + "," + d.x + ")"; });	
+
+								d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
+									.transition()
+									.attr("transform", function(d,i) { 
+									return "translate(" + (-thirdLevelParentVLWidth) + "," + 0 + ")"; });	
+
 								// Call Virtual Layer
 								levelG.call(country_map_projection_virtual_layer, {
 									side: 'parent',
+									thirdLevelParentVLWidth: thirdLevelParentVLWidth,
 									level: 'level3'
 								});	
 							} 

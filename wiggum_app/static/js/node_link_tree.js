@@ -28,6 +28,7 @@ var firstLevelWidth = 0;
 var secondLevelWidth = 0;
 var firstLevelParentVLWidth = 0;
 var firstLevelChildrenVLWidth = 0;
+var thirdLevelParentVLWidth = 0;
 
 /**
  * Draw node link tree

@@ -203,6 +203,7 @@ const country_map_virtual_layer = (selection, props) => {
 const country_map_projection_virtual_layer = (selection, props) => {
 	const {
 	  side,
+	  thirdLevelParentVLWidth,
 	  level
 	} = props;
 
@@ -368,8 +369,8 @@ const country_map_projection_virtual_layer = (selection, props) => {
 			
 			// Draw curve area
 			var curve_point = [
-				{ start1: { x: -(rectWidth/2 + 50), y: 10 + poistion_y }, 
-					start2: { x: -(rectWidth/2 + 50), y: 30 + poistion_y }, 
+				{ start1: { x: -(rectWidth/2 + 50 + thirdLevelParentVLWidth), y: 10 + poistion_y }, 
+					start2: { x: -(rectWidth/2 + 50 + thirdLevelParentVLWidth), y: 30 + poistion_y }, 
 					end1: { x: -10, y: northMostPoint_y }, 
 					end2: { x: -10, y: southMostPoint_y },
 					subgroup: subgroup }
