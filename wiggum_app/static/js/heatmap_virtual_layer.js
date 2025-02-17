@@ -112,8 +112,9 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 	  height,
 	  chart_data,
 	  offset_flag,
-	  side,
 	  parentVLWidth,
+	  childrenVLWidth,
+	  side,
 	  level
 	} = props;
 
@@ -200,7 +201,7 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 			.attr("width", width )
 			.attr("height", y.bandwidth() )
 			.style("fill", function(d) { return heatmapDensityColor(d[dependent])} )
-			.style("stroke", "grey")
+			.style("stroke", "black")
 			.style("stroke-width", "1px")
 			.append('title')
 			.text(d => `The ${dependent} is ${d3.format(".2s")(d[dependent])}.`);	
@@ -210,7 +211,7 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 			// draw legend colored rectangles
 			g.append("rect")
 				.attr("class", level + " " + side + " genericheatmap virtuallayer label rect")
-				.attr("x", -20)
+				.attr("x", -30)
 				.attr("y", -10)
 				.attr("width", 10)
 				.attr("height", 10)
@@ -219,10 +220,22 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 			// draw legend text
 			g.append("text")
 				.attr("class", level + " " + side + " genericheatmap virtuallayer label text")
-				.attr("x", 24)
+				.attr("x", 14)
 				.attr("y", 0)
 				.style("text-anchor", "end")
 				.text(dependent);
+		}
+
+		if (side == "children") {
+			// Duplicate the axis labels
+			console.log(x_position);
+			console.log(childrenVLWidth);
+			g.append("g")
+				.attr("class", level + " " + side + " genericheatmap virtuallayer y axis")
+				.attr("transform", "translate(" + (x_position - childrenVLWidth - 10) + ","+ 0 +")")
+				.call(d3.axisRight(y)
+						.tickSize(0))
+				.select(".domain").remove()
 		}
 
 	});

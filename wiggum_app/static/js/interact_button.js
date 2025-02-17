@@ -803,7 +803,7 @@ const interactiveLevelButton = (selection, props) => {
 
 						if (trendType == 'rank_trend') {
 							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
-								addWidth4Lable = 20;
+								addWidth4Lable = 30;
 								firstLevelParentVLWidth = addWidth4Lable;
 							} 
 						}
@@ -909,8 +909,8 @@ const interactiveLevelButton = (selection, props) => {
 									height: newViewHeight,
 									chart_data: csvData,
 									offset_flag: false,
-									side: 'parent',
 									parentVLWidth: firstLevelParentVLWidth,
+									side: 'parent',
 									level: 'level1'
 								});	
 							}
@@ -1447,7 +1447,7 @@ const interactiveLevelButton = (selection, props) => {
 
 							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
 
-								firstLevelChildrenVLWidth = 30;
+								firstLevelChildrenVLWidth = 40 + 20;
 								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 		
 								adjustWidth({
@@ -1464,6 +1464,8 @@ const interactiveLevelButton = (selection, props) => {
 									height: newViewHeight,
 									chart_data: csvData,
 									offset_flag: true,
+									parentVLWidth: firstLevelParentVLWidth,
+									childrenVLWidth: firstLevelChildrenVLWidth,
 									side: 'children',
 									level: 'level1'
 								});	

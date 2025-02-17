@@ -525,7 +525,7 @@ const interactGenericHeatmap = (selection, props) => {
 		.attr("class", level + " genericheatmap y axis")
 		.call(d3.axisLeft(y)
 				.tickSize(0))
-		.select(".domain").remove()
+		.select(".domain").remove();
 
 	// Add y axis label
 	g.select('.' + level + '.genericheatmap.y.axis')
