@@ -1076,6 +1076,36 @@ const interactiveLevelButton = (selection, props) => {
 						}
 
 					}
+
+					if (i == 4) {
+						if (trendType == 'rank_trend') {
+
+							// Leaf Level
+							if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
+
+								// Adjust level 3 nodes x postion
+								thirdLevelParentVLWidth = 100;
+								d3.selectAll('.node.level-3')
+									.transition()
+									.attr("transform", function(d,i) { 
+										var postion_x = d.y + firstLevelWidth 
+														+ secondLevelWidth + thirdLevelParentVLWidth;
+										return "translate(" + postion_x + "," + d.x + ")"; });	
+
+								d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
+									.transition()
+									.attr("transform", function(d,i) { 
+									return "translate(" + (-thirdLevelParentVLWidth) + "," + 0 + ")"; });	
+
+								// Call Virtual Layer
+								levelG.call(country_map_projection_center_virtual_layer, {
+									side: 'parent',
+									thirdLevelParentVLWidth: thirdLevelParentVLWidth,
+									level: 'level3'
+								});	
+							} 
+						}						
+					}
 				});
 
 	leftIdentityButtonGroups.call(button_vertical_list, {
