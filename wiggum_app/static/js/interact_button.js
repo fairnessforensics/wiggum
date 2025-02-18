@@ -1078,13 +1078,14 @@ const interactiveLevelButton = (selection, props) => {
 					}
 				});
 
-	leftIdentityButtonGroups.call(button, {
+	leftIdentityButtonGroups.call(button_vertical_list, {
 			bWidth: bWidth,
 			bHeight: bHeight,
 			bSpace: bSpace,
 			x0: 0,
 			y0: 0,
-			transform_x: (-bWidth - bSpace) // TODO hardcode
+			transform_x: (-bWidth - bSpace), // TODO hardcode
+			side: 'parent'
 		});		
 
 	// Right Identity Button
@@ -1685,13 +1686,14 @@ const interactiveLevelButton = (selection, props) => {
 
 				});
 
-	rightIdentityButtonGroups.call(button, {
+	rightIdentityButtonGroups.call(button_vertical_list, {
 		bWidth: bWidth,
         bHeight: bHeight,
         bSpace: bSpace,
 		x0: 0,
 		y0: 0,
-		transform_x: (40 * 3) // TODO hardcode
+		transform_x: (40 * 3), // TODO hardcode
+		side: 'children'
 	});	
 
 }

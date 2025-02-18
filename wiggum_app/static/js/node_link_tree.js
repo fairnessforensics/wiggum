@@ -44,7 +44,8 @@ function drawNodeLinkTree(data) {
 
 	// TODO width for big state
 	//var width = 1150;
-	var width = 2500;
+	//var width = 2500;
+	var width = 2600;
 	var height = 2600;
 	// TODO width for big state
 	//var margin = {top: 50, right: 420, bottom: 10, left: 60};
@@ -191,10 +192,10 @@ function drawNodeLinkTree(data) {
 	}
 
 	// Left identity portion in virtual layer
-	var leftIdentityLabels= ['0', 'I', 'II', 'III'];
+	var leftIdentityLabels= ['0', 'I', 'II', 'III', 'IV'];
 
 	// Right identity portion in virtual layer
-	var rightIdentityLabels= ['0', 'I', 'II', 'III'];
+	var rightIdentityLabels= ['0', 'I', 'II', 'III', 'IV'];
 
 	var firstLevelG1 = g.select('.level-1');
 
@@ -758,7 +759,7 @@ function drawNodeLinkTree(data) {
 	// Third level: subgroups
 
 	// Left identity labels for virtual layer
-	leftIdentityLabels = ['0', 'I', 'II', 'III'];
+	leftIdentityLabels = ['0', 'I', 'II', 'III', 'IV'];
 
 	// Right identity labels for virtual layer
 	rightIdentityLabels = [];
