@@ -670,11 +670,7 @@ const interactiveLevelButton = (selection, props) => {
 								addWidth: firstLevelChildrenVLWidth, 
 								level: 'level2'});
 
-							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-								d3.selectAll('.'+ level +'.scatterplot.children.text')
-									.transition()
-									.attr("x", -firstLevelParentVLWidth)
-							}
+
 
 							if (level == "level1") {
 								if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
@@ -772,21 +768,7 @@ const interactiveLevelButton = (selection, props) => {
 							}
 						} else if (trendType == 'rank_trend') {
 
-							if (level == "level1") {
-								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 
-									adjustWidth({
-										firstLevelWidth: firstLevelWidth, 
-										addWidth: firstLevelChildrenVLWidth, 
-										level: 'level2'});
-
-									d3.selectAll('.'+ level +'.list.cell')
-										.transition()
-										.attr("y", 0)
-										.attr("height", newViewHeight)
-										.attr('transform', `translate(${0},${-newViewHeight/2})`);
-								}
-							}
 							if (level == "level3") {
 								if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
 									// TODO hardcode issue for exporter and importer
@@ -823,20 +805,6 @@ const interactiveLevelButton = (selection, props) => {
 								firstLevelParentVLWidth = addWidth4Lable;
 							} 
 						}
-
-						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-							firstLevelParentVLWidth = 40;
-						} 
-
-						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-
-						// Adjust Total Space
-						adjustTotalWidth({
-							firstLevelWidth: firstLevelWidth, 
-							firstLevelParentVLWidth: firstLevelParentVLWidth,
-							addTotalWidthVL: addTotalWidthVL,
-							resetFlag: true
-						})
 
 						if (trendType == 'pearson_corr') {
 							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
@@ -928,22 +896,6 @@ const interactiveLevelButton = (selection, props) => {
 									parentVLWidth: firstLevelParentVLWidth,
 									side: 'parent',
 									level: 'level1'
-								});	
-							}
-
-							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-								d3.selectAll('.'+ level +'.scatterplot.children.text')
-									.transition()
-									.attr("x", -firstLevelParentVLWidth)
-
-								// Call Virtual Layer
-								levelG.call(agg_scatterplot_virtual_layer, {
-											width: firstLevelWidth,
-											height: newViewHeight,
-											parentVLWidth: firstLevelParentVLWidth,
-											axis_x_position: 15,
-											side: 'parent',
-											level: 'level1'
 								});	
 							}
 
@@ -1121,6 +1073,82 @@ const interactiveLevelButton = (selection, props) => {
 								});	
 							} 
 						}						
+					}
+
+					if (selectedChart == 'scatterplot') {
+						if (i == 0) {
+							d3.selectAll('.'+ level +'.scatterplot.children.text')
+								.transition()
+								.attr("x", -firstLevelParentVLWidth)
+						}
+
+						if (i == 1) {
+							d3.selectAll('.'+ level +'.scatterplot.children.text')
+								.transition()
+								.attr("x", -25);
+
+							adjustWidth({
+								firstLevelWidth: firstLevelWidth, 
+								addWidth: firstLevelChildrenVLWidth, 
+								level: 'level2'});
+
+							d3.selectAll('.'+ level +'.list.cell')
+								.transition()
+								.attr("y", 0)
+								.attr("height", newViewHeight)
+								.attr('transform', `translate(${0},${-newViewHeight/2})`);
+						}
+
+						if (i == 2 || i == 3) {
+							firstLevelParentVLWidth = 40;
+						} 
+
+						if (i == 2) {
+
+							d3.selectAll('.'+ level +'.scatterplot.children.text')
+								.transition()
+								.attr("x", -firstLevelParentVLWidth)
+
+							// Call Virtual Layer
+							levelG.call(agg_scatterplot_virtual_layer, {
+										width: firstLevelWidth,
+										height: newViewHeight,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 15,
+										side: 'parent',
+										level: 'level1'
+							});	
+							
+						}
+
+						if (i == 3) {
+							levelG.call(scatterplot_virtual_layer, {
+								width: firstLevelWidth,
+								height: newViewHeight,
+								parentVLWidth: firstLevelParentVLWidth,
+								axis_x_position: 15,
+								link_opacity: 0.3,
+								side: 'parent',
+								level: 'level1'
+							});	
+						}
+
+						if (i == 4) {
+							
+						}
+					}
+
+					// Common code
+					if (i == 2 || i == 3) {
+						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+
+						// Adjust Total Space
+						adjustTotalWidth({
+							firstLevelWidth: firstLevelWidth, 
+							firstLevelParentVLWidth: firstLevelParentVLWidth,
+							addTotalWidthVL: addTotalWidthVL,
+							resetFlag: true
+						})
 					}
 				});
 

@@ -188,7 +188,8 @@ const scatterPlot = (selection, props) => {
 	} = props;
 
 	const g = selection.append('g')
-	  .attr('transform', `translate(${margin.left},${relative_translate_y})`);
+				.attr("class", level + " scatterplot")
+	  			.attr('transform', `translate(${margin.left},${relative_translate_y})`);
 
 	var chartHeight = height - margin.bottom;
 

@@ -5,6 +5,7 @@ const scatterplot_virtual_layer = (selection, props) => {
 	  height,
 	  parentVLWidth,
 	  axis_x_position,
+	  link_opacity,
 	  side,
 	  level
 	} = props;
@@ -24,7 +25,8 @@ const scatterplot_virtual_layer = (selection, props) => {
 
 		vl_axis.select(".domain")
 			.attr("stroke","black")
-			.attr("stroke-width","3");
+			.attr("stroke-width","1")
+			.attr("stroke-opacity", 0.5);
 		vl_axis.selectAll("text").remove();
 		vl_axis.selectAll(".tick").remove();
 		
@@ -36,7 +38,7 @@ const scatterplot_virtual_layer = (selection, props) => {
 
 				var circleX = d3.select(this).attr("cx");
 				var circleY = d3.select(this).attr("cy");
-				var y_position = circleY - 100/2;
+				var y_position = circleY - height/2;
 
 				var object = {};
 
@@ -49,7 +51,10 @@ const scatterplot_virtual_layer = (selection, props) => {
 				}
 
 				// add color
-				object['color'] = "black";
+				object['color'] = this.style.fill;
+
+				// add opacity
+				object['opacity'] = link_opacity;
 				
 				// add id for coordiate
 				object['id'] = d3.select(this).attr("id");
@@ -76,6 +81,7 @@ const agg_scatterplot_virtual_layer = (selection, props) => {
 	  height,
 	  parentVLWidth,
 	  axis_x_position,
+	  link_opacity,
 	  side,
 	  level
 	} = props;
@@ -133,7 +139,7 @@ const agg_scatterplot_virtual_layer = (selection, props) => {
 				object['color'] = this.style.fill;
 
 				// add opacity
-				object['opacity'] = 1;
+				object['opacity'] = link_opacity;
 
 				// add id for coordiate
 				object['id'] = d3.select(this).attr("id");
@@ -146,8 +152,65 @@ const agg_scatterplot_virtual_layer = (selection, props) => {
 				side: side,
 				rowIndex: 'row' + rowIndex,
 				chartType: 'scatterplot',
-				level: level
+				level: level,
+				group_select_flag: true
 		});		
+
+		// Connect dots
+		if (side == "parent" ) {
+			var lineData = [];
+			var newlineData = [];
+	
+			selectionLevelG.selectAll("." + level + ".scatterplot.middle.circle")
+				.each(function (d, i) {
+					//console.log(d);
+					var lastElement = this.id.split("_").pop();
+					if (lastElement == "0" ) {
+						newlineData = [];
+					}
+	
+					var circleX = parseFloat(d3.select(this).attr("cx"));
+					var circleY = parseFloat(d3.select(this).attr("cy"));
+
+					var parent_transform = d3.select(this.parentNode).attr('transform').split(/[\s,()]+/);
+					var parent_transform_x = parseFloat(parent_transform[1]);
+					var parent_transform_y = parseFloat(parent_transform[2]);
+
+					var position_x = circleX + parent_transform_x;
+					var position_y = circleY + parent_transform_y;
+
+					var object = {};
+					object['x'] = position_x;
+					object['y'] = position_y;
+					object['fill'] = this.style.fill;
+					object['id'] = this.id;
+	
+					newlineData.push(object);
+	
+					if (lastElement == "last" ) {
+						lineData.push(newlineData);
+					}
+				})
+
+			selectionLevelG.selectAll(".linepath")
+				.data(lineData)
+				.enter()
+				.append("path")
+				.attr("id", function(d) {
+					return d[0].id + "_linepath" + "_vpath";
+				})
+				.attr('class', level + " " + side + " row" + rowIndex 
+							+ ' scatterplot linepath virtuallayer')
+				.attr("fill", "none")
+				.attr("stroke", d=>d[0].fill)
+				.attr("stroke-width", 1)
+				.attr("d", function(d){
+					return d3.line()
+					  .x(function(d) { return d.x; })
+					  .y(function(d) { return d.y; })
+					  (d)
+				  })
+		}
 
 		rowIndex = rowIndex + 1;
 	});
