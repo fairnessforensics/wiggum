@@ -771,6 +771,22 @@ const interactiveLevelButton = (selection, props) => {
 
 							}
 						} else if (trendType == 'rank_trend') {
+
+							if (level == "level1") {
+								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
+
+									adjustWidth({
+										firstLevelWidth: firstLevelWidth, 
+										addWidth: firstLevelChildrenVLWidth, 
+										level: 'level2'});
+
+									d3.selectAll('.'+ level +'.list.cell')
+										.transition()
+										.attr("y", 0)
+										.attr("height", newViewHeight)
+										.attr('transform', `translate(${0},${-newViewHeight/2})`);
+								}
+							}
 							if (level == "level3") {
 								if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
 									// TODO hardcode issue for exporter and importer
@@ -1166,94 +1182,114 @@ const interactiveLevelButton = (selection, props) => {
 					}
 
 					if (i == 1) {
-						if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
-						|| d3.select('.level1.scatterplot').style("visibility") == 'visible'
-						|| d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
-							adjustWidth({
-								firstLevelWidth: firstLevelWidth, 
-								addWidth: firstLevelParentVLWidth, 
-								level: 'level1'});
+						if (trendType == 'pearson_corr') {
+							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
+							|| d3.select('.level1.scatterplot').style("visibility") == 'visible'
+							|| d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
+								adjustWidth({
+									firstLevelWidth: firstLevelWidth, 
+									addWidth: firstLevelParentVLWidth, 
+									level: 'level1'});
 
-							d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
-							.transition()
-							.attr("y", 0)
-							.attr("height", height)
-							.attr('transform', `translate(${-40},${0})`);
+								d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+								.transition()
+								.attr("y", 0)
+								.attr("height", height)
+								.attr('transform', `translate(${-40},${0})`);
+							}
+
+							if (d3.select('.level1.histogram').style("visibility") == 'visible') {
+								firstLevelChildrenVLWidth = 60 + 20;
+								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+								// Adjust Total Space
+								adjustTotalWidth({
+									firstLevelWidth: firstLevelWidth, 
+									firstLevelParentVLWidth: firstLevelParentVLWidth,
+									addTotalWidthVL: addTotalWidthVL,
+									resetFlag: true
+								})
+
+								// Reset the x position for child nodes in level 1 Virtual Layer
+								d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+									.transition()
+									.attr("transform", function(d,i) { 
+										return "translate(" + 40 + "," + height/2 + ")"; });	
+
+								// TODO merge same code for duplicate y axis
+								levelG.each(function (d) {
+									var selectionLevelG = d3.select(this);
+
+									var keyArray = d.data.key.split(",");
+									var histrogram_data = [];
+									csvData.forEach(function (item) {
+										var singleObj_var = {};
+										singleObj_var['type'] = keyArray[0];
+										singleObj_var['value'] = item[keyArray[0]];
+										histrogram_data.push(singleObj_var);
+
+									});
+
+									// Duplicate y axis
+									selectionLevelG.call(axisHistogram, {
+										chart_data: histrogram_data,
+										width: firstLevelWidth,
+										height: 30,
+										offset_y: -35,
+										level: 'level1'
+									})
+
+									// Second chart
+									var histrogram_data = [];
+									csvData.forEach(function (item) {
+										var singleObj_var = {};
+										singleObj_var['type'] = keyArray[1];
+										singleObj_var['value'] = item[keyArray[1]];
+										histrogram_data.push(singleObj_var);
+									});
+
+									// Duplicate y axis
+									selectionLevelG.call(axisHistogram, {
+										chart_data: histrogram_data,
+										width: firstLevelWidth,
+										height: 30,
+										offset_y: 35,
+										level: 'level1'
+									})
+								})	
+
+								// Call Virtual Layer
+								levelG.call(small_multiples_virtual_layer, {
+									width: firstLevelWidth,
+									height: 30,
+									offset_x: 10 + firstLevelWidth,
+									offset_y: 35,
+									virtualLayerWidth: firstLevelChildrenVLWidth,
+									rectWidth: 20,
+									rectHeight: 20,
+									matrix_data: matrix_data,
+									side: 'children',
+									level: 'level1'
+								});	
+							}
 						}
 
-						if (d3.select('.level1.histogram').style("visibility") == 'visible') {
-							firstLevelChildrenVLWidth = 60 + 20;
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-							// Adjust Total Space
-							adjustTotalWidth({
-								firstLevelWidth: firstLevelWidth, 
-								firstLevelParentVLWidth: firstLevelParentVLWidth,
-								addTotalWidthVL: addTotalWidthVL,
-								resetFlag: true
-							})
+						if (trendType == 'rank_trend') {
 
-							// Reset the x position for child nodes in level 1 Virtual Layer
-							d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
-								.transition()
-								.attr("transform", function(d,i) { 
-									return "translate(" + 40 + "," + height/2 + ")"; });	
+							if (level == "level1") {
+								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
 
-							// TODO merge same code for duplicate y axis
-							levelG.each(function (d) {
-								var selectionLevelG = d3.select(this);
-
-								var keyArray = d.data.key.split(",");
-								var histrogram_data = [];
-								csvData.forEach(function (item) {
-									var singleObj_var = {};
-									singleObj_var['type'] = keyArray[0];
-									singleObj_var['value'] = item[keyArray[0]];
-									histrogram_data.push(singleObj_var);
-
-								});
-
-								// Duplicate y axis
-								selectionLevelG.call(axisHistogram, {
-									chart_data: histrogram_data,
-									width: firstLevelWidth,
-									height: 30,
-									offset_y: -35,
-									level: 'level1'
-								})
-
-								// Second chart
-								var histrogram_data = [];
-								csvData.forEach(function (item) {
-									var singleObj_var = {};
-									singleObj_var['type'] = keyArray[1];
-									singleObj_var['value'] = item[keyArray[1]];
-									histrogram_data.push(singleObj_var);
-								});
-
-								// Duplicate y axis
-								selectionLevelG.call(axisHistogram, {
-									chart_data: histrogram_data,
-									width: firstLevelWidth,
-									height: 30,
-									offset_y: 35,
-									level: 'level1'
-								})
-							})	
-
-							// Call Virtual Layer
-							levelG.call(small_multiples_virtual_layer, {
-								width: firstLevelWidth,
-								height: 30,
-								offset_x: 10 + firstLevelWidth,
-								offset_y: 35,
-								virtualLayerWidth: firstLevelChildrenVLWidth,
-								rectWidth: 20,
-								rectHeight: 20,
-								matrix_data: matrix_data,
-								side: 'children',
-								level: 'level1'
-							});	
-
+									adjustWidth({
+										firstLevelWidth: firstLevelWidth, 
+										addWidth: firstLevelParentVLWidth, 
+										level: 'level1'});
+	
+									d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+										.transition()
+										.attr("y", 0)
+										.attr("height", newViewHeight)
+										.attr('transform', `translate(${-50},${0})`);
+								}
+							}
 						}
 					}
 
