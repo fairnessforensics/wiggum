@@ -89,12 +89,34 @@ function onMouseOver(selection, element, level, rowIndex, side, multi_no, chartT
 		selection.selectAll(".scatterplot .subgroup_" + selected_subgroup)
 				.style("opacity", 1)
 				.raise();
+
+		let parts = element.id.split("_");
+
+		let new_part = parts.slice();
+		// splice is in place
+		new_part.splice(parts.length - 3, 1);
+		let result = new_part.join("_");
+
+		d3.select("#" + result.replace(side, "linepath")).style("opacity", 1);
+
+		new_part = parts.slice();
+
+		if (side == "parent") {
+			new_part.splice(new_part.length - 3, 1, "last");
+			result = new_part.join("_");
+
+			d3.select("#" + result.replace("parent", "children")).style("opacity", 1);
+		} else if (side == "children") {
+			new_part.splice(new_part.length - 3, 1, "0");
+			result = new_part.join("_");
+
+			d3.select("#" + result.replace("children", "parent")).style("opacity", 1);
+		} else {}
 	}
 
 	if (side == "parent") {
 		d3.select("#" + element.id.replace("parent", "children")).style("opacity", 1);
 		d3.select("#" + element.id.replace("parent", "aux")).style("opacity", 1);
-		d3.select("#" + element.id.replace("parent", "linepath")).style("opacity", 1);
 	} else if (side == "children") {
 		d3.select("#" + element.id.replace("children", "parent")).style("opacity", 1);
 		d3.select("#" + element.id.replace("children", "aux")).style("opacity", 1);

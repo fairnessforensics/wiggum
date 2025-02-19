@@ -197,7 +197,10 @@ const agg_scatterplot_virtual_layer = (selection, props) => {
 				.enter()
 				.append("path")
 				.attr("id", function(d) {
-					return d[0].id + "_linepath" + "_vpath";
+					let lastIndex = d[0].id.lastIndexOf("_");
+					let id = d[0].id.slice(0, lastIndex);
+
+					return id + "_linepath" + "_vpath";
 				})
 				.attr('class', level + " " + side + " row" + rowIndex 
 							+ ' scatterplot linepath virtuallayer')
