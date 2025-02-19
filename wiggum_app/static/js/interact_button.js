@@ -670,15 +670,12 @@ const interactiveLevelButton = (selection, props) => {
 								addWidth: firstLevelChildrenVLWidth, 
 								level: 'level2'});
 
-
-
 							if (level == "level1") {
 								if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
 									d3.selectAll('.'+level + '.genericheatmap.children.text')
 										.transition()
 										.style('visibility', 'visible');
 								}
-
 							}
 
 							if (level == "level3") {
@@ -799,12 +796,7 @@ const interactiveLevelButton = (selection, props) => {
 							} 
 						} 
 
-						if (trendType == 'rank_trend') {
-							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
-								addWidth4Lable = 30;
-								firstLevelParentVLWidth = addWidth4Lable;
-							} 
-						}
+
 
 						if (trendType == 'pearson_corr') {
 							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible') {
@@ -876,38 +868,6 @@ const interactiveLevelButton = (selection, props) => {
 									level: 'level1'
 								});	
 							}
-						}
-
-						if (trendType == 'rank_trend') {
-
-							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
-								// Hide node
-								d3.selectAll('.'+ level +'.list.cell')
-									.transition().style('visibility', "hidden");
-
-								d3.selectAll('.'+ level +'.genericheatmap.children.text')
-									.transition().style('visibility', "hidden");
-
-								levelG.call(generic_heatmap_virtual_layer, {
-									x_position: 0,
-									height: newViewHeight,
-									chart_data: csvData,
-									offset_flag: false,
-									parentVLWidth: firstLevelParentVLWidth,
-									side: 'parent',
-									level: 'level1'
-								});	
-							}
-
-							// Leaf Level
-							if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
-
-								// Call Virtual Layer
-								levelG.call(country_map_virtual_layer, {
-									side: 'parent',
-									level: 'level3'
-								});	
-							} 
 						}
 					}
 
@@ -1014,90 +974,34 @@ const interactiveLevelButton = (selection, props) => {
 								});	
 							}
 						}
-
-						if (trendType == 'rank_trend') {
-
-							// Leaf Level
-							if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
-
-								// Adjust level 3 nodes x postion
-								thirdLevelParentVLWidth = 100;
-								d3.selectAll('.node.level-3')
-									.transition()
-									.attr("transform", function(d,i) { 
-										var postion_x = d.y + firstLevelWidth 
-														+ secondLevelWidth + thirdLevelParentVLWidth;
-										return "translate(" + postion_x + "," + d.x + ")"; });	
-
-								d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
-									.transition()
-									.attr("transform", function(d,i) { 
-									return "translate(" + (-thirdLevelParentVLWidth) + "," + 0 + ")"; });	
-
-								// Call Virtual Layer
-								levelG.call(country_map_projection_virtual_layer, {
-									side: 'parent',
-									thirdLevelParentVLWidth: thirdLevelParentVLWidth,
-									level: 'level3'
-								});	
-							} 
-						}
-
 					}
 
-					if (i == 4) {
-						if (trendType == 'rank_trend') {
+					// Start to use selectedChart=================================>
+					// Common VL option for all charts
+					if (i == 0) {
+						d3.selectAll('.'+ level +'.' + selectedChart + '.children.text')
+							.transition()
+							.attr("x", -firstLevelParentVLWidth)
+					}
 
-							// Leaf Level
-							if (d3.select('.level3.countrymap').style("visibility") == 'visible') {
+					if (i == 1) {
+						d3.selectAll('.'+ level +'.' + selectedChart + '.children.text')
+						.transition()
+						.attr("x", -25);
 
-								// Adjust level 3 nodes x postion
-								thirdLevelParentVLWidth = 100;
-								d3.selectAll('.node.level-3')
-									.transition()
-									.attr("transform", function(d,i) { 
-										var postion_x = d.y + firstLevelWidth 
-														+ secondLevelWidth + thirdLevelParentVLWidth;
-										return "translate(" + postion_x + "," + d.x + ")"; });	
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: firstLevelChildrenVLWidth, 
+							level: 'level2'});
 
-								d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
-									.transition()
-									.attr("transform", function(d,i) { 
-									return "translate(" + (-thirdLevelParentVLWidth) + "," + 0 + ")"; });	
-
-								// Call Virtual Layer
-								levelG.call(country_map_projection_center_virtual_layer, {
-									side: 'parent',
-									thirdLevelParentVLWidth: thirdLevelParentVLWidth,
-									level: 'level3'
-								});	
-							} 
-						}						
+						d3.selectAll('.'+ level +'.list.cell')
+							.transition()
+							.attr("y", 0)
+							.attr("height", newViewHeight)
+							.attr('transform', `translate(${0},${-newViewHeight/2})`);
 					}
 
 					if (selectedChart == 'scatterplot') {
-						if (i == 0) {
-							d3.selectAll('.'+ level +'.scatterplot.children.text')
-								.transition()
-								.attr("x", -firstLevelParentVLWidth)
-						}
-
-						if (i == 1) {
-							d3.selectAll('.'+ level +'.scatterplot.children.text')
-								.transition()
-								.attr("x", -25);
-
-							adjustWidth({
-								firstLevelWidth: firstLevelWidth, 
-								addWidth: firstLevelChildrenVLWidth, 
-								level: 'level2'});
-
-							d3.selectAll('.'+ level +'.list.cell')
-								.transition()
-								.attr("y", 0)
-								.attr("height", newViewHeight)
-								.attr('transform', `translate(${0},${-newViewHeight/2})`);
-						}
 
 						if (i == 2 || i == 3) {
 							firstLevelParentVLWidth = 40;
@@ -1138,17 +1042,100 @@ const interactiveLevelButton = (selection, props) => {
 						}
 					}
 
-					// Common code
-					if (i == 2 || i == 3) {
-						var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+					if (selectedChart == 'genericheatmap') {
 
-						// Adjust Total Space
-						adjustTotalWidth({
-							firstLevelWidth: firstLevelWidth, 
-							firstLevelParentVLWidth: firstLevelParentVLWidth,
-							addTotalWidthVL: addTotalWidthVL,
-							resetFlag: true
-						})
+						if (i == 2) {
+							addWidth4Lable = 30;
+							firstLevelParentVLWidth = addWidth4Lable;
+
+							// Hide node
+							d3.selectAll('.'+ level +'.list.cell')
+								.transition().style('visibility', "hidden");
+
+							d3.selectAll('.'+ level +'.genericheatmap.children.text')
+								.transition().style('visibility', "hidden");
+
+							levelG.call(generic_heatmap_virtual_layer, {
+								x_position: 0,
+								height: newViewHeight,
+								chart_data: csvData,
+								offset_flag: false,
+								parentVLWidth: firstLevelParentVLWidth,
+								side: 'parent',
+								level: 'level1'
+							});	
+						}
+					}
+
+					if (selectedChart == 'countrymap') {
+						if (i == 2) {
+							// Call Virtual Layer
+							levelG.call(country_map_virtual_layer, {
+								side: 'parent',
+								level: 'level3'
+							});								
+						}
+
+						if (i == 3) {
+							// Adjust level 3 nodes x postion
+							thirdLevelParentVLWidth = 100;
+							d3.selectAll('.node.level-3')
+								.transition()
+								.attr("transform", function(d,i) { 
+									var postion_x = d.y + firstLevelWidth 
+													+ secondLevelWidth + thirdLevelParentVLWidth;
+									return "translate(" + postion_x + "," + d.x + ")"; });	
+
+							d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
+								.transition()
+								.attr("transform", function(d,i) { 
+								return "translate(" + (-thirdLevelParentVLWidth) + "," + 0 + ")"; });	
+
+							// Call Virtual Layer
+							levelG.call(country_map_projection_virtual_layer, {
+								side: 'parent',
+								thirdLevelParentVLWidth: thirdLevelParentVLWidth,
+								level: 'level3'
+							});	
+						}
+
+						if (i == 4) {
+							// Adjust level 3 nodes x postion
+							thirdLevelParentVLWidth = 100;
+							d3.selectAll('.node.level-3')
+								.transition()
+								.attr("transform", function(d,i) { 
+									var postion_x = d.y + firstLevelWidth 
+													+ secondLevelWidth + thirdLevelParentVLWidth;
+									return "translate(" + postion_x + "," + d.x + ")"; });	
+
+							d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
+								.transition()
+								.attr("transform", function(d,i) { 
+								return "translate(" + (-thirdLevelParentVLWidth) + "," + 0 + ")"; });	
+
+							// Call Virtual Layer
+							levelG.call(country_map_projection_center_virtual_layer, {
+								side: 'parent',
+								thirdLevelParentVLWidth: thirdLevelParentVLWidth,
+								level: 'level3'
+							});	
+						}
+					}
+
+					// Common code
+					if (level == "level1") {
+						if (i == 2 || i == 3) {
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+
+							// Adjust Total Space
+							adjustTotalWidth({
+								firstLevelWidth: firstLevelWidth, 
+								firstLevelParentVLWidth: firstLevelParentVLWidth,
+								addTotalWidthVL: addTotalWidthVL,
+								resetFlag: true
+							})
+						}
 					}
 				});
 
@@ -1300,28 +1287,9 @@ const interactiveLevelButton = (selection, props) => {
 								});	
 							}
 						}
-
-						if (trendType == 'rank_trend') {
-
-							if (level == "level1") {
-								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-
-									adjustWidth({
-										firstLevelWidth: firstLevelWidth, 
-										addWidth: firstLevelParentVLWidth, 
-										level: 'level1'});
-	
-									d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
-										.transition()
-										.attr("y", 0)
-										.attr("height", newViewHeight)
-										.attr('transform', `translate(${-50},${0})`);
-								}
-							}
-						}
 					}
 
-					if (i == 2) {
+					if (i == 2 && trendType == "pearson_corr") {
 
 						if (trendType == 'pearson_corr') {
 							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
@@ -1341,23 +1309,7 @@ const interactiveLevelButton = (selection, props) => {
 									addWidth: addTotalWidthVL, 
 									level: 'level2'});
 							} 
-						} else if (trendType == 'rank_trend') {
-							if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-								//var addRightWidth = 40 + 60;
-								if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-									firstLevelChildrenVLWidth = 70;
-								} else {
-									firstLevelChildrenVLWidth = 60;
-								}
-
-								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-		
-								adjustWidth({
-									firstLevelWidth: firstLevelWidth, 
-									addWidth: addTotalWidthVL, 
-									level: 'level2'});
-							} 
-						}
+						} 
 
 						// TODO not sure what the purpose is
 						// Reset the x position for child nodes in level 1 Virtual Layer
@@ -1536,120 +1488,9 @@ const interactiveLevelButton = (selection, props) => {
 								});	
 							}
 						}
-
-						// Charts in rank trend
-						if (trendType == 'rank_trend') {
-
-							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
-
-								firstLevelChildrenVLWidth = 40 + 20;
-								var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
-		
-								adjustWidth({
-									firstLevelWidth: firstLevelWidth, 
-									addWidth: addTotalWidthVL, 
-									level: 'level2'});
-
-								// Hide node
-								d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
-									.transition().style('visibility', "hidden");
-
-								levelG.call(generic_heatmap_virtual_layer, {
-									x_position: firstLevelWidth + firstLevelChildrenVLWidth,
-									height: newViewHeight,
-									chart_data: csvData,
-									offset_flag: true,
-									parentVLWidth: firstLevelParentVLWidth,
-									childrenVLWidth: firstLevelChildrenVLWidth,
-									side: 'children',
-									level: 'level1'
-								});	
-							}
-						}
-
-						// Charts in both trends
-						if (d3.select('.level1.scatterplot').style("visibility") == 'visible') {
-							levelG.each(function (d) {				
-								var selectionLevelG = d3.select(this);
-
-								yLable = selectionLevelG.select(".scatterplot.y.label").text();
-								xLable = selectionLevelG.select(".scatterplot.x.label").text();
-								var keyArray = d.data.key.split(",");
-
-								var chart_data;
-								if (trendType == 'pearson_corr') {
-									chart_data = csvData;
-								} else if (trendType == 'rank_trend') {
-
-									// Aggregate data
-									var aggResultArray = d3.nest()
-										.key(function(d) {return d[keyArray[1]]})
-										.key(function(d) {return d[xLable]})
-										.sortKeys(d3.ascending)
-										.rollup(function(v) {
-											return {
-												sum: d3.sum(v, function(d) {return d[keyArray[0]]})
-											}
-										})
-										.entries(csvData);
-
-									// Flattern the nested data
-									chart_data = []
-									aggResultArray.forEach(function(row) {
-										row.values.forEach(function(cell) {
-										var singleObj = {};
-										singleObj[keyArray[1]] = row.key;
-										singleObj[xLable] = Number(cell.key);
-										singleObj[keyArray[0]] = cell.value.sum;
-
-										chart_data.push(singleObj);
-										});
-									});
-								}
-
-								// Duplicate y axis
-								// TODO Move to axis.js
-								const yScale = d3.scaleLinear();
-								// Insert padding so that points do not overlap with y or x axis
-								yScale.domain(padLinear(d3.extent(chart_data, d => d[yLable]), 0.05));
-								yScale.range([newViewHeight, 0]);
-								yScale.nice();
-
-								const yAxis = d3.axisRight(yScale).ticks(5);
-								yAxis.tickFormat(d3.format(".2s"));
-		
-								selectionLevelG.append("g")
-									.attr("class", level + " scatterplot virtuallayer y axis children")
-									.attr("transform", "translate(" + 250 + ","+ (-newViewHeight/2)+")")
-									.call(yAxis);
-							});	
-
-							// Call Virtual Layer
-							if (trendType == 'pearson_corr') {
-								levelG.call(scatterplot_virtual_layer, {
-									width: firstLevelWidth,
-									height: newViewHeight,
-									parentVLWidth: firstLevelParentVLWidth,
-									axis_x_position: 250 + 35,
-									side: 'children',
-									aux_flag: false,
-									level: 'level1'
-								});	
-							} else if (trendType == 'rank_trend') {
-								levelG.call(agg_scatterplot_virtual_layer, {
-									width: firstLevelWidth,
-									height: newViewHeight,
-									parentVLWidth: firstLevelParentVLWidth,
-									axis_x_position: 250 + 35,
-									side: 'children',
-									aux_flag: false,
-									level: 'level1'
-								});	
-							}
-						}
 					}
-
-					if (i == 3) {
+					
+					if (i == 3 && trendType == "pearson_corr") {
 						if (d3.select('.level1.heatmapdensity').style("visibility") == 'visible') {
 
 							firstLevelChildrenVLWidth = 25;
@@ -1777,7 +1618,173 @@ const interactiveLevelButton = (selection, props) => {
 						}
 					}
 
+					// Start to use selectedChart=================================>
+					// Common VL option for all charts
+					if (i == 1) {
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: firstLevelParentVLWidth, 
+							level: 'level1'});
 
+						d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+							.transition()
+							.attr("y", 0)
+							.attr("height", newViewHeight)
+							.attr('transform', `translate(${-50},${0})`);
+					}
+
+					if (selectedChart == 'scatterplot') {
+
+						if (i == 2 || i == 3) {
+
+							firstLevelChildrenVLWidth = 70;
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+	
+							adjustWidth({
+								firstLevelWidth: firstLevelWidth, 
+								addWidth: addTotalWidthVL, 
+								level: 'level2'});							
+
+							// Reset the x position for child nodes in level 1 Virtual Layer
+							child_x_position = 20;
+
+							d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+								.transition()
+								.attr("transform", function(d,i) { 
+									return "translate(" + child_x_position + "," + newViewHeight/2 + ")"; });	
+
+							// Charts in both trends
+							levelG.each(function (d) {				
+								var selectionLevelG = d3.select(this);
+
+								yLable = selectionLevelG.select(".scatterplot.y.label").text();
+								xLable = selectionLevelG.select(".scatterplot.x.label").text();
+								var keyArray = d.data.key.split(",");
+
+								var chart_data;
+								if (trendType == 'pearson_corr') {
+									chart_data = csvData;
+								} else if (trendType == 'rank_trend') {
+
+									// Aggregate data
+									var aggResultArray = d3.nest()
+										.key(function(d) {return d[keyArray[1]]})
+										.key(function(d) {return d[xLable]})
+										.sortKeys(d3.ascending)
+										.rollup(function(v) {
+											return {
+												sum: d3.sum(v, function(d) {return d[keyArray[0]]})
+											}
+										})
+										.entries(csvData);
+
+									// Flattern the nested data
+									chart_data = []
+									aggResultArray.forEach(function(row) {
+										row.values.forEach(function(cell) {
+										var singleObj = {};
+										singleObj[keyArray[1]] = row.key;
+										singleObj[xLable] = Number(cell.key);
+										singleObj[keyArray[0]] = cell.value.sum;
+
+										chart_data.push(singleObj);
+										});
+									});
+								}
+
+								// Duplicate y axis
+								// TODO Move to axis.js
+								const yScale = d3.scaleLinear();
+								// Insert padding so that points do not overlap with y or x axis
+								yScale.domain(padLinear(d3.extent(chart_data, d => d[yLable]), 0.05));
+								yScale.range([newViewHeight, 0]);
+								yScale.nice();
+
+								const yAxis = d3.axisRight(yScale).ticks(5);
+								yAxis.tickFormat(d3.format(".2s"));
+		
+								selectionLevelG.append("g")
+									.attr("class", level + " scatterplot virtuallayer y axis children")
+									.attr("transform", "translate(" + 250 + ","+ (-newViewHeight/2)+")")
+									.call(yAxis);
+							});	
+
+							// Call Virtual Layer
+							if (i == 2) {
+								if (trendType == 'pearson_corr') {
+
+									levelG.call(scatterplot_virtual_layer, {
+										width: firstLevelWidth,
+										height: newViewHeight,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 250 + 35,
+										side: 'children',
+										aux_flag: false,
+										level: 'level1'
+									});	
+								} 
+							}
+
+							if (i == 2) {
+								levelG.call(agg_scatterplot_virtual_layer, {
+									width: firstLevelWidth,
+									height: newViewHeight,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 250 + 35,
+									side: 'children',
+									aux_flag: false,
+									level: 'level1'
+								});	
+							}
+
+							if (i == 3) {
+								levelG.call(scatterplot_virtual_layer, {
+									width: firstLevelWidth,
+									height: newViewHeight,
+									parentVLWidth: firstLevelParentVLWidth,
+									axis_x_position: 250 + 35,
+									aux_flag: false,
+									link_opacity: 0.3,
+									side: 'children',
+									level: 'level1'
+								});	
+							}
+						}
+
+						if (i == 4) {
+
+						}
+
+						// Common part
+
+					}
+
+					if (selectedChart == 'genericheatmap') {
+						if (i == 2) {
+							firstLevelChildrenVLWidth = 40 + 20;
+							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
+
+							adjustWidth({
+								firstLevelWidth: firstLevelWidth, 
+								addWidth: addTotalWidthVL,  
+								level: 'level2'});
+
+							// Hide node
+							d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
+								.transition().style('visibility', "hidden");
+
+							levelG.call(generic_heatmap_virtual_layer, {
+								x_position: firstLevelWidth + firstLevelChildrenVLWidth,
+								height: newViewHeight,
+								chart_data: csvData,
+								offset_flag: true,
+								parentVLWidth: firstLevelParentVLWidth,
+								childrenVLWidth: firstLevelChildrenVLWidth,
+								side: 'children',
+								level: 'level1'
+							});	
+						}
+					}
 				});
 
 	rightIdentityButtonGroups.call(button_vertical_list, {
