@@ -387,12 +387,11 @@ const scatterPlot = (selection, props) => {
 			.attr("opacity", 0.9)
 			.on("click", function(d) {
 				// Add vertical line at clicked point
-
-				//const existingLine = g.select(`.v-line[id="${d.industry}"]`);
-				//if (!existingLine.empty()) {
+				const existingLine = g.select(`.v-line[id="${d.industry}"]`);
+				if (!existingLine.empty()) {
 					// If the line already exists, remove it
-				//	existingLine.remove();
-				//} else {
+					existingLine.remove();
+				} else {
 					g.append("line")
 						.attr("class", "v-line")
 						.attr("id", d.industry)
@@ -406,8 +405,8 @@ const scatterPlot = (selection, props) => {
 						.on("click", function() {
 							d3.select(this).remove(); // Remove the line if clicked
 						})
-						//.lower();
-				//}
+						.lower();
+				}
 			})
 			.append('title')
 			.text(function(d) {
