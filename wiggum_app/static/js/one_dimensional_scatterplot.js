@@ -408,6 +408,11 @@ const scatterPlot = (selection, props) => {
 						})
 						//.lower();
 				//}
+			})
+			.append('title')
+			.text(function(d) {
+				var industryInfo =  "[" + d.industry + ": " + getIndustryNameById(d.industry) + "]";
+				return `The trade for ${industryInfo} is ${d3.format(".3f")(d.trade)}.`
 			});
 
 	} else {
