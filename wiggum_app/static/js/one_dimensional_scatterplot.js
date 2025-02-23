@@ -178,17 +178,26 @@ const scatterPlot = (selection, props) => {
 	  smallMultipleFlag,
 	  first_small_multiple_flag,
 	  last_small_multiple_flag,
+	  share_axis_flag,
 	  rectWidth,
 	  rectHeight,
 	  identity_data,
 	  chart_data,
 	  myColor,
+	  mark_shape,
 	  rowIndex,
 	  level
 	} = props;
 
+	var chart_name;
+	if (smallMultipleFlag == true) {
+		chart_name = 'smscatterplot';
+	} else {
+		chart_name = 'scatterplot';
+	}
+
 	const g = selection.append('g')
-				.attr("class", level + " scatterplot")
+				.attr("class", level + " " + chart_name)
 	  			.attr('transform', `translate(${margin.left},${relative_translate_y})`);
 
 	var chartHeight = height - margin.bottom;
@@ -218,8 +227,15 @@ const scatterPlot = (selection, props) => {
 	===============================================================*/
 
 	// TODO maybe check the data type by meta data
-	const xScale = d3.scaleTime();
+	var xScale;
+
+	if (xAxisLabel == 'year') {
+		xScale = d3.scaleTime();
 	
+	} else {
+		xScale = d3.scaleLinear();
+	}
+
 	// Add padding: eg. [2010, 2019] => [2009, 2020]
 	xScale.domain(d3.extent(chart_data, xValue).map((num, index, array) => {
 													if (index == 0 ) {
@@ -228,10 +244,20 @@ const scatterPlot = (selection, props) => {
 														return num + 1;
 													}
 												}));
+
 	xScale.range([0, width]);
 
-	const xAxis = d3.axisBottom(xScale);
-	xAxis.tickFormat(d3.format(".4"));
+	var xAxis = d3.axisBottom(xScale);
+	if (smallMultipleFlag && !share_axis_flag) {
+		// Used for industry id
+		var dataRange = d3.extent(chart_data, xValue);
+		var tickCount = Math.ceil((dataRange[1] - dataRange[0]) / 5);
+
+		xAxis.ticks(tickCount).tickFormat(d=> d % 5 === 0 ? d : ""); 
+	} else {
+		// Used for year
+		xAxis.tickFormat(d3.format(".4"));
+	}
 
 	// setup fill color
 	var cValue = function(d) { return d[splitby];};
@@ -244,10 +270,11 @@ const scatterPlot = (selection, props) => {
 	}
 
 	var x_axis = g.append("g")
-		.attr("class", level + " scatterplot x axis")
+		.attr("class", level + " " + chart_name + " x axis")
 		.attr("transform", "translate(0," + chartHeight + ")")
 		.call(
-			(smallMultipleFlag == false || last_small_multiple_flag == true) ? xAxis : xAxis.tickSize(0)
+			(smallMultipleFlag == false || last_small_multiple_flag == true
+				|| share_axis_flag == false) ? xAxis : xAxis.tickSize(0)
 		);
 
 	x_axis.selectAll("text")
@@ -257,14 +284,24 @@ const scatterPlot = (selection, props) => {
 		.style("text-anchor", "end");
 
 	// Remove two end labels from x axis for time scale
-	x_axis.selectAll(".tick")
-		.filter(function(d, i) {
-			return i === 0 || i === xScale.ticks().length - 1;
-		})
-		.remove();
+	if (!smallMultipleFlag || share_axis_flag) {
+		// Small multiple for leaf level
+		x_axis.selectAll(".tick")
+			.filter(function(d, i) {
+				return i === 0 || i === xScale.ticks().length - 1;
+			})
+			.remove();
+	} else {
+		// Small multiple for industry in the first level 
+		x_axis.selectAll(".tick")
+			.filter(function(d, i) {
+				return i === 0;
+			})
+			.remove();
+	}
 
 	if (smallMultipleFlag) {
-		if (!last_small_multiple_flag) {
+		if (!last_small_multiple_flag && share_axis_flag) {
 			x_axis.selectAll('.tick').remove();
 			x_axis.select(".domain")
 					.attr("stroke", "black")
@@ -275,25 +312,26 @@ const scatterPlot = (selection, props) => {
 
 	if (smallMultipleFlag == false || last_small_multiple_flag == true) {
 		x_axis.append("text")
-			.attr("class", level + " scatterplot x label")
+			.attr("class", level + " " + chart_name + " x label")
 			.attr('fill', 'black')
 			//.attr("x", width/2)
 			//.attr("y", 45)
 			.attr("x", width + 5)
 			.attr("y", 20)
+			.attr("text-anchor", (xAxisLabel == 'industry') ? "start" : "middle")
 			.text(xAxisLabel);	
 	}
 
 	var y_axis = g.append("g")
 		  .attr("class", function(d) {
-				return level + " scatterplot y left axis";
+				return level + " " + chart_name + " y left axis";
 			})	  
 		  .call(yAxis);
 
 	if (smallMultipleFlag == false || first_small_multiple_flag == true) {
 		y_axis.append("text")
 			.attr("class", function(d) {
-					return level + " scatterplot y label";
+					return level + " " + chart_name + " y label";
 				})	  
 				.attr("x", 0)
 				.attr("y", -8)
@@ -305,48 +343,71 @@ const scatterPlot = (selection, props) => {
 	const subgroups = new Set(chart_data.map(obj => obj[xAxisLabel]));
 	const num_subgroups = subgroups.size;
 
-	g.selectAll(".scatterplot.circle.middle")
-		  .data(chart_data)
-		  .enter().append("circle")	    
-		  .attr("class", function(d) {
-			return level + " " +rowIndex + " scatterplot middle circle " 
-				+ yAxisLabel + " " + xAxisLabel + " splitby_" + splitby + " subgroup_" + cValue(d);
-			})	  
-		  .attr("id", function(d, i) {
-				var id;
-				if ((i+1) % num_subgroups == 0) {
-					id = 'last';
-				} else {
-					id = i % num_subgroups;
-				}
-				return level + "_" + rowIndex + "_scatterplot_middle_circle_"
-					+ yAxisLabel + "_" + xAxisLabel + "_splitby_" + splitby 
-					+ "_subgroup_" + cValue(d) + "_" + id;})
-		  .attr("r", circleRadius)
-		  .attr("cx", function(d) {
-				return xScale(xValue(d));
-		  })
-		  .attr("cy", d => yScale(yValue(d)))
-		  .attr("stroke", "black")
-		  .attr("stroke-width", 1)	  
-		  .attr("stroke-opacity", 0.25)
-		  .style("fill", function(d) { 
-				if (level == "level3") {
-					return color(cValue(d));}
-				if (myColor == undefined) {
-					return '#ffffff';
-					//return "#bebebe";
-				} else { 
-					return color(cValue(d));
-					//return myColor;}
-				}})
-		  .on("mouseover", function(d) {
-				highlight(d);
-		  })
-		  .on("mouseleave", function(d) {
-				doNotHighlight(d);
-		  })
-		  .append('title');
+	if (mark_shape == 'rectangle') {
+		mark_width = 6;
+		mark_height = 3;
+		g.selectAll("." + chart_name + ".circle.middle")
+			.data(chart_data)
+			.enter().append("rect")	    
+			.attr("class", function(d) {
+				return level + " " +rowIndex + " " + chart_name + " middle circle " 
+					+ yAxisLabel + " " + xAxisLabel + " splitby_" + splitby + " subgroup_" + cValue(d);
+				})	  
+			.attr("id", function(d, i) {
+					return level + "_" + rowIndex + "_" + chart_name + "_middle_circle_"
+						+ yAxisLabel + "_" + xAxisLabel + "_splitby_" + splitby 
+						+ "_subgroup_" + cValue(d);})
+			.attr("x", d => xScale(xValue(d)) - mark_width/2)
+			.attr("y", d => yScale(yValue(d)) - mark_height/2)
+			.attr("width", mark_width) 
+       		.attr("height", mark_height)
+			.style("fill", d => color(cValue(d)))
+			.attr("opacity", 0.9);
+
+	} else {
+		g.selectAll("." + chart_name + ".circle.middle")
+			.data(chart_data)
+			.enter().append("circle")	    
+			.attr("class", function(d) {
+				return level + " " +rowIndex + " " + chart_name + " middle circle " 
+					+ yAxisLabel + " " + xAxisLabel + " splitby_" + splitby + " subgroup_" + cValue(d);
+				})	  
+			.attr("id", function(d, i) {
+					var id;
+					if ((i+1) % num_subgroups == 0) {
+						id = 'last';
+					} else {
+						id = i % num_subgroups;
+					}
+					return level + "_" + rowIndex + "_" + chart_name + "_middle_circle_"
+						+ yAxisLabel + "_" + xAxisLabel + "_splitby_" + splitby 
+						+ "_subgroup_" + cValue(d) + "_" + id;})
+			.attr("r", circleRadius)
+			.attr("cx", function(d) {
+					return xScale(xValue(d));
+			})
+			.attr("cy", d => yScale(yValue(d)))
+			.attr("stroke", "black")
+			.attr("stroke-width", 1)	  
+			.attr("stroke-opacity", 0.25)
+			.style("fill", function(d) { 
+					if (level == "level3") {
+						return color(cValue(d));}
+					if (myColor == undefined) {
+						return '#ffffff';
+						//return "#bebebe";
+					} else { 
+						return color(cValue(d));
+						//return myColor;}
+					}})
+			.on("mouseover", function(d) {
+					highlight(d);
+			})
+			.on("mouseleave", function(d) {
+					doNotHighlight(d);
+			})
+			.append('title');
+		}
 
 	// Draw legend
 	var legend_g = g.append("g");
@@ -359,7 +420,7 @@ const scatterPlot = (selection, props) => {
 						.data(color.domain())
 						.enter()
 						.append("g")
-						.attr("class", d => level + " scatterplot legend " + d)
+						.attr("class", d => level + " " + chart_name + " legend " + d)
 						.attr("transform", 
 							function (d, i) {
 								row = Math.floor(i / 4) + 1;
@@ -389,7 +450,7 @@ const scatterPlot = (selection, props) => {
 
 		// add legend label
 		legend_g.append("text")
-			.attr("class", level + " scatterplot legend label")
+			.attr("class", level + " " + chart_name + " legend label")
 			.attr("x", legendWidth / 2)
 			.attr("y", -(row_num-1) * 12 - 3)
 			.style("text-anchor", "middle")
@@ -401,16 +462,25 @@ const scatterPlot = (selection, props) => {
 		var legend = legend_g.selectAll(".legend")
 						.data(color.domain())
 						.enter().append("g")
-						.attr("class", level + " scatterplot legend")
+						.attr("class", level + " " + chart_name + " legend")
 						.attr("transform", function(d, i) { 
 							return "translate("+ (width) 
 								+"," + (i * 15 + 5) + ")"; });
 
-		legend.append("circle")
-			.attr("cx", 10)
-			.attr("cy", 8)
-			.attr("r", 5)
-			.style("fill", color);
+		if (mark_shape == "rectangle") {
+			legend.append("rect")
+				.attr("x", 4)
+				.attr("y", 4)
+				.attr("width", 10)
+				.attr("height", 6)
+				.style("fill", color);
+		} else {
+			legend.append("circle")
+				.attr("cx", 10)
+				.attr("cy", 8)
+				.attr("r", 5)
+				.style("fill", color);
+		}
 
 		legend.append("text")
 			.attr("x", 17)
@@ -420,7 +490,7 @@ const scatterPlot = (selection, props) => {
 			.text(function(d) { return d;});
 
 		legend_g.append("text")
-			.attr("class", level + " scatterplot legend title")		
+			.attr("class", level + " " + chart_name + " legend title")		
 			.attr("x", width + 5)
 			.attr("y", 0)
 			.style("font-size", "12px")                     
@@ -430,11 +500,12 @@ const scatterPlot = (selection, props) => {
 
 	// Children Identity
 	if (childrenIdentityFlag) {
+
 		g.selectAll(".rect")
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " scatterplot initialvirtuallayer children rect " 
+			.attr("class", d => level + " " + chart_name + " initialvirtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = chartHeight/2;
@@ -459,7 +530,7 @@ const scatterPlot = (selection, props) => {
 			.data(identity_data)
 			.enter()    		
 			.append("text")	   
-			.attr("class", d => level + " scatterplot children text " 
+			.attr("class", d => level + " " + chart_name + " children text " 
 						+ d.dependent + " " + d.independent)	
 			.attr("transform", function(d) {
 				var y_position = chartHeight/2;

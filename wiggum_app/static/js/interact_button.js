@@ -58,6 +58,9 @@ const interactiveLevelButton = (selection, props) => {
 								.attr("y", -10)
 								.attr("height", 20);
 
+							d3.selectAll('.'+level + '.children.text')
+								.attr("y", 0);	
+
 							// Level 1 keep both view and identity
 							if (level == "level1") {
 								// set default position for list text
@@ -66,7 +69,7 @@ const interactiveLevelButton = (selection, props) => {
 									d3.selectAll('.'+level + '.list.text')
 										.transition()
 										.attr("x", "-10px")			
-										.style("text-anchor", "start");		
+										.style("text-anchor", "start");					
 								} else {
 									d3.selectAll('.'+level + '.list.text')
 										.transition()
@@ -100,7 +103,9 @@ const interactiveLevelButton = (selection, props) => {
 										addWidth = addWidthArray[1] + 110;
 									} else if (selectedChart == 'genericheatmap' ) {
 										addWidth = addWidthArray[1] + 70;
-									} else if (i == 5 || i == 6) {
+									} else if (selectedChart == 'smscatterplot' ) {
+										addWidth = addWidthArray[1] + 260;
+								 	} else if (i == 5 || i == 6) {
 										addWidth = addWidthArray[1];
 									}
 
@@ -138,6 +143,8 @@ const interactiveLevelButton = (selection, props) => {
 										addHeight = addHeightArray[1];
 									} else if (selectedChart == 'genericheatmap') {
 										addHeight = addHeightArray[0];
+									} else if (selectedChart == 'smscatterplot') {
+										addHeight = addHeightArray[2];
 									}
 
 									newViewHeight = height + addHeight;
@@ -145,8 +152,13 @@ const interactiveLevelButton = (selection, props) => {
 									// Adjust level 1 children rect x postion
 									// TODO may simplify
 									d3.selectAll('.level1.initialvirtuallayer.children.rect')
-										.transition()
+										//.transition()
 										.attr('transform', `translate(${-50},${newViewHeight/2})`);
+
+									if (selectedChart == 'smscatterplot' ) {
+										d3.selectAll('.'+level + '.children.text')
+											.attr("y", addHeight/2 + 20);	
+									}
 
 									// Adjust level 2 nodes x postion
 									d3.selectAll('.node.level-2')
@@ -286,7 +298,7 @@ const interactiveLevelButton = (selection, props) => {
 								}*/
 
 								if (selectedChart == 'countrymap' || selectedChart == 'barchart'
-									|| selectedChart == 'genericheatmap' || selectedChart == 'scatterplot') {
+									|| selectedChart == 'genericheatmap' || selectedChart == 'smscatterplot') {
 									d3.selectAll('.'+level + '.text')
 									.transition()
 									.style('visibility', 'visible');	

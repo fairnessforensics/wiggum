@@ -23,6 +23,16 @@ var twoPartyColor = d3.scaleOrdinal()
 //						.range(["#145fa8", "#c91919"]);
 						.range(["#6494c4", "#ff6868"]);
 
+// Light
+var countryColor_bak = d3.scaleOrdinal()
+//						.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
+				.range(["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
+				"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]);
+
+var countryColor = d3.scaleOrdinal()
+				.range(["#1f78b4","#e31a1c","#ff7f00","#6a3d9a","#b15928",
+						"#a6cee3","#fb9a99","#fdbf6f","#cab2d6","#ffff99"]);
+
 // initiate the first and second level width
 var firstLevelWidth = 0;
 var secondLevelWidth = 0;
@@ -189,6 +199,10 @@ function drawNodeLinkTree(data) {
 
 		levelLabels.push('SP2');
 		chartList.push('scatterplot')
+
+		levelLabels.push('smS');
+		chartList.push('smscatterplot')
+
 	}
 
 	// Left identity portion in virtual layer
@@ -221,7 +235,7 @@ function drawNodeLinkTree(data) {
 	if (agg_data.trend_type == 'pearson_corr') {
 		addHeightArray = [100];
 	} else if (agg_data.trend_type == 'rank_trend') {
-		addHeightArray = [60, 100];
+		addHeightArray = [60, 100, 220];
 	}
 
 	var height = 100;
@@ -321,10 +335,6 @@ function drawNodeLinkTree(data) {
 
 			// TODO width is using addWidthArray
 			// how to merge the chart width and the interactive width adjustment.
-			var countryColor = d3.scaleOrdinal()
-			//						.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
-							.range(["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
-							"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]);
 
 			container.call(coloredBarChart, {
 				chart_data: chart_data,
@@ -385,29 +395,9 @@ function drawNodeLinkTree(data) {
 			//					.range(category16);
 
 			// Aggregate data
-			var aggResultArray = d3.nest()
-									.key(function(d) {return d[keyArray[1]]})
-									.key(function(d) {return d[first_candidate]})
-									.sortKeys(d3.ascending)
-									.rollup(function(v) {
-										return {
-											sum: d3.sum(v, function(d) {return d[keyArray[0]]})
-										}
-									})
-									.entries(csvData);
-
-			// Flattern the nested data
-			var scatterplot_data = []
-			aggResultArray.forEach(function(row) {
-				row.values.forEach(function(cell) {
-					var singleObj = {};
-					singleObj[keyArray[1]] = row.key;
-					singleObj[first_candidate] = Number(cell.key);
-					singleObj[keyArray[0]] = cell.value.sum;
-
-					scatterplot_data.push(singleObj);
-				});
-			});
+			var scatterplot_data = aggregate({data: csvData,
+										groupby_keys: [keyArray[1], first_candidate],
+										agg_var: keyArray[0]});
 
 			container.call(scatterPlot, {
 				xValue: d => d[first_candidate],
@@ -430,6 +420,74 @@ function drawNodeLinkTree(data) {
 				rowIndex: 'row' + rowIndex,
 				level: 'level1'
 			});
+
+			// Visual Tech 4: Small Multiples of Scatterplot
+			// Specificly for Industry ID
+
+			// Iterate through number of small multiples
+			var num_small_multiples = 4;
+			var total_industry_id = 170;
+			var first_candidate = "industry";
+
+			// Aggregate data
+			var agg_result = aggregate({data: csvData,
+										groupby_keys: [keyArray[1], first_candidate],
+										agg_var: keyArray[0]});
+
+			var start = 0;
+			var end = total_industry_id;
+			var size = 50;
+
+			var width = 350;
+			var small_multiple_height = 60;
+			var padding = 20;
+			var offset_y = num_small_multiples * (small_multiple_height + padding) / 2;
+			var first_small_multiple_flag = true;
+			var last_small_multiple_flag = false;
+
+			for (var i = 0; i < num_small_multiples; i++) {
+				if (i == num_small_multiples - 1) {
+					last_small_multiple_flag = true;
+				}
+
+				start = size * i + 1; 
+				end = Math.min(start + size - 1, total_industry_id);
+
+				var small_multiple_data = [];
+				small_multiple_data = agg_result.filter(d => {
+									return d[first_candidate] >= start && d[first_candidate] <= end;
+								});
+
+				small_multiple_position = i * (small_multiple_height + padding) - offset_y;
+						
+				small_multiple_width = width * ((end - start + 1) / size);
+
+				container.call(scatterPlot, {
+					xValue: d => d[first_candidate],
+					xAxisLabel: first_candidate,
+					yValue: d => d[keyArray[0]],
+					yAxisLabel: keyArray[0],
+					splitby: keyArray[1],
+					margin: { left: 50, top: 0, right: 0, bottom: 0 },
+					width: small_multiple_width,
+					height: small_multiple_height,
+					relative_translate_y: small_multiple_position,
+					childrenIdentityFlag: first_small_multiple_flag,
+					smallMultipleFlag: true,
+					first_small_multiple_flag: first_small_multiple_flag,
+					last_small_multiple_flag: last_small_multiple_flag,
+					share_axis_flag: false,
+					rectWidth: rectWidth,
+					rectHeight: rectHeight,
+					identity_data: identity_data,
+					chart_data: small_multiple_data,
+					myColor: countryColor,
+					mark_shape: 'rectangle',
+					rowIndex: 'row' + rowIndex,
+					level: 'level1'
+				});
+				first_small_multiple_flag = false;
+			}
 
 			rowIndex = rowIndex + 1;
 		}
@@ -797,7 +855,7 @@ function drawNodeLinkTree(data) {
 			rightIdentityLabels: rightIdentityLabels,
 			levelG: thirdLevelG,
 			level: 'level3',
-			charts: ['list', 'countrymap', 'barchart', 'genericheatmap', 'scatterplot'],
+			charts: ['list', 'countrymap', 'barchart', 'genericheatmap', 'smscatterplot'],
 			trendType: agg_data.trend_type
 		});
 	}
@@ -1194,10 +1252,7 @@ function drawNodeLinkTree(data) {
 				const xValue = chart_data => chart_data['value'];
 				var xDomain = [0, d3.max(chart_data, xValue)];
 
-				var countryColor = d3.scaleOrdinal()
-				//			.range(["#fdcdac", "#cbd5e8", "#f4cae4"]);
-				.range(["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
-						"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"]);
+
 
 				thirdLevelG1_visual_alter_barchart.call(barChart, {
 					chart_data: bar_chart_data,
@@ -1344,6 +1399,7 @@ function drawNodeLinkTree(data) {
 						smallMultipleFlag: true,
 						first_small_multiple_flag: first_small_multiple_flag,
 						last_small_multiple_flag: last_small_multiple_flag,
+						share_axis_flag: true,
 						chart_data: scatterplot_data,
 						level: 'level3',
 						myColor: countryColor
@@ -2136,6 +2192,7 @@ function initVisibility() {
 	d3.selectAll('.level1.heatmapdensity').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
+	d3.selectAll('.level1.smscatterplot').transition().style('visibility', "hidden");
 	d3.selectAll('.path.list').transition().style('visibility', "visible");
 	d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
 
@@ -2154,5 +2211,5 @@ function initVisibility() {
 	d3.selectAll('.level3.singlecountrymap').transition().style('visibility', "hidden");
 	d3.selectAll('.level3.barchart').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.genericheatmap').transition().style('visibility', "hidden");	
-	d3.selectAll('.level3.scatterplot').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.smscatterplot').transition().style('visibility', "hidden");	
 }
