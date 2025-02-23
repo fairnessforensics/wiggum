@@ -179,6 +179,8 @@ const scatterPlot = (selection, props) => {
 	  first_small_multiple_flag,
 	  last_small_multiple_flag,
 	  share_axis_flag,
+	  x_axis_scale,
+	  y_axis_scale,
 	  rectWidth,
 	  rectHeight,
 	  identity_data,
@@ -202,18 +204,34 @@ const scatterPlot = (selection, props) => {
 
 	var chartHeight = height - margin.bottom;
 
-	const yScale = d3.scaleLinear();
-	// Insert padding so that points do not overlap with y or x axis
-	yScale.domain(padLinear(d3.extent(chart_data, yValue), 0.05));
-	yScale.range([chartHeight, 0]);
-	yScale.nice();
+	var yScale;
+	var yAxis;
 
-	var yAxis = d3.axisLeft(yScale).ticks(5);
-	if (smallMultipleFlag) {
-		yAxis = d3.axisLeft(yScale).ticks(3);
-	} 
+	if (y_axis_scale == 'scaleLog') {
+		// Log scale cannot include zero
+		yScale = d3.scaleLog()
+						.domain(d3.extent(chart_data, yValue)) 
+						.range([chartHeight, 0]);
 
-	yAxis.tickFormat(d3.format(".2s"));
+		yAxis = d3.axisLeft(yScale)
+					.ticks(3, ",.0e")  
+					.tickFormat(d3.format(",.0e")); 
+	} else {
+		yScale = d3.scaleLinear();
+		
+		// Insert padding so that points do not overlap with y or x axis
+		yScale.domain(padLinear(d3.extent(chart_data, yValue), 0.05));
+		yScale.range([chartHeight, 0]);
+		yScale.nice();
+
+		if (smallMultipleFlag) {
+			yAxis = d3.axisLeft(yScale).ticks(3);
+		} else {
+			yAxis = d3.axisLeft(yScale).ticks(5);
+		}
+
+		yAxis.tickFormat(d3.format(".2s"));
+	}
 
 	// TODO choose linear scale =====================================
 	/*const xScale = d3.scaleLinear();
@@ -229,7 +247,7 @@ const scatterPlot = (selection, props) => {
 	// TODO maybe check the data type by meta data
 	var xScale;
 
-	if (xAxisLabel == 'year') {
+	if (x_axis_scale == 'scaleTime') {
 		xScale = d3.scaleTime();
 	
 	} else {

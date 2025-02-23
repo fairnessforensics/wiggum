@@ -454,8 +454,11 @@ function drawNodeLinkTree(data) {
 				end = Math.min(start + size - 1, total_industry_id);
 
 				var small_multiple_data = [];
+				// Log scale cannot include zero, filter zero
 				small_multiple_data = agg_result.filter(d => {
-									return d[first_candidate] >= start && d[first_candidate] <= end;
+									return d[first_candidate] >= start 
+												&& d[first_candidate] <= end
+												&& d[keyArray[0]] > 0;
 								});
 
 				small_multiple_position = i * (small_multiple_height + padding) - offset_y;
@@ -477,6 +480,8 @@ function drawNodeLinkTree(data) {
 					first_small_multiple_flag: first_small_multiple_flag,
 					last_small_multiple_flag: last_small_multiple_flag,
 					share_axis_flag: false,
+					x_axis_scale: 'scaleLinear', 
+					y_axis_scale: 'scaleLog', 
 					rectWidth: rectWidth,
 					rectHeight: rectHeight,
 					identity_data: identity_data,
