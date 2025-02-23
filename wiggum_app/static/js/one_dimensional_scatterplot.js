@@ -295,11 +295,14 @@ const scatterPlot = (selection, props) => {
 				|| share_axis_flag == false) ? xAxis : xAxis.tickSize(0)
 		);
 
-	x_axis.selectAll("text")
-		.attr("transform", "rotate(-60)")
-		.attr("dx", "-.9em")
-		.attr("dy", ".1em")
-		.style("text-anchor", "end");
+	if (xAxisLabel != 'industry') {
+		// TODO  add rotate as input
+		x_axis.selectAll("text")
+			.attr("transform", "rotate(-60)")
+			.attr("dx", "-.9em")
+			.attr("dy", ".1em")
+			.style("text-anchor", "end");
+	}
 
 	// Remove two end labels from x axis for time scale
 	if (!smallMultipleFlag || share_axis_flag) {
@@ -364,6 +367,7 @@ const scatterPlot = (selection, props) => {
 	if (mark_shape == 'rectangle') {
 		mark_width = 6;
 		mark_height = 3;
+		
 		g.selectAll("." + chart_name + ".circle.middle")
 			.data(chart_data)
 			.enter().append("rect")	    
@@ -380,7 +384,31 @@ const scatterPlot = (selection, props) => {
 			.attr("width", mark_width) 
        		.attr("height", mark_height)
 			.style("fill", d => color(cValue(d)))
-			.attr("opacity", 0.9);
+			.attr("opacity", 0.9)
+			.on("click", function(d) {
+				// Add vertical line at clicked point
+
+				//const existingLine = g.select(`.v-line[id="${d.industry}"]`);
+				//if (!existingLine.empty()) {
+					// If the line already exists, remove it
+				//	existingLine.remove();
+				//} else {
+					g.append("line")
+						.attr("class", "v-line")
+						.attr("id", d.industry)
+						.attr("x1", xScale(xValue(d)) - mark_width/2 + 3)
+						.attr("x2", xScale(xValue(d)) - mark_width/2 + 3)
+						.attr("y1", 0)
+						.attr("y2", height)
+						.attr("stroke", "grey")
+						.attr("stroke-width", 6)
+						.attr("stroke-opacity", 0.2)
+						.on("click", function() {
+							d3.select(this).remove(); // Remove the line if clicked
+						})
+						//.lower();
+				//}
+			});
 
 	} else {
 		g.selectAll("." + chart_name + ".circle.middle")
