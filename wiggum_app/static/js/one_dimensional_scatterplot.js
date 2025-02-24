@@ -275,7 +275,7 @@ const scatterPlot = (selection, props) => {
 		var tickCount = Math.ceil((dataRange[1] - dataRange[0] + 1) / 5);
 
 		xAxis.ticks(tickCount).tickFormat(d=> d % 5 === 0 ? d : ""); 
-	// TODO Miss tick 80 for the code below
+	// TODO Bug: Miss tick 80 for the code below
 	//} else if (smallMultipleFlag && share_axis_flag) {
 		// Used for industry id
 	//	var tickValues = d3.range(0, 171, 10);
