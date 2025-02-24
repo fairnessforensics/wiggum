@@ -438,6 +438,7 @@ function drawNodeLinkTree(data) {
 				padding: 20,
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
+				childrenIdentityFlag: true,
 				identity_data: identity_data,
 				xAxisLabel: first_candidate,
 				yAxisLabel: keyArray[0],
@@ -837,10 +838,51 @@ function drawNodeLinkTree(data) {
 		.style("stroke", "black")
 		.style("stroke-width", "2px")
 		.attr("stroke-opacity", 0.3)
+		.on('click', function(d) {
+			// TODO only active when SM2 is selected
+			const existing_virtual_chart = g.select('.level-3' + '.' + d.data.dependent 
+				+ '.' + d.data.independent + '.splitby_' + d.data.splitby 
+				+ '.va.smscatterplot_industry');
+
+			d3.selectAll(".level3.list.rect" + "." + d.data.dependent 
+							+ "." + d.data.independent + ".splitby_" + d.data.splitby)
+				.style("stroke-opacity", 0.3);
+
+			const existing_selected_interact_chart = g.select('.level-3' + '.' + d.data.dependent 
+				+ '.' + d.data.independent + '.splitby_' + d.data.splitby 
+				+ '.subgroup_' + d.data.subgroup + '.va.smscatterplot_industry.interact');
+
+			if (!existing_selected_interact_chart.empty()) {
+				d3.select(this)
+					.style("stroke-opacity", 0.3);
+				existing_selected_interact_chart.remove();
+				existing_virtual_chart.selectAll('.smscatterplot_industry')
+					.transition()
+					.style('visibility', 'visible');
+			} else {
+				d3.select(this)
+					.style("stroke-opacity", 1);
+				const existing_interact_chart = g.select('.level-3' + '.' + d.data.dependent 
+				+ '.' + d.data.independent + '.splitby_' + d.data.splitby 
+				+ '.va.smscatterplot_industry.interact');
+
+				existing_interact_chart.remove();
+
+				existing_virtual_chart.selectAll('.smscatterplot_industry')
+					.transition()
+					.style('visibility', 'hidden');
+
+				g.call(interact_node_click, {
+					element: d,
+					rectWidth: rectWidth,
+					myColor: countryColor
+				});
+			}
+		})
 		.append('title')
 		.text(function(d) {
 			return `The distance is ${d.data.distance}.`
-		}); 			
+		});
 
 	// Node Text Background color
 	//var correspondColor = d3.scaleOrdinal()
@@ -1139,8 +1181,6 @@ function drawNodeLinkTree(data) {
 					}
 				*/
 
-
-
 				// if chart height is higher than the branch heght
 				var largerFlag = false;
 
@@ -1313,9 +1353,9 @@ function drawNodeLinkTree(data) {
 					}
 
 					var object = d.data.values[i];
-					var subject = object.subgroup;
+					var subgroup = object.subgroup;
 					var filter_csvData = csvData.filter(
-							function(d){ return d[splitby] === subject} );
+							function(d){ return d[splitby] === subgroup} );
 
 					// Aggregate data
 					var small_multiple_data = aggregate({data: filter_csvData,
@@ -1370,10 +1410,10 @@ function drawNodeLinkTree(data) {
 						last_small_multiple_flag = true;
 					}
 					var object = d.data.values[i];
-					var subject = object.subgroup;
+					var subgroup = object.subgroup;
 
 					var filter_csvData = csvData.filter(
-						function(d){ return d[splitby] === subject} );
+						function(d){ return d[splitby] === subgroup} );
 
 					// Aggregate data
 					var agg_result = aggregate({data: filter_csvData,

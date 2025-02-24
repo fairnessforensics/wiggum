@@ -7,6 +7,7 @@ const small_multiple_scatterplot = (selection, props) => {
 	  padding,
 	  rectWidth,
 	  rectHeight,
+	  childrenIdentityFlag,
 	  identity_data,
 	  xAxisLabel,
 	  yAxisLabel,
@@ -49,6 +50,13 @@ const small_multiple_scatterplot = (selection, props) => {
 				
 		small_multiple_width = width * ((end - start + 1) / size);
 
+		var temp_children_identity_flag;
+		if (childrenIdentityFlag == true) {
+			temp_children_identity_flag = first_small_multiple_flag;
+		} else {
+			temp_children_identity_flag = false;
+		}
+
 		selection.call(scatterPlot, {
 			xValue: d => d[xAxisLabel],
 			xAxisLabel: xAxisLabel,
@@ -59,7 +67,7 @@ const small_multiple_scatterplot = (selection, props) => {
 			width: small_multiple_width,
 			height: small_multiple_height,
 			relative_translate_y: small_multiple_position,
-			childrenIdentityFlag: first_small_multiple_flag,
+			childrenIdentityFlag: temp_children_identity_flag,
 			smallMultipleFlag: true,
 			first_small_multiple_flag: first_small_multiple_flag,
 			last_small_multiple_flag: last_small_multiple_flag,
