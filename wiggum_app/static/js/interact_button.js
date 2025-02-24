@@ -103,7 +103,7 @@ const interactiveLevelButton = (selection, props) => {
 										addWidth = addWidthArray[1] + 110;
 									} else if (selectedChart == 'genericheatmap' ) {
 										addWidth = addWidthArray[1] + 70;
-									} else if (selectedChart == 'smscatterplot' ) {
+									} else if (selectedChart == 'smscatterplot_industry' ) {
 										addWidth = addWidthArray[1] + 260;
 								 	} else if (i == 5 || i == 6) {
 										addWidth = addWidthArray[1];
@@ -143,7 +143,7 @@ const interactiveLevelButton = (selection, props) => {
 										addHeight = addHeightArray[1];
 									} else if (selectedChart == 'genericheatmap') {
 										addHeight = addHeightArray[0];
-									} else if (selectedChart == 'smscatterplot') {
+									} else if (selectedChart == 'smscatterplot_industry') {
 										addHeight = addHeightArray[2];
 									}
 
@@ -155,7 +155,7 @@ const interactiveLevelButton = (selection, props) => {
 										//.transition()
 										.attr('transform', `translate(${-50},${newViewHeight/2})`);
 
-									if (selectedChart == 'smscatterplot' ) {
+									if (selectedChart == 'smscatterplot_industry' ) {
 										d3.selectAll('.'+level + '.children.text')
 											.attr("y", addHeight/2 + 20);	
 									}
@@ -297,11 +297,14 @@ const interactiveLevelButton = (selection, props) => {
 										.style('visibility', 'hidden');	
 								}*/
 
-								if (selectedChart == 'countrymap' || selectedChart == 'barchart'
-									|| selectedChart == 'genericheatmap' || selectedChart == 'smscatterplot') {
+								if (selectedChart == 'countrymap' 
+										|| selectedChart == 'barchart'
+										|| selectedChart == 'genericheatmap' 
+										|| selectedChart == 'smscatterplot_year'
+										|| selectedChart == 'smscatterplot_industry') {
 									d3.selectAll('.'+level + '.text')
-									.transition()
-									.style('visibility', 'visible');	
+										.transition()
+										.style('visibility', 'visible');	
 								}
 							}
 

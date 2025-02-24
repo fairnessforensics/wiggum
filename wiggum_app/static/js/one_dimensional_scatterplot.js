@@ -187,13 +187,15 @@ const scatterPlot = (selection, props) => {
 	  chart_data,
 	  myColor,
 	  mark_shape,
+	  mark_width,
+	  mark_height,
 	  rowIndex,
 	  level
 	} = props;
 
 	var chart_name;
 	if (smallMultipleFlag == true) {
-		chart_name = 'smscatterplot';
+		chart_name = 'smscatterplot_' + xAxisLabel;
 	} else {
 		chart_name = 'scatterplot';
 	}
@@ -266,13 +268,19 @@ const scatterPlot = (selection, props) => {
 	xScale.range([0, width]);
 
 	var xAxis = d3.axisBottom(xScale);
+
 	if (smallMultipleFlag && !share_axis_flag) {
 		// Used for industry id
 		var dataRange = d3.extent(chart_data, xValue);
-		var tickCount = Math.ceil((dataRange[1] - dataRange[0]) / 5);
+		var tickCount = Math.ceil((dataRange[1] - dataRange[0] + 1) / 5);
 
 		xAxis.ticks(tickCount).tickFormat(d=> d % 5 === 0 ? d : ""); 
-	} else {
+	// TODO Miss tick 80 for the code below
+	//} else if (smallMultipleFlag && share_axis_flag) {
+		// Used for industry id
+	//	var tickValues = d3.range(0, 171, 10);
+	//	xAxis.tickValues(tickValues).tickFormat(d3.format("d")); 
+	}else {
 		// Used for year
 		xAxis.tickFormat(d3.format(".4"));
 	}
@@ -338,10 +346,10 @@ const scatterPlot = (selection, props) => {
 			//.attr("x", width/2)
 			//.attr("y", 45)
 			.attr("x", width + 5)
-			.attr("y", 20)
+			.attr("y", (xAxisLabel == 'industry') ? 5 : 20)
 			.attr("text-anchor", (xAxisLabel == 'industry') ? "start" : "middle")
 			.text(xAxisLabel);	
-	}
+	} 
 
 	var y_axis = g.append("g")
 		  .attr("class", function(d) {
@@ -365,8 +373,6 @@ const scatterPlot = (selection, props) => {
 	const num_subgroups = subgroups.size;
 
 	if (mark_shape == 'rectangle') {
-		mark_width = 6;
-		mark_height = 3;
 		
 		g.selectAll("." + chart_name + ".circle.middle")
 			.data(chart_data)
@@ -395,12 +401,12 @@ const scatterPlot = (selection, props) => {
 					g.append("line")
 						.attr("class", "v-line")
 						.attr("id", d.industry)
-						.attr("x1", xScale(xValue(d)) - mark_width/2 + 3)
-						.attr("x2", xScale(xValue(d)) - mark_width/2 + 3)
+						.attr("x1", xScale(xValue(d)))
+						.attr("x2", xScale(xValue(d)))
 						.attr("y1", 0)
-						.attr("y2", height)
+						.attr("y2", chartHeight)
 						.attr("stroke", "grey")
-						.attr("stroke-width", 6)
+						.attr("stroke-width", mark_width)
 						.attr("stroke-opacity", 0.2)
 						.on("click", function() {
 							d3.select(this).remove(); // Remove the line if clicked

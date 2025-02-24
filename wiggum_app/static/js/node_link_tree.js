@@ -200,8 +200,8 @@ function drawNodeLinkTree(data) {
 		levelLabels.push('SP2');
 		chartList.push('scatterplot')
 
-		levelLabels.push('smS');
-		chartList.push('smscatterplot')
+		levelLabels.push('SM2');
+		chartList.push('smscatterplot_industry')
 
 	}
 
@@ -488,6 +488,8 @@ function drawNodeLinkTree(data) {
 					chart_data: small_multiple_data,
 					myColor: countryColor,
 					mark_shape: 'rectangle',
+					mark_width: 6,
+					mark_height: 3,
 					rowIndex: 'row' + rowIndex,
 					level: 'level1'
 				});
@@ -852,7 +854,7 @@ function drawNodeLinkTree(data) {
 		});
 	} else if (agg_data.detail_view_type == 'rank') {
 		// Generate interactive buttons
-		var levelLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'smS'];
+		var levelLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'SM1', 'SM2'];
 
 		thirdLevelButtons.call(interactiveLevelButton, {
 			levelLabels: levelLabels,
@@ -860,7 +862,8 @@ function drawNodeLinkTree(data) {
 			rightIdentityLabels: rightIdentityLabels,
 			levelG: thirdLevelG,
 			level: 'level3',
-			charts: ['list', 'countrymap', 'barchart', 'genericheatmap', 'smscatterplot'],
+			charts: ['list', 'countrymap', 'barchart', 'genericheatmap'
+						, 'smscatterplot_year', 'smscatterplot_industry'],
 			trendType: agg_data.trend_type
 		});
 	}
@@ -1333,10 +1336,10 @@ function drawNodeLinkTree(data) {
 					level: 'level3'
 				});	
 
-				// Visual Tech 4: small multiples scatterplot
-				var thirdLevelG1_visual_alter_smscatterplot = thirdLevelG1.append("g")
+				// Visual Tech 4: small multiples scatterplot for year
+				var thirdLevelG1_visual_alter_smscatterplot_year = thirdLevelG1.append("g")
 						.attr("class", 'level-3' + ' ' + dependent 
-						+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot')
+						+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot_year')
 						.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
 
 				// Filter the independent var from contextual_cat_vars
@@ -1365,31 +1368,11 @@ function drawNodeLinkTree(data) {
 							function(d){ return d[splitby] === subject} );
 
 					// Aggregate data
-					var aggResultArray = d3.nest()
-									.key(function(d) {return d[independent]})
-									.key(function(d) {return d[first_candidate]})
-									.sortKeys(d3.ascending)
-									.rollup(function(v) {
-										return {
-											sum: d3.sum(v, function(d) {return d[dependent]})
-										}
-									})
-									.entries(filter_csvData);
+					var small_multiple_data = aggregate({data: filter_csvData,
+						groupby_keys: [independent, first_candidate],
+						agg_var: dependent});
 
-					// Flattern the nested data
-					var scatterplot_data = []
-					aggResultArray.forEach(function(row) {
-						row.values.forEach(function(cell) {
-									var singleObj = {};
-									singleObj[independent] = row.key;
-									singleObj[first_candidate] = Number(cell.key);
-									singleObj[dependent] = cell.value.sum;
-
-									scatterplot_data.push(singleObj);
-						});
-					});
-
-					thirdLevelG1_visual_alter_smscatterplot.call(scatterPlot, {
+					thirdLevelG1_visual_alter_smscatterplot_year.call(scatterPlot, {
 						xValue: d => d[first_candidate],
 						xAxisLabel: first_candidate,
 						yValue: d => d[dependent],
@@ -1405,7 +1388,7 @@ function drawNodeLinkTree(data) {
 						first_small_multiple_flag: first_small_multiple_flag,
 						last_small_multiple_flag: last_small_multiple_flag,
 						share_axis_flag: true,
-						chart_data: scatterplot_data,
+						chart_data: small_multiple_data,
 						level: 'level3',
 						myColor: countryColor
 					});	
@@ -1414,6 +1397,81 @@ function drawNodeLinkTree(data) {
 					first_small_multiple_flag = false;
 				}
 
+				// Visual Tech 5: small multiples scatterplot for industry
+				var thirdLevelG1_visual_alter_smscatterplot_industry = thirdLevelG1.append("g")
+							.attr("class", 'level-3' + ' ' + dependent 
+							+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot_industry')
+							.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
+				
+				first_small_multiple_flag = true;
+				last_small_multiple_flag = false;
+				first_candidate = "industry";
+				small_multiple_width = 400;
+				small_multiple_position = 0;
+				size = 170;
+				mark_width = 2;
+				mark_height = 2;
+				share_axis_flag = true;
+				bottom = 10;
+
+				// Iterate through subgroup
+				for (var i = 0; i < num_small_multiples; i++) {
+					if (i == num_small_multiples - 1) {
+						last_small_multiple_flag = true;
+					}
+					var object = d.data.values[i];
+					var subject = object.subgroup;
+
+					var filter_csvData = csvData.filter(
+						function(d){ return d[splitby] === subject} );
+
+					// Aggregate data
+					var agg_result = aggregate({data: filter_csvData,
+						groupby_keys: [independent, first_candidate],
+						agg_var: dependent});
+
+					// Log scale cannot include zero, filter zero
+					var small_multiple_data = agg_result.filter(d => {
+						return d[dependent] > 0;
+					});
+
+					if (splitby == 'sector') {
+						small_multiple_width = 580;
+						mark_width = 2;
+						mark_height = 2;
+						share_axis_flag = false;
+						var range = d3.extent(small_multiple_data, d => d[first_candidate]);
+						small_multiple_width = small_multiple_width * ((range[1] - range[0] + 1) / size);
+						bottom = 20;
+					}
+
+					thirdLevelG1_visual_alter_smscatterplot_industry.call(scatterPlot, {
+						xValue: d => d[first_candidate],
+						xAxisLabel: first_candidate,
+						yValue: d => d[dependent],
+						yAxisLabel: dependent,
+						splitby: independent,
+						margin: { left: 60, top: 0, right: 0, bottom: bottom },
+						width: small_multiple_width,
+						height: small_multiple_height,
+						relative_translate_y: small_multiple_position + 10,
+						smallMultipleFlag: true,
+						first_small_multiple_flag: first_small_multiple_flag,
+						last_small_multiple_flag: last_small_multiple_flag,
+						share_axis_flag: share_axis_flag,
+						x_axis_scale: 'scaleLinear', 
+						y_axis_scale: 'scaleLog', 
+						chart_data: small_multiple_data,
+						myColor: countryColor,
+						mark_shape: 'rectangle',
+						mark_width: mark_width,
+						mark_height: mark_height,
+						level: 'level3'
+					});
+
+					small_multiple_position = small_multiple_position + small_multiple_height;
+					first_small_multiple_flag = false;
+				}
 			})
 		})
 	} else if (agg_data.detail_view_type == 'scatter') {	
@@ -2197,7 +2255,7 @@ function initVisibility() {
 	d3.selectAll('.level1.heatmapdensity').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
-	d3.selectAll('.level1.smscatterplot').transition().style('visibility', "hidden");
+	d3.selectAll('.level1.smscatterplot_industry').transition().style('visibility', "hidden");
 	d3.selectAll('.path.list').transition().style('visibility', "visible");
 	d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
 
@@ -2216,5 +2274,6 @@ function initVisibility() {
 	d3.selectAll('.level3.singlecountrymap').transition().style('visibility', "hidden");
 	d3.selectAll('.level3.barchart').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.genericheatmap').transition().style('visibility', "hidden");	
-	d3.selectAll('.level3.smscatterplot').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.smscatterplot_year').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.smscatterplot_industry').transition().style('visibility', "hidden");	
 }
