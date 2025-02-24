@@ -423,10 +423,6 @@ function drawNodeLinkTree(data) {
 
 			// Visual Tech 4: Small Multiples of Scatterplot
 			// Specificly for Industry ID
-
-			// Iterate through number of small multiples
-			var num_small_multiples = 4;
-			var total_industry_id = 170;
 			var first_candidate = "industry";
 
 			// Aggregate data
@@ -434,67 +430,23 @@ function drawNodeLinkTree(data) {
 										groupby_keys: [keyArray[1], first_candidate],
 										agg_var: keyArray[0]});
 
-			var start = 0;
-			var end = total_industry_id;
-			var size = 50;
-
-			var width = 350;
-			var small_multiple_height = 60;
-			var padding = 20;
-			var offset_y = num_small_multiples * (small_multiple_height + padding) / 2;
-			var first_small_multiple_flag = true;
-			var last_small_multiple_flag = false;
-
-			for (var i = 0; i < num_small_multiples; i++) {
-				if (i == num_small_multiples - 1) {
-					last_small_multiple_flag = true;
-				}
-
-				start = size * i + 1; 
-				end = Math.min(start + size - 1, total_industry_id);
-
-				var small_multiple_data = [];
-				// Log scale cannot include zero, filter zero
-				small_multiple_data = agg_result.filter(d => {
-									return d[first_candidate] >= start 
-												&& d[first_candidate] <= end
-												&& d[keyArray[0]] > 0;
-								});
-
-				small_multiple_position = i * (small_multiple_height + padding) - offset_y;
-						
-				small_multiple_width = width * ((end - start + 1) / size);
-
-				container.call(scatterPlot, {
-					xValue: d => d[first_candidate],
-					xAxisLabel: first_candidate,
-					yValue: d => d[keyArray[0]],
-					yAxisLabel: keyArray[0],
-					splitby: keyArray[1],
-					margin: { left: 50, top: 0, right: 0, bottom: 0 },
-					width: small_multiple_width,
-					height: small_multiple_height,
-					relative_translate_y: small_multiple_position,
-					childrenIdentityFlag: first_small_multiple_flag,
-					smallMultipleFlag: true,
-					first_small_multiple_flag: first_small_multiple_flag,
-					last_small_multiple_flag: last_small_multiple_flag,
-					share_axis_flag: false,
-					x_axis_scale: 'scaleLinear', 
-					y_axis_scale: 'scaleLog', 
-					rectWidth: rectWidth,
-					rectHeight: rectHeight,
-					identity_data: identity_data,
-					chart_data: small_multiple_data,
-					myColor: countryColor,
-					mark_shape: 'rectangle',
-					mark_width: 6,
-					mark_height: 3,
-					rowIndex: 'row' + rowIndex,
-					level: 'level1'
-				});
-				first_small_multiple_flag = false;
-			}
+			container.call(small_multiple_scatterplot, {
+				num_small_multiples: 4,
+				margin: { left: 50, top: 0, right: 0, bottom: 0 },
+				width: 350,
+				height: 60,
+				padding: 20,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				xAxisLabel: first_candidate,
+				yAxisLabel: keyArray[0],
+				splitby: keyArray[1],
+				chart_data: agg_result,
+				myColor: countryColor,
+				rowIndex: rowIndex,
+				level: 'level1'
+			});
 
 			rowIndex = rowIndex + 1;
 		}
