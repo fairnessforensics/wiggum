@@ -1212,8 +1212,6 @@ function drawNodeLinkTree(data) {
 				const xValue = chart_data => chart_data['value'];
 				var xDomain = [0, d3.max(chart_data, xValue)];
 
-
-
 				thirdLevelG1_visual_alter_barchart.call(barChart, {
 					chart_data: bar_chart_data,
 					width: 300,
