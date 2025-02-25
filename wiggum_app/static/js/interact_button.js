@@ -1,3 +1,6 @@
+// Global variable
+var level3_state;
+
 const interactiveLevelButton = (selection, props) => {
 	const {
 		levelLabels,
@@ -29,7 +32,7 @@ const interactiveLevelButton = (selection, props) => {
 							updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
 							selectedChart = charts[i];
-							
+
 							// Visual Techniques
 							for (var k = 0; k < charts.length; k++){
 								d3.selectAll('.'+level+'.' + charts[k])
@@ -265,6 +268,8 @@ const interactiveLevelButton = (selection, props) => {
 							// TODO redesign for different interactions for visual alternative
 							// and visual detail view  
 							if (level == "level3") {
+								level3_state = selectedChart;
+								
 								thirdLevelParentVLWidth = 0;
 
 								d3.selectAll('.'+level + '.rect')
