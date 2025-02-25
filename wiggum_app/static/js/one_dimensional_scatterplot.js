@@ -487,19 +487,38 @@ const scatterPlot = (selection, props) => {
 						//.attr("transform", function(d, i) { return "translate(10," + i * 15 + ")"; });
 
 		// draw legend colored rectangles
-		legend.append("circle")
-			.attr("cx", 10)
-			.attr("cy", 10)
-			.attr("r", 5)
-			.style("fill", color);
+		if (mark_shape == "rectangle") {
+			legend.append("rect")
+				.attr("x", 4)
+				.attr("y", 4)
+				.attr("width", 10)
+				.attr("height", 6)
+				.style("fill", color);
 
-		// draw legend text
-		legend.append("text")
-			.attr("x", 17)
-			.attr("y", 14)
-			.style("text-anchor", "start")
-			.style("font-size", "10px") 
-			.text(function(d) { return d;});
+			// draw legend text
+			legend.append("text")
+				.attr("x", 17)
+				.attr("y", 11)
+				.style("text-anchor", "start")
+				.style("font-size", "10px") 
+				.text(function(d) { return d;});
+		} else {
+			legend.append("circle")
+				.attr("cx", 10)
+				.attr("cy", 10)
+				.attr("r", 5)
+				.style("fill", color);
+
+			// draw legend text
+			legend.append("text")
+				.attr("x", 17)
+				.attr("y", 14)
+				.style("text-anchor", "start")
+				.style("font-size", "10px") 
+				.text(function(d) { return d;});
+		}
+
+
 
 		var legendWidth = legend_g.node().getBBox().width;
 		legend_g.attr("transform", `translate(${(width - legendWidth) / 2}, -20)`);
