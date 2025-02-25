@@ -1,16 +1,63 @@
 const interact_node_click = (selection, props) => {
 	const {
 		element,
+		d,
+		rectWidth,
+		myColor
+	} = props;
+
+	// TODO only active when SM2 is selected
+	const existing_virtual_chart = selection.select('.level-3' + '.' + d.data.dependent 
+										+ '.' + d.data.independent + '.splitby_' + d.data.splitby 
+										+ '.va.smscatterplot_industry');
+
+	d3.selectAll(".level3.list.rect" + "." + d.data.dependent 
+					+ "." + d.data.independent + ".splitby_" + d.data.splitby)
+		.style("stroke-opacity", 0.3);
+
+	const existing_selected_interact_chart = selection.select('.level-3' + '.' + d.data.dependent 
+										+ '.' + d.data.independent + '.splitby_' + d.data.splitby 
+										+ '.subgroup_' + d.data.subgroup + '.va.smscatterplot_industry.interact');
+
+	if (!existing_selected_interact_chart.empty()) {
+		element.style("stroke-opacity", 0.3);
+		existing_selected_interact_chart.remove();
+		existing_virtual_chart.selectAll('.smscatterplot_industry')
+			.transition()
+			.style('visibility', 'visible');
+	} else {
+		element.style("stroke-opacity", 1);
+		const existing_interact_chart = selection.select('.level-3' + '.' + d.data.dependent 
+					+ '.' + d.data.independent + '.splitby_' + d.data.splitby 
+					+ '.va.smscatterplot_industry.interact');
+
+		existing_interact_chart.remove();
+
+		existing_virtual_chart.selectAll('.smscatterplot_industry')
+			.transition()
+			.style('visibility', 'hidden');
+
+		selection.call(interact_node_small_multiple_scatterplot, {
+			d: d,
+			rectWidth: rectWidth,
+			myColor: myColor
+		});
+	}
+}
+
+const interact_node_small_multiple_scatterplot = (selection, props) => {
+	const {
+		d,
 		rectWidth,
 		myColor
 	} = props;
 
 	var num_small_multiples = 4;
 	var first_candidate = "industry";
-	var dependent = element.data.dependent;
-	var independent = element.data.independent;
-	var splitby = element.data.splitby;
-	var subgroup = element.data.subgroup;
+	var dependent = d.data.dependent;
+	var independent = d.data.independent;
+	var splitby = d.data.splitby;
+	var subgroup = d.data.subgroup;
 
 	// Filter data
 	var filter_csvData = csvData.filter(
@@ -22,8 +69,8 @@ const interact_node_click = (selection, props) => {
 								agg_var: dependent});
 
 	// Find position
-	var height = element.parent.children[element.parent.children.length - 1].x 
-					- element.parent.children[0].x;
+	var height = d.parent.children[d.parent.children.length - 1].x 
+					- d.parent.children[0].x;
 	var relative_translate_y = height / 2 + 10;	
 	var small_multiple_height = height / num_small_multiples;	
 

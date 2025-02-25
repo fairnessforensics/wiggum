@@ -839,8 +839,15 @@ function drawNodeLinkTree(data) {
 		.style("stroke-width", "2px")
 		.attr("stroke-opacity", 0.3)
 		.on('click', function(d) {
+
+			g.call(interact_node_click, {
+				element: d3.select(this),
+				d: d,
+				rectWidth: rectWidth,
+				myColor: countryColor
+			});
 			// TODO only active when SM2 is selected
-			const existing_virtual_chart = g.select('.level-3' + '.' + d.data.dependent 
+/*			const existing_virtual_chart = g.select('.level-3' + '.' + d.data.dependent 
 				+ '.' + d.data.independent + '.splitby_' + d.data.splitby 
 				+ '.va.smscatterplot_industry');
 
@@ -877,7 +884,7 @@ function drawNodeLinkTree(data) {
 					rectWidth: rectWidth,
 					myColor: countryColor
 				});
-			}
+			}*/
 		})
 		.append('title')
 		.text(function(d) {
