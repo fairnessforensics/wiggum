@@ -312,6 +312,99 @@ class _TrendDetectors():
                            N_RDFA:RESULT_DF_HEADER_ALL}
             self.result_df = self.result_df[col_reorder[n_cols]]
         return self.result_df
+    def get_subgroup_trends_1lev(self,trend_types, replace=False):
+        """
+        find subgroup and aggregate trends in the dataset, return a DataFrame that
+        contains information necessary to filter for SP and relaxations
+        computes for 1 level grouby (eg correlation and linear trends)
+
+        Parameters
+        -----------
+        labeled_df : LabeledDataFrame
+            data to find SP in, must be tidy
+        trend_types: list of strings or list trend objects
+            info on what trends to compute and the variables to use, dict is of form
+        {'name':<str>,'vars':['varname1','varname1'],'func':functionhandle}
+
+        """
+        data_df = self.df
+        groupby_vars = self.get_vars_per_role('splitby')
+
+        new_trends = self.parse_trend_input_list(trend_types)
+
+        # prep the result df to add data to later
+        if self.result_df.empty:
+            self.result_df = pd.DataFrame(columns=RESULT_DF_HEADER)
+
+        # create empty lists
+        all_agg_trends_list = []
+        subgroup_trends_list = []
+
+        # precomputed trends
+        precomputed_trends = set(self.result_df['trend_type'])
+
+        for cur_trend in new_trends:
+
+            # only compute if the current trend is not in the result_df already
+            # or replace is true
+            if not(cur_trend.name in precomputed_trends) or replace:
+                cur_trend.get_trend_vars(self)
+
+                # augment the data with if needed
+
+
+                if cur_trend.preaugment == 'confusion':
+                    acc_pairs = itert.product(cur_trend.groundtruth,
+                                              cur_trend.prediction)
+
+                    for var_pair in acc_pairs:
+                        # TODO: only if col not there already
+                        self.add_acc(*var_pair)
+
+
+                # Tabulate aggregate statistics
+                agg_trends = cur_trend.get_trends(self.df,'agg_trend')
+
+                all_agg_trends_list.append(agg_trends)
+
+                # iterate over groupby attributes
+                for groupbyAttr in groupby_vars:
+
+                    #condition the data
+                    cur_grouping = self.df.groupby(groupbyAttr)
+
+                    # get subgoup trends
+                    curgroup_trend_df = cur_trend.get_trends(cur_grouping,'subgroup_trend')
+
+                    # append
+                    subgroup_trends_list.append(curgroup_trend_df)
+
+        # if any trends were computed, mrege them together
+        if subgroup_trends_list or all_agg_trends_list:
+            # condense and merge all trends with subgroup trends
+            subgroup_trends_df = pd.concat(subgroup_trends_list, sort=True)
+            all_agg_trends = pd.concat(all_agg_trends_list, sort=True)
+            new_res = pd.merge(subgroup_trends_df,all_agg_trends)
+
+            # remove rows where a trend is undefined
+            new_res.dropna(subset=['subgroup_trend','agg_trend'],axis=0,inplace=True)
+
+            new_res[result_df_type_col_name] = 'aggregate-subgroup'
+
+            # write or append depending on settings. contact in axis=0 is
+            # the pandas append
+            if self.result_df.empty or replace:
+                self.result_df = new_res
+            else:
+                self.result_df = pd.concat([self.result_df,new_res], axis =0,
+                                           sort=True)
+
+            # reorder columns
+            _,n_cols = self.result_df.shape
+            col_reorder = {N_RDFSG:RESULT_DF_HEADER,
+                           N_RDFA:RESULT_DF_HEADER_ALL}
+            self.result_df = self.result_df[col_reorder[n_cols]]
+        return self.result_df
 
 
     def get_pairwise_trends_1lev(self,trend_types, replace=False):
