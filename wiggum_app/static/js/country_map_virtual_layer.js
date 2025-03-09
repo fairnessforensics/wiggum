@@ -367,18 +367,27 @@ const country_map_projection_virtual_layer = (selection, props) => {
 			}
 			poistion_y += interval;
 			
+			var geoCentroid = d3.geoCentroid(country[0]);
 			// Draw curve area
 			var curve_point = [
 				{ start1: { x: -(rectWidth/2 + 50 + thirdLevelParentVLWidth), y: 10 + poistion_y }, 
 					start2: { x: -(rectWidth/2 + 50 + thirdLevelParentVLWidth), y: 30 + poistion_y }, 
-					end1: { x: -10, y: northMostPoint_y }, 
-					end2: { x: -10, y: southMostPoint_y },
+					middle1: { x: -50, y: northMostPoint_y },
+					middle2: { x: -50, y: southMostPoint_y },
+					end1: { x: projection(geoCentroid)[0], y: projection(geoCentroid)[1] - 1 }, 
+					end2: { x: projection(geoCentroid)[0], y: projection(geoCentroid)[1] + 1 },
 					subgroup: subgroup }
 			];
 
 			interval = g_node_position_y;
 
 			// Bézier curve
+			// First Bézier curve (C): Move from start1 to middle1 using a midpoint control
+			// Second Bézier curve (C): Move from middle 1 to end1
+			// Line (L): Connect end1 to end2
+			// Third Bézier curve (C): Move from end2 to middle2
+			// Fourth Bézier curve (C): Move from middle2 to start2
+			// Closing the path (Z) 
 			var area = virtual_layer_g.selectAll(".area")
 							.append("g")
 							.attr("class", level + " countrymap virtuallayer area " + subgroup)
@@ -386,11 +395,21 @@ const country_map_projection_virtual_layer = (selection, props) => {
 							.enter()
 							.append("path")
 							.attr("d", d => `
-								M${d.start1.x},${d.start1.y}
-								C${(d.start1.x + d.end1.x) / 2},${d.start1.y} ${(d.start1.x + d.end1.x) / 2},${d.end1.y} ${d.end1.x},${d.end1.y}
-								L${d.end2.x},${d.end2.y}
-								C${(d.start2.x + d.end2.x) / 2},${d.end2.y} ${(d.start2.x + d.end2.x) / 2},${d.start2.y} ${d.start2.x},${d.start2.y}
-								Z
+									M${d.start1.x},${d.start1.y}
+									C${(d.start1.x + d.middle1.x) / 2},${d.start1.y} 
+									${(d.start1.x + d.middle1.x) / 2},${d.middle1.y} 
+									${d.middle1.x},${d.middle1.y}						
+									C${(d.middle1.x + d.end1.x) / 2},${d.middle1.y} 
+									${(d.middle1.x + d.end1.x) / 2},${d.end1.y} 
+									${d.end1.x},${d.end1.y}
+									L${d.end2.x},${d.end2.y}
+									C${(d.middle2.x + d.end2.x) / 2},${d.end2.y} 
+									${(d.middle2.x + d.end2.x) / 2},${d.middle2.y} 
+									${d.middle2.x},${d.middle2.y}
+									C${(d.start2.x + d.middle2.x) / 2},${d.middle2.y} 
+									${(d.start2.x + d.middle2.x) / 2},${d.start2.y} 
+									${d.start2.x},${d.start2.y}
+									Z
 							`)
 							.attr("fill", "#8da0cb")
 							.attr("opacity", 0.5);
@@ -425,13 +444,14 @@ const country_map_projection_virtual_layer = (selection, props) => {
 			// Add leader lines to the map
 			var start_position_y = northMostPoint_y + (southMostPoint_y - northMostPoint_y) / 2;
 
-			var geoCentroid = d3.geoCentroid(country[0]);
 			virtual_layer_g.append('circle')
 				.attr('cx', projection(geoCentroid)[0])
 				.attr('cy', projection(geoCentroid)[1])
 				.attr('r', 1)
-				.attr("fill", "red");
-
+				.attr("fill", "#8da0cb")
+				.attr("opacity", 0.5);
+			
+			/*
 			var leftCentroidPoint = findLeftCentroidPoint(geoJSONCoordinate, geoCentroid);
 
 			var [leftCentroidPoint_x, leftCentroidPoint_y] = projection(leftCentroidPoint);
@@ -458,8 +478,9 @@ const country_map_projection_virtual_layer = (selection, props) => {
 				.attr('stroke', '#8da0cb')
 				.style("stroke-width", "2px")
 				.attr("stroke-opacity", 1);
-			
+		*/
 		});
+
 	})
 
 }
