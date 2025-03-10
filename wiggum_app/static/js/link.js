@@ -37,6 +37,55 @@ const link = (selection, props) => {
 
 }
 
+const swath = (selection, props) => {
+	const {
+		data,
+		side,
+		rowIndex,
+		chartType,
+		multi_no,
+	  	level,
+		group_select_flag
+	} = props;
+
+	selection.selectAll('.vpath list node').data(data)
+		.enter().append('path')
+		.attr("d", d => `
+			M${d.start1[0]},${d.start1[1]}
+			C${(d.start1[0] + d.end1[0]) / 2},${d.start1[1]} 
+			 ${(d.start1[0] + d.end1[0]) / 2},${d.end1[1]} 
+			 ${d.end1[0]},${d.end1[1]}
+			L${d.end2[0]},${d.end2[1]}
+			C${(d.start2[0] + d.end2[0]) / 2},${d.end2[1]} 
+			 ${(d.start2[0] + d.end2[0]) / 2},${d.start2[1]} 
+			 ${d.start2[0]},${d.start2[1]}
+			Z
+		`)
+		.attr("id", d => d.id + "_" + side + "_vpath")
+		.attr("class", function(d) {
+			if (multi_no != null) {
+				return level + " " + rowIndex + " " + multi_no + " " 
+						+ chartType + " vpath " + side + " virtuallayer";
+			} else {
+				return level + " " + rowIndex + " " + chartType 
+						+ " vpath " + side + " virtuallayer";
+			}
+		})
+		.attr('fill', d => d.color)
+		.attr('stroke', d => d.color)
+		//.style("opacity", 0.6)
+		.style("opacity", d => d.opacity)
+		.style("stroke-width", "1px")
+		.on("mouseover", function(d) {
+			if (side != "aux")
+				onMouseOver(selection, this, level, rowIndex, side, multi_no, chartType, group_select_flag);
+		})
+		.on("mouseout", function(d) {
+			if (side != "aux")
+				onMouseOut(d, level, rowIndex, multi_no, chartType)});
+
+}
+
 function onMouseOver(selection, element, level, rowIndex, side, multi_no, chartType, group_select_flag) {
 	//var opacityValue = 1;
 	//if (chartType == "doublehistogram") {

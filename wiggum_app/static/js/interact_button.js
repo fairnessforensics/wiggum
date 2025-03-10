@@ -1023,7 +1023,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (selectedChart == 'scatterplot') {
 
-						if (i == 2 || i == 3) {
+						if (i == 2 || i == 3 || i == 4) {
 							firstLevelParentVLWidth = 40;
 						} 
 
@@ -1058,7 +1058,20 @@ const interactiveLevelButton = (selection, props) => {
 						}
 
 						if (i == 4) {
-							
+							d3.selectAll('.'+ level +'.scatterplot.children.text')
+								.transition()
+								.attr("x", -firstLevelParentVLWidth)
+
+							// Call Virtual Layer
+							levelG.call(agg_scatterplot_swath_virtual_layer, {
+										width: firstLevelWidth,
+										height: newViewHeight,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 15,
+										link_opacity: 0.6,
+										side: 'parent',
+										level: 'level1'
+							});								
 						}
 					}
 
@@ -1145,7 +1158,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					// Common code
 					if (level == "level1") {
-						if (i == 2 || i == 3) {
+						if (i == 2 || i == 3 || i == 4) {
 							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
 							// Adjust Total Space
@@ -1655,7 +1668,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (selectedChart == 'scatterplot') {
 
-						if (i == 2 || i == 3) {
+						if (i == 2 || i == 3 || i == 4) {
 
 							firstLevelChildrenVLWidth = 70;
 							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
@@ -1772,7 +1785,17 @@ const interactiveLevelButton = (selection, props) => {
 						}
 
 						if (i == 4) {
-
+							// Call Virtual Layer
+							levelG.call(agg_scatterplot_swath_virtual_layer, {
+										width: firstLevelWidth,
+										height: newViewHeight,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 250 + 35,
+										aux_flag: false,
+										link_opacity: 0.6,
+										side: 'children',
+										level: 'level1'
+							});						
 						}
 
 						// Common part
