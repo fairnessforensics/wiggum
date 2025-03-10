@@ -163,7 +163,7 @@ const agg_scatterplot_virtual_layer = (selection, props) => {
 	
 			selectionLevelG.selectAll("." + level + ".scatterplot.middle.circle")
 				.each(function (d, i) {
-					//console.log(d);
+
 					var lastElement = this.id.split("_").pop();
 					if (lastElement == "0" ) {
 						newlineData = [];
