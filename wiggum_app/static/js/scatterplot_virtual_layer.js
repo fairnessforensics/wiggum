@@ -75,6 +75,122 @@ const scatterplot_virtual_layer = (selection, props) => {
 
 }
 
+const scatterplot_scented_swath_virtual_layer = (selection, props) => {
+	const {
+	  width,
+	  height,
+	  parentVLWidth,
+	  axis_x_position,
+	  link_opacity,
+	  side,
+	  level
+	} = props;
+
+	var rowIndex = 0;
+
+	selection.each(function (d) {
+
+		var selectionLevelG = d3.select(this);
+
+		var keyArray = d.data.key.split(",");
+		var dependent = keyArray[0];
+		var independent = keyArray[1];
+
+		var y = d3.scaleLinear()
+					.range([height, 0]);
+
+		var vl_axis = selectionLevelG.append("g")
+			.attr("class", level + " " + side + " scatterplot virtuallayer y axis")
+			.attr("transform", "translate(" + axis_x_position + "," + (-height/2) + ")")
+			.call(d3.axisRight(y).tickSizeOuter(0));
+
+		vl_axis.select(".domain")
+			.attr("stroke","black")
+			.attr("stroke-width","1")
+			.attr("stroke-opacity", 0.5);
+		vl_axis.selectAll("text").remove();
+		vl_axis.selectAll(".tick").remove();
+		
+		// Add swath
+		var swathData = [];
+
+		var num_subgroup = 0;
+		var subgroup_list = [];
+		selectionLevelG.selectAll("." + level + ".scatterplot.middle.circle")
+			.filter(function(d, i) {
+
+				var lastElement = this.id.split("_").pop();
+				if (side == "parent" ) {
+    				return lastElement === "0";
+				} else {
+					return lastElement === "last";
+				}
+			})
+			.each(function (d) {
+				num_subgroup++;
+				subgroup_list.push(d[independent]);
+		});
+
+		var height_interval = 20 / num_subgroup;
+		var node_y = -10;
+
+		subgroup_list.forEach(subgroup => {
+
+			let filteredNodes = selectionLevelG.selectAll("." + level + ".scatterplot.middle.circle")
+										.filter(d => d[independent] === subgroup) 
+										.nodes();
+	
+			let [minCY, maxCY] = d3.extent(filteredNodes, d => +d.getAttribute("cy")); 
+		
+			let fillColor = filteredNodes.length > 0 ? filteredNodes[0].style.fill : "none";
+	
+			let firstID = filteredNodes.length > 0 ? d3.select(filteredNodes[0]).attr("id") : "none";
+
+			var object = {};
+
+			if (side == "parent" ) {
+				object['start1'] = [-parentVLWidth + 10, node_y];
+				// Calculate next control point y position by interval
+				node_y = node_y + height_interval;
+				object['start2'] = [-parentVLWidth + 10, node_y];
+				object['end1'] = [axis_x_position, minCY - height/2];
+				object['end2'] = [axis_x_position, maxCY - height/2];
+			} else {
+				object['start1'] = [axis_x_position, minCY - height/2];
+				object['start2'] = [axis_x_position, maxCY - height/2];
+				object['end1'] = [280 + 50, node_y];
+				// Calculate next control point y position by interval
+				node_y = node_y + height_interval;
+				object['end2'] = [280 + 50, node_y];
+			}
+
+			// add color
+			object['color'] = fillColor;
+
+			// add opacity
+			object['opacity'] = link_opacity;
+
+			// add id for coordiate
+			object['id'] = firstID;
+
+			swathData.push(object);
+
+		});
+
+		selectionLevelG.call(swath, {
+			data: swathData,
+			side: side,
+			rowIndex: 'row' + rowIndex,
+			chartType: 'scatterplot',
+			level: level,
+			group_select_flag: true
+		});		
+
+		rowIndex = rowIndex + 1;
+	});
+
+}
+
 const agg_scatterplot_virtual_layer = (selection, props) => {
 	const {
 	  width,

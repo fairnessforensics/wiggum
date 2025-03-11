@@ -206,10 +206,10 @@ function drawNodeLinkTree(data) {
 	}
 
 	// Left identity portion in virtual layer
-	var leftIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V'];
+	var leftIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
 
 	// Right identity portion in virtual layer
-	var rightIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V'];
+	var rightIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
 
 	var firstLevelG1 = g.select('.level-1');
 

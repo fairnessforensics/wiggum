@@ -1023,7 +1023,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (selectedChart == 'scatterplot') {
 
-						if (i == 2 || i == 3 || i == 4) {
+						if (i == 2 || i == 3 || i == 4 || i == 6) {
 							firstLevelParentVLWidth = 40;
 						} else if (i == 5) {
 							firstLevelParentVLWidth = 60;
@@ -1083,6 +1083,23 @@ const interactiveLevelButton = (selection, props) => {
 
 							// Call Virtual Layer
 							levelG.call(agg_scatterplot_swath_control_virtual_layer, {
+										width: firstLevelWidth,
+										height: newViewHeight,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 15,
+										link_opacity: 0.6,
+										side: 'parent',
+										level: 'level1'
+							});								
+						}
+
+						if (i == 6) {
+							d3.selectAll('.'+ level +'.scatterplot.children.text')
+								.transition()
+								.attr("x", -firstLevelParentVLWidth)
+
+							// Call Virtual Layer
+							levelG.call(scatterplot_scented_swath_virtual_layer, {
 										width: firstLevelWidth,
 										height: newViewHeight,
 										parentVLWidth: firstLevelParentVLWidth,
@@ -1177,7 +1194,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					// Common code
 					if (level == "level1") {
-						if (i == 2 || i == 3 || i == 4 || i == 5) {
+						if (i == 2 || i == 3 || i == 4 || i == 5 || i == 6) {
 							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
 							// Adjust Total Space
@@ -1687,7 +1704,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					if (selectedChart == 'scatterplot') {
 
-						if (i == 2 || i == 3 || i == 4 || i == 5) {
+						if (i == 2 || i == 3 || i == 4 || i == 5 || i == 6) {
 
 							firstLevelChildrenVLWidth = 70;
 
@@ -1834,6 +1851,19 @@ const interactiveLevelButton = (selection, props) => {
 										parentVLWidth: firstLevelParentVLWidth,
 										axis_x_position: 250 + 35,
 										aux_flag: false,
+										link_opacity: 0.6,
+										side: 'children',
+										level: 'level1'
+							});								
+						}
+
+						if (i == 6) {
+							// Call Virtual Layer
+							levelG.call(scatterplot_scented_swath_virtual_layer, {
+										width: firstLevelWidth,
+										height: newViewHeight,
+										parentVLWidth: firstLevelParentVLWidth,
+										axis_x_position: 250 + 35,
 										link_opacity: 0.6,
 										side: 'children',
 										level: 'level1'
