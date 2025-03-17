@@ -110,7 +110,7 @@ const scatterplot_scented_swath_virtual_layer = (selection, props) => {
 			.attr("stroke-opacity", 0.5);
 		vl_axis.selectAll("text").remove();
 		vl_axis.selectAll(".tick").remove();
-		
+
 		// Add swath
 		var swathData = [];
 
@@ -187,6 +187,66 @@ const scatterplot_scented_swath_virtual_layer = (selection, props) => {
 		});		
 
 		rowIndex = rowIndex + 1;
+
+		// Add checkbox
+		let foreignObject = selectionLevelG.append("foreignObject")
+				.attr("x", -parentVLWidth - 50) 
+				.attr("y", -height/2)
+				.attr("width", 100)
+				.attr("height", 10)
+				.style("overflow", "visible");
+
+		let checkbox = foreignObject.append("xhtml:input")
+					.attr("type", "checkbox")
+					.attr("class", level + " " + side + " scatterplot virtuallayer checkbox")
+					.on("change", function () {
+						if (this.checked) {
+							var pointData = [];
+							selectionLevelG.selectAll("." + level + ".scatterplot.middle.circle")
+								.each(function () {
+				
+								var circleX = 0;
+								var circleY = d3.select(this).attr("cy");
+				
+								var object = {};
+								object['cx'] = circleX;
+								object['cy'] = circleY;
+				
+								// add color
+								object['color'] = this.style.fill;
+				
+								// add opacity
+								object['opacity'] = link_opacity;
+								
+								// add id for coordiate
+								object['id'] = d3.select(this).attr("id");
+				
+								pointData.push(object);
+							})
+
+							vl_axis.selectAll(".circle")
+								.data(pointData)
+								.enter().append("circle")	    
+								.attr("class", "test")
+								.attr("r", 3)
+								.attr("cx", d => d.cx)
+								.attr("cy", d => d.cy)
+								.attr("stroke", "black")
+								.attr("stroke-width", 1)	  
+								.attr("stroke-opacity", 0.25)
+								.style("fill", d => d.color)
+								.style("fill-opacity", d => d.opacity);
+							vl_axis.raise();
+						} else {
+							vl_axis.selectAll("circle").remove();
+						}
+					});
+			
+		foreignObject.append("xhtml:label")
+			.attr("class", level + " " + side + " scatterplot virtuallayer label")
+			.style("font-size", "12px") 
+			.style("margin-left", "3px") 
+			.text("Points");
 	});
 
 }
