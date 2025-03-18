@@ -954,7 +954,7 @@ function drawNodeLinkTree(data) {
 		});
 	} else if (agg_data.detail_view_type == 'rank') {
 		// Generate interactive buttons
-		var levelLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'SM1', 'SM2'];
+		var levelLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'SM1', 'SM2', 'SM3', 'SM4'];
 
 		thirdLevelButtons.call(interactiveLevelButton, {
 			levelLabels: levelLabels,
@@ -963,7 +963,8 @@ function drawNodeLinkTree(data) {
 			levelG: thirdLevelG,
 			level: 'level3',
 			charts: ['list', 'countrymap', 'barchart', 'genericheatmap'
-						, 'smscatterplot_year', 'smscatterplot_industry'],
+						, 'smscatterplot_year', 'smscatterplot_industry'
+						, 'smscatterplot_industry_all', 'smscatterplot_industry_bounded'],
 			trendType: agg_data.trend_type
 		});
 	}
@@ -1604,6 +1605,72 @@ function drawNodeLinkTree(data) {
 						first_small_multiple_flag: first_small_multiple_flag,
 						last_small_multiple_flag: last_small_multiple_flag,
 						share_axis_flag: share_axis_flag,
+						x_axis_scale: 'scaleLinear', 
+						y_axis_scale: 'scaleLog', 
+						y_axis_tick_num: 3,
+						chart_data: small_multiple_data,
+						myColor: countryColor,
+						mark_shape: 'rectangle',
+						mark_width: mark_width,
+						mark_height: mark_height,
+						mark_opacity: 0.9,
+						level: 'level3'
+					});
+
+					small_multiple_position = small_multiple_position + small_multiple_height;
+					first_small_multiple_flag = false;
+				}
+
+
+				// Visual Tech 6: small multiples scatterplot for all industry
+				var thirdLevelG1_visual_alter_smscatterplot_industry_all = thirdLevelG1.append("g")
+							.attr("class", 'level-3' + ' ' + dependent 
+							+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot_industry_all')
+							.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
+
+				// Reset
+				first_small_multiple_flag = true;
+				last_small_multiple_flag = false;
+				small_multiple_position = 0;
+				small_multiple_width = 400;
+
+				// Iterate through subgroup
+				for (var i = 0; i < num_small_multiples; i++) {
+					if (i == num_small_multiples - 1) {
+						last_small_multiple_flag = true;
+					}
+					var object = d.data.values[i];
+					var subgroup = object.subgroup;
+
+					var filter_csvData = csvData.filter(
+						function(d){ return d[splitby] === subgroup} );
+
+					// Aggregate data
+					var agg_result = aggregate({data: filter_csvData,
+						groupby_keys: [independent, first_candidate],
+						agg_var: dependent});
+
+					// Log scale cannot include zero, filter zero
+					var small_multiple_data = agg_result.filter(d => {
+						return d[dependent] > 0;
+					});
+
+					thirdLevelG1_visual_alter_smscatterplot_industry_all.call(scatterPlot, {
+						xValue: d => d[first_candidate],
+						xAxisLabel: first_candidate,
+						yValue: d => d[dependent],
+						yAxisLabel: dependent,
+						splitby: independent,
+						margin: { left: 60, top: 0, right: 0, bottom: 10 },
+						width: small_multiple_width,
+						height: small_multiple_height,
+						relative_translate_y: small_multiple_position + 10,
+						smallMultipleFlag: true,
+						first_small_multiple_flag: first_small_multiple_flag,
+						last_small_multiple_flag: last_small_multiple_flag,
+						share_axis_flag: true,
+						chart_name_suffix_flag: true,
+						chart_name_suffix: 'all',
 						x_axis_scale: 'scaleLinear', 
 						y_axis_scale: 'scaleLog', 
 						y_axis_tick_num: 3,
@@ -2425,4 +2492,5 @@ function initVisibility() {
 	d3.selectAll('.level3.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.smscatterplot_year').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.smscatterplot_industry').transition().style('visibility', "hidden");	
+	d3.selectAll('.level3.smscatterplot_industry_all').transition().style('visibility', "hidden");	
 }

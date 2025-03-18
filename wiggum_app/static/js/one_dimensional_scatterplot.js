@@ -199,7 +199,11 @@ const scatterPlot = (selection, props) => {
 
 	var chart_name;
 	if (smallMultipleFlag == true) {
-		chart_name = 'smscatterplot_' + xAxisLabel;
+		if (chart_name_suffix != undefined) {
+			chart_name = 'smscatterplot_' + xAxisLabel + "_" + chart_name_suffix;
+		} else {
+			chart_name = 'smscatterplot_' + xAxisLabel;
+		}
 	} else if (chart_name_suffix_flag == true) {
 		if (chart_name_suffix != undefined) {
 			chart_name = 'scatterplot_' + xAxisLabel + "_" + chart_name_suffix;
@@ -266,14 +270,24 @@ const scatterPlot = (selection, props) => {
 		xScale = d3.scaleLinear();
 	}
 
-	// Add padding: eg. [2010, 2019] => [2009, 2020]
-	xScale.domain(d3.extent(chart_data, xValue).map((num, index, array) => {
-													if (index == 0 ) {
-														return num - 1;
-													} else if (index == array.length - 1) {
-														return num + 1;
-													}
-												}));
+	if (chart_name_suffix == "all") {
+		xScale.domain(d3.extent(csvData, xValue).map((num, index, array) => {
+			if (index == 0 ) {
+				return num - 1;
+			} else if (index == array.length - 1) {
+				return num + 1;
+			}
+		}));
+	} else {
+		// Add padding: eg. [2010, 2019] => [2009, 2020]
+		xScale.domain(d3.extent(chart_data, xValue).map((num, index, array) => {
+			if (index == 0 ) {
+				return num - 1;
+			} else if (index == array.length - 1) {
+				return num + 1;
+			}
+		}));
+	}
 
 	xScale.range([0, width]);
 

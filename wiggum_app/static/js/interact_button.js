@@ -312,7 +312,8 @@ const interactiveLevelButton = (selection, props) => {
 										|| selectedChart == 'barchart'
 										|| selectedChart == 'genericheatmap' 
 										|| selectedChart == 'smscatterplot_year'
-										|| selectedChart == 'smscatterplot_industry') {
+										|| selectedChart == 'smscatterplot_industry'
+										|| selectedChart == 'smscatterplot_industry_all') {
 									d3.selectAll('.'+level + '.text')
 										.transition()
 										.style('visibility', 'visible');	
