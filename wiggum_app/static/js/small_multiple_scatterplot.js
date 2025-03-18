@@ -74,6 +74,7 @@ const small_multiple_scatterplot = (selection, props) => {
 			share_axis_flag: false,
 			x_axis_scale: 'scaleLinear', 
 			y_axis_scale: 'scaleLog', 
+			y_axis_tick_num: 3,
 			rectWidth: rectWidth,
 			rectHeight: rectHeight,
 			identity_data: identity_data,
@@ -82,6 +83,7 @@ const small_multiple_scatterplot = (selection, props) => {
 			mark_shape: 'rectangle',
 			mark_width: 6,
 			mark_height: 3,
+			mark_opacity: 0.9,
 			rowIndex: 'row' + rowIndex,
 			level: level
 		});

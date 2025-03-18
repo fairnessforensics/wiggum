@@ -203,6 +203,12 @@ function drawNodeLinkTree(data) {
 		levelLabels.push('SM2');
 		chartList.push('smscatterplot_industry')
 
+		levelLabels.push('SP3');
+		chartList.push('scatterplot_industry')
+
+		levelLabels.push('SP4');
+		chartList.push('scatterplot_industry_bounded')
+
 	}
 
 	// Left identity portion in virtual layer
@@ -417,6 +423,7 @@ function drawNodeLinkTree(data) {
 				identity_data: identity_data,
 				chart_data: scatterplot_data,
 				myColor: countryColor,
+				mark_opacity: 0.9,
 				rowIndex: 'row' + rowIndex,
 				level: 'level1'
 			});
@@ -449,6 +456,146 @@ function drawNodeLinkTree(data) {
 				level: 'level1'
 			});
 
+			// Visual Tech 5: Scatterplot specificly for Industry ID
+			var dependent = keyArray[0];
+			var independent = keyArray[1];
+			var scatterplot_industry_g = container.append("g")
+							.attr("class", 'level-1' + ' ' + dependent
+							+ ' ' + independent + ' scatterplot_industry');
+
+			first_candidate = "industry";
+
+			// Aggregate data
+			var agg_result = aggregate({data: csvData,
+				groupby_keys: [independent, first_candidate],
+				agg_var: dependent});
+
+			// Log scale cannot include zero, filter zero
+			var scatterplot_data = agg_result.filter(d => {
+				return d[dependent] > 0;
+			});
+
+			scatterplot_industry_g.call(scatterPlot, {
+				xValue: d => d[first_candidate],
+				xAxisLabel: first_candidate,
+				yValue: d => d[keyArray[0]],
+				yAxisLabel: keyArray[0],
+				splitby: keyArray[1],
+				margin: { left: 50, top: 0, right: 0, bottom: 0 },
+				width: 400,
+				height: 100,
+				relative_translate_y: -50,
+				childrenIdentityFlag: true,
+				smallMultipleFlag: false,
+				chart_name_suffix_flag: true,
+				x_axis_scale: 'scaleLinear', 
+				y_axis_scale: 'scaleLog', 
+				y_axis_tick_num: 5,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				chart_data: scatterplot_data,
+				myColor: countryColor,
+				mark_shape: 'rectangle',
+				mark_width: 2,
+				mark_height: 2,
+				mark_opacity: 0.9,
+				rowIndex: 'row' + rowIndex,
+				level: 'level1'
+			});
+
+			// Visual Tech 6: Scatterplot specificly for Industry ID in a bounded space
+			var scatterplot_industry_g = container.append("g")
+									.attr("class", 'level-1' + ' ' + dependent
+									+ ' ' + independent + ' scatterplot_industry_bounded')
+									.attr('transform', `translate(${20},${-100})`);
+
+			var foreignObject = scatterplot_industry_g.append("foreignObject")
+									.attr("width", 400)  
+									.attr("height", 200)
+									.append("xhtml:div") 
+									.attr("class", level + " scatterplot_industry_bounded div")
+									.style("width", "600px") 
+									.style("height", "100%")
+									.style("overflow-x", "auto") 
+									.style("white-space", "nowrap")
+									.style("display", "block")
+									//.style("border", "1px solid #ccc")  
+									.style("border-radius", "2px")
+									//.style("box-shadow", "inset 0 0 5px rgba(0, 0, 0, 0.1)") 
+									//.style("border", "1px solid black");
+
+			var scatterplot_industry_svg = d3.select(foreignObject.node())
+						.append("svg")
+						.attr("width", 1900)
+						.attr("height", 200);
+			
+			scatterplot_industry_svg.call(scatterPlot, {
+				xValue: d => d[first_candidate],
+				xAxisLabel: first_candidate,
+				yValue: d => d[keyArray[0]],
+				yAxisLabel: keyArray[0],
+				splitby: keyArray[1],
+				margin: { left: 50, top: 0, right: 0, bottom: 0 },
+				width: 1600,
+				height: 100,
+				relative_translate_y: 50,
+				childrenIdentityFlag: false,
+				smallMultipleFlag: false,
+				chart_name_suffix_flag: true,
+				chart_name_suffix: 'bounded',
+				x_axis_scale: 'scaleLinear', 
+				y_axis_scale: 'scaleLog', 
+				y_axis_tick_num: 5,
+				rectWidth: rectWidth,
+				rectHeight: rectHeight,
+				identity_data: identity_data,
+				chart_data: scatterplot_data,
+				myColor: countryColor,
+				mark_shape: 'rectangle',
+				mark_width: 8,
+				mark_height: 3,
+				mark_opacity: 0.9,
+				rowIndex: 'row' + rowIndex,
+				level: 'level1'
+			});
+
+			scatterplot_industry_g.selectAll(".rect")
+				.data(identity_data)
+				.enter()    
+				.append("rect")	
+				.attr("class", d => level + " scatterplot_industry_bounded initialvirtuallayer children rect " 
+							+ dependent + " " + independent)	  						
+				.attr("x", 400 + rectWidth + 40)
+				.attr("y", -10)						
+				.attr("width", rectWidth)
+				.attr("height", rectHeight)
+				.style("stroke", "black")
+				.style("stroke-width", "2px")
+				.attr("stroke-opacity", 0.3)
+				.style("fill-opacity", 1)
+				.style("fill", d => heatmapColorScale(d.value))
+				.append('title')
+				.text(function(d) {
+					return `The mean distance is ${d3.format(".3f")(d.value)}.`
+				});
+
+			// Text for identity portion  
+			scatterplot_industry_g.selectAll(".text")
+				.data(identity_data)
+				.enter()    		
+				.append("text")	   
+				.attr("class", d => level + " scatterplot_industry_bounded children text " 
+							+ d.dependent + " " + d.independent)	
+				.attr("transform", function(d) {
+					var y_position = 100;
+					return "translate(" + (-20) +"," + y_position + ")";
+				})		
+				.attr("dx", '.6em')			  
+				.attr('dy', '1.5em')																
+				.style("text-anchor", "end")
+				.text(d => d.dependent + "," + d.independent);
+	
 			rowIndex = rowIndex + 1;
 		}
 	
@@ -1386,6 +1533,7 @@ function drawNodeLinkTree(data) {
 						last_small_multiple_flag: last_small_multiple_flag,
 						share_axis_flag: true,
 						chart_data: small_multiple_data,
+						mark_opacity: 0.9,
 						level: 'level3',
 						myColor: countryColor
 					});	
@@ -1458,11 +1606,13 @@ function drawNodeLinkTree(data) {
 						share_axis_flag: share_axis_flag,
 						x_axis_scale: 'scaleLinear', 
 						y_axis_scale: 'scaleLog', 
+						y_axis_tick_num: 3,
 						chart_data: small_multiple_data,
 						myColor: countryColor,
 						mark_shape: 'rectangle',
 						mark_width: mark_width,
 						mark_height: mark_height,
+						mark_opacity: 0.9,
 						level: 'level3'
 					});
 
@@ -2253,6 +2403,8 @@ function initVisibility() {
 	d3.selectAll('.level1.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
 	d3.selectAll('.level1.smscatterplot_industry').transition().style('visibility', "hidden");
+	d3.selectAll('.level1.scatterplot_industry').transition().style('visibility', "hidden");
+	d3.selectAll('.level1.scatterplot_industry_bounded').transition().style('visibility', "hidden");
 	d3.selectAll('.path.list').transition().style('visibility', "visible");
 	d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
 

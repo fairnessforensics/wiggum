@@ -74,11 +74,13 @@ const interact_node_click = (selection, props) => {
 				smallMultipleFlag: false,
 				x_axis_scale: 'scaleLinear', 
 				y_axis_scale: 'scaleLog', 
+				y_axis_tick_num: 4,
 				chart_data: agg_result,
 				myColor: myColor,
 				mark_shape: 'rectangle',
 				mark_width: mark_width,
 				mark_height: mark_height,
+				mark_opacity: 0.9,
 				level: 'level3'
 			});
 		} else {

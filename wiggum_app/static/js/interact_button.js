@@ -80,7 +80,7 @@ const interactiveLevelButton = (selection, props) => {
 										.style("text-anchor", "middle");
 								}										
 
-								if (i == 2 || i == 3 || i == 4 || i == 5 || i == 6) {
+								if ([2, 3, 4, 5, 6, 7, 8].includes(i)) {
 									d3.selectAll('.'+level+'.list')
 										.transition()
 										.style('visibility', 'visible');
@@ -108,7 +108,11 @@ const interactiveLevelButton = (selection, props) => {
 										addWidth = addWidthArray[1] + 70;
 									} else if (selectedChart == 'smscatterplot_industry' ) {
 										addWidth = addWidthArray[1] + 260;
-								 	} else if (i == 5 || i == 6) {
+								 	} else if (selectedChart == 'scatterplot_industry') {
+										addWidth = addWidthArray[1] + 310;
+									} else if (selectedChart == 'scatterplot_industry_bounded') {
+											addWidth = addWidthArray[1] + 280;
+									} else if (i == 5 || i == 6) {
 										addWidth = addWidthArray[1];
 									}
 
@@ -148,6 +152,8 @@ const interactiveLevelButton = (selection, props) => {
 										addHeight = addHeightArray[0];
 									} else if (selectedChart == 'smscatterplot_industry') {
 										addHeight = addHeightArray[2];
+									} else if (selectedChart == 'scatterplot_industry_bounded') {
+										addHeight = addHeightArray[1];
 									}
 
 									newViewHeight = height + addHeight;
@@ -326,7 +332,7 @@ const interactiveLevelButton = (selection, props) => {
 								// Level 0 path
 								d3.selectAll('.path.list.level0')
 									.transition()
-									.style('visibility', (i == 0 || i == 3 || i == 4 || i == 5 || i == 6) ? 'visible' : 'hidden');								
+									.style('visibility', [0, 3, 4, 5, 6, 7, 8].includes(i) ? 'visible' : 'hidden');								
 								d3.selectAll('.path.heatmap.level0')
 									.transition()
 									.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
@@ -340,7 +346,7 @@ const interactiveLevelButton = (selection, props) => {
 									// Level 2: list
 									d3.selectAll('.path.list.node.level1')
 										.transition()
-										.style('visibility', (i == 0 || i == 3 || i == 4 || i == 5 || i == 6) ? 'visible' : 'hidden');
+										.style('visibility', [0, 3, 4, 5, 6, 7, 8].includes(i) ? 'visible' : 'hidden');
 									d3.selectAll('.path.heatmap.node.level1')
 										.transition()
 										.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	

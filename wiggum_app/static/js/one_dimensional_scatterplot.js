@@ -179,8 +179,11 @@ const scatterPlot = (selection, props) => {
 	  first_small_multiple_flag,
 	  last_small_multiple_flag,
 	  share_axis_flag,
+	  chart_name_suffix_flag,
+	  chart_name_suffix,
 	  x_axis_scale,
 	  y_axis_scale,
+	  y_axis_tick_num,
 	  rectWidth,
 	  rectHeight,
 	  identity_data,
@@ -189,6 +192,7 @@ const scatterPlot = (selection, props) => {
 	  mark_shape,
 	  mark_width,
 	  mark_height,
+	  mark_opacity,
 	  rowIndex,
 	  level
 	} = props;
@@ -196,6 +200,12 @@ const scatterPlot = (selection, props) => {
 	var chart_name;
 	if (smallMultipleFlag == true) {
 		chart_name = 'smscatterplot_' + xAxisLabel;
+	} else if (chart_name_suffix_flag == true) {
+		if (chart_name_suffix != undefined) {
+			chart_name = 'scatterplot_' + xAxisLabel + "_" + chart_name_suffix;
+		} else {
+			chart_name = 'scatterplot_' + xAxisLabel;
+		}
 	} else {
 		chart_name = 'scatterplot';
 	}
@@ -216,7 +226,7 @@ const scatterPlot = (selection, props) => {
 						.range([chartHeight, 0]);
 
 		yAxis = d3.axisLeft(yScale)
-					.ticks(3, ",.0e")  
+					.ticks(y_axis_tick_num, ",.0e")  
 					.tickFormat(d3.format(",.0e")); 
 	} else {
 		yScale = d3.scaleLinear();
@@ -269,12 +279,13 @@ const scatterPlot = (selection, props) => {
 
 	var xAxis = d3.axisBottom(xScale);
 
-	if (smallMultipleFlag && !share_axis_flag) {
+	if ((smallMultipleFlag && !share_axis_flag) || chart_name_suffix == 'bounded') {
 		// Used for industry id
 		var dataRange = d3.extent(chart_data, xValue);
 		var tickCount = Math.ceil((dataRange[1] - dataRange[0] + 1) / 5);
 
 		xAxis.ticks(tickCount).tickFormat(d=> d % 5 === 0 ? d : ""); 
+		
 	// TODO Bug: Miss tick 80 for the code below
 	//} else if (smallMultipleFlag && share_axis_flag) {
 		// Used for industry id
@@ -313,7 +324,7 @@ const scatterPlot = (selection, props) => {
 	}
 
 	// Remove two end labels from x axis for time scale
-	if (!smallMultipleFlag || share_axis_flag) {
+	if ((!smallMultipleFlag || share_axis_flag) && chart_name_suffix != 'bounded') {
 		// Small multiple for leaf level
 		x_axis.selectAll(".tick")
 			.filter(function(d, i) {
@@ -390,7 +401,7 @@ const scatterPlot = (selection, props) => {
 			.attr("width", mark_width) 
        		.attr("height", mark_height)
 			.style("fill", d => color(cValue(d)))
-			.attr("opacity", 0.9)
+			.attr("opacity", mark_opacity)
 			.on("click", function(d) {
 				// Add vertical line at clicked point
 				const existingLine = g.select(`.v-line[id="${d.industry}"]`);
@@ -575,7 +586,6 @@ const scatterPlot = (selection, props) => {
 
 	// Children Identity
 	if (childrenIdentityFlag) {
-
 		g.selectAll(".rect")
 			.data(identity_data)
 			.enter()    
