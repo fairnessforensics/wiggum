@@ -313,7 +313,8 @@ const interactiveLevelButton = (selection, props) => {
 										|| selectedChart == 'genericheatmap' 
 										|| selectedChart == 'smscatterplot_year'
 										|| selectedChart == 'smscatterplot_industry'
-										|| selectedChart == 'smscatterplot_industry_all') {
+										|| selectedChart == 'smscatterplot_industry_all'
+										|| selectedChart == 'smscatterplot_industry_all_bounded') {
 									d3.selectAll('.'+level + '.text')
 										.transition()
 										.style('visibility', 'visible');	

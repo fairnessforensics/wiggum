@@ -270,7 +270,7 @@ const scatterPlot = (selection, props) => {
 		xScale = d3.scaleLinear();
 	}
 
-	if (chart_name_suffix == "all") {
+	if (chart_name_suffix == "all" || chart_name_suffix == "all_bounded") {
 		xScale.domain(d3.extent(csvData, xValue).map((num, index, array) => {
 			if (index == 0 ) {
 				return num - 1;
@@ -293,9 +293,17 @@ const scatterPlot = (selection, props) => {
 
 	var xAxis = d3.axisBottom(xScale);
 
-	if ((smallMultipleFlag && !share_axis_flag) || chart_name_suffix == 'bounded') {
+	if ((smallMultipleFlag && !share_axis_flag) || chart_name_suffix == 'bounded'
+			|| chart_name_suffix == 'all_bounded') {
 		// Used for industry id
-		var dataRange = d3.extent(chart_data, xValue);
+		var dataRange;
+
+		if (chart_name_suffix == 'all_bounded') {
+			dataRange = d3.extent(csvData, xValue);
+		} else {
+			dataRange = d3.extent(chart_data, xValue);
+		}
+
 		var tickCount = Math.ceil((dataRange[1] - dataRange[0] + 1) / 5);
 
 		xAxis.ticks(tickCount).tickFormat(d=> d % 5 === 0 ? d : ""); 
@@ -338,7 +346,8 @@ const scatterPlot = (selection, props) => {
 	}
 
 	// Remove two end labels from x axis for time scale
-	if ((!smallMultipleFlag || share_axis_flag) && chart_name_suffix != 'bounded') {
+	if ((!smallMultipleFlag || share_axis_flag) 
+			&& chart_name_suffix != 'bounded' && chart_name_suffix != 'all_bounded') {
 		// Small multiple for leaf level
 		x_axis.selectAll(".tick")
 			.filter(function(d, i) {
