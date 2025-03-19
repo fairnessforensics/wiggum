@@ -12,6 +12,12 @@ const interact_node_click = (selection, props) => {
 	var subgroup = d.data.subgroup;
 	var first_candidate = "industry";
 
+	d3.selectAll(".level3.list.rect" + "." + dependent 
+						+ "." + independent + ".splitby_" + splitby)
+						.style("stroke-opacity", 0.3);
+
+	element.style("stroke-opacity", 1);
+
 	if (level3_state == "smscatterplot_industry") {
 		if (splitby == 'sector') {
 
@@ -87,10 +93,6 @@ const interact_node_click = (selection, props) => {
 			const existing_virtual_chart = selection.select('.level-3' + '.' + dependent 
 												+ '.' + independent + '.splitby_' + splitby 
 												+ '.va.smscatterplot_industry');
-
-			d3.selectAll(".level3.list.rect" + "." + dependent 
-								+ "." + independent + ".splitby_" + splitby)
-								.style("stroke-opacity", 0.3);
 
 			const existing_selected_interact_chart = selection.select('.level-3' + '.' + dependent 
 					+ '.' + independent + '.splitby_' + splitby 
