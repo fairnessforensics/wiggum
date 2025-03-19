@@ -122,6 +122,77 @@ const interact_node_click = (selection, props) => {
 				});
 			}
 		}
+	} else if (level3_state == "smscatterplot_industry_all_bounded") {
+		// Filter data
+		var filter_csvData = csvData.filter(
+			function(d){ return d[splitby] === subgroup && d[dependent] > 0} );
+	
+		// Aggregate data
+		var agg_result = aggregate({data: filter_csvData,
+									groupby_keys: [independent, first_candidate],
+									agg_var: dependent});
+		
+		// Find position
+		var height = d.parent.children[d.parent.children.length - 1].x 
+						- d.parent.children[0].x + 40;
+						
+		var relative_translate_y = 0;	
+	
+		var thirdLevelG1 = selection.select('.level-3' + '.' + dependent 
+								+ '.' + independent + '.splitby_' + splitby);
+
+		thirdLevelG1.selectAll('.smscatterplot_industry_all_bounded')
+								.transition()
+								.style('visibility', 'hidden');			
+		
+		var scatterplot_industry_all_bounded_g = thirdLevelG1.append("g")
+					.attr("class", 'level-3' + ' ' + dependent 
+					+ ' ' + independent + ' splitby_' + splitby 
+					+ ' subgroup_' + subgroup + ' va smscatterplot_industry_all_bounded interact')
+					.attr("transform", "translate(" + (rectWidth + 10 + 30) + ", " + relative_translate_y +")");
+
+		var foreignObject = scatterplot_industry_all_bounded_g.append("foreignObject")
+									.attr("width", 400)  
+									.attr("height", height)
+									.append("xhtml:div") 
+									.attr("class", "level3 smscatterplot_industry_all_bounded div")
+									.style("width", "600px") 
+									.style("height", "100%")
+									.style("overflow-x", "auto") 
+									.style("white-space", "nowrap")
+									.style("display", "block")
+									.style("border-radius", "2px");
+
+		var scatterplot_industry_svg = d3.select(foreignObject.node())
+				.append("svg")
+				.attr("width", 1900)
+				.attr("height", height);
+
+		scatterplot_industry_svg.call(scatterPlot, {
+			xValue: d => d[first_candidate],
+			xAxisLabel: first_candidate,
+			yValue: d => d[dependent],
+			yAxisLabel: dependent,
+			splitby: independent,
+			margin: { left: 30, top: 0, right: 0, bottom: 40 },
+			width: 1600,
+			height: height,
+			relative_translate_y: relative_translate_y,
+			childrenIdentityFlag: false,
+			smallMultipleFlag: false,
+			chart_name_suffix_flag: true,
+			chart_name_suffix: 'all_bounded',
+			x_axis_scale: 'scaleLinear', 
+			y_axis_scale: 'scaleLog', 
+			y_axis_tick_num: 4,
+			chart_data: agg_result,
+			myColor: myColor,
+			mark_shape: 'rectangle',
+			mark_width: 8,
+			mark_height: 3,
+			mark_opacity: 0.9,
+			level: 'level3'
+		});
 	}
 }
 

@@ -297,6 +297,11 @@ const interactiveLevelButton = (selection, props) => {
 									.attr("transform", function(d,i) { 
 									return "translate(" + 0 + "," + 0 + ")"; });									
 
+								// Remove all interactive charts from leaf nodes
+								d3.selectAll('.level-3.interact').remove();
+								d3.selectAll(".level3.list.rect")
+									.style("stroke-opacity", 0.3);
+
 								/*if (selectedChart == 'countrymap') {	
 									// TODO hardcode
 									d3.selectAll('.'+level + '.rect' + '.splitby_importer'
