@@ -341,7 +341,6 @@ function drawNodeLinkTree(data) {
 
 			// TODO width is using addWidthArray
 			// how to merge the chart width and the interactive width adjustment.
-
 			container.call(coloredBarChart, {
 				chart_data: chart_data,
 				width: 160,
@@ -351,7 +350,9 @@ function drawNodeLinkTree(data) {
 				rectHeight: rectHeight,
 				margin: { left: 50, top: 0, right: 0, bottom: 0 },
 				identity_data: identity_data,
-				yAxisLabel: keyArray[0],		
+				yAxisLabel: keyArray[0],	
+				y_axis_scale: 'scaleLog',	
+				y_axis_tick_num: 5,
 				level: 'level1',
 				myColor: countryColor
 			});
@@ -1405,18 +1406,21 @@ function drawNodeLinkTree(data) {
 				});
 
 				const xValue = chart_data => chart_data['value'];
-				var xDomain = [0, d3.max(chart_data, xValue)];
+				var x_value_max = d3.max(chart_data, xValue);
+				console.log(bar_chart_data);
 
 				thirdLevelG1_visual_alter_barchart.call(barChart, {
 					chart_data: bar_chart_data,
 					width: 300,
 					height: chart_height,
 					margin: { top: 0, right: 0, bottom: 0, left: 30 },
-					xDomain: xDomain,
 					level: 'level3',
 					largerFlag: largerFlag,
 					percentageFlag: false,
 					x_axis_label: dependent,
+					x_axis_scale: 'scaleLog',
+					x_value_max: x_value_max,
+					x_axis_tick_num: 5,
 					legend_title: independent,
 					myColor: countryColor,
 					tooltipValueFormatFlag: true

@@ -4,7 +4,6 @@ const barChart = (selection, props) => {
 	  width,
 	  height,
 	  margin,
-	  xDomain,
 	  level,
 	  largerFlag,
 	  keys,
@@ -14,6 +13,9 @@ const barChart = (selection, props) => {
 	  circleRadius,
 	  identity_data,
 	  x_axis_label,
+	  x_axis_scale,
+	  x_value_max,
+	  x_axis_tick_num,
 	  legend_title,
 	  myColor,
 	  tooltipValueFormatFlag
@@ -47,11 +49,35 @@ const barChart = (selection, props) => {
 		innerHeight =  height - margin.top - margin.bottom;
 	}
 
-	const xScale = d3.scaleLinear()
-	  //.domain([0, d3.max(chart_data, xValue)])
-	  //.domain([0, 1])
-	  .domain(xDomain).nice()
-	  .range([0, innerWidth]);
+	var xScale;
+	var xAxis;
+
+	if (x_axis_scale == 'scaleLog') {
+		// Log scale cannot include zero
+		xScale = d3.scaleLog()
+						.range([0, innerWidth]);
+		xScale.domain([1, x_value_max]).nice();
+
+		xAxis = d3.axisBottom(xScale)
+					.tickSize(-innerHeight)
+					.ticks(x_axis_tick_num, ",.0e")  
+					.tickFormat(d3.format(",.0e")); 
+	} else {
+		xScale = d3.scaleLinear()
+					.range([0, innerWidth]);
+		
+		xScale.domain([0, x_value_max]).nice();	
+
+		if (percentageFlag) {
+			xAxis = d3.axisBottom(xScale)
+				.tickSize(-innerHeight)
+				.ticks(5, "%");
+		} else {
+			xAxis = d3.axisBottom(xScale)
+				.tickSize(-innerHeight)
+				.tickFormat(d3.format(".2s"));
+		}
+	}
 	
 	const yScale = d3.scaleBand()
 	  .domain(groups)
@@ -94,17 +120,6 @@ const barChart = (selection, props) => {
 		  .attr("width", function(d) { return innerWidth; })
 		  .attr("height", ySubgroup.bandwidth())
 		  .attr("fill", function(d) { return '#eee' ; });			
-
-	var xAxis;
-	if (percentageFlag) {
-		xAxis = d3.axisBottom(xScale)
-			.tickSize(-innerHeight)
-			.ticks(5, "%");
-	} else {
-		xAxis = d3.axisBottom(xScale)
-			.tickSize(-innerHeight)
-			.tickFormat(d3.format(".2s"));
-	}
 
 	g.append('g')
 	  .call(d3.axisLeft(yScale))
@@ -274,6 +289,8 @@ const coloredBarChart = (selection, props) => {
 	  margin,
 	  identity_data,
 	  yAxisLabel,
+	  y_axis_scale,
+	  y_axis_tick_num,
 	  level,
 	  myColor
 	} = props;
@@ -297,8 +314,27 @@ const coloredBarChart = (selection, props) => {
 					.range([0, width])
 					.padding(0.3);
 
-	var yScale = d3.scaleLinear()
+	var yScale;
+	var yAxis;
+
+	if (y_axis_scale == 'scaleLog') {
+		// Log scale cannot include zero
+		yScale = d3.scaleLog()
+						.range([height, 0]);
+		yScale.domain([1, d3.max(chart_data, d => d.value )]).nice();
+
+		yAxis = d3.axisLeft(yScale)
+					.ticks(y_axis_tick_num, ",.0e")  
+					.tickFormat(d3.format(",.0e")); 
+	} else {
+		yScale = d3.scaleLinear()
 					.range([height, 0]);
+		
+		yScale.domain([0, d3.max(chart_data, function (d){ return d.value; })]).nice();			
+
+		yAxis = d3.axisLeft(yScale)
+					.tickFormat(d3.format(".2s"));
+	}
 
 	var color;
 	if (myColor == undefined) {
@@ -310,11 +346,7 @@ const coloredBarChart = (selection, props) => {
 
 	var xAxis = d3.axisBottom(xScale);
 
-	var yAxis = d3.axisLeft(yScale)
-					.tickFormat(d3.format(".2s"));
-
 	xScale.domain(chart_data.map( function (d){ return d.name; }));
-	yScale.domain([0, d3.max(chart_data, function (d){ return d.value; })]).nice();
 
 	xAxisG.call(xAxis)
 		.selectAll("text")  
