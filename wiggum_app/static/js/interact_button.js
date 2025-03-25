@@ -697,7 +697,7 @@ const interactiveLevelButton = (selection, props) => {
 								//	addWidth: firstLevelParentVLWidth + firstLevelChildrenVLWidth, 
 								//	level: 'level1'});
 							}
-						} else if (trendType == 'rank_trend') {
+						} else if (trendType == 'rank_trend'|| trendType == 'sum_rank') {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth, 
@@ -796,7 +796,7 @@ const interactiveLevelButton = (selection, props) => {
 								});	
 
 							}
-						} else if (trendType == 'rank_trend') {
+						} else if (trendType == 'rank_trend' || trendType == 'sum_rank') {
 
 
 							if (level == "level3") {
@@ -1755,7 +1755,7 @@ const interactiveLevelButton = (selection, props) => {
 								var chart_data;
 								if (trendType == 'pearson_corr') {
 									chart_data = csvData;
-								} else if (trendType == 'rank_trend') {
+								} else if (trendType == 'rank_trend' || trendType == 'sum_rank') {
 
 									// Aggregate data
 									var aggResultArray = d3.nest()

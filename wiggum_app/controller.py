@@ -65,7 +65,8 @@ def explore():
                 # Get details for subgroup level
                 # TODO fix the hard code
                 if ('rank_trend' in list(trend_type_list)) or \
-                    ('percentage_rank' in list(trend_type_list)):
+                    ('percentage_rank' in list(trend_type_list)) or \
+                    ('sum_rank' in list(trend_type_list)):
                     rank_trend_detail_dict = models.getAllRankTrendDetail(
                                                 labeled_df_setup, trend_type_list)
                 else:

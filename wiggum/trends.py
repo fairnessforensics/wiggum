@@ -65,6 +65,11 @@ class Percentage_Rank_Trend(PercentageRankTrend,PercentageRank,Trend):
     name = 'percentage_rank'
     display_name = 'Rank by Percentage'    
 
+class Sum_Rank_Trend(SumRankTrend,WeightedRank,Trend):
+    my_stat = lambda self, d,m: sum(d,m)
+    name = 'sum_rank'
+    display_name = 'Rank by Sum' 
+
 class Continuous_Pearson(CorrelationTrend,ContinuousRegression,Trend):
     name = 'pearson_corr'
     corrtype = 'pearson'
@@ -114,8 +119,9 @@ class Binary_Median_Rank_Trend(StatBinRankTrend,BinaryWeightedRank,Trend):
 
 all_trend_types = {'pearson_corr':All_Pearson,
                     'spearman_corr': Spearman_Correlation,
+                    'sum_rank':Sum_Rank_Trend,   
                     'rank_trend':Mean_Rank_Trend,
-                    'percentage_rank':Percentage_Rank_Trend,                    
+                    'percentage_rank':Percentage_Rank_Trend,   
                     'lin_reg':Linear_Trend,
                     'binary_rank':Binary_Mean_Rank_Trend,
                     'binary_sign':Binary_Pearson_Trend,

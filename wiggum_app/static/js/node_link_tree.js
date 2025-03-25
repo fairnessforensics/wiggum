@@ -190,7 +190,7 @@ function drawNodeLinkTree(data) {
 		chartList.push('histogram')
 	} 
 
-	if (agg_data.trend_type == 'rank_trend') {
+	if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
 		levelLabels.push('\uf080');
 		chartList.push('coloredbarchart')
 
@@ -234,13 +234,13 @@ function drawNodeLinkTree(data) {
 	// TODO sovle hard code addWidthArray, height
 	if (agg_data.trend_type == 'pearson_corr') {
 		addWidthArray = [120, 160];
-	} else if (agg_data.trend_type == 'rank_trend') {
+	} else if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
 		addWidthArray = [120, 160];
 	}
 
 	if (agg_data.trend_type == 'pearson_corr') {
 		addHeightArray = [100];
-	} else if (agg_data.trend_type == 'rank_trend') {
+	} else if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
 		addHeightArray = [60, 100, 220];
 	}
 
@@ -314,7 +314,7 @@ function drawNodeLinkTree(data) {
 			level: 'level1'
 		});
 
-		if (agg_data.trend_type == 'rank_trend') {
+		if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
 			// Visual Tech 1: colored bar chart
 			var detail_dict = data.rank_trend_detail_dict.find(obj => {
 				return obj.dependent === keyArray[0]

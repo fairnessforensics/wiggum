@@ -434,7 +434,8 @@ def getAllRankTrendDetail(labeled_df, trend_type_list):
 
     for trend_type in trend_type_list:  
         if (trend_type == 'rank_trend') or \
-                (trend_type == 'percentage_rank'):   
+                (trend_type == 'percentage_rank') or \
+                (trend_type == 'sum_rank'):   
             # get index for rank trend
             trend_idx = trend_idx_dict.get(trend_type)
 
