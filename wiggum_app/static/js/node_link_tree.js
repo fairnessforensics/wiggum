@@ -855,11 +855,13 @@ function drawNodeLinkTree(data) {
 		});		
 
 		// Visual Tech 3: 2d scatter plot	
-		var xColumn = 'mean_subgroup_trend_strength';
+		// var xColumn = 'mean_subgroup_trend_strength';
+		var xColumn = 'max_distance';
 
 		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
 			xValue: d => d[xColumn],
-			xAxisLabel: 'The Mean of Winning Margins',
+			//xAxisLabel: 'The Mean of Winning Margins',
+			xAxisLabel: 'The Maximum Distance',
 			yValue: d => d[yColumn],
 			yAxisLabel: 'The Mean of Distances',
 			circleRadius: secondLevelCircleRadius,
@@ -1407,7 +1409,6 @@ function drawNodeLinkTree(data) {
 
 				const xValue = chart_data => chart_data['value'];
 				var x_value_max = d3.max(chart_data, xValue);
-				console.log(bar_chart_data);
 
 				thirdLevelG1_visual_alter_barchart.call(barChart, {
 					chart_data: bar_chart_data,
