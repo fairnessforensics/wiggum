@@ -765,7 +765,7 @@ class SumRankTrend():
 
                 # TODO Using zero as the strength for percentage rank trend
                 # create row
-                rank_res.append([rankfeat,statfeat,ordered_rank_feat,0,
+                rank_res.append([rankfeat,statfeat,ordered_rank_feat,0.0,
                                         groupby_lev])
 
 
