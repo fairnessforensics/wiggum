@@ -59,7 +59,7 @@ function drawNodeLinkTree(data) {
 	var height = 2600;
 	// TODO width for big state
 	//var margin = {top: 50, right: 420, bottom: 10, left: 60};
-	var margin = {top: 100, right: 1800, bottom: 30, left: 60};
+	var margin = {top: 110, right: 1800, bottom: 30, left: 60};
 
 	var innerWidth = width - margin.left - margin.right;
 	//var innerHeight = height - margin.top - margin.bottom;
@@ -555,7 +555,7 @@ function drawNodeLinkTree(data) {
 				myColor: countryColor,
 				mark_shape: 'rectangle',
 				mark_width: 8,
-				mark_height: 3,
+				mark_height: 2,
 				mark_opacity: 0.9,
 				rowIndex: 'row' + rowIndex,
 				level: 'level1'
@@ -1344,6 +1344,8 @@ function drawNodeLinkTree(data) {
 
 				chart_height = d.children[d.children.length - 1].x - d.children[0].x;
 
+				// TODO design if chart height is larger than the branch height
+				/*
 				if (chart_height > (treeHeight / num_charts)) {
 					largerFlag = true;
 					var first_node_y = d.children[0].x;
@@ -1363,6 +1365,11 @@ function drawNodeLinkTree(data) {
 					relative_translate_y = -rectHeight - paddingOuter/2;
 					chart_height = height + 2 * rectHeight + paddingOuter;
 				}
+				*/
+
+				var paddingOuter = 20;
+				relative_translate_y = -rectHeight - paddingOuter/2;
+				chart_height = height + 2 * rectHeight + paddingOuter;
 
 				// Visual Tech 2: map
 				var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
@@ -1497,7 +1504,9 @@ function drawNodeLinkTree(data) {
 					return item !== independent && item !== splitby
 				})
 
-				var first_candidate = candidate_context_vars[0];
+				//var first_candidate = candidate_context_vars[0];
+				// TODO hard code issue
+				var first_candidate = 'year';
 
 				var num_small_multiples = d.data.values.length;
 				var small_multiple_position = 0;
@@ -1766,7 +1775,7 @@ function drawNodeLinkTree(data) {
 						myColor: countryColor,
 						mark_shape: 'rectangle',
 						mark_width: 8,
-						mark_height: 3,
+						mark_height: 2,
 						mark_opacity: 0.9,
 						level: 'level3'
 					});
