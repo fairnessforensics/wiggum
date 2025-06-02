@@ -3,17 +3,20 @@ const adjustTotalWidth = (props) => {
         firstLevelWidth, 
 		firstLevelParentVLWidth,
         addTotalWidthVL,
+        thirdLevelParentVLWidth,
         resetFlag
 	} = props;
 
     adjustWidth({
         firstLevelWidth: firstLevelWidth, 
         addWidth: firstLevelParentVLWidth, 
+        thirdLevelParentVLWidth: thirdLevelParentVLWidth,
         level: 'level1'}); 
 
     adjustWidth({
         firstLevelWidth: firstLevelWidth, 
         addWidth: addTotalWidthVL, 
+        thirdLevelParentVLWidth: thirdLevelParentVLWidth,
         level: 'level2'}); 
 
     // Reset the x position for tree node in level 1
@@ -29,6 +32,7 @@ const adjustWidth = (props) => {
 	const {
         firstLevelWidth, 
 		addWidth,
+        thirdLevelParentVLWidth,
         level
 	} = props;
 
@@ -53,7 +57,7 @@ const adjustWidth = (props) => {
         d3.selectAll('.node.level-3')
             .transition()
             .attr("transform", function(d,i) { 
-                var postion_x = d.y + firstLevelWidth + addWidth;
+                var postion_x = d.y + firstLevelWidth + addWidth + thirdLevelParentVLWidth;
                 return "translate(" + postion_x + "," + d.x + ")"; });
     }
 

@@ -228,8 +228,6 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 
 		if (side == "children") {
 			// Duplicate the axis labels
-			console.log(x_position);
-			console.log(childrenVLWidth);
 			g.append("g")
 				.attr("class", level + " " + side + " genericheatmap virtuallayer y axis")
 				.attr("transform", "translate(" + (x_position - childrenVLWidth - 10) + ","+ 0 +")")

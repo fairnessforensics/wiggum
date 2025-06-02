@@ -57,8 +57,6 @@ const interactiveLevelButton = (selection, props) => {
 									.style('visibility', 'hidden');
 							}
 
-
-
 							// Reset left rect
 							d3.selectAll('.'+ level +'.list.cell')
 								.attr("y", -10)
@@ -74,6 +72,17 @@ const interactiveLevelButton = (selection, props) => {
 
 							// Level 1 keep both view and identity
 							if (level == "level1") {
+								// Reset first level width
+								firstLevelWidth = firstLevelWidth - firstLevelParentVLWidth
+														- firstLevelChildrenVLWidth;
+
+								// Adjust first level width
+								adjustWidth({
+									firstLevelWidth: firstLevelWidth, 
+									addWidth: 0, 
+									thirdLevelParentVLWidth: thirdLevelParentVLWidth,
+									level: 'level1'});
+
 								// reset first level VL width 
 								firstLevelParentVLWidth = 0;
 								firstLevelChildrenVLWidth = 0;
@@ -656,7 +665,15 @@ const interactiveLevelButton = (selection, props) => {
 
 					// Reset
 					if (level == 'level1') {
+						firstLevelWidth = firstLevelWidth - firstLevelParentVLWidth;
 						firstLevelParentVLWidth = 0;
+
+						// Adjust first level width
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: 0, 
+							thirdLevelParentVLWidth: thirdLevelParentVLWidth,
+							level: 'level1'});
 					}
 
 					d3.selectAll('.'+ level +'.list.cell')
@@ -668,17 +685,24 @@ const interactiveLevelButton = (selection, props) => {
 						.attr("height", 20);
 
 					// Remove existing virtual layer
-					d3.selectAll('.parent.virtuallayer').remove();
-
-					// Adjust first level width
-					adjustWidth({
-						firstLevelWidth: firstLevelWidth, 
-						addWidth: 0, 
-						level: 'level1'});
+					d3.selectAll('.' + level + '.parent.virtuallayer').remove();
 					
 					// Reset third level
 					if (level == 'level3') {
 						thirdLevelParentVLWidth = 0;
+
+						// Adjust third level
+						d3.selectAll('.node.level-3')
+							.transition()
+							.attr("transform", function(d,i) { 
+								var postion_x = d.y + firstLevelWidth 
+												+ secondLevelWidth + thirdLevelParentVLWidth;
+								return "translate(" + postion_x + "," + d.x + ")"; });	
+
+						// Reset the position by overwriting
+						d3.selectAll('.' + level + '.list.rect, ' + '.' + level + '.list.text')
+								.attr("transform", function(d,i) { 
+								return "translate(" + 0 + "," + 0 + ")"; });
 					}
 
 					d3.selectAll('.'+ level +'.list.rect')
@@ -688,10 +712,11 @@ const interactiveLevelButton = (selection, props) => {
 						.transition()
 						.style('visibility', 'hidden');	
 
-					d3.selectAll('.' + level + '.list.rect, ' + '.' + level + '.list.text')
+					/*d3.selectAll('.' + level + '.list.rect, ' + '.' + level + '.list.text')
 						.attr("transform", function(d,i) { 
 						return "translate(" + firstLevelWidth + "," + 0 + ")"; });
-
+*/
+					/*
 					if (i == 0) {
 						var addWidth4Lable = 0;
 
@@ -715,7 +740,7 @@ const interactiveLevelButton = (selection, props) => {
 								//	addWidth: firstLevelParentVLWidth + firstLevelChildrenVLWidth, 
 								//	level: 'level1'});
 							}
-						} else if (trendType == 'rank_trend'|| trendType == 'sum_rank') {
+						} else if (trendType == 'rank_trend') {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth, 
@@ -749,7 +774,7 @@ const interactiveLevelButton = (selection, props) => {
 							.attr('transform', `translate(${0 - addWidth4Lable},${0})`);
 							//.attr("x", 30);
 					}
-
+					
 					if (i == 1) {
 						if (trendType == 'pearson_corr') {
 							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
@@ -814,7 +839,7 @@ const interactiveLevelButton = (selection, props) => {
 								});	
 
 							}
-						} else if (trendType == 'rank_trend' || trendType == 'sum_rank') {
+						} else if (trendType == 'rank_trend') {
 
 
 							if (level == "level3") {
@@ -1026,13 +1051,26 @@ const interactiveLevelButton = (selection, props) => {
 							}
 						}
 					}
+					*/
 
 					// Start to use selectedChart=================================>
 					// Common VL option for all charts
 					if (i == 0) {
+						if (level == "level1") {
+							if (d3.select('.level1.genericheatmap').style("visibility") == 'visible') {
+								d3.selectAll('.'+level + '.genericheatmap.children.text')
+									.transition()
+									.style('visibility', 'visible');
+
+								d3.selectAll('.'+ level +'.list.cell')
+									.transition()
+									.attr('transform', `translate(${0},${0})`);
+							}
+						}
+
 						d3.selectAll('.'+ level +'.' + selectedChart + '.children.text')
 							.transition()
-							.attr("x", -firstLevelParentVLWidth)
+							.attr("x", -firstLevelParentVLWidth);
 					}
 
 					if (i == 1) {
@@ -1043,6 +1081,7 @@ const interactiveLevelButton = (selection, props) => {
 						adjustWidth({
 							firstLevelWidth: firstLevelWidth, 
 							addWidth: firstLevelChildrenVLWidth, 
+							thirdLevelParentVLWidth: thirdLevelParentVLWidth,
 							level: 'level2'});
 
 						d3.selectAll('.'+ level +'.list.cell')
@@ -1233,6 +1272,7 @@ const interactiveLevelButton = (selection, props) => {
 								firstLevelWidth: firstLevelWidth, 
 								firstLevelParentVLWidth: firstLevelParentVLWidth,
 								addTotalWidthVL: addTotalWidthVL,
+								thirdLevelParentVLWidth: thirdLevelParentVLWidth,
 								resetFlag: true
 							})
 						}
@@ -1264,7 +1304,15 @@ const interactiveLevelButton = (selection, props) => {
 
 					// Reset
 					if (level == 'level1') {
+						firstLevelWidth = firstLevelWidth - firstLevelChildrenVLWidth;
 						firstLevelChildrenVLWidth = 0;
+
+						// Adjust first level width
+						adjustWidth({
+							firstLevelWidth: firstLevelWidth, 
+							addWidth: 0, 
+							thirdLevelParentVLWidth: thirdLevelParentVLWidth,
+							level: 'level2'});
 					}
 
 					d3.selectAll('.' + level + '.' + selectedChart + '.initialvirtuallayer.children.rect')
@@ -1279,19 +1327,7 @@ const interactiveLevelButton = (selection, props) => {
 					d3.selectAll('.children.virtuallayer').remove();
 					d3.selectAll('.aux.virtuallayer').remove();
 
-					// Adjust first level width
-					adjustWidth({
-						firstLevelWidth: firstLevelWidth, 
-						addWidth: 0, 
-						level: 'level2'});
-
-
 					if (i == 0) {
-						adjustWidth({
-							firstLevelWidth: firstLevelWidth, 
-							addWidth: firstLevelParentVLWidth, 
-							level: 'level1'});
-
 						adjust_position = -50;
 
 						d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
@@ -1300,6 +1336,7 @@ const interactiveLevelButton = (selection, props) => {
 							.attr('transform', `translate(${adjust_position},${newViewHeight/2})`);
 					}
 
+					/*
 					if (i == 1) {
 						if (trendType == 'pearson_corr') {
 							if (d3.select('.level1.doublehistogram').style("visibility") == 'visible'
@@ -1721,13 +1758,14 @@ const interactiveLevelButton = (selection, props) => {
 							});	
 						}
 					}
-
+					*/
 					// Start to use selectedChart=================================>
 					// Common VL option for all charts
 					if (i == 1) {
 						adjustWidth({
 							firstLevelWidth: firstLevelWidth, 
 							addWidth: firstLevelParentVLWidth, 
+							thirdLevelParentVLWidth: thirdLevelParentVLWidth,
 							level: 'level1'});
 
 						d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
@@ -1750,6 +1788,7 @@ const interactiveLevelButton = (selection, props) => {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth, 
+								thirdLevelParentVLWidth: thirdLevelParentVLWidth,
 								level: 'level2'});							
 
 							// Reset the x position for child nodes in level 1 Virtual Layer
@@ -1920,12 +1959,13 @@ const interactiveLevelButton = (selection, props) => {
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
 								addWidth: firstLevelChildrenVLWidth,  
+								thirdLevelParentVLWidth: thirdLevelParentVLWidth,
 								level: 'level2'});
 
 							// Hide node
 							d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
 								.transition().style('visibility', "hidden");
-							console.log(firstLevelParentVLWidth);
+
 							levelG.call(generic_heatmap_virtual_layer, {
 								x_position: firstLevelWidth - firstLevelParentVLWidth + firstLevelChildrenVLWidth,
 								height: newViewHeight,
