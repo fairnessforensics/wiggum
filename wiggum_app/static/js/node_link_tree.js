@@ -2259,6 +2259,7 @@ function drawNodeLinkTree(data) {
 		.style("font-size", "15px") 
 		.text("Distance / Mean Distance");	
 
+/*		
 	svg.append("text")
 		.attr("x", -margin.left)
 		.attr("y", 265)
@@ -2277,6 +2278,7 @@ function drawNodeLinkTree(data) {
 //		.text("If rankings are reversed, distance = 1.");	
 		.text("If patterns are reversed, distance = 1.");	
 
+
 	svg.append("text")
 		.attr("x", -margin.left)
 		.attr("y", 265)
@@ -2291,7 +2293,7 @@ function drawNodeLinkTree(data) {
 		.attr("dy", "3.4em")
 		.attr("text-anchor", "start")  
 		.style("font-size", "15px") 		
-		.text("leaf nodes are {0, 1}.");	
+		.text("leaf nodes are [0, 1].");	
 		
 	svg.append("text")
 		.attr("x", -margin.left)
@@ -2315,8 +2317,9 @@ function drawNodeLinkTree(data) {
 		.attr("dy", "6.4em")
 		.attr("text-anchor", "start")  
 		.style("font-size", "15px") 		
-		.text("in the range of [0, 1].");			
-}
+		.text("in the range of [0, 1].");		
+*/	
+} 
 
 function getMatrixIndex(details, dep, indep) {
 	var r;
