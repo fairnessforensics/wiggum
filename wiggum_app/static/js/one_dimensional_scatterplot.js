@@ -228,9 +228,12 @@ const scatterPlot = (selection, props) => {
 		yScale = d3.scaleLog()
 						.domain(d3.extent(chart_data, yValue)) 
 						.range([chartHeight, 0]);
-
+		
+		yScale.nice();
+		
 		yAxis = d3.axisLeft(yScale)
 					.ticks(y_axis_tick_num, ",.0e")  
+					//.tickFormat(d3.format(".2s"));
 					.tickFormat(d3.format(",.0e")); 
 	} else {
 		yScale = d3.scaleLinear();

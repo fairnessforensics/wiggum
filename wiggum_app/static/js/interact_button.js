@@ -1,6 +1,16 @@
 // Global variable
 var level3_state;
 
+// Initiate the first level virtual layer width
+var firstLevelWidth = 0;
+var firstLevelParentVLWidth = 0;
+var firstLevelChildrenVLWidth = 0;
+var firstLevelViewVLWidth = 0;
+// Initiate second level virtual layer width
+var secondLevelWidth = 0;
+// Initiate third level virtual layer width
+var thirdLevelParentVLWidth = 0;
+
 const interactiveLevelButton = (selection, props) => {
 	const {
 		levelLabels,
@@ -47,9 +57,7 @@ const interactiveLevelButton = (selection, props) => {
 									.style('visibility', 'hidden');
 							}
 
-							// reset VL width 
-							firstLevelParentVLWidth = 0;
-							firstLevelChildrenVLWidth = 0;
+
 
 							// Reset left rect
 							d3.selectAll('.'+ level +'.list.cell')
@@ -66,6 +74,10 @@ const interactiveLevelButton = (selection, props) => {
 
 							// Level 1 keep both view and identity
 							if (level == "level1") {
+								// reset first level VL width 
+								firstLevelParentVLWidth = 0;
+								firstLevelChildrenVLWidth = 0;
+
 								// set default position for list text
 								// TODO list text alignment
 								if (i == 3 || i == 4) {
@@ -95,31 +107,32 @@ const interactiveLevelButton = (selection, props) => {
 										.style('visibility', 'visible');											
 									} 
 										
-									var addWidth = 0;
+									firstLevelViewVLWidth = 0;
 
 									if (i == 2) {
-										addWidth = addWidthArray[0];
+										firstLevelViewVLWidth = addWidthArray[0];
 									} else if (selectedChart == 'coloredbarchart' ) {
-										addWidth = addWidthArray[1] + 70;
+										firstLevelViewVLWidth = addWidthArray[1] + 70;
 									} else if (selectedChart == 'scatterplot') {
 										// Scatterplot
-										addWidth = addWidthArray[1] + 110;
+										firstLevelViewVLWidth = addWidthArray[1] + 110;
 									} else if (selectedChart == 'genericheatmap' ) {
-										addWidth = addWidthArray[1] + 70;
+										firstLevelViewVLWidth = addWidthArray[1] + 70;
 									} else if (selectedChart == 'smscatterplot_industry' ) {
-										addWidth = addWidthArray[1] + 260;
+										firstLevelViewVLWidth = addWidthArray[1] + 260;
 								 	} else if (selectedChart == 'scatterplot_industry') {
-										addWidth = addWidthArray[1] + 310;
+										firstLevelViewVLWidth = addWidthArray[1] + 310;
 									} else if (selectedChart == 'scatterplot_industry_bounded') {
-											addWidth = addWidthArray[1] + 280;
+										firstLevelViewVLWidth = addWidthArray[1] + 280;
 									} else if (i == 5 || i == 6) {
-										addWidth = addWidthArray[1];
+										firstLevelViewVLWidth = addWidthArray[1];
 									}
 
-									var newWidth = width + addWidth + secondLevelWidth + thirdLevelParentVLWidth;
+									var newWidth = width + firstLevelViewVLWidth
+													 + secondLevelWidth + thirdLevelParentVLWidth;
 									
 									// Change the global variable firstLevelWidth
-									firstLevelWidth = addWidth;
+									firstLevelWidth = firstLevelViewVLWidth;
 
 									// Change SVG size
 									d3.select('#node_link_tree svg')
@@ -450,7 +463,7 @@ const interactiveLevelButton = (selection, props) => {
 										.transition()
 										.attr("transform", function(d,i) { 
 											var parentKey = d.parent.parent.data.key;
-											addWidth = addWidthArray.find( ({ key }) => key === parentKey );
+											var addWidth = addWidthArray.find( ({ key }) => key === parentKey );
 
 											var postion_x = d.y + addWidth.value + firstLevelWidth;
 											return "translate(" + postion_x + "," + d.x + ")"; });											
@@ -466,7 +479,7 @@ const interactiveLevelButton = (selection, props) => {
 									d3.selectAll('.path.level2')
 										.each(function (d) {
 											var parentKey = d.source.parent.data.key;
-											addWidth = addWidthArray.find( ({ key }) => key === parentKey );
+											var addWidth = addWidthArray.find( ({ key }) => key === parentKey );
 
 											d3.select(this)
 												.attr("transform",  "translate(" + (addWidth.value + firstLevelWidth) + ", 0)")
@@ -642,7 +655,9 @@ const interactiveLevelButton = (selection, props) => {
 					updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
 					// Reset
-					firstLevelParentVLWidth = 0;
+					if (level == 'level1') {
+						firstLevelParentVLWidth = 0;
+					}
 
 					d3.selectAll('.'+ level +'.list.cell')
 						.transition().style('visibility', "visible");
@@ -662,7 +677,10 @@ const interactiveLevelButton = (selection, props) => {
 						level: 'level1'});
 					
 					// Reset third level
-					thirdLevelParentVLWidth = 0;
+					if (level == 'level3') {
+						thirdLevelParentVLWidth = 0;
+					}
+
 					d3.selectAll('.'+ level +'.list.rect')
 						.transition().style('visibility', "visible");
 
@@ -672,7 +690,7 @@ const interactiveLevelButton = (selection, props) => {
 
 					d3.selectAll('.' + level + '.list.rect, ' + '.' + level + '.list.text')
 						.attr("transform", function(d,i) { 
-						return "translate(" + 0 + "," + 0 + ")"; });
+						return "translate(" + firstLevelWidth + "," + 0 + ")"; });
 
 					if (i == 0) {
 						var addWidth4Lable = 0;
@@ -1218,6 +1236,8 @@ const interactiveLevelButton = (selection, props) => {
 								resetFlag: true
 							})
 						}
+
+						firstLevelWidth += firstLevelParentVLWidth;
 					}
 				});
 
@@ -1243,7 +1263,9 @@ const interactiveLevelButton = (selection, props) => {
 					updateButtonColors(d3.select(this), d3.select(this.parentNode));
 
 					// Reset
-					firstLevelChildrenVLWidth = 0;
+					if (level == 'level1') {
+						firstLevelChildrenVLWidth = 0;
+					}
 
 					d3.selectAll('.' + level + '.' + selectedChart + '.initialvirtuallayer.children.rect')
 						.transition().style('visibility', "visible");
@@ -1724,12 +1746,10 @@ const interactiveLevelButton = (selection, props) => {
 							if (i == 5) {
 								firstLevelChildrenVLWidth = 90;
 							}
-
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 	
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
-								addWidth: addTotalWidthVL, 
+								addWidth: firstLevelChildrenVLWidth, 
 								level: 'level2'});							
 
 							// Reset the x position for child nodes in level 1 Virtual Layer
@@ -1785,14 +1805,20 @@ const interactiveLevelButton = (selection, props) => {
 
 								// Duplicate y axis
 								// TODO Move to axis.js
-								const yScale = d3.scaleLinear();
+								//const yScale = d3.scaleLinear();
 								// Insert padding so that points do not overlap with y or x axis
-								yScale.domain(padLinear(d3.extent(chart_data, d => d[yLable]), 0.05));
+								//yScale.domain(padLinear(d3.extent(chart_data, d => d[yLable]), 0.05));
+								yScale = d3.scaleLog()
+									.domain(d3.extent(chart_data, d => d[yLable])); 
+								
 								yScale.range([newViewHeight, 0]);
 								yScale.nice();
 
-								const yAxis = d3.axisRight(yScale).ticks(5);
-								yAxis.tickFormat(d3.format(".2s"));
+								// TODO hardcode
+								//const yAxis = d3.axisRight(yScale).ticks(5);
+								//yAxis.tickFormat(d3.format(".2s"));
+								const yAxis = d3.axisRight(yScale).ticks(3);
+								yAxis.tickFormat(d3.format(".0e"));
 		
 								selectionLevelG.append("g")
 									.attr("class", level + " scatterplot virtuallayer y axis children")
@@ -1890,19 +1916,18 @@ const interactiveLevelButton = (selection, props) => {
 					if (selectedChart == 'genericheatmap') {
 						if (i == 2) {
 							firstLevelChildrenVLWidth = 40 + 20;
-							var addTotalWidthVL = firstLevelParentVLWidth + firstLevelChildrenVLWidth;
 
 							adjustWidth({
 								firstLevelWidth: firstLevelWidth, 
-								addWidth: addTotalWidthVL,  
+								addWidth: firstLevelChildrenVLWidth,  
 								level: 'level2'});
 
 							// Hide node
 							d3.selectAll('.' + level + '.initialvirtuallayer.children.rect')
 								.transition().style('visibility', "hidden");
-
+							console.log(firstLevelParentVLWidth);
 							levelG.call(generic_heatmap_virtual_layer, {
-								x_position: firstLevelWidth + firstLevelChildrenVLWidth,
+								x_position: firstLevelWidth - firstLevelParentVLWidth + firstLevelChildrenVLWidth,
 								height: newViewHeight,
 								chart_data: csvData,
 								offset_flag: true,
@@ -1912,6 +1937,11 @@ const interactiveLevelButton = (selection, props) => {
 								level: 'level1'
 							});	
 						}
+					}
+
+					// Common code
+					if (level == 'level1') {
+						firstLevelWidth += firstLevelChildrenVLWidth;
 					}
 				});
 

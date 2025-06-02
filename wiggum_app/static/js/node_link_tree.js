@@ -33,13 +33,6 @@ var countryColor = d3.scaleOrdinal()
 				.range(["#1f78b4","#e31a1c","#ff7f00","#6a3d9a","#b15928",
 						"#a6cee3","#fb9a99","#fdbf6f","#cab2d6","#ffff99"]);
 
-// initiate the first and second level width
-var firstLevelWidth = 0;
-var secondLevelWidth = 0;
-var firstLevelParentVLWidth = 0;
-var firstLevelChildrenVLWidth = 0;
-var thirdLevelParentVLWidth = 0;
-
 /**
  * Draw node link tree
  * 
@@ -167,6 +160,7 @@ function drawNodeLinkTree(data) {
 		colLabels : colLabels,		
 		height: matrixHeight,	
 		subLabel  : 'Pattern',
+		//subLabel  : '',
 		level: 'level0'
 	});
 
@@ -419,6 +413,8 @@ function drawNodeLinkTree(data) {
 				relative_translate_y: -100,
 				childrenIdentityFlag: true,
 				smallMultipleFlag: false,
+				y_axis_scale: 'scaleLog', 
+				y_axis_tick_num: 3,			
 				rectWidth: rectWidth,
 				rectHeight: rectHeight,
 				identity_data: identity_data,
@@ -2269,7 +2265,8 @@ function drawNodeLinkTree(data) {
 		.attr("dy", "0em")
 		.attr("text-anchor", "start")  
 		.style("font-size", "15px") 
-		.text("If same pattern, distance = 0.");	
+//		.text("If rankings match, distance = 0.");	
+		.text("If patterns are the same, distance = 0.");			
 		
 	svg.append("text")
 		.attr("x", -margin.left)
@@ -2277,8 +2274,9 @@ function drawNodeLinkTree(data) {
 		.attr("dy", "1.2em")
 		.attr("text-anchor", "start")  
 		.style("font-size", "15px") 
-		.text("If reverse pattern, distance = 1.");	
-		
+//		.text("If rankings are reversed, distance = 1.");	
+		.text("If patterns are reversed, distance = 1.");	
+
 	svg.append("text")
 		.attr("x", -margin.left)
 		.attr("y", 265)
