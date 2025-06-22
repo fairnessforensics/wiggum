@@ -89,5 +89,9 @@ const small_multiple_scatterplot = (selection, props) => {
 		});
 		first_small_multiple_flag = false;
 	}
+
+	// Adjust children rect y postion
+	d3.selectAll('.level1.virtuallayer.children.rect')
+		.attr('transform', `translate(${-50},${offset_y})`);
 };
 

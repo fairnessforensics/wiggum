@@ -276,7 +276,7 @@ function resetVirtualLayering(level) {
 	firstLevelChildrenVLWidth = 0;
 
 	// Reset right rect
-	d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
+	d3.selectAll('.'+ level +'.virtuallayer.children.rect')
 			.attr("y", -10)
 			.attr("height", 20);
 

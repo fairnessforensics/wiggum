@@ -300,7 +300,8 @@ const coloredBarChart = (selection, props) => {
 	//var innerHeight = height - margin.top  - margin.bottom;
 
 	const g = selection.append('g')
-	  .attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
+		.attr("class", level + " view virtuallayer coloredbarchart")
+	  	.attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
 
 	var xAxisG = g.append("g")
 	  .attr("class", level + " coloredbarchart x axis")
@@ -382,7 +383,7 @@ const coloredBarChart = (selection, props) => {
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " coloredbarchart initialvirtuallayer children rect " 
+			.attr("class", d => level + " coloredbarchart virtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;
@@ -409,7 +410,7 @@ const coloredBarChart = (selection, props) => {
 			.data(identity_data)
 			.enter()    		
 			.append("text")	   
-			.attr("class", d => level + " coloredbarchart left text " 
+			.attr("class", d => level + " coloredbarchart children text " 
 						+ d.dependent + " " + d.independent)	
 			.attr("transform", function(d) {
 				var y_position = height/2;

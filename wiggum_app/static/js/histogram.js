@@ -101,7 +101,7 @@ const histogram = (selection, props) => {
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " histogram initialvirtuallayer children rect " 
+			.attr("class", d => level + " histogram virtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2 - offset_y;
@@ -349,7 +349,7 @@ const doubleHistogram = (selection, props) => {
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " doublehistogram initialvirtuallayer children rect " 
+			.attr("class", d => level + " doublehistogram virtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;

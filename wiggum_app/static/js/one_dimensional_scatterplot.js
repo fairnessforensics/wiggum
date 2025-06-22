@@ -215,7 +215,7 @@ const scatterPlot = (selection, props) => {
 	}
 
 	const g = selection.append('g')
-				.attr("class", level + " " + chart_name)
+				.attr("class", level + " view virtuallayer " + chart_name)
 	  			.attr('transform', `translate(${margin.left},${relative_translate_y})`);
 
 	var chartHeight = height - margin.bottom;
@@ -616,7 +616,7 @@ const scatterPlot = (selection, props) => {
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " " + chart_name + " initialvirtuallayer children rect " 
+			.attr("class", d => level + " " + chart_name + " virtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = chartHeight/2;

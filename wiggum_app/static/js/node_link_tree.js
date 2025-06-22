@@ -42,8 +42,11 @@ var countryColor = d3.scaleOrdinal()
 function drawNodeLinkTree(data) {
 
     var result_table = JSON.parse(data.result_df);
+
+	// =================TODO remove=======================>
 	var contextual_cat_vars = data.contextual_cat_vars;
 	var contextual_ord_vars = data.contextual_ord_vars;
+	// <=================TODO remove=======================
 
 	// TODO width for big state
 	//var width = 1150;
@@ -166,41 +169,41 @@ function drawNodeLinkTree(data) {
 
 	// First level - aggregate pattern
 	// Generate interactive buttons
-	//var levelLabels= ['\uf03a','\uf009','\uf00a', '\uf080'];
+	//var viewLabels= ['\uf03a','\uf009','\uf00a', '\uf080'];
 	//var chartList = ['list', 'heatmap', 'heatmaplist', 'barchart'];
-	var levelLabels= ['\uf03a','\uf009','\uf00a'];
+	var viewLabels= ['\uf03a','\uf009','\uf00a'];
 	var chartList = ['list', 'heatmap', 'heatmaplist'];
 	if (agg_data.trend_type == 'pearson_corr') {
-		levelLabels.push('SP2');
+		viewLabels.push('SP2');
 		chartList.push('scatterplot')
 
-		levelLabels.push('\uf080');
+		viewLabels.push('\uf080');
 		chartList.push('doublehistogram')
 
-		levelLabels.push('HM');
+		viewLabels.push('HM');
 		chartList.push('heatmapdensity')
 		
-		levelLabels.push('H2');
+		viewLabels.push('H2');
 		chartList.push('histogram')
 	} 
 
 	if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
-		levelLabels.push('\uf080');
+		viewLabels.push('\uf080');
 		chartList.push('coloredbarchart')
 
-		levelLabels.push('HM');
+		viewLabels.push('HM');
 		chartList.push('genericheatmap')
 
-		levelLabels.push('SP2');
+		viewLabels.push('SP1');
 		chartList.push('scatterplot')
 
-		levelLabels.push('SM2');
+		viewLabels.push('SM2');
 		chartList.push('smscatterplot_industry')
 
-		levelLabels.push('SP3');
+		viewLabels.push('SP2');
 		chartList.push('scatterplot_industry')
 
-		levelLabels.push('SP4');
+		viewLabels.push('SP3');
 		chartList.push('scatterplot_industry_bounded')
 
 	}
@@ -240,7 +243,7 @@ function drawNodeLinkTree(data) {
 
 	var height = 100;
 	firstLevelButtons.call(interactiveLevelButton, {
-		levelLabels: levelLabels,
+		viewLabels: viewLabels,
 		leftIdentityLabels: leftIdentityLabels,
 		rightIdentityLabels: rightIdentityLabels,
 		levelG: firstLevelG,
@@ -252,10 +255,13 @@ function drawNodeLinkTree(data) {
 		addHeightArray: addHeightArray,
 		treeHeight: treeHeight + margin.top + margin.bottom,
 		matrix_data: matrix_data,
+		rowLabels : rowLabels,
+		colLabels : colLabels,	
+		matrixHeight: matrixHeight,
 		trendType: agg_data.trend_type
 	});
 
-	// Visual Tech 1: Tree nodes	
+	// Visual Tech 0: Tree nodes	
 	var rectWidth = 20;
 	var rectHeight = 20;
 	firstLevelG.append('rect')
@@ -286,8 +292,11 @@ function drawNodeLinkTree(data) {
 			return `The mean distance is ${d3.format(".3f")(value)}.`
 		});
 
-	// Visual Alternatives
+	// Store CSV Data
 	csvData = JSON.parse(data.df.replace(/\bNaN\b/g, "null"));
+
+	// TODO: Get rid of trend type, merge pearson_corr code to interact_button_view.js
+	/* ==================================TODO Start=============================================>
 	var rowIndex = 0;
 	firstLevelG.each(function (d) {
 
@@ -296,306 +305,12 @@ function drawNodeLinkTree(data) {
 		// Visual Tech 2: Heatmap
 		var container = d3.select(this);
 
-		drawHeatmap({
-			container : container,
-			data	  : matrix_data,
-			rowLabels : rowLabels,
-			colLabels : colLabels,			
-			subLabel  : '',
-			selDep: keyArray[0],
-			selIndep: keyArray[1],
-			height: matrixHeight,	
-			level: 'level1'
-		});
 
-		if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
-			// Visual Tech 1: colored bar chart
-			var detail_dict = data.rank_trend_detail_dict.find(obj => {
-				return obj.dependent === keyArray[0]
-						&& obj.independent === keyArray[1]
-			});
+		// TODO: Get rid of trend type, merge pearson_corr code to interact_button_view.js
+		//if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {			
+			// Code has been moved to interact_button_view.js 
+		//}
 
-			var detail_dict = JSON.parse(detail_dict.detail_df);
-
-			var chart_data = [];
-
-			for (const [key1, value1] of Object.entries(detail_dict)) {
-				var agg_object = {};
-				agg_object['name'] = key1;
-				agg_object['value'] = value1.aggregate;
-				chart_data.push(agg_object);	
-			}
-
-			var single_object = {};
-			var identity_data = [];
-			single_object['dependent'] = keyArray[0];
-			single_object['independent'] = keyArray[1];
-			single_object['value'] = getMatrixValue(matrix_data, keyArray[0], keyArray[1]);
-			identity_data.push(single_object);
-
-			// TODO width is using addWidthArray
-			// how to merge the chart width and the interactive width adjustment.
-			container.call(coloredBarChart, {
-				chart_data: chart_data,
-				width: 160,
-				height: 160,
-				childrenIdentityFlag: true,
-				rectWidth: rectWidth,
-				rectHeight: rectHeight,
-				margin: { left: 50, top: 0, right: 0, bottom: 0 },
-				identity_data: identity_data,
-				yAxisLabel: keyArray[0],	
-				y_axis_scale: 'scaleLog',	
-				y_axis_tick_num: 5,
-				level: 'level1',
-				myColor: countryColor
-			});
-
-			// Visual Tech 2: a heatmap with a new dimension
-			// Merge contextual categorical vars and contextual ordinal vars
-			var candidate_context_vars = contextual_cat_vars.concat(contextual_ord_vars)
-
-			// Filter the independent var from contextual_context_vars
-			candidate_context_vars = candidate_context_vars.filter(function(item) {
-				return item !== keyArray[1]
-			})
-
-			var first_candidate = candidate_context_vars[0];
-
-			container.call(interactGenericHeatmap, {
-				margin: { left: 50, top: 0, right: 0, bottom: 0 },
-				width: 160,
-				height: 160,
-				xValue: d => d[first_candidate],
-				yValue: d => d[keyArray[1]],
-				x_var: first_candidate,
-				y_var: keyArray[1],
-				z_var: keyArray[0],
-				contextaul_vars: candidate_context_vars,
-				childrenIdentityFlag: true,
-				rectWidth: rectWidth,
-				rectHeight: rectHeight,
-				identity_data: identity_data,
-				csvData: csvData,
-				level: 'level1'
-			});	
-
-			// Visual Tech 3: Scatterplot
-			// Filter the independent var from contextual_cat_vars
-			var candidate_context_vars = contextual_ord_vars.filter(function(item) {
-				return item !== keyArray[1]
-			})
-
-			var first_candidate = candidate_context_vars[0];
-
-			// TODO corresponding to leaf level color if needed
-			//var category16 = ["#aec7e8","#ffbb78","#ff9896","#c49c94","#f7b6d2","#c7c7c7","#dbdb8d","#9edae5",
-			//"#1f77b4","#ff7f0e","#d62728","#8c564b","#e377c2","#7f7f7f","#bcbd22","#17becf"];
-		
-			//var correspondColor = d3.scaleOrdinal()
-			//					.range(category16);
-
-			// Aggregate data
-			var scatterplot_data = aggregate({data: csvData,
-										groupby_keys: [keyArray[1], first_candidate],
-										agg_var: keyArray[0]});
-
-			container.call(scatterPlot, {
-				xValue: d => d[first_candidate],
-				xAxisLabel: first_candidate,
-				yValue: d => d[keyArray[0]],
-				yAxisLabel: keyArray[0],
-				splitby: keyArray[1],
-				circleRadius: 3,
-				margin: { left: 50, top: 0, right: 0, bottom: 0 },
-				width: 200,
-				height: 200,
-				relative_translate_y: -100,
-				childrenIdentityFlag: true,
-				smallMultipleFlag: false,
-				y_axis_scale: 'scaleLog', 
-				y_axis_tick_num: 3,			
-				rectWidth: rectWidth,
-				rectHeight: rectHeight,
-				identity_data: identity_data,
-				chart_data: scatterplot_data,
-				myColor: countryColor,
-				mark_opacity: 0.9,
-				rowIndex: 'row' + rowIndex,
-				level: 'level1'
-			});
-
-			// Visual Tech 4: Small Multiples of Scatterplot
-			// Specificly for Industry ID
-			var first_candidate = "industry";
-
-			// Aggregate data
-			var agg_result = aggregate({data: csvData,
-										groupby_keys: [keyArray[1], first_candidate],
-										agg_var: keyArray[0]});
-
-			container.call(small_multiple_scatterplot, {
-				num_small_multiples: 4,
-				margin: { left: 50, top: 0, right: 0, bottom: 0 },
-				width: 350,
-				height: 60,
-				padding: 20,
-				rectWidth: rectWidth,
-				rectHeight: rectHeight,
-				childrenIdentityFlag: true,
-				identity_data: identity_data,
-				xAxisLabel: first_candidate,
-				yAxisLabel: keyArray[0],
-				splitby: keyArray[1],
-				chart_data: agg_result,
-				myColor: countryColor,
-				rowIndex: rowIndex,
-				level: 'level1'
-			});
-
-			// Visual Tech 5: Scatterplot specificly for Industry ID
-			var dependent = keyArray[0];
-			var independent = keyArray[1];
-			var scatterplot_industry_g = container.append("g")
-							.attr("class", 'level-1' + ' ' + dependent
-							+ ' ' + independent + ' scatterplot_industry');
-
-			first_candidate = "industry";
-
-			// Aggregate data
-			var agg_result = aggregate({data: csvData,
-				groupby_keys: [independent, first_candidate],
-				agg_var: dependent});
-
-			// Log scale cannot include zero, filter zero
-			var scatterplot_data = agg_result.filter(d => {
-				return d[dependent] > 0;
-			});
-
-			scatterplot_industry_g.call(scatterPlot, {
-				xValue: d => d[first_candidate],
-				xAxisLabel: first_candidate,
-				yValue: d => d[keyArray[0]],
-				yAxisLabel: keyArray[0],
-				splitby: keyArray[1],
-				margin: { left: 50, top: 0, right: 0, bottom: 0 },
-				width: 400,
-				height: 100,
-				relative_translate_y: -50,
-				childrenIdentityFlag: true,
-				smallMultipleFlag: false,
-				chart_name_suffix_flag: true,
-				x_axis_scale: 'scaleLinear', 
-				y_axis_scale: 'scaleLog', 
-				y_axis_tick_num: 5,
-				rectWidth: rectWidth,
-				rectHeight: rectHeight,
-				identity_data: identity_data,
-				chart_data: scatterplot_data,
-				myColor: countryColor,
-				mark_shape: 'rectangle',
-				mark_width: 2,
-				mark_height: 2,
-				mark_opacity: 0.9,
-				rowIndex: 'row' + rowIndex,
-				level: 'level1'
-			});
-
-			// Visual Tech 6: Scatterplot specificly for Industry ID in a bounded space
-			var scatterplot_industry_g = container.append("g")
-									.attr("class", 'level-1' + ' ' + dependent
-									+ ' ' + independent + ' scatterplot_industry_bounded')
-									.attr('transform', `translate(${20},${-100})`);
-
-			var foreignObject = scatterplot_industry_g.append("foreignObject")
-									.attr("width", 400)  
-									.attr("height", 200)
-									.append("xhtml:div") 
-									.attr("class", level + " scatterplot_industry_bounded div")
-									.style("width", "600px") 
-									.style("height", "100%")
-									.style("overflow-x", "auto") 
-									.style("white-space", "nowrap")
-									.style("display", "block")
-									//.style("border", "1px solid #ccc")  
-									.style("border-radius", "2px")
-									//.style("box-shadow", "inset 0 0 5px rgba(0, 0, 0, 0.1)") 
-									//.style("border", "1px solid black");
-
-			var scatterplot_industry_svg = d3.select(foreignObject.node())
-						.append("svg")
-						.attr("width", 1900)
-						.attr("height", 200);
-			
-			scatterplot_industry_svg.call(scatterPlot, {
-				xValue: d => d[first_candidate],
-				xAxisLabel: first_candidate,
-				yValue: d => d[keyArray[0]],
-				yAxisLabel: keyArray[0],
-				splitby: keyArray[1],
-				margin: { left: 35, top: 0, right: 0, bottom: 0 },
-				width: 1600,
-				height: 100,
-				relative_translate_y: 50,
-				childrenIdentityFlag: false,
-				smallMultipleFlag: false,
-				chart_name_suffix_flag: true,
-				chart_name_suffix: 'bounded',
-				x_axis_scale: 'scaleLinear', 
-				y_axis_scale: 'scaleLog', 
-				y_axis_tick_num: 5,
-				rectWidth: rectWidth,
-				rectHeight: rectHeight,
-				identity_data: identity_data,
-				chart_data: scatterplot_data,
-				myColor: countryColor,
-				mark_shape: 'rectangle',
-				mark_width: 8,
-				mark_height: 2,
-				mark_opacity: 0.9,
-				rowIndex: 'row' + rowIndex,
-				level: 'level1'
-			});
-
-			scatterplot_industry_g.selectAll(".rect")
-				.data(identity_data)
-				.enter()    
-				.append("rect")	
-				.attr("class", d => level + " scatterplot_industry_bounded initialvirtuallayer children rect " 
-							+ dependent + " " + independent)	  						
-				.attr("x", 400 + rectWidth + 40)
-				.attr("y", -10)						
-				.attr("width", rectWidth)
-				.attr("height", rectHeight)
-				.style("stroke", "black")
-				.style("stroke-width", "2px")
-				.attr("stroke-opacity", 0.3)
-				.style("fill-opacity", 1)
-				.style("fill", d => heatmapColorScale(d.value))
-				.append('title')
-				.text(function(d) {
-					return `The mean distance is ${d3.format(".3f")(d.value)}.`
-				});
-
-			// Text for identity portion  
-			scatterplot_industry_g.selectAll(".text")
-				.data(identity_data)
-				.enter()    		
-				.append("text")	   
-				.attr("class", d => level + " scatterplot_industry_bounded children text " 
-							+ d.dependent + " " + d.independent)	
-				.attr("transform", function(d) {
-					var y_position = 100;
-					return "translate(" + (-20) +"," + y_position + ")";
-				})		
-				.attr("dx", '.6em')			  
-				.attr('dy', '1.5em')																
-				.style("text-anchor", "end")
-				.text(d => d.dependent + "," + d.independent);
-	
-			rowIndex = rowIndex + 1;
-		}
-	
 		if (agg_data.trend_type == 'pearson_corr') {
 			// Visual Tech 1 for Pearson Corr: Scatterplot
 			var single_object = {};
@@ -713,12 +428,13 @@ function drawNodeLinkTree(data) {
 			});
 			rowIndex = rowIndex + 1;
 		}
-
-	})
 		
+	})
+	====================================TODO End===========================================*/
+
 	// Second level - splitby
 	// Generate interactive buttons
-	levelLabels= ['\uf03a', 'SP1', 'SP2', '\uf080' ];
+	viewLabels= ['\uf03a', 'SP1', 'SP2', '\uf080' ];
 	// Left identity portion in virtual layer
 	leftIdentityLabels = ['I', 'II', 'III'];
 
@@ -757,7 +473,7 @@ function drawNodeLinkTree(data) {
 
 	// TODO add width varies for bar chart
 	secondLevelButtons.call(interactiveLevelButton, {
-		levelLabels: levelLabels,
+		viewLabels: viewLabels,
 		leftIdentityLabels: leftIdentityLabels,
 		rightIdentityLabels: rightIdentityLabels,
 		level: 'level2',
@@ -942,10 +658,10 @@ function drawNodeLinkTree(data) {
 
 	if (agg_data.detail_view_type == 'scatter') {	
 		// Generate interactive buttons
-		var levelLabels= ['\uf03a', 'SP1'];
+		var viewLabels= ['\uf03a', 'SP1'];
 
 		thirdLevelButtons.call(interactiveLevelButton, {
-			levelLabels: levelLabels,
+			viewLabels: viewLabels,
 			leftIdentityLabels: leftIdentityLabels,
 			rightIdentityLabels: rightIdentityLabels,
 			level: 'level3',
@@ -953,10 +669,10 @@ function drawNodeLinkTree(data) {
 		});
 	} else if (agg_data.detail_view_type == 'rank') {
 		// Generate interactive buttons
-		var levelLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'SM1', 'SM2', 'SM3', 'SM4'];
+		var viewLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'SM1', 'SM2', 'SM3', 'SM4'];
 
 		thirdLevelButtons.call(interactiveLevelButton, {
-			levelLabels: levelLabels,
+			viewLabels: viewLabels,
 			leftIdentityLabels: leftIdentityLabels,
 			rightIdentityLabels: rightIdentityLabels,
 			levelG: thirdLevelG,
@@ -2098,7 +1814,7 @@ function drawNodeLinkTree(data) {
 	drawNodeLinkLegend();
 
 	// Add interaction to the legend 
-	d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
+	d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.virtuallayer.rect')
 		.on("mouseover", function(d) {
 			highlightLegend(d);
 		})
@@ -2133,7 +1849,7 @@ function drawNodeLinkTree(data) {
 		// Reset
 		d3.selectAll(".legend.rect")
 			.style("stroke", "none");
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.virtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 
 		d3.selectAll('.legend.rect.distcolor' 
@@ -2214,7 +1930,7 @@ function drawNodeLinkTree(data) {
 		d3.selectAll(".legend.rect")
 			.style("stroke", "none");
 
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.virtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 
 		//d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect')
@@ -2226,7 +1942,7 @@ function drawNodeLinkTree(data) {
 			element.style("stroke", "black")
 					.attr("stroke-width", 2);
 
-			d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
+			d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.virtuallayer.rect')
 				.filter(function() { 
 					return d3.color(d3.select(this).style("fill")).formatHex() == filtercolor; })
 				.attr("stroke-opacity", 1);
@@ -2237,18 +1953,18 @@ function drawNodeLinkTree(data) {
 		// Reset
 		d3.selectAll(".legend.rect")
 			.style("stroke", "none");
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.virtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 
 		var filtercolor = d;
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.virtuallayer.rect')
 			.filter(function() { 
 				return d3.color(d3.select(this).style("fill")).formatHex() == filtercolor; })
 			.attr("stroke-opacity", 1);
 	}
 	
 	var doNotHighlightTree = function(d){
-		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.initialvirtuallayer.rect')
+		d3.selectAll('.heatmap.cell,.list.cell,.list.circle,.list.rect,.virtuallayer.rect')
 			.attr("stroke-opacity", 0.3);
 	}
 
@@ -2391,7 +2107,11 @@ function drawHeatmap(options) {
 	    height = options.height,
 	    data = options.data,
 	    container = options.container,
-		subLabel = options.subLabel
+		subLabel = options.subLabel,
+		childrenIdentityFlag = options.childrenIdentityFlag,
+		rectWidth = options.rectWidth,
+		rectHeight = options.rectHeight,
+		identity_data = options.identity_data,
 		level = options.level;
 
 	if(!data){
@@ -2404,7 +2124,7 @@ function drawHeatmap(options) {
 	//var distanceMatrixPlot = svg.append("g")
 	var distanceMatrixPlot = container.append("g")
 		.attr("id", "distanceMatrixPlot")
-		.attr("class", level + " distanceMatrixPlot")
+		.attr("class", level + " virtuallayer distanceMatrixPlot")
 		.attr("transform", "translate(" + 0 + "," + (-width/2) + ")")
 	    //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -2552,6 +2272,36 @@ function drawHeatmap(options) {
 	    .attr("text-anchor", "end")
 		.text(function(d, i) { return d; })
 		.style("font-size", "10px");	
+
+	if (childrenIdentityFlag) {
+		console.log(height);
+		console.log(width);
+		console.log(margin);
+		distanceMatrixPlot.selectAll(".rect")
+			.data(identity_data)
+			.enter()    
+			.append("rect")	
+			.attr("class", d => level + " heatmap virtuallayer children rect " 
+						+ d.dependent + " " + d.independent)	  
+			.attr("transform", function(d) {
+				var y_position = height/2;
+				return "translate(" + (0) +"," + y_position + ")";
+			})						
+			.attr("x", width + rectWidth)
+			.attr("y", -10)						
+			.attr("width", rectWidth)
+			.attr("height", rectHeight)
+			.style("stroke", "black")
+			.style("stroke-width", "2px")
+			.attr("stroke-opacity", 0.3)
+			.style("fill-opacity", 1)
+			.style("fill", d => heatmapColorScale(d.value))
+			.append('title')
+			.text(function(d) {
+				return `The mean distance is ${d3.format(".3f")(d.value)}.`
+			});
+	}
+
 }
 
 
@@ -2559,17 +2309,9 @@ function drawHeatmap(options) {
 function initVisibility() {
 	// TODO condition by trend type
 	// Aggregate level
-	d3.selectAll('.level1.list').transition().style('visibility', "visible");
-	d3.selectAll('.level1.heatmap').transition().style('visibility', "hidden");	
-	d3.selectAll('.level1.coloredbarchart').transition().style('visibility', "hidden");	
-	d3.selectAll('.level1.scatterplot').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.doublehistogram').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.heatmapdensity').transition().style('visibility', "hidden");	
-	d3.selectAll('.level1.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
-	d3.selectAll('.level1.smscatterplot_industry').transition().style('visibility', "hidden");
-	d3.selectAll('.level1.scatterplot_industry').transition().style('visibility', "hidden");
-	d3.selectAll('.level1.scatterplot_industry_bounded').transition().style('visibility', "hidden");
 	d3.selectAll('.path.list').transition().style('visibility', "visible");
 	d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
 

@@ -172,7 +172,7 @@ const heatmapDensity = (selection, props) => {
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " heatmapdensity initialvirtuallayer children rect " 
+			.attr("class", d => level + " heatmapdensity virtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;
@@ -357,7 +357,7 @@ const genericHeatmap = (selection, props) => {
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " genericheatmap initialvirtuallayer children rect " 
+			.attr("class", d => level + " genericheatmap virtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;
@@ -450,6 +450,7 @@ const interactGenericHeatmap = (selection, props) => {
     var x_var_label = d3.map(chart_data, function(d){return d[x_var];}).keys();
 
 	const g = selection.append('g')
+					.attr("class", level + " view virtuallayer genericheatmap")
 					.attr("id", level + "_" + y_var +  "_genericheatmap_g")
 					.attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
 
@@ -484,7 +485,7 @@ const interactGenericHeatmap = (selection, props) => {
 					.on('change', (event) => {
 
 						// Reset VL
-						resetVirtualLayering(level);
+						//resetVirtualLayering(level);
 
 						var selected_option = $('#' + level + "_" + y_var +  "_genericheatmap_x_menu").val();
 						selection.call(interactGenericHeatmap, {
@@ -571,7 +572,7 @@ const interactGenericHeatmap = (selection, props) => {
 			.data(identity_data)
 			.enter()    
 			.append("rect")	
-			.attr("class", d => level + " genericheatmap initialvirtuallayer children rect " 
+			.attr("class", d => level + " genericheatmap virtuallayer children rect " 
 						+ d.dependent + " " + d.independent)	  
 			.attr("transform", function(d) {
 				var y_position = height/2;
