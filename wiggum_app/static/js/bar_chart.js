@@ -283,11 +283,7 @@ const coloredBarChart = (selection, props) => {
 	  chart_data,
 	  width,
 	  height,
-	  childrenIdentityFlag,	  
-	  rectWidth,
-	  rectHeight,
 	  margin,
-	  identity_data,
 	  yAxisLabel,
 	  y_axis_scale,
 	  y_axis_tick_num,
@@ -295,24 +291,22 @@ const coloredBarChart = (selection, props) => {
 	  myColor
 	} = props;
 
-	//var margin = { left: 50, top: 0, right: 0, bottom: 30 };
-	//var innerWidth  = width  - margin.left - margin.right;
-	//var innerHeight = height - margin.top  - margin.bottom;
+	var innerWidth  = width  - margin.left - margin.right;
+	var innerHeight = height - margin.top  - margin.bottom;
 
 	const g = selection.append('g')
 		.attr("class", level + " view virtuallayer coloredbarchart")
-	  	.attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
+	  	.attr('transform', `translate(${margin.left},${-innerHeight/2 + margin.top})`);
 
 	var xAxisG = g.append("g")
 	  .attr("class", level + " coloredbarchart x axis")
-	  .attr("transform", "translate(0," + height + ")");
+	  .attr("transform", "translate(0," + innerHeight + ")");
 
 	var yAxisG = g.append("g")
 	  .attr("class", level + " coloredbarchart y axis");
 
 	var xScale = d3.scaleBand()
-					//.domain(groups)
-					.range([0, width])
+					.range([0, innerWidth])
 					.padding(0.3);
 
 	var yScale;
@@ -321,7 +315,7 @@ const coloredBarChart = (selection, props) => {
 	if (y_axis_scale == 'scaleLog') {
 		// Log scale cannot include zero
 		yScale = d3.scaleLog()
-						.range([height, 0]);
+						.range([innerHeight, 0]);
 		yScale.domain([1, d3.max(chart_data, d => d.value )]).nice();
 
 		yAxis = d3.axisLeft(yScale)
@@ -329,7 +323,7 @@ const coloredBarChart = (selection, props) => {
 					.tickFormat(d3.format(",.0e")); 
 	} else {
 		yScale = d3.scaleLinear()
-					.range([height, 0]);
+					.range([innerHeight, 0]);
 		
 		yScale.domain([0, d3.max(chart_data, function (d){ return d.value; })]).nice();			
 
@@ -371,55 +365,9 @@ const coloredBarChart = (selection, props) => {
 		.attr("width", xScale.bandwidth())
 		.attr("x", function (d){ return xScale(d.name); })
 		.attr("y", function (d){ return yScale(d.value); })
-		.attr("height", function (d){ return height - yScale(d.value); })
+		.attr("height", function (d){ return innerHeight - yScale(d.value); })
 		.attr("fill", function (d){ return color(d.name); })
 		.append('title')
 		.text(d => `${d.name} : ${d3.format(".2s")(d.value)}` );
-
-	// Children Identity
-	if (childrenIdentityFlag) {
-
-		g.selectAll(".rect")
-			.data(identity_data)
-			.enter()    
-			.append("rect")	
-			.attr("class", d => level + " coloredbarchart virtuallayer children rect " 
-						+ d.dependent + " " + d.independent)	  
-			.attr("transform", function(d) {
-				var y_position = height/2;
-				return "translate(" + (-margin.left) +"," + y_position + ")";
-			})						
-			// Adjust for interactive menu
-			//.attr("x", width + rectWidth + 30)
-			.attr("x", width + rectWidth + 40)
-			.attr("y", -10)						
-			.attr("width", rectWidth)
-			.attr("height", rectHeight)
-			.style("stroke", "black")
-			.style("stroke-width", "2px")
-			.attr("stroke-opacity", 0.3)
-			.style("fill-opacity", 1)
-			.style("fill", d => heatmapColorScale(d.value))
-			.append('title')
-			.text(function(d) {
-				return `The mean distance is ${d3.format(".3f")(d.value)}.`
-			});
-
-		// Text for identity portion  
-		g.selectAll(".text")
-			.data(identity_data)
-			.enter()    		
-			.append("text")	   
-			.attr("class", d => level + " coloredbarchart children text " 
-						+ d.dependent + " " + d.independent)	
-			.attr("transform", function(d) {
-				var y_position = height/2;
-				return "translate(" + (-margin.left) +"," + y_position + ")";
-			})		
-			.attr("dx", '.6em')			  
-			.attr('dy', '1.5em')																
-			.style("text-anchor", "end")
-			.text(d => d.dependent + "," + d.independent);
-	}
 
 }

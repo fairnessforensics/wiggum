@@ -174,7 +174,6 @@ const scatterPlot = (selection, props) => {
 	  width,
 	  height,
 	  relative_translate_y,
-	  childrenIdentityFlag,
 	  smallMultipleFlag,
 	  first_small_multiple_flag,
 	  last_small_multiple_flag,
@@ -184,9 +183,6 @@ const scatterPlot = (selection, props) => {
 	  x_axis_scale,
 	  y_axis_scale,
 	  y_axis_tick_num,
-	  rectWidth,
-	  rectHeight,
-	  identity_data,
 	  chart_data,
 	  myColor,
 	  mark_shape,
@@ -218,7 +214,8 @@ const scatterPlot = (selection, props) => {
 				.attr("class", level + " view virtuallayer " + chart_name)
 	  			.attr('transform', `translate(${margin.left},${relative_translate_y})`);
 
-	var chartHeight = height - margin.bottom;
+	var innerWidth  = width  - margin.left - margin.right;
+	var innerHeight = height - margin.bottom;
 
 	var yScale;
 	var yAxis;
@@ -227,7 +224,7 @@ const scatterPlot = (selection, props) => {
 		// Log scale cannot include zero
 		yScale = d3.scaleLog()
 						.domain(d3.extent(chart_data, yValue)) 
-						.range([chartHeight, 0]);
+						.range([innerHeight, 0]);
 		
 		yScale.nice();
 		
@@ -240,7 +237,7 @@ const scatterPlot = (selection, props) => {
 		
 		// Insert padding so that points do not overlap with y or x axis
 		yScale.domain(padLinear(d3.extent(chart_data, yValue), 0.05));
-		yScale.range([chartHeight, 0]);
+		yScale.range([innerHeight, 0]);
 		yScale.nice();
 
 		if (smallMultipleFlag) {
@@ -292,7 +289,7 @@ const scatterPlot = (selection, props) => {
 		}));
 	}
 
-	xScale.range([0, width]);
+	xScale.range([0, innerWidth]);
 
 	var xAxis = d3.axisBottom(xScale);
 
@@ -333,7 +330,7 @@ const scatterPlot = (selection, props) => {
 
 	var x_axis = g.append("g")
 		.attr("class", level + " " + chart_name + " x axis")
-		.attr("transform", "translate(0," + chartHeight + ")")
+		.attr("transform", "translate(0," + innerHeight + ")")
 		.call(
 			(smallMultipleFlag == false || last_small_multiple_flag == true
 				|| share_axis_flag == false) ? xAxis : xAxis.tickSize(0)
@@ -382,7 +379,7 @@ const scatterPlot = (selection, props) => {
 			.attr('fill', 'black')
 			//.attr("x", width/2)
 			//.attr("y", 45)
-			.attr("x", width + 5)
+			.attr("x", innerWidth + 5)
 			.attr("y", (xAxisLabel == 'industry') ? 5 : 20)
 			.attr("text-anchor", (xAxisLabel == 'industry') ? "start" : "middle")
 			.text(xAxisLabel);	
@@ -441,7 +438,7 @@ const scatterPlot = (selection, props) => {
 						.attr("x1", xScale(xValue(d)))
 						.attr("x2", xScale(xValue(d)))
 						.attr("y1", 0)
-						.attr("y2", chartHeight)
+						.attr("y2", innerHeight)
 						.attr("stroke", "grey")
 						.attr("stroke-width", mark_width)
 						.attr("stroke-opacity", 0.2)
@@ -558,7 +555,7 @@ const scatterPlot = (selection, props) => {
 
 
 		var legendWidth = legend_g.node().getBBox().width;
-		legend_g.attr("transform", `translate(${(width - legendWidth) / 2}, -20)`);
+		legend_g.attr("transform", `translate(${(innerWidth - legendWidth) / 2}, -20)`);
 
 		// add legend label
 		legend_g.append("text")
@@ -576,7 +573,7 @@ const scatterPlot = (selection, props) => {
 						.enter().append("g")
 						.attr("class", level + " " + chart_name + " legend")
 						.attr("transform", function(d, i) { 
-							return "translate("+ (width) 
+							return "translate("+ (innerWidth) 
 								+"," + (i * 15 + 5) + ")"; });
 
 		if (mark_shape == "rectangle") {
@@ -603,54 +600,11 @@ const scatterPlot = (selection, props) => {
 
 		legend_g.append("text")
 			.attr("class", level + " " + chart_name + " legend title")		
-			.attr("x", width + 5)
+			.attr("x", innerWidth + 5)
 			.attr("y", 0)
 			.style("font-size", "12px")                     
 			.style("text-anchor", "start")
 			.text(splitby);		
-	}
-
-	// Children Identity
-	if (childrenIdentityFlag) {
-		g.selectAll(".rect")
-			.data(identity_data)
-			.enter()    
-			.append("rect")	
-			.attr("class", d => level + " " + chart_name + " virtuallayer children rect " 
-						+ d.dependent + " " + d.independent)	  
-			.attr("transform", function(d) {
-				var y_position = chartHeight/2;
-				return "translate(" + (-margin.left) +"," + y_position + ")";
-			})						
-			.attr("x", width + rectWidth + 40)
-			.attr("y", -10)						
-			.attr("width", rectWidth)
-			.attr("height", rectHeight)
-			.style("stroke", "black")
-			.style("stroke-width", "2px")
-			.attr("stroke-opacity", 0.3)
-			.style("fill-opacity", 1)
-			.style("fill", d => heatmapColorScale(d.value))
-			.append('title')
-			.text(function(d) {
-				return `The mean distance is ${d3.format(".3f")(d.value)}.`
-			});
-
-		// Text for identity portion  
-		g.selectAll(".text")
-			.data(identity_data)
-			.enter()    		
-			.append("text")	   
-			.attr("class", d => level + " " + chart_name + " children text " 
-						+ d.dependent + " " + d.independent)	
-			.attr("transform", function(d) {
-				var y_position = chartHeight/2;
-				return "translate(" + (-margin.left) +"," + y_position + ")";
-			})		
-			.attr("dx", '.6em')			  
-			.attr('dy', '1.5em')																
-			.style("text-anchor", "end")
-			.text(d => d.dependent + "," + d.independent);
 	}
 
 

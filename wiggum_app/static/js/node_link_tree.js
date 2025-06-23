@@ -192,7 +192,7 @@ function drawNodeLinkTree(data) {
 		chartList.push('coloredbarchart')
 
 		viewLabels.push('HM');
-		chartList.push('genericheatmap')
+		chartList.push('interactheatmap')
 
 		viewLabels.push('SP1');
 		chartList.push('scatterplot')
@@ -228,20 +228,13 @@ function drawNodeLinkTree(data) {
 	// First level drawing
 	var firstLevelG = g.selectAll('.level-1');
 
-	// TODO sovle hard code addWidthArray, height
-	if (agg_data.trend_type == 'pearson_corr') {
-		addWidthArray = [120, 160];
-	} else if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
-		addWidthArray = [120, 160];
-	}
-
+	// TODO remove height
 	if (agg_data.trend_type == 'pearson_corr') {
 		addHeightArray = [100];
 	} else if (agg_data.trend_type == 'rank_trend' || agg_data.trend_type == 'sum_rank') {
 		addHeightArray = [60, 100, 220];
 	}
 
-	var height = 100;
 	firstLevelButtons.call(interactiveLevelButton, {
 		viewLabels: viewLabels,
 		leftIdentityLabels: leftIdentityLabels,
@@ -249,9 +242,6 @@ function drawNodeLinkTree(data) {
 		levelG: firstLevelG,
 		level: 'level1',
 		charts: chartList,
-		width: width,
-		height: height,
-		addWidthArray: addWidthArray,
 		addHeightArray: addHeightArray,
 		treeHeight: treeHeight + margin.top + margin.bottom,
 		matrix_data: matrix_data,
@@ -284,7 +274,6 @@ function drawNodeLinkTree(data) {
 		.style("stroke", "black")
 	    .style("stroke-width", "2px")
 		.attr("stroke-opacity", 0.3)
-		.style("visibility", "hidden")
 		.append('title')
 		.text(function(d) {
 			var keyArray = d.data.key.split(",");
@@ -820,7 +809,7 @@ function drawNodeLinkTree(data) {
 			}
 		})
 		.style("visibility", function(d, i) {
-			return d.depth > 1 ? "visible" : "hidden";
+			return d.depth > 0 ? "visible" : "hidden";
 		})
 		.style("pointer-events", function(d, i) {
 			return !d.depth ? "none" : "all";
@@ -2108,10 +2097,6 @@ function drawHeatmap(options) {
 	    data = options.data,
 	    container = options.container,
 		subLabel = options.subLabel,
-		childrenIdentityFlag = options.childrenIdentityFlag,
-		rectWidth = options.rectWidth,
-		rectHeight = options.rectHeight,
-		identity_data = options.identity_data,
 		level = options.level;
 
 	if(!data){
@@ -2272,36 +2257,6 @@ function drawHeatmap(options) {
 	    .attr("text-anchor", "end")
 		.text(function(d, i) { return d; })
 		.style("font-size", "10px");	
-
-	if (childrenIdentityFlag) {
-		console.log(height);
-		console.log(width);
-		console.log(margin);
-		distanceMatrixPlot.selectAll(".rect")
-			.data(identity_data)
-			.enter()    
-			.append("rect")	
-			.attr("class", d => level + " heatmap virtuallayer children rect " 
-						+ d.dependent + " " + d.independent)	  
-			.attr("transform", function(d) {
-				var y_position = height/2;
-				return "translate(" + (0) +"," + y_position + ")";
-			})						
-			.attr("x", width + rectWidth)
-			.attr("y", -10)						
-			.attr("width", rectWidth)
-			.attr("height", rectHeight)
-			.style("stroke", "black")
-			.style("stroke-width", "2px")
-			.attr("stroke-opacity", 0.3)
-			.style("fill-opacity", 1)
-			.style("fill", d => heatmapColorScale(d.value))
-			.append('title')
-			.text(function(d) {
-				return `The mean distance is ${d3.format(".3f")(d.value)}.`
-			});
-	}
-
 }
 
 

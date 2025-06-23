@@ -44,6 +44,15 @@ const interact_view_button = (selection, props) => {
 				.attr('dy', '1.5em')
 				.attr('text-anchor', () => selectedChart === 'list' ? 'middle' : 'end');
 
+			// Reset first level size
+			globalFirstLevelWidth = 0;
+			globalFirstLevelHeight = 0;
+
+			var viewVLWidth = 0;
+			var viewVLHeight = 0;
+			var childrenVLWidth = 0;
+			var childrenVLHeight = 0;
+
 			firstLevelG.each(function (d) {
 				var container = d3.select(this);
 
@@ -51,6 +60,7 @@ const interact_view_button = (selection, props) => {
 				var dependent = keyArray[0];
 				var independent = keyArray[1];
 
+				// ======================= TODO Move it to VL Children =====================
 				// Identity data
 				var single_object = {};
 				var identity_data = [];
@@ -81,7 +91,7 @@ const interact_view_button = (selection, props) => {
 						chart_data.push(agg_object);	
 					}
 
-				} else if (selectedChart == 'genericheatmap') {
+				} else if (selectedChart == 'interactheatmap') {
 					/* Visual Tech 4: a heatmap with an interactable dimension */
 					// Merge contextual categorical vars and contextual ordinal vars
 					candidate_context_vars = contextual_cat_vars.concat(contextual_ord_vars)
@@ -146,6 +156,10 @@ const interact_view_button = (selection, props) => {
 						.transition()
 						.style('visibility', 'hidden');
 
+					if (selectedChart == 'heatmaplist') {
+						viewVLWidth = 100;
+					}
+
 					drawHeatmap({
 						container : container,
 						data	  : matrix_data,
@@ -155,23 +169,18 @@ const interact_view_button = (selection, props) => {
 						selDep: dependent,
 						selIndep: independent,
 						height: matrixHeight,	
-						childrenIdentityFlag : (selectedChart === 'heatmaplist'),
-						rectWidth : globalRectWidth,
-						rectHeight : globalRectHeight,
-						identity_data: identity_data,
 						level: level
 					});
 				} else if (selectedChart == 'coloredbarchart') {
 					/* Visual Tech 3: colored bar chart */
-					// TODO width is using addWidthArray
-					// how to merge the chart width and the interactive width adjustment.
+					viewVLWidth = 210;
+					viewVLHeight = 160;
+					
 					container.call(coloredBarChart, {
 						chart_data: chart_data,
-						width: 160,
-						height: 160,
-						childrenIdentityFlag: true,
-						rectWidth: globalRectWidth,
-						rectHeight: globalRectHeight,
+						width: viewVLWidth,
+						height: viewVLHeight,
+						childrenIdentityFlag: false,
 						margin: { left: 50, top: 0, right: 0, bottom: 0 },
 						identity_data: identity_data,
 						yAxisLabel: keyArray[0],	
@@ -180,28 +189,30 @@ const interact_view_button = (selection, props) => {
 						level: level,
 						myColor: countryColor
 					});
-				} else if (selectedChart == 'genericheatmap') {
+				} else if (selectedChart == 'interactheatmap') {
 					/* Visual Tech 4: a heatmap with an interactable dimension */
-					container.call(interactGenericHeatmap, {
+					viewVLWidth = 210;
+					viewVLHeight = 160;
+
+					container.call(interactHeatmap, {
 						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: 160,
-						height: 160,
+						width: viewVLWidth,
+						height: viewVLHeight,
 						xValue: d => d[first_candidate],
 						yValue: d => d[keyArray[1]],
 						x_var: first_candidate,
 						y_var: keyArray[1],
 						z_var: keyArray[0],
 						contextaul_vars: candidate_context_vars,
-						childrenIdentityFlag: true,
-						rectWidth: globalRectWidth,
-						rectHeight: globalRectHeight,
-						identity_data: identity_data,
 						csvData: csvData,
 						level: level
 					});
 
 				} else if (selectedChart == 'scatterplot') {
 					/* Visual Tech 5: Scatterplot */
+					viewVLWidth = 250;
+					viewVLHeight = 200;
+
 					container.call(scatterPlot, {
 						xValue: d => d[first_candidate],
 						xAxisLabel: first_candidate,
@@ -210,8 +221,8 @@ const interact_view_button = (selection, props) => {
 						splitby: keyArray[1],
 						circleRadius: 3,
 						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: 200,
-						height: 200,
+						width: viewVLWidth,
+						height: viewVLHeight,
 						relative_translate_y: -100,
 						childrenIdentityFlag: true,
 						smallMultipleFlag: false,
@@ -229,16 +240,15 @@ const interact_view_button = (selection, props) => {
 
 				} else if (selectedChart == 'smscatterplot_industry') {
 					/* Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID */
+					viewVLWidth = 350;
+					viewVLHeight = 240;
+					
 					container.call(small_multiple_scatterplot, {
 						num_small_multiples: 4,
 						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: 350,
-						height: 60,
+						width: viewVLWidth,
+						height: viewVLHeight,
 						padding: 20,
-						rectWidth: globalRectWidth,
-						rectHeight: globalRectHeight,
-						childrenIdentityFlag: true,
-						identity_data: identity_data,
 						xAxisLabel: first_candidate,
 						yAxisLabel: keyArray[0],
 						splitby: keyArray[1],
@@ -254,6 +264,9 @@ const interact_view_button = (selection, props) => {
 									.attr("class", level + ' ' + dependent
 									+ ' ' + independent + ' virtuallayer scatterplot_industry');
 		
+					viewVLWidth = 400;
+					viewVLHeight = 100;
+
 					scatterplot_industry_g.call(scatterPlot, {
 						xValue: d => d[first_candidate],
 						xAxisLabel: first_candidate,
@@ -261,18 +274,14 @@ const interact_view_button = (selection, props) => {
 						yAxisLabel: keyArray[0],
 						splitby: keyArray[1],
 						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: 400,
-						height: 100,
+						width: viewVLWidth,
+						height: viewVLHeight,
 						relative_translate_y: -50,
-						childrenIdentityFlag: true,
 						smallMultipleFlag: false,
 						chart_name_suffix_flag: true,
 						x_axis_scale: 'scaleLinear', 
 						y_axis_scale: 'scaleLog', 
 						y_axis_tick_num: 5,
-						rectWidth: globalRectWidth,
-						rectHeight: globalRectHeight,
-						identity_data: identity_data,
 						chart_data: chart_data,
 						myColor: countryColor,
 						mark_shape: 'rectangle',
@@ -290,9 +299,12 @@ const interact_view_button = (selection, props) => {
 														+ ' virtuallayer scatterplot_industry_bounded')
 													.attr('transform', `translate(${20},${-100})`);
 
+					viewVLWidth = 400;
+					viewVLHeight = 200;
+
 					var foreignObject = scatterplot_industry_g.append("foreignObject")
-											.attr("width", 400)  
-											.attr("height", 200)
+											.attr("width", viewVLWidth)  
+											.attr("height", viewVLHeight)
 											.append("xhtml:div") 
 											.attr("class", level + " scatterplot_industry_bounded div")
 											.style("width", "600px") 
@@ -308,7 +320,7 @@ const interact_view_button = (selection, props) => {
 					var scatterplot_industry_svg = d3.select(foreignObject.node())
 													.append("svg")
 													.attr("width", 1900)
-													.attr("height", 200);
+													.attr("height", viewVLHeight);
 
 					scatterplot_industry_svg.call(scatterPlot, {
 						xValue: d => d[first_candidate],
@@ -320,16 +332,12 @@ const interact_view_button = (selection, props) => {
 						width: 1600,
 						height: 100,
 						relative_translate_y: 50,
-						childrenIdentityFlag: false,
 						smallMultipleFlag: false,
 						chart_name_suffix_flag: true,
 						chart_name_suffix: 'bounded',
 						x_axis_scale: 'scaleLinear', 
 						y_axis_scale: 'scaleLog', 
 						y_axis_tick_num: 5,
-						rectWidth: globalRectWidth,
-						rectHeight: globalRectHeight,
-						identity_data: identity_data,
 						chart_data: chart_data,
 						myColor: countryColor,
 						mark_shape: 'rectangle',
@@ -339,55 +347,43 @@ const interact_view_button = (selection, props) => {
 						rowIndex: 'row' + rowIndex,
 						level: level
 					});
-
-					scatterplot_industry_g.selectAll(".rect")
-						.data(identity_data)
-						.enter()    
-						.append("rect")	
-						.attr("class", level + " scatterplot_industry_bounded" 
-									+ " virtuallayer children rect " 
-									+ dependent + " " + independent)	  						
-						.attr("x", 400 + globalRectWidth/2)
-						.attr("y", 100 - globalRectHeight/2)						
-						.attr("width", globalRectWidth)
-						.attr("height", globalRectHeight)
-						.style("stroke", "black")
-						.style("stroke-width", "2px")
-						.attr("stroke-opacity", 0.3)
-						.style("fill-opacity", 1)
-						.style("fill", d => heatmapColorScale(d.value))
-						.append('title')
-						.text(function(d) {
-							return `The mean distance is ${d3.format(".3f")(d.value)}.`
-						});
 				} 
+
+				// Create a rectangle for children VL
+				if (selectedChart == 'heatmaplist' ||
+					selectedChart == 'coloredbarchart' ||
+					selectedChart == 'interactheatmap' ||
+					selectedChart == 'scatterplot' ||
+					selectedChart == 'smscatterplot_industry' ||
+					selectedChart == 'scatterplot_industry' ||
+					selectedChart == 'scatterplot_industry_bounded') {
+
+					childrenVLWidth = 20;
+					var position_x = viewVLWidth;
+					var position_y = 0;
+
+					if (selectedChart == 'scatterplot_industry_bounded') {
+						var padding = 20;
+						childrenVLWidth += padding;
+						position_x = viewVLWidth + padding;
+					}
+					
+					container.call(initial_children_virtual_layer, {
+						chart_name: selectedChart,
+						identity_data: identity_data,
+						position_x: position_x,
+						position_y: position_y,
+						level: level
+					});
+				}
 			});
 
 			// ================= Common part =================
-			// Adjust position by view VL
-			var firstLevelViewVLWidth = 0;
-
-			if (selectedChart == 'heatmaplist') {
-				firstLevelViewVLWidth = addWidthArray[0];
-			} else if (selectedChart == 'coloredbarchart' ) {
-				firstLevelViewVLWidth = addWidthArray[1] + 70;
-			} else if (selectedChart == 'scatterplot') {
-				firstLevelViewVLWidth = addWidthArray[1] + 110;
-			} else if (selectedChart == 'genericheatmap' ) {
-				firstLevelViewVLWidth = addWidthArray[1] + 70;
-			} else if (selectedChart == 'smscatterplot_industry' ) {
-				firstLevelViewVLWidth = addWidthArray[1] + 260;
-			 } else if (selectedChart == 'scatterplot_industry') {
-				firstLevelViewVLWidth = addWidthArray[1] + 310;
-			} else if (selectedChart == 'scatterplot_industry_bounded') {
-				firstLevelViewVLWidth = addWidthArray[1] + 280;
-			} else {}
-
-			firstLevelWidth = firstLevelViewVLWidth;
+			globalFirstLevelWidth = viewVLWidth + childrenVLWidth;
 
 			// Adjust first level width
 			adjustWidth({
-				firstLevelWidth: firstLevelWidth, 
+				firstLevelWidth: globalFirstLevelWidth, 
 				addWidth: 0, 
 				thirdLevelParentVLWidth: thirdLevelParentVLWidth,
 				level: 'level1'});

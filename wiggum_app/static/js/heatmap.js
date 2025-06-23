@@ -381,7 +381,7 @@ const genericHeatmap = (selection, props) => {
 
 }
 
-const interactGenericHeatmap = (selection, props) => {
+const interactHeatmap = (selection, props) => {
 	const {
 	  margin,
 	  width,
@@ -392,17 +392,12 @@ const interactGenericHeatmap = (selection, props) => {
 	  y_var,
 	  z_var,
 	  contextaul_vars,
-	  parentIdentityFlag,
-	  childrenIdentityFlag,
-	  rectWidth,
-	  rectHeight,
-	  identity_data,
 	  csvData,
 	  myColor,
 	  level
 	} = props;
 
-	selection.selectAll('#' + level + "_" + y_var +  "_genericheatmap_g")
+	selection.selectAll('#' + level + "_" + y_var +  "_interactheatmap_g")
 			 .remove();
 
 	// Processing the data
@@ -430,6 +425,8 @@ const interactGenericHeatmap = (selection, props) => {
 		});
 	});
 
+	var innerWidth  = width  - margin.left - margin.right;
+	var innerHeight = height - margin.top  - margin.bottom;
 
 	var xScale = d3.scaleLinear()
 					.domain(d3.extent(chart_data, xValue));
@@ -450,18 +447,18 @@ const interactGenericHeatmap = (selection, props) => {
     var x_var_label = d3.map(chart_data, function(d){return d[x_var];}).keys();
 
 	const g = selection.append('g')
-					.attr("class", level + " view virtuallayer genericheatmap")
-					.attr("id", level + "_" + y_var +  "_genericheatmap_g")
+					.attr("class", level + " view virtuallayer interactheatmap")
+					.attr("id", level + "_" + y_var +  "_interactheatmap_g")
 					.attr('transform', `translate(${margin.left},${-height/2 + margin.top})`);
 
 	// Build X scales and axis:
 	var x = d3.scaleBand()
-				.range([ 0, width ])
+				.range([ 0, innerWidth ])
 				.domain(x_var_label)
 				.padding(0.1);
 
 	var xAxis = g.append("g")
-		.attr("class", level + " genericheatmap x axis")
+		.attr("class", level + " interactheatmap x axis")
 		.attr("transform", "translate(0," + height + ")")
 		.call(d3.axisBottom(x).tickSize(0));
 		
@@ -476,19 +473,19 @@ const interactGenericHeatmap = (selection, props) => {
 	var select = xAxis.append("foreignObject")
 					.attr("width", 100)
 					.attr("height", 100)
-					.attr("x", width - 5)
+					.attr("x", innerWidth - 5)
 					.attr("y", 5)
 					.append('xhtml:select')
-					.attr("class", level + " " + y_var + " genericheatmap x menu")
-					.attr("id", level + "_" + y_var +  "_genericheatmap_x_menu")
+					.attr("class", level + " " + y_var + " interactheatmap x menu")
+					.attr("id", level + "_" + y_var +  "_interactheatmap_x_menu")
 					.on("mousedown", function() { d3.event.stopImmediatePropagation(); }) 
 					.on('change', (event) => {
 
 						// Reset VL
 						//resetVirtualLayering(level);
 
-						var selected_option = $('#' + level + "_" + y_var +  "_genericheatmap_x_menu").val();
-						selection.call(interactGenericHeatmap, {
+						var selected_option = $('#' + level + "_" + y_var +  "_interactheatmap_x_menu").val();
+						selection.call(interactHeatmap, {
 							margin: margin,
 							width: width,
 							height: height,
@@ -498,10 +495,6 @@ const interactGenericHeatmap = (selection, props) => {
 							y_var: y_var,
 							z_var: z_var,
 							contextaul_vars: contextaul_vars,
-							childrenIdentityFlag: childrenIdentityFlag,
-							rectWidth: rectWidth,
-							rectHeight: rectHeight,
-							identity_data: identity_data,
 							csvData: csvData,
 							level: level
 						});	
@@ -523,15 +516,15 @@ const interactGenericHeatmap = (selection, props) => {
 				.padding(0.1);
 
 	g.append("g")
-		.attr("class", level + " genericheatmap y axis")
+		.attr("class", level + " interactheatmap y axis")
 		.call(d3.axisLeft(y)
 				.tickSize(0))
 		.select(".domain").remove();
 
 	// Add y axis label
-	g.select('.' + level + '.genericheatmap.y.axis')
+	g.select('.' + level + '.interactheatmap.y.axis')
 		.append("text")
-		.attr("class", level + " genericheatmap y label")
+		.attr("class", level + " interactheatmap y label")
 		.attr("x", 0)
 		.attr("y", -1)
 		.attr("text-anchor", "middle")
@@ -553,7 +546,7 @@ const interactGenericHeatmap = (selection, props) => {
 		.data(chart_data)
 		.enter()
 		.append("rect")
-		.attr("class", level + " genericheatmap cell")
+		.attr("class", level + " interactheatmap cell")
 		.attr("x", function(d) { return x(d[x_var]) })
 		.attr("y", function(d) { return y(d[y_var]) })
 		.attr("width", x.bandwidth() )
@@ -563,52 +556,4 @@ const interactGenericHeatmap = (selection, props) => {
 		.style("stroke-width", "1px")
 		.append('title')
 		.text(d => `The ${z_var} is ${d3.format(".2s")(d[z_var])}.`);	
-
-	// Children Identity
-	// TODO merge all identity code to a class
-	if (childrenIdentityFlag) {
-
-		g.selectAll(".rect")
-			.data(identity_data)
-			.enter()    
-			.append("rect")	
-			.attr("class", d => level + " genericheatmap virtuallayer children rect " 
-						+ d.dependent + " " + d.independent)	  
-			.attr("transform", function(d) {
-				var y_position = height/2;
-				return "translate(" + (-margin.left) +"," + y_position + ")";
-			})						
-			//.attr("x", -10)
-			// Adjust for interactive menu
-			//.attr("x", width + rectWidth + 30)
-			.attr("x", width + rectWidth + 40)
-			.attr("y", -10)						
-			.attr("width", rectWidth)
-			.attr("height", rectHeight)
-			.style("stroke", "black")
-			.style("stroke-width", "2px")
-			.attr("stroke-opacity", 0.3)
-			.style("fill-opacity", 1)
-			.style("fill", d => heatmapColorScale(d.value))
-			.append('title')
-			.text(function(d) {
-				return `The mean distance is ${d3.format(".3f")(d.value)}.`
-			});
-
-		// Text for identity portion  
-		g.selectAll(".text")
-			.data(identity_data)
-			.enter()    		
-			.append("text")	   
-			.attr("class", d => level + " genericheatmap children text " 
-						+ d.dependent + " " + d.independent)	
-			.attr("transform", function(d) {
-				var y_position = height/2;
-				return "translate(" + (-margin.left) +"," + y_position + ")";
-			})		
-			.attr("dx", '.6em')			  
-			.attr('dy', '1.5em')																
-			.style("text-anchor", "end")
-			.text(d => d.dependent + "," + d.independent);
-	}
 }

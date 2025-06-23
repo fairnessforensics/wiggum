@@ -2,7 +2,7 @@
 var level3_state;
 
 // Initiate the first level virtual layer width
-var firstLevelWidth = 0;
+var globalFirstLevelWidth = 0;
 var firstLevelParentVLWidth = 0;
 var firstLevelChildrenVLWidth = 0;
 var firstLevelViewVLWidth = 0;
@@ -22,9 +22,6 @@ const interactiveLevelButton = (selection, props) => {
 		levelG,
 		level,
 		charts,
-		width,
-		height,
-		addWidthArray,
 		addHeightArray,
 		treeHeight,
 		matrix_data,
