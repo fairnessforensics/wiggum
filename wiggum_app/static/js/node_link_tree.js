@@ -252,14 +252,12 @@ function drawNodeLinkTree(data) {
 	});
 
 	// Visual Tech 0: Tree nodes	
-	var rectWidth = 20;
-	var rectHeight = 20;
 	firstLevelG.append('rect')
 		.attr("class", "level1 list cell")
 	    .attr("x", -10)
 	    .attr("y", -10)		
-		.attr("width", rectWidth)
-	    .attr("height", rectHeight)
+		.attr("width", globalRectWidth)
+	    .attr("height", globalRectHeight)
 		.style("fill", function(d, i) {
 			var keyArray = d.data.key.split(",");
 
@@ -680,10 +678,10 @@ function drawNodeLinkTree(data) {
 			return "level3 list rect " + d.data.dependent 
 					+ " " + d.data.independent + " splitby_" + d.data.splitby
 					+ " subgroup_" + d.data.subgroup;})
-		.attr("x", -rectWidth/2)
-		.attr("y", -rectHeight/2)		
-		.attr("width", rectWidth)
-		.attr("height", rectHeight)
+		.attr("x", -globalRectWidth/2)
+		.attr("y", -globalRectHeight/2)		
+		.attr("width", globalRectWidth)
+		.attr("height", globalRectHeight)
 		.style("fill", function(d) {
 			return heatmapColorScale(d.data.distance);
 		})
@@ -695,7 +693,7 @@ function drawNodeLinkTree(data) {
 			g.call(interact_node_click, {
 				element: d3.select(this),
 				d: d,
-				rectWidth: rectWidth,
+				rectWidth: globalRectWidth,
 				myColor: countryColor
 			});
 			// TODO only active when SM2 is selected
@@ -788,7 +786,7 @@ function drawNodeLinkTree(data) {
 						+ '_' + d.data.splitby
 						+ '_' + d.data.subgroup})
 			.attr("x", ".9em")
-			.attr("y", -rectHeight/2)	
+			.attr("y", -globalRectHeight/2)	
 			.style('fill', function(d) {
 				return correspondColor(d.data.subgroup);
 			})
@@ -985,7 +983,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va')
-					.attr("transform", "translate(" + (rectWidth + 5) + "," + 0 + ")");
+					.attr("transform", "translate(" + (globalRectWidth + 5) + "," + 0 + ")");
 
 				/* Gerrymandering 
 				// Visual Tech 2: strip plot
@@ -1069,15 +1067,15 @@ function drawNodeLinkTree(data) {
 				*/
 
 				var paddingOuter = 20;
-				relative_translate_y = -rectHeight - paddingOuter/2;
-				chart_height = height + 2 * rectHeight + paddingOuter;
+				relative_translate_y = -globalRectHeight - paddingOuter/2;
+				chart_height = height + 2 * globalRectHeight + paddingOuter;
 
 				// Visual Tech 2: map
 				var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va map')
 					//.attr("transform", "translate(" + (rectWidth + 10) + ", 0)");
-					.attr("transform", "translate(" + (rectWidth + 50) + "," + (-rectHeight) + ")");
+					.attr("transform", "translate(" + (globalRectWidth + 50) + "," + (-globalRectHeight) + ")");
 				var map_data = result_table.filter(obj => {
 					return obj.dependent === dependent
 							&& obj.independent === independent
@@ -1099,7 +1097,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter_barchart = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va barchart')
-					.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
+					.attr("transform", "translate(" + (globalRectWidth + 10) + ", " + relative_translate_y +")");
 
 				var bar_chart_data = [];
 
@@ -1148,7 +1146,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter_genericheatmap = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va genericheatmap')
-					.attr("transform", "translate(" + (rectWidth + 20) + ", " + height/2 +")");
+					.attr("transform", "translate(" + (globalRectWidth + 20) + ", " + height/2 +")");
 
 				var aggResultArray = d3.nest()
 					.key(function(d) {return d[independent]})
@@ -1179,8 +1177,8 @@ function drawNodeLinkTree(data) {
 
 				thirdLevelG1_visual_alter_genericheatmap.call(genericHeatmap, {
 					margin: { left: 30, top: 0, right: 0, bottom: 0 },
-					width: height + rectHeight + adjustHeight,
-					height: height + rectHeight + adjustHeight,
+					width: height + globalRectHeight + adjustHeight,
+					height: height + globalRectHeight + adjustHeight,
 					xValue: d => d[independent],
 					yValue: d => d[splitby],
 					x_var: independent,
@@ -1188,8 +1186,8 @@ function drawNodeLinkTree(data) {
 					z_var: dependent,
 					parentIdentityFlag: true,
 					childrenIdentityFlag: false,
-					rectWidth: rectWidth,
-					rectHeight: rectHeight,
+					rectWidth: globalRectWidth,
+					rectHeight: globalRectHeight,
 					chart_data: heatmap_data,
 					level: 'level3'
 				});	
@@ -1198,7 +1196,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter_smscatterplot_year = thirdLevelG1.append("g")
 						.attr("class", 'level-3' + ' ' + dependent 
 						+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot_year')
-						.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
+						.attr("transform", "translate(" + (globalRectWidth + 10) + ", " + relative_translate_y +")");
 
 				// Filter the independent var from contextual_cat_vars
 				var candidate_context_vars = contextual_ord_vars.filter(function(item) {
@@ -1262,7 +1260,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter_smscatterplot_industry = thirdLevelG1.append("g")
 							.attr("class", 'level-3' + ' ' + dependent 
 							+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot_industry')
-							.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
+							.attr("transform", "translate(" + (globalRectWidth + 10) + ", " + relative_translate_y +")");
 				
 				first_small_multiple_flag = true;
 				last_small_multiple_flag = false;
@@ -1341,7 +1339,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter_smscatterplot_industry_all = thirdLevelG1.append("g")
 							.attr("class", 'level-3' + ' ' + dependent 
 							+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot_industry_all')
-							.attr("transform", "translate(" + (rectWidth + 10) + ", " + relative_translate_y +")");
+							.attr("transform", "translate(" + (globalRectWidth + 10) + ", " + relative_translate_y +")");
 
 				// Reset
 				first_small_multiple_flag = true;
@@ -1406,7 +1404,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter_smscatterplot_industry_bounded = thirdLevelG1.append("g")
 							.attr("class", 'level-3' + ' ' + dependent 
 							+ ' ' + independent + ' splitby_' + splitby + ' va smscatterplot_industry_all_bounded')
-							.attr("transform", "translate(" + (rectWidth + 10 + 35) + ", " + (relative_translate_y - 10) +")");
+							.attr("transform", "translate(" + (globalRectWidth + 10 + 35) + ", " + (relative_translate_y - 10) +")");
 
 				var foreignObject = thirdLevelG1_visual_alter_smscatterplot_industry_bounded
 											.append("foreignObject")
@@ -1505,7 +1503,7 @@ function drawNodeLinkTree(data) {
 				var thirdLevelG1_visual_alter_scatterplot = thirdLevelG1.append("g")
 					.attr("class", 'level-3' + ' ' + dependent 
 					+ ' ' + independent + ' splitby_' + splitby + ' va scatterplot')
-					.attr("transform", "translate(" + (rectWidth + 5) + ", 0)");
+					.attr("transform", "translate(" + (globalRectWidth + 5) + ", 0)");
 
 				thirdLevelG1_visual_alter_scatterplot.call(scatterPlot, {
 						xValue: d => d[independent],
@@ -1545,7 +1543,7 @@ function drawNodeLinkTree(data) {
 			= d3.linkHorizontal()
 				.source(function(d) {
 					if (d.source.depth == 1) {
-						return [d.source.y + rectWidth / 2, d.source.x];
+						return [d.source.y + globalRectWidth / 2, d.source.x];
 					} else if (d.source.depth == 2) { 
 						return [d.source.y + secondLevelCircleRadius, d.source.x];
 					}else {}
@@ -1553,7 +1551,7 @@ function drawNodeLinkTree(data) {
 					if (d.source.depth == 1) {
 						return [d.target.y - secondLevelCircleRadius, d.target.x];
 					} else if (d.source.depth == 2) { 
-						return [d.target.y - rectWidth / 2, d.target.x];
+						return [d.target.y - globalRectWidth / 2, d.target.x];
 					}else {}
 				});	
 
@@ -1574,7 +1572,7 @@ function drawNodeLinkTree(data) {
 					if (d.source.depth == 0) {
 						// Level 1
 						if (type === 'list') {
-							return [d.target.y  - rectWidth/2, d.target.x];
+							return [d.target.y  - globalRectWidth/2, d.target.x];
 						}
 						var keyArray = d.target.data.key.split(",");
 						var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
@@ -1594,7 +1592,7 @@ function drawNodeLinkTree(data) {
 							var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
 							return [d.source.y + x(c) + x.bandwidth()-3, d.source.x + y(r)+y.bandwidth()/2 - matrixHeight/2];
 						}
-						return [d.source.y + rectWidth / 2, d.source.x];
+						return [d.source.y + globalRectWidth / 2, d.source.x];
 					} else if (d.source.depth == 2) { 
 
 						var dependent = d.target.data.dependent;
@@ -1634,7 +1632,7 @@ function drawNodeLinkTree(data) {
 
 						return [d.target.y - secondLevelCircleRadius, secondLevelG1_y + y_position];
 					} else if (d.source.depth == 2) { 
-						return [d.target.y - rectWidth / 2, d.target.x];
+						return [d.target.y - globalRectWidth / 2, d.target.x];
 					}else {}
 				});	
 
@@ -1647,7 +1645,7 @@ function drawNodeLinkTree(data) {
 						var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
 						return [d.source.y + x(c) + x.bandwidth()-3, d.source.x + y(r)+y.bandwidth()/2 - matrixHeight/2];
 					}
-					return [d.source.y + rectWidth / 2, d.source.x];
+					return [d.source.y + globalRectWidth / 2, d.source.x];
 				} else if (d.source.depth == 2) { 
 
 					var dependent = d.target.data.dependent;
@@ -1691,7 +1689,7 @@ function drawNodeLinkTree(data) {
 
 					return [d.target.y - secondLevelCircleRadius, secondLevelG1_y + y_position + secondLevelCircleRadius - 2];
 				} else if (d.source.depth == 2) { 
-					return [d.target.y - rectWidth / 2, d.target.x];
+					return [d.target.y - globalRectWidth / 2, d.target.x];
 				}else {}
 			});	
 	
