@@ -8,8 +8,12 @@ const oneDimensionalScatterPlot = (selection, props) => {
 	  width,
 	  height,
 	  chart_data,
+	  chart_name,
 	  level
 	} = props;
+
+	const g = selection.append('g')
+				.attr("class", level + " view virtuallayer " + chart_name)
 
 	const yScale = d3.scaleLinear();
 	//yScale.domain(d3.extent(chart_data, yValue));
@@ -26,7 +30,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		xScale.nice();
 
 		const xAxis = d3.axisBottom(xScale);
-		selection.append("g")
+		g.append("g")
 			.attr("class", level + " scatterplot2d x axis")
 			.attr("transform", "translate(0," + height + ")")
 			.call(xAxis)
@@ -39,7 +43,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 
 		// add right y axis
 		const yAxisRight = d3.axisRight(yScale);
-		selection.append("g")
+		g.append("g")
 			.attr("class", level + " scatterplot2d y right axis")
 			.attr("transform", "translate(" + width + ",0)")
 			.call(yAxisRight)
@@ -50,7 +54,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			.attr("dy", ".71em");
 		
 		// Left dots
-		selection.selectAll(".path")
+		g.selectAll(".path")
 			.data(chart_data)
 			.enter().append("path")	    
 			.attr("class", d => level + " scatterplot2d left circle " 
@@ -67,7 +71,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			.style("fill", d => heatmapColorScale(d.mean_distance));
 
 		// Right dots
-		selection.selectAll(".path")
+		g.selectAll(".path")
 			.data(chart_data)
 			.enter().append("path")	    
 			.attr("class", d => level + " scatterplot2d right circle " 
@@ -84,7 +88,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			.style("fill", d => heatmapColorScale(d.mean_distance));			
 	}
 
-	selection.append("g")
+	g.append("g")
 		  .attr("class", function(d) {
 			if (xValue) {
 				return level + " scatterplot2d y left axis";
@@ -108,7 +112,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .attr('fill', 'black')
 		  .text(yAxisLabel);
 
-	selection.selectAll(xValue ? ".scatterplot2d.circle.middle" : ".scatterplot1d.circle.middle")
+	g.selectAll(xValue ? ".scatterplot2d.circle.middle" : ".scatterplot1d.circle.middle")
 		  .data(chart_data)
 		  .enter().append("circle")	    
 		  .attr("class", function(d) {
@@ -140,8 +144,8 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			} else {
 				return `${d3.format(".3f")(yValue(d))}`;
 			}});
-	  
-	selection.selectAll(xValue ? ".scatterplot2d.text" : ".scatterplot1d.text")		
+
+	g.selectAll(xValue ? ".scatterplot2d.text" : ".scatterplot1d.text")		
 		.data(chart_data)
 		.enter().append("text")	   
 		.attr("class", function(d) {

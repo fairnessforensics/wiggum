@@ -1,19 +1,3 @@
-// Global variable
-var level3_state;
-
-// Initiate the first level virtual layer width
-var globalFirstLevelWidth = 0;
-var firstLevelParentVLWidth = 0;
-var firstLevelChildrenVLWidth = 0;
-var firstLevelViewVLWidth = 0;
-// Initiate second level virtual layer width
-var secondLevelWidth = 0;
-// Initiate third level virtual layer width
-var thirdLevelParentVLWidth = 0;
-
-var globalRectWidth = 20;
-var globalRectHeight = 20;
-
 const interactiveLevelButton = (selection, props) => {
 	const {
 		viewLabels,

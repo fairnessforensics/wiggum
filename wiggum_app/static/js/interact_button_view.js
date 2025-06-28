@@ -1,3 +1,16 @@
+/* =========== Global variable ========== */
+// Initiate the first level virtual layer width
+var globalFirstLevelWidth = 0;
+var globalFirstLevelView = 'list';
+
+// Initiate second level virtual layer width
+var globalSecondLevelWidth = 0;
+var globalSecondLevelView = 'list';
+
+// Initiate third level virtual layer width
+var globalThirdLevelParentVLWidth = 0;
+var globalThirdLevelView = 'list';
+
 const interact_view_button = (selection, props) => {
 	const {
 		viewLabels,
@@ -21,6 +34,14 @@ const interact_view_button = (selection, props) => {
 
 		selectedChart = charts[i];
 
+		if (level == 'level1') {
+			globalFirstLevelView = selectedChart;
+		} else if (level == 'level2') {
+			globalSecondLevelView = selectedChart;
+		} else if (level == 'level3') {
+			globalThirdLevelView = selectedChart;
+		} else {}
+
 		// Remove existing view virtual layer
 		d3.selectAll('.' + level + '.virtuallayer').remove();
 
@@ -28,39 +49,371 @@ const interact_view_button = (selection, props) => {
 		var contextual_cat_vars = globalInitData.contextual_cat_vars;
 		var contextual_ord_vars = globalInitData.contextual_ord_vars;
 
+		// Splitby table for level 2
+		var agg_splitby_table_dict = globalInitData.agg_splitby_table_dict;
+		var splitby_data = agg_splitby_table_dict[0];
+		var splitby_table = JSON.parse(splitby_data.splitby_table);
+
+		// Reset global level size
 		if (level == "level1") {
-			var rowIndex = 0;
+			// Reset first level size
+			globalFirstLevelWidth = 0;
+			globalFirstLevelHeight = 0;
 
-			var firstLevelG = d3.select('#node_link_tree').selectAll('.node.level-1');
+		} else if (level == 'level2') {
 
-			// Reset list visible
-			d3.selectAll('.'+level+'.list')
-				.transition()
-				.style('visibility', 'visible');
+		} else if (level == 'level3') {
 
+		}
+
+		var rowIndex = 0;
+
+		var firstLevelG = d3.select('#node_link_tree').selectAll('.node.level-1');
+
+		// Reset list visible
+		d3.selectAll('.'+level+'.list')
+			.transition()
+			.style('visibility', 'visible');
+
+		if (level == "level1") {
 			d3.selectAll('.' + level + '.list.text')
 				.transition()
 				.attr('dx', () => selectedChart === 'list' ? '0em' : '.6em')
 				.attr('dy', '1.5em')
 				.attr('text-anchor', () => selectedChart === 'list' ? 'middle' : 'end');
 
-			// Reset first level size
-			globalFirstLevelWidth = 0;
-			globalFirstLevelHeight = 0;
+			// Reset path visible
+			d3.select('#node_link_tree')
+				.selectAll('.path.level0')
+				.style('visibility', 'visible');
+		}
 
-			var viewVLWidth = 0;
-			var viewVLHeight = 0;
-			var childrenVLWidth = 0;
-			var childrenVLHeight = 0;
+		var viewVLWidth = 0;
+		var viewVLHeight = 0;
+		var childrenVLWidth = 0;
+		var childrenVLHeight = 0;
 
-			firstLevelG.each(function (d) {
-				var container = d3.select(this);
+		firstLevelG.each(function (d) {
 
-				var keyArray = d.data.key.split(",");
-				var dependent = keyArray[0];
-				var independent = keyArray[1];
+			var container = d3.select(this);
 
-				// ======================= TODO Move it to VL Children =====================
+			var keyArray = d.data.key.split(",");
+			var dependent = keyArray[0];
+			var independent = keyArray[1];
+
+			/* ==================== Data Space ==================== */
+			// Chart data
+			var first_candidate;
+			var candidate_context_vars;
+			var chart_data = [];
+
+			if (selectedChart == 'coloredbarchart') {
+				/* Visual Tech 3: colored bar chart */
+				var detail_dict = globalInitData.rank_trend_detail_dict.find(obj => {
+					return obj.dependent === dependent
+							&& obj.independent === independent
+				});
+
+				var detail_list = JSON.parse(detail_dict.detail_df);
+				
+				for (const [key1, value1] of Object.entries(detail_list)) {
+					var agg_object = {};
+					agg_object['name'] = key1;
+					agg_object['value'] = value1.aggregate;
+					chart_data.push(agg_object);	
+				}
+
+			} else if (selectedChart == 'interactheatmap') {
+				/* Visual Tech 4: a heatmap with an interactable dimension */
+				// Merge contextual categorical vars and contextual ordinal vars
+				candidate_context_vars = contextual_cat_vars.concat(contextual_ord_vars)
+
+				// Filter the independent var from contextual_context_vars
+				candidate_context_vars = candidate_context_vars.filter(function(item) {
+					return item !== independent
+				})
+
+				first_candidate = candidate_context_vars[0];
+
+			} else if (selectedChart == 'scatterplot') {
+				/* Visual Tech 5: Scatterplot */
+				// Filter the independent var from contextual_cat_vars
+				candidate_context_vars = contextual_ord_vars.filter(function(item) {
+					return item !== independent
+				})
+
+				first_candidate = candidate_context_vars[0];
+
+			} else if (selectedChart == 'smscatterplot_industry' || 
+						selectedChart == 'scatterplot_industry' || 
+						selectedChart == 'scatterplot_industry_bounded') {
+				/* 
+					Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID 
+					Visual Tech 7: Scatterplot specificly for Industry ID 
+					Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space
+				*/
+				first_candidate = "industry";
+
+			} else if (selectedChart == 'scatterplot1d') {
+				yAxisLabel = "mean_distance";
+				
+				chart_data = splitby_table.filter(obj => {
+					return obj.dependent === dependent
+							&& obj.independent === independent
+				  })
+			}
+
+			// Analytical Abstraction - Aggregation
+			if (selectedChart == 'scatterplot' || 
+				selectedChart == 'smscatterplot_industry' ||
+				selectedChart == 'scatterplot_industry' ||
+				selectedChart == 'scatterplot_industry_bounded') {
+				/* 
+					Visual Tech 5: Scatterplot 
+					Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID
+					Visual Tech 7: Scatterplot specificly for Industry ID
+					Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space
+				*/
+				chart_data = aggregate({data: csvData,
+					groupby_keys: [independent, first_candidate],
+					agg_var: dependent});
+
+				if (selectedChart == 'scatterplot_industry' || 
+					selectedChart == 'scatterplot_industry_bounded') {
+					// Log scale cannot include zero, filter zero
+					chart_data = chart_data.filter(d => {
+						return d[dependent] > 0;
+					});
+				}
+			}
+
+			/* ==================== View Space ==================== */
+			if (selectedChart == 'heatmap' || selectedChart == 'heatmaplist') {
+				/* Visual Tech 1: heatmap 
+				   Visual Tech 2: heatmap with children node */
+				d3.selectAll('.' + level + '.list.cell, ' + '.' + level + '.list.text')
+					.transition()
+					.style('visibility', 'hidden');
+
+				if (selectedChart == 'heatmaplist') {
+					viewVLWidth = 100;
+				} 
+
+				drawHeatmap({
+					container : container,
+					data	  : matrix_data,
+					rowLabels : rowLabels,
+					colLabels : colLabels,			
+					subLabel  : '',
+					selDep: dependent,
+					selIndep: independent,
+					height: matrixHeight,	
+					level: level
+				});
+			} else if (selectedChart == 'coloredbarchart') {
+				/* Visual Tech 3: colored bar chart */
+				viewVLWidth = 210;
+				viewVLHeight = 160;
+				
+				container.call(coloredBarChart, {
+					chart_data: chart_data,
+					width: viewVLWidth,
+					height: viewVLHeight,
+					childrenIdentityFlag: false,
+					margin: { left: 50, top: 0, right: 0, bottom: 0 },
+					yAxisLabel: keyArray[0],	
+					y_axis_scale: 'scaleLog',	
+					y_axis_tick_num: 5,
+					level: level,
+					myColor: countryColor
+				});
+			} else if (selectedChart == 'interactheatmap') {
+				/* Visual Tech 4: a heatmap with an interactable dimension */
+				viewVLWidth = 210;
+				viewVLHeight = 160;
+
+				container.call(interactHeatmap, {
+					margin: { left: 50, top: 0, right: 0, bottom: 0 },
+					width: viewVLWidth,
+					height: viewVLHeight,
+					xValue: d => d[first_candidate],
+					yValue: d => d[keyArray[1]],
+					x_var: first_candidate,
+					y_var: keyArray[1],
+					z_var: keyArray[0],
+					contextaul_vars: candidate_context_vars,
+					csvData: csvData,
+					level: level
+				});
+
+			} else if (selectedChart == 'scatterplot') {
+				/* Visual Tech 5: Scatterplot */
+				viewVLWidth = 250;
+				viewVLHeight = 200;
+
+				container.call(scatterPlot, {
+					xValue: d => d[first_candidate],
+					xAxisLabel: first_candidate,
+					yValue: d => d[keyArray[0]],
+					yAxisLabel: keyArray[0],
+					splitby: keyArray[1],
+					circleRadius: 3,
+					margin: { left: 50, top: 0, right: 0, bottom: 0 },
+					width: viewVLWidth,
+					height: viewVLHeight,
+					relative_translate_y: -100,
+					smallMultipleFlag: false,
+					y_axis_scale: 'scaleLog', 
+					y_axis_tick_num: 3,			
+					chart_data: chart_data,
+					myColor: countryColor,
+					mark_opacity: 0.9,
+					rowIndex: 'row' + rowIndex,
+					level: level
+				});
+
+			} else if (selectedChart == 'smscatterplot_industry') {
+				/* Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID */
+				viewVLWidth = 350;
+				viewVLHeight = 240;
+				
+				container.call(small_multiple_scatterplot, {
+					num_small_multiples: 4,
+					margin: { left: 50, top: 0, right: 0, bottom: 0 },
+					width: viewVLWidth,
+					height: viewVLHeight,
+					padding: 20,
+					xAxisLabel: first_candidate,
+					yAxisLabel: keyArray[0],
+					splitby: keyArray[1],
+					chart_data: chart_data,
+					myColor: countryColor,
+					rowIndex: rowIndex,
+					level: level
+				});
+
+			} else if (selectedChart == 'scatterplot_industry') {
+				/* Visual Tech 7: Scatterplot specificly for Industry ID */
+				viewVLWidth = 400;
+				viewVLHeight = 100;
+
+				container.call(scatterPlot, {
+					xValue: d => d[first_candidate],
+					xAxisLabel: first_candidate,
+					yValue: d => d[keyArray[0]],
+					yAxisLabel: keyArray[0],
+					splitby: keyArray[1],
+					margin: { left: 50, top: 0, right: 0, bottom: 0 },
+					width: viewVLWidth,
+					height: viewVLHeight,
+					relative_translate_y: -50,
+					smallMultipleFlag: false,
+					chart_name_suffix_flag: true,
+					x_axis_scale: 'scaleLinear', 
+					y_axis_scale: 'scaleLog', 
+					y_axis_tick_num: 5,
+					chart_data: chart_data,
+					myColor: countryColor,
+					mark_shape: 'rectangle',
+					mark_width: 2,
+					mark_height: 2,
+					mark_opacity: 0.9,
+					rowIndex: 'row' + rowIndex,
+					level: level
+				});
+
+			} else if (selectedChart == 'scatterplot_industry_bounded') {
+				/* Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space */
+				var scatterplot_industry_g = container.append("g")
+												.attr("class", level + ' ' + dependent + ' ' + independent 
+													+ ' virtuallayer scatterplot_industry_bounded')
+												.attr('transform', `translate(${20},${-100})`);
+
+				viewVLWidth = 400;
+				viewVLHeight = 200;
+
+				var foreignObject = scatterplot_industry_g.append("foreignObject")
+										.attr("width", viewVLWidth)  
+										.attr("height", viewVLHeight)
+										.append("xhtml:div") 
+										.attr("class", level + " scatterplot_industry_bounded div")
+										.style("width", "600px") 
+										.style("height", "100%")
+										.style("overflow-x", "auto") 
+										.style("white-space", "nowrap")
+										.style("display", "block")
+										//.style("border", "1px solid #ccc")  
+										.style("border-radius", "2px")
+										//.style("box-shadow", "inset 0 0 5px rgba(0, 0, 0, 0.1)") 
+										//.style("border", "1px solid black");
+
+				var scatterplot_industry_svg = d3.select(foreignObject.node())
+												.append("svg")
+												.attr("width", 1900)
+												.attr("height", viewVLHeight);
+
+				scatterplot_industry_svg.call(scatterPlot, {
+					xValue: d => d[first_candidate],
+					xAxisLabel: first_candidate,
+					yValue: d => d[keyArray[0]],
+					yAxisLabel: keyArray[0],
+					splitby: keyArray[1],
+					margin: { left: 35, top: 0, right: 0, bottom: 0 },
+					width: 1600,
+					height: 100,
+					relative_translate_y: 50,
+					smallMultipleFlag: false,
+					chart_name_suffix_flag: true,
+					chart_name_suffix: 'bounded',
+					x_axis_scale: 'scaleLinear', 
+					y_axis_scale: 'scaleLog', 
+					y_axis_tick_num: 5,
+					chart_data: chart_data,
+					myColor: countryColor,
+					mark_shape: 'rectangle',
+					mark_width: 8,
+					mark_height: 2,
+					mark_opacity: 0.9,
+					rowIndex: 'row' + rowIndex,
+					level: level
+				});
+			} else if (selectedChart == 'scatterplot1d') {
+				/* Level 2 - Visual Tech 1: 1d scatter plot */
+				var maxHeight = 300;
+				viewVLHeight = d.children[d.children.length - 1].x - d.children[0].x;
+
+				if (viewVLHeight > maxHeight) {
+					viewVLHeight = maxHeight;
+				}
+
+				var secondLevelG1 = d3.select('#node_link_tree')
+									.select('.level-2' + '.' + dependent + '.' + independent);
+
+				secondLevelG1.call(oneDimensionalScatterPlot, {
+									yValue: d => d[yAxisLabel],
+									yAxisLabel: yAxisLabel,
+									circleRadius: globalCircleRadius,
+									height: viewVLHeight,
+									chart_data: chart_data,
+									chart_name: selectedChart,
+									level: level
+								});		
+
+				// Hide the list circle
+				d3.selectAll('.' + level + '.list.circle, ' + '.' + level + '.list.text')
+					.transition()
+					.style('visibility', 'hidden');
+			}
+
+			// Create a rectangle for children VL
+			if (selectedChart == 'heatmaplist' ||
+				selectedChart == 'coloredbarchart' ||
+				selectedChart == 'interactheatmap' ||
+				selectedChart == 'scatterplot' ||
+				selectedChart == 'smscatterplot_industry' ||
+				selectedChart == 'scatterplot_industry' ||
+				selectedChart == 'scatterplot_industry_bounded') {
+
 				// Identity data
 				var single_object = {};
 				var identity_data = [];
@@ -69,364 +422,88 @@ const interact_view_button = (selection, props) => {
 				single_object['value'] = getMatrixValue(matrix_data, dependent, independent);
 				identity_data.push(single_object);
 
-				/* Data Space */
-				// Chart data
-				var first_candidate;
-				var candidate_context_vars;
-				var chart_data = [];
+				childrenVLWidth = 20;
+				var position_x = viewVLWidth;
+				var position_y = 0;
 
-				if (selectedChart == 'coloredbarchart') {
-					/* Visual Tech 3: colored bar chart */
-					var detail_dict = globalInitData.rank_trend_detail_dict.find(obj => {
-						return obj.dependent === dependent
-								&& obj.independent === independent
-					});
-
-					var detail_list = JSON.parse(detail_dict.detail_df);
-					
-					for (const [key1, value1] of Object.entries(detail_list)) {
-						var agg_object = {};
-						agg_object['name'] = key1;
-						agg_object['value'] = value1.aggregate;
-						chart_data.push(agg_object);	
-					}
-
-				} else if (selectedChart == 'interactheatmap') {
-					/* Visual Tech 4: a heatmap with an interactable dimension */
-					// Merge contextual categorical vars and contextual ordinal vars
-					candidate_context_vars = contextual_cat_vars.concat(contextual_ord_vars)
-
-					// Filter the independent var from contextual_context_vars
-					candidate_context_vars = candidate_context_vars.filter(function(item) {
-						return item !== independent
-					})
-
-					first_candidate = candidate_context_vars[0];
-
-				} else if (selectedChart == 'scatterplot') {
-					/* Visual Tech 5: Scatterplot */
-					// Filter the independent var from contextual_cat_vars
-					candidate_context_vars = contextual_ord_vars.filter(function(item) {
-						return item !== independent
-					})
-
-					first_candidate = candidate_context_vars[0];
-
-				} else if (selectedChart == 'smscatterplot_industry' || 
-							selectedChart == 'scatterplot_industry' || 
-							selectedChart == 'scatterplot_industry_bounded') {
-					/* 
-						Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID 
-						Visual Tech 7: Scatterplot specificly for Industry ID 
-						Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space
-					*/
-					first_candidate = "industry";
-
+				if (selectedChart == 'scatterplot_industry_bounded') {
+					var padding = 20;
+					childrenVLWidth += padding;
+					position_x = viewVLWidth + padding;
 				}
+				
+				container.call(initial_children_virtual_layer, {
+					chart_name: selectedChart,
+					identity_data: identity_data,
+					position_x: position_x,
+					position_y: position_y,
+					level: level
+				});
+			}
 
-				// Analytical Abstraction - Aggregation
-				if (selectedChart == 'scatterplot' || 
-					selectedChart == 'smscatterplot_industry' ||
-					selectedChart == 'scatterplot_industry' ||
-					selectedChart == 'scatterplot_industry_bounded') {
-					/* 
-						Visual Tech 5: Scatterplot 
-						Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID
-						Visual Tech 7: Scatterplot specificly for Industry ID
-						Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space
-					*/
-					chart_data = aggregate({data: csvData,
-						groupby_keys: [independent, first_candidate],
-						agg_var: dependent});
+			rowIndex = rowIndex + 1;
+		});
 
-					if (selectedChart == 'scatterplot_industry' || 
-						selectedChart == 'scatterplot_industry_bounded') {
-						// Log scale cannot include zero, filter zero
-						chart_data = chart_data.filter(d => {
-							return d[dependent] > 0;
-						});
-					}
-				}
-
-				/* View Space */
-				if (selectedChart == 'heatmap' || selectedChart == 'heatmaplist') {
-					/* Visual Tech 1: heatmap 
-					   Visual Tech 2: heatmap with children node */
-					d3.selectAll('.'+level+'.list')
-						.transition()
-						.style('visibility', 'hidden');
-
-					if (selectedChart == 'heatmaplist') {
-						viewVLWidth = 100;
-					}
-
-					drawHeatmap({
-						container : container,
-						data	  : matrix_data,
-						rowLabels : rowLabels,
-						colLabels : colLabels,			
-						subLabel  : '',
-						selDep: dependent,
-						selIndep: independent,
-						height: matrixHeight,	
-						level: level
-					});
-				} else if (selectedChart == 'coloredbarchart') {
-					/* Visual Tech 3: colored bar chart */
-					viewVLWidth = 210;
-					viewVLHeight = 160;
-					
-					container.call(coloredBarChart, {
-						chart_data: chart_data,
-						width: viewVLWidth,
-						height: viewVLHeight,
-						childrenIdentityFlag: false,
-						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						identity_data: identity_data,
-						yAxisLabel: keyArray[0],	
-						y_axis_scale: 'scaleLog',	
-						y_axis_tick_num: 5,
-						level: level,
-						myColor: countryColor
-					});
-				} else if (selectedChart == 'interactheatmap') {
-					/* Visual Tech 4: a heatmap with an interactable dimension */
-					viewVLWidth = 210;
-					viewVLHeight = 160;
-
-					container.call(interactHeatmap, {
-						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: viewVLWidth,
-						height: viewVLHeight,
-						xValue: d => d[first_candidate],
-						yValue: d => d[keyArray[1]],
-						x_var: first_candidate,
-						y_var: keyArray[1],
-						z_var: keyArray[0],
-						contextaul_vars: candidate_context_vars,
-						csvData: csvData,
-						level: level
-					});
-
-				} else if (selectedChart == 'scatterplot') {
-					/* Visual Tech 5: Scatterplot */
-					viewVLWidth = 250;
-					viewVLHeight = 200;
-
-					container.call(scatterPlot, {
-						xValue: d => d[first_candidate],
-						xAxisLabel: first_candidate,
-						yValue: d => d[keyArray[0]],
-						yAxisLabel: keyArray[0],
-						splitby: keyArray[1],
-						circleRadius: 3,
-						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: viewVLWidth,
-						height: viewVLHeight,
-						relative_translate_y: -100,
-						childrenIdentityFlag: true,
-						smallMultipleFlag: false,
-						y_axis_scale: 'scaleLog', 
-						y_axis_tick_num: 3,			
-						rectWidth: globalRectWidth,
-						rectHeight: globalRectHeight,
-						identity_data: identity_data,
-						chart_data: chart_data,
-						myColor: countryColor,
-						mark_opacity: 0.9,
-						rowIndex: 'row' + rowIndex,
-						level: level
-					});
-
-				} else if (selectedChart == 'smscatterplot_industry') {
-					/* Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID */
-					viewVLWidth = 350;
-					viewVLHeight = 240;
-					
-					container.call(small_multiple_scatterplot, {
-						num_small_multiples: 4,
-						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: viewVLWidth,
-						height: viewVLHeight,
-						padding: 20,
-						xAxisLabel: first_candidate,
-						yAxisLabel: keyArray[0],
-						splitby: keyArray[1],
-						chart_data: chart_data,
-						myColor: countryColor,
-						rowIndex: rowIndex,
-						level: level
-					});
-
-				} else if (selectedChart == 'scatterplot_industry') {
-					/* Visual Tech 7: Scatterplot specificly for Industry ID */
-					var scatterplot_industry_g = container.append("g")
-									.attr("class", level + ' ' + dependent
-									+ ' ' + independent + ' virtuallayer scatterplot_industry');
-		
-					viewVLWidth = 400;
-					viewVLHeight = 100;
-
-					scatterplot_industry_g.call(scatterPlot, {
-						xValue: d => d[first_candidate],
-						xAxisLabel: first_candidate,
-						yValue: d => d[keyArray[0]],
-						yAxisLabel: keyArray[0],
-						splitby: keyArray[1],
-						margin: { left: 50, top: 0, right: 0, bottom: 0 },
-						width: viewVLWidth,
-						height: viewVLHeight,
-						relative_translate_y: -50,
-						smallMultipleFlag: false,
-						chart_name_suffix_flag: true,
-						x_axis_scale: 'scaleLinear', 
-						y_axis_scale: 'scaleLog', 
-						y_axis_tick_num: 5,
-						chart_data: chart_data,
-						myColor: countryColor,
-						mark_shape: 'rectangle',
-						mark_width: 2,
-						mark_height: 2,
-						mark_opacity: 0.9,
-						rowIndex: 'row' + rowIndex,
-						level: level
-					});
-
-				} else if (selectedChart == 'scatterplot_industry_bounded') {
-					/* Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space */
-					var scatterplot_industry_g = container.append("g")
-													.attr("class", level + ' ' + dependent + ' ' + independent 
-														+ ' virtuallayer scatterplot_industry_bounded')
-													.attr('transform', `translate(${20},${-100})`);
-
-					viewVLWidth = 400;
-					viewVLHeight = 200;
-
-					var foreignObject = scatterplot_industry_g.append("foreignObject")
-											.attr("width", viewVLWidth)  
-											.attr("height", viewVLHeight)
-											.append("xhtml:div") 
-											.attr("class", level + " scatterplot_industry_bounded div")
-											.style("width", "600px") 
-											.style("height", "100%")
-											.style("overflow-x", "auto") 
-											.style("white-space", "nowrap")
-											.style("display", "block")
-											//.style("border", "1px solid #ccc")  
-											.style("border-radius", "2px")
-											//.style("box-shadow", "inset 0 0 5px rgba(0, 0, 0, 0.1)") 
-											//.style("border", "1px solid black");
-
-					var scatterplot_industry_svg = d3.select(foreignObject.node())
-													.append("svg")
-													.attr("width", 1900)
-													.attr("height", viewVLHeight);
-
-					scatterplot_industry_svg.call(scatterPlot, {
-						xValue: d => d[first_candidate],
-						xAxisLabel: first_candidate,
-						yValue: d => d[keyArray[0]],
-						yAxisLabel: keyArray[0],
-						splitby: keyArray[1],
-						margin: { left: 35, top: 0, right: 0, bottom: 0 },
-						width: 1600,
-						height: 100,
-						relative_translate_y: 50,
-						smallMultipleFlag: false,
-						chart_name_suffix_flag: true,
-						chart_name_suffix: 'bounded',
-						x_axis_scale: 'scaleLinear', 
-						y_axis_scale: 'scaleLog', 
-						y_axis_tick_num: 5,
-						chart_data: chart_data,
-						myColor: countryColor,
-						mark_shape: 'rectangle',
-						mark_width: 8,
-						mark_height: 2,
-						mark_opacity: 0.9,
-						rowIndex: 'row' + rowIndex,
-						level: level
-					});
-				} 
-
-				// Create a rectangle for children VL
-				if (selectedChart == 'heatmaplist' ||
-					selectedChart == 'coloredbarchart' ||
-					selectedChart == 'interactheatmap' ||
-					selectedChart == 'scatterplot' ||
-					selectedChart == 'smscatterplot_industry' ||
-					selectedChart == 'scatterplot_industry' ||
-					selectedChart == 'scatterplot_industry_bounded') {
-
-					childrenVLWidth = 20;
-					var position_x = viewVLWidth;
-					var position_y = 0;
-
-					if (selectedChart == 'scatterplot_industry_bounded') {
-						var padding = 20;
-						childrenVLWidth += padding;
-						position_x = viewVLWidth + padding;
-					}
-					
-					container.call(initial_children_virtual_layer, {
-						chart_name: selectedChart,
-						identity_data: identity_data,
-						position_x: position_x,
-						position_y: position_y,
-						level: level
-					});
-				}
-			});
-
-			// ================= Common part =================
+		/* ==================== Node-link Diagram Adjustment ==================== */
+		// Tree Size adjustment
+		if (level == 'level1') {
 			globalFirstLevelWidth = viewVLWidth + childrenVLWidth;
 
 			// Adjust first level width
 			adjustWidth({
 				firstLevelWidth: globalFirstLevelWidth, 
 				addWidth: 0, 
-				thirdLevelParentVLWidth: thirdLevelParentVLWidth,
+				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 				level: 'level1'});
-
-			// Reset first level VL width 
-			firstLevelParentVLWidth = 0;
-			firstLevelChildrenVLWidth = 0;
 
 			// Hide children text
 			d3.selectAll('.'+level + '.children.text')
-				.style('visibility', 'hidden');
+						.style('visibility', 'hidden');
 
-			rowIndex = rowIndex + 1;
+		} else if (level == 'level2') {
+
+		}
+
+		// Tree path adjustment
+		if (globalFirstLevelView == 'heatmap') {
+			if (globalSecondLevelView == 'list') {
+				// Update path for level 0 and level 1
+				d3.select('#node_link_tree').selectAll('.path')
+					.attr('d', function(d, i) {
+						return d.source.depth < 2 ? globalMatrixLinkPathGenerator(d, i, 'heatmap', matrixHeight)
+											: globalLinkPathGenerator(d)
+					})			
+			} else if (globalSecondLevelView == 'scatterplot1d') {
+				d3.select('#node_link_tree').selectAll('.path')
+					.attr('d', function(d, i) {
+						return d.source.depth < 1 ? globalMatrixLinkPathGenerator(d, i, 'heatmap', matrixHeight)
+							: globalScatterplot1dLinkPathGenerator(d, i, 'heatmap', matrixHeight);
+					})
+			}
+		} else {
+			if (globalSecondLevelView == 'list') {
+				d3.select('#node_link_tree').selectAll('.path')
+					.attr('d', function(d, i) {
+						return d.source.depth < 1 ? globalMatrixLinkPathGenerator(d, i, 'list', matrixHeight) 
+											: globalLinkPathGenerator(d);
+					})	
+			} else if (globalSecondLevelView == 'scatterplot1d') {
+				d3.select('#node_link_tree').selectAll('.path')
+					.attr('d', function(d, i) {
+						return d.source.depth < 1 ? globalMatrixLinkPathGenerator(d, i, 'list', matrixHeight)
+												: globalScatterplot1dLinkPathGenerator(d, i);
+					})
+			}
+		} 
+		
+		if (globalFirstLevelView == 'heatmaplist') {
+			// Hide path for level 0
+			d3.select('#node_link_tree')
+				.selectAll('.path.level0')
+				.style('visibility', 'hidden');
 		}
 
 /*===========WORKING====================>
-							// Visual Techniques
-							for (var k = 0; k < charts.length; k++){
-								d3.selectAll('.'+level+'.' + charts[k])
-									.transition()
-									.style('visibility', i == k ? 'visible' : 'hidden');
-							}
-
-							// Hide all virtual layer
-							for (var k = 0; k < charts.length; k++){
-								d3.selectAll('.'+level+'.' + charts[k]+'.virtuallayer')
-									.transition()
-									.style('visibility', 'hidden');
-							}
-
-							// Reset left rect
-							d3.selectAll('.'+ level +'.list.cell')
-								.attr("y", -10)
-								.attr("height", 20);
-
-							// Reset right rect
-							d3.selectAll('.'+ level +'.initialvirtuallayer.children.rect')
-								.attr("y", -10)
-								.attr("height", 20);
-
-							d3.selectAll('.'+level + '.children.text')
-								.attr("y", 0);	
-
 							// Level 1 keep both view and identity
 							if (level == "level1") {
 								// Reset first level width
@@ -696,6 +773,7 @@ const interact_view_button = (selection, props) => {
 								}
 							}
 <===============WORKING=============*/
+/*===============WORKING=============>
 							// Path
 							if (level == "level1") {
 								// Hide all path for level 0 and level 1
@@ -718,8 +796,7 @@ const interact_view_button = (selection, props) => {
 								if ((d3.select('.level2.scatterplot1d').style("visibility") == 'hidden')
 									&& (d3.select('.level2.scatterplot2d').style("visibility") == 'hidden')) {
 									// Level 1: list/heatmap; 
-									/* Fix Later TODO trend type condition
-									if (d3.select('.level2.barchart').style("visibility") == 'hidden') {*/
+
 									// Level 2: list
 									d3.selectAll('.path.list.node.level1')
 										.transition()
@@ -727,16 +804,6 @@ const interact_view_button = (selection, props) => {
 									d3.selectAll('.path.heatmap.node.level1')
 										.transition()
 										.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
-									/*
-									} else {
-										// Level 2: barchart
-										d3.selectAll('.path.list.barchart.level1')
-											.transition()
-											.style('visibility', (i == 0 || i == 3 || i == 4) ? 'visible' : 'hidden');
-										d3.selectAll('.path.heatmap.barchart.level1')
-											.transition()
-											.style('visibility', (i == 1 || i == 2) ? 'visible' : 'hidden');	
-									}*/
 
 								} else {
 									// Level 1: list/heatmap; level 2: scatterplot1d/scatterplot2d
@@ -767,25 +834,6 @@ const interact_view_button = (selection, props) => {
 										d3.selectAll('.path.heatmap.node.level1')
 											.transition()
 											.style('visibility', 'hidden');	
-										
-										// Todo fix later for level2 charts
-										/*if (d3.select('.level2.barchart').style("visibility") == 'hidden') {
-											// Level 2: list
-											d3.selectAll('.path.list.node.level1')
-												.transition()
-												.style('visibility', 'visible');
-											d3.selectAll('.path.heatmap.node.level1')
-												.transition()
-												.style('visibility', 'hidden');	
-										} else {
-											// Level 2: barchart
-											d3.selectAll('.path.list.barchart.level1')
-												.transition()
-												.style('visibility', 'visible');
-											d3.selectAll('.path.heatmap.barchart.level1')
-												.transition()
-												.style('visibility', 'hidden');	
-										}*/
 
 									} else {
 										// Level 1: list/heatmap; level 2: scatterplot1d/scatterplot2d
@@ -953,7 +1001,9 @@ const interact_view_button = (selection, props) => {
 									.transition()
 									.style('visibility', i == 3 ? 'visible' : 'hidden');
 							}
-						});
+<===============WORKING=============*/
+	});
+
 
 	var bWidth= 35; //button width
 	var bHeight= 22; //button height

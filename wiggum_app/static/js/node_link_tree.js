@@ -33,6 +33,15 @@ var countryColor = d3.scaleOrdinal()
 				.range(["#1f78b4","#e31a1c","#ff7f00","#6a3d9a","#b15928",
 						"#a6cee3","#fb9a99","#fdbf6f","#cab2d6","#ffff99"]);
 
+var globalLinks;
+var globalLinkPathGenerator;
+var globalMatrixLinkPathGenerator;
+var globalScatterplot1dLinkPathGenerator;
+
+var globalRectWidth = 20;
+var globalRectHeight = 20;
+var globalCircleRadius = 10;
+
 /**
  * Draw node link tree
  * 
@@ -80,7 +89,7 @@ function drawNodeLinkTree(data) {
 
 	var root = d3.hierarchy(nested_data, d => d.values);
 
-	var links = treeLayout(root).links();
+	globalLinks = treeLayout(root).links();
 
 	var svg = d3.select('#node_link_tree')
 				.append('svg');
@@ -421,7 +430,10 @@ function drawNodeLinkTree(data) {
 
 	// Second level - splitby
 	// Generate interactive buttons
-	viewLabels= ['\uf03a', 'SP1', 'SP2', '\uf080' ];
+	// TODO Generalize Gerrymandering: barchart for competitive information
+	//viewLabels= ['\uf03a', 'SP1', 'SP2', '\uf080' ];
+	viewLabels= ['\uf03a', 'SP1', 'SP2' ];
+	
 	// Left identity portion in virtual layer
 	leftIdentityLabels = ['I', 'II', 'III'];
 
@@ -464,10 +476,12 @@ function drawNodeLinkTree(data) {
 		leftIdentityLabels: leftIdentityLabels,
 		rightIdentityLabels: rightIdentityLabels,
 		level: 'level2',
-		charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
+		//charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
+		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
 		width: width,
 		addWidthArray: height_array,
-		treeHeight: treeHeight + margin.top + margin.bottom
+		treeHeight: treeHeight + margin.top + margin.bottom,
+		matrixHeight: matrixHeight
 	});
 
 	// Second level data
@@ -478,11 +492,11 @@ function drawNodeLinkTree(data) {
 
 	// Second level drawing
 	// Visual Tech 1: Tree nodes	
-	var secondLevelCircleRadius = 10;
+	//var secondLevelCircleRadius = 10;
 	var secondLevelG = g.selectAll('.level-2');
 	secondLevelG.append('circle')
 		.attr("class", "level2 list circle")
-		.attr('r', secondLevelCircleRadius)	
+		.attr('r', globalCircleRadius)	
 		.style("fill", function(d) {
 			var row = splitby_table.find(obj => {
 				return obj.dependent === d.data.values[0].dependent 
@@ -508,9 +522,10 @@ function drawNodeLinkTree(data) {
 			  })
 			return `The mean distance is ${d3.format(".3f")(row.mean_distance)}.`
 		}); 			
-
+/*=================================WORKING==============================>
 	// Visual Alternatives
 	root.children.forEach(function (d) {
+
 		var yColumn = 'mean_distance';
 
 		var keyArray = d.data.key.split(",");
@@ -570,7 +585,7 @@ function drawNodeLinkTree(data) {
 			chart_data,
 			level: 'level2'
 		});
-
+<=================================WORKING==============================*/
 		/* Gerrymandering Only
 		if (agg_data.trend_type == 'rank_trend') {
 			// Visual Tech 4: grouped bar chart
@@ -621,7 +636,7 @@ function drawNodeLinkTree(data) {
 		}
 		*/
 
-	});
+// ===========WORKING============	});
 
 	// Third level: subgroups
 
@@ -999,7 +1014,7 @@ function drawNodeLinkTree(data) {
 				*/
 
 				// extract leaf nodes
-				var leaf_node_links = links.filter(obj => {
+				var leaf_node_links = globalLinks.filter(obj => {
 					return obj.target.data.dependent === dependent
 							&& obj.target.data.independent === independent
 							&& obj.target.data.splitby === splitby
@@ -1539,23 +1554,23 @@ function drawNodeLinkTree(data) {
 	    .domain(d3.range(numrows))
 	    .range([0, height]);
 
-	var linkPathGenerator 
+	globalLinkPathGenerator 
 			= d3.linkHorizontal()
 				.source(function(d) {
 					if (d.source.depth == 1) {
 						return [d.source.y + globalRectWidth / 2, d.source.x];
 					} else if (d.source.depth == 2) { 
-						return [d.source.y + secondLevelCircleRadius, d.source.x];
+						return [d.source.y + globalCircleRadius, d.source.x];
 					}else {}
 				}).target(function(d) {
 					if (d.source.depth == 1) {
-						return [d.target.y - secondLevelCircleRadius, d.target.x];
+						return [d.target.y - globalCircleRadius, d.target.x];
 					} else if (d.source.depth == 2) { 
 						return [d.target.y - globalRectWidth / 2, d.target.x];
 					}else {}
 				});	
 
-	var matrixLinkPathGenerator 
+	globalMatrixLinkPathGenerator 
 			= d3.linkHorizontal()
 				.source(function(d, i, type, matrixHeight) {
 
@@ -1579,17 +1594,18 @@ function drawNodeLinkTree(data) {
 						return [d.target.y + x(c) + x.bandwidth()/2, d.target.x + y(r)+y.bandwidth()/2 - matrixHeight/2];
 					} else {
 						// Level 2
-						return [d.target.y - secondLevelCircleRadius, d.target.x];
+						return [d.target.y - globalCircleRadius, d.target.x];
 					}
 				});
 
-	var scatterplot1dLinkPathGenerator 
+	globalScatterplot1dLinkPathGenerator 
 			= d3.linkHorizontal()
 				.source(function(d, i, type, matrixHeight) {
 					if (d.source.depth == 1) {
 						if (type === 'heatmap') {
 							var keyArray = d.source.data.key.split(",");
 							var {r, c} = getMatrixIndex(matrix_data, keyArray[0], keyArray[1]);
+
 							return [d.source.y + x(c) + x.bandwidth()-3, d.source.x + y(r)+y.bandwidth()/2 - matrixHeight/2];
 						}
 						return [d.source.y + globalRectWidth / 2, d.source.x];
@@ -1610,7 +1626,7 @@ function drawNodeLinkTree(data) {
 						const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 						const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
 
-						return [d.source.y + secondLevelCircleRadius, secondLevelG1_y + y_position];
+						return [d.source.y + globalCircleRadius, secondLevelG1_y + y_position];
 					}else {}
 				}).target(function(d, i) {
 					if (d.source.depth == 1) {
@@ -1630,7 +1646,7 @@ function drawNodeLinkTree(data) {
 						const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 						const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
 
-						return [d.target.y - secondLevelCircleRadius, secondLevelG1_y + y_position];
+						return [d.target.y - globalCircleRadius, secondLevelG1_y + y_position];
 					} else if (d.source.depth == 2) { 
 						return [d.target.y - globalRectWidth / 2, d.target.x];
 					}else {}
@@ -1665,7 +1681,7 @@ function drawNodeLinkTree(data) {
 					const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 					const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
 
-					return [d.source.y + secondLevelCircleRadius, secondLevelG1_y + y_position + secondLevelCircleRadius - 2];
+					return [d.source.y + globalCircleRadius, secondLevelG1_y + y_position + globalCircleRadius - 2];
 				}else {}
 			}).target(function(d, i) {
 				if (d.source.depth == 1) {
@@ -1687,13 +1703,13 @@ function drawNodeLinkTree(data) {
 					const secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
 					const secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
 
-					return [d.target.y - secondLevelCircleRadius, secondLevelG1_y + y_position + secondLevelCircleRadius - 2];
+					return [d.target.y - globalCircleRadius, secondLevelG1_y + y_position + globalCircleRadius - 2];
 				} else if (d.source.depth == 2) { 
 					return [d.target.y - globalRectWidth / 2, d.target.x];
 				}else {}
 			});	
 	
-
+/*================================WORKING============================>
 	// Path for heatmap
 	g.selectAll('.path heatmap node').data(links)
 		.enter().append('path')
@@ -1710,6 +1726,7 @@ function drawNodeLinkTree(data) {
 		.style("pointer-events", function(d, i) {
 			return !d.source.depth ? "none" : "all";
 		});
+
 
 	// Path for 1d scatter plot
 	g.selectAll('.path list scatterplot1d').data(links)
@@ -1742,20 +1759,20 @@ function drawNodeLinkTree(data) {
 		.style("pointer-events", function(d, i) {
 			return !d.source.depth ? "none" : "all";
 		});			
-
-	g.selectAll('.path list node').data(links)
+	<================================WORKING============================*/
+	g.selectAll('.path').data(globalLinks)
 		.enter().append('path')
 		.attr('d', function(d, i) {
-			return d.source.depth < 1 ? matrixLinkPathGenerator(d, i, 'list', matrixHeight) : linkPathGenerator(d);
+			return d.source.depth < 1 ? globalMatrixLinkPathGenerator(d, i, 'list', matrixHeight) 
+										: globalLinkPathGenerator(d);
 		})
-		.attr("class", d => "path list node level" + d.source.depth)
+		.attr("class", d => "path level" + d.source.depth)
 		.attr('fill', 'none')
 		.attr('stroke', 'black')
 		.style("stroke-width", "1px")
 		.style("pointer-events", function(d, i) {
 			return !d.source.depth ? "none" : "all";
-		})
-		.style("visibility", "hidden");
+		});
 
 	/* Temporary comment out until barchart is fixed.
 	if (agg_data.trend_type == 'rank_trend') {	
@@ -2265,8 +2282,8 @@ function initVisibility() {
 	d3.selectAll('.level1.doublehistogram').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.heatmapdensity').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
-	d3.selectAll('.path.list').transition().style('visibility', "visible");
-	d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
+	//d3.selectAll('.path.list').transition().style('visibility', "visible");
+	//d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
 
 	// Splitby level
 	d3.selectAll('.level2.list').transition().style('visibility', "visible");
@@ -2274,7 +2291,7 @@ function initVisibility() {
 	d3.selectAll('.path.list.scatterplot1d').transition().style('visibility', "hidden");	
 	d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
 	d3.selectAll('.level2.barchart').transition().style('visibility', "hidden");	
-	d3.selectAll('.path.list.barchart').transition().style('visibility', "hidden");	
+	//d3.selectAll('.path.list.barchart').transition().style('visibility', "hidden");	
 
 	// Subgroup level
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
