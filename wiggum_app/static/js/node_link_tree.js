@@ -2282,13 +2282,8 @@ function initVisibility() {
 	d3.selectAll('.level1.doublehistogram').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.heatmapdensity').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
-	//d3.selectAll('.path.list').transition().style('visibility', "visible");
-	//d3.selectAll('.path.heatmap').transition().style('visibility', "hidden");	
 
 	// Splitby level
-	d3.selectAll('.level2.list').transition().style('visibility', "visible");
-	d3.selectAll('.level2.scatterplot1d').transition().style('visibility', "hidden");	
-	d3.selectAll('.path.list.scatterplot1d').transition().style('visibility', "hidden");	
 	d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
 	d3.selectAll('.level2.barchart').transition().style('visibility', "hidden");	
 	//d3.selectAll('.path.list.barchart').transition().style('visibility', "hidden");	
