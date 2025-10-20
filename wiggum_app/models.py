@@ -105,7 +105,7 @@ def getDistanceHeatmapDict(labeled_df, cur_result_df):
 
     distance_heatmap_dict_list = []
 
-    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
+    for trend_type, trend_df in cur_result_df.groupby('trend_type', sort=False):
 
         # iterate over the GroupFeat variables
         for gby, gby_trend_df in trend_df.groupby('splitby'):
@@ -159,7 +159,7 @@ def getDistanceHeatmapDict2D(labeled_df, cur_result_df):
 
     distance_heatmap_dict_list = []
 
-    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
+    for trend_type, trend_df in cur_result_df.groupby('trend_type', sort=False):
         grouped_df = trend_df.groupby(['dependent','independent','splitby']).agg(
                                         {'distance': ['mean']}).reset_index()
         grouped_df.columns = ['dependent', 'independent', 'splitby', 'mean_distance']
@@ -208,7 +208,7 @@ def getAggregateDistanceHeatmapDict(labeled_df, cur_result_df):
 
     distance_heatmap_dict_list = []
 
-    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
+    for trend_type, trend_df in cur_result_df.groupby('trend_type', sort=False):
 
         grouped_df = trend_df.groupby(['dependent','independent']).agg(
                                         {'distance': ['mean']}).reset_index()
@@ -258,7 +258,7 @@ def getAggregateSplitbyTableDict(labeled_df, cur_result_df):
 
     splitby_table_dict_list = []
 
-    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
+    for trend_type, trend_df in cur_result_df.groupby('trend_type', sort=False):
         grouped_df = trend_df.groupby(
                         ['dependent','independent','splitby']).agg(
                         {'distance': ['mean', 'max'], 'subgroup_trend_strength': ['mean']}).reset_index()
@@ -272,7 +272,8 @@ def getAggregateSplitbyTableDict(labeled_df, cur_result_df):
         competitive_df = trend_df.groupby(
                 ['dependent','independent','splitby', 
                 pd.cut(trend_df['subgroup_trend_strength'], 
-                bins=bins, labels=labels)]).size().reset_index(name='count')
+                bins=bins, labels=labels)],
+                observed=True).size().reset_index(name='count')
 
         competitive_df.columns = ['dependent', 'independent', 'splitby', 
                                 'winning_margin', 'count']
