@@ -19,15 +19,6 @@ const interact_parent_button = (selection, props) => {
 		if (level == 'level1') {
 			globalFirstLevelWidth = globalFirstLevelWidth - globalFirstLevelParentVLWidth;
 			globalFirstLevelParentVLWidth = 0;
-
-			// Adjust first level width
-			/*adjustWidth({
-				firstLevelWidth: globalFirstLevelWidth, 
-				addWidth: 0, 
-				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
-				resetFlag: false,
-				level: 'level1'});
-				*/
 		}
 
 		d3.selectAll('.'+ level +'.list.cell')
