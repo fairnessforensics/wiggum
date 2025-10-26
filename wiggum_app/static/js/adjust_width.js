@@ -1,30 +1,29 @@
 const adjustTotalWidth = (props) => {
 	const {
         firstLevelWidth, 
-		firstLevelParentVLWidth,
-        addTotalWidthVL,
+        addWidth,
         thirdLevelParentVLWidth,
         resetFlag
 	} = props;
 
     adjustWidth({
         firstLevelWidth: firstLevelWidth, 
-        addWidth: firstLevelParentVLWidth, 
+        addWidth: addWidth, 
         thirdLevelParentVLWidth: thirdLevelParentVLWidth,
         level: 'level1'}); 
 
     adjustWidth({
         firstLevelWidth: firstLevelWidth, 
-        addWidth: addTotalWidthVL, 
+        addWidth: addWidth, 
         thirdLevelParentVLWidth: thirdLevelParentVLWidth,
         level: 'level2'}); 
 
     // Reset the x position for tree node in level 1
     if (resetFlag == true) {
-        d3.selectAll('.' + level + '.list.cell')
+        d3.selectAll('.level1.list.cell')
             .transition()
             .attr("transform", function(d,i) { 
-                return "translate(" + (-firstLevelParentVLWidth) + "," + 0 + ")"; });	
+                return "translate(" + (-globalFirstLevelParentVLWidth) + "," + 0 + ")"; });	
     }
 }
 
@@ -33,6 +32,7 @@ const adjustWidth = (props) => {
         firstLevelWidth, 
 		addWidth,
         thirdLevelParentVLWidth,
+        resetFlag,
         level
 	} = props;
 
@@ -75,4 +75,12 @@ const adjustWidth = (props) => {
                 .attr("transform",  
                 "translate(" + (firstLevelWidth + addWidth) + ", 0)")
     });	
+
+    // Reset the x position for tree node in level 1
+    if (resetFlag == true) {
+        d3.selectAll('.level1.list.cell, .level1.list.text')
+            .transition()
+            .attr("transform", function(d,i) { 
+                return "translate(" + (-globalFirstLevelParentVLWidth) + "," + 0 + ")"; });	
+    }
 }

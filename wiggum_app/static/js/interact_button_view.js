@@ -1,16 +1,3 @@
-/* =========== Global variable ========== */
-// Initiate the first level virtual layer width
-var globalFirstLevelWidth = 0;
-var globalFirstLevelView = 'list';
-
-// Initiate second level virtual layer width
-var globalSecondLevelWidth = 0;
-var globalSecondLevelView = 'list';
-
-// Initiate third level virtual layer width
-var globalThirdLevelParentVLWidth = 0;
-var globalThirdLevelView = 'list';
-
 const interact_view_button = (selection, props) => {
 	const {
 		viewLabels,
@@ -59,6 +46,10 @@ const interact_view_button = (selection, props) => {
 			// Reset first level size
 			globalFirstLevelWidth = 0;
 			globalFirstLevelHeight = 0;
+
+			// Reset first level VL width 
+			globalFirstLevelParentVLWidth = 0;
+			globalFirstLevelChildrenVLWidth = 0;
 
 		} else if (level == 'level2') {
 
@@ -405,6 +396,10 @@ const interact_view_button = (selection, props) => {
 					.style('visibility', 'hidden');
 			}
 
+			// Update global view size
+			globalFirstLevelViewVLWidth = viewVLWidth;
+			globalFirstLevelViewVLHeight = viewVLHeight;
+
 			// Create a rectangle for children VL
 			if (selectedChart == 'heatmaplist' ||
 				selectedChart == 'coloredbarchart' ||
@@ -448,6 +443,7 @@ const interact_view_button = (selection, props) => {
 		// Tree Size adjustment
 		if (level == 'level1') {
 			globalFirstLevelWidth = viewVLWidth + childrenVLWidth;
+			globalFirstLevelChildrenVLWidth = childrenVLWidth;
 
 			// Adjust first level width
 			adjustWidth({

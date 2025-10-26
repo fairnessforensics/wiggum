@@ -217,11 +217,11 @@ function drawNodeLinkTree(data) {
 
 	}
 
-	// Left identity portion in virtual layer
-	var leftIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
+	// Parent identity portion in virtual layer
+	var parentIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
 
-	// Right identity portion in virtual layer
-	var rightIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
+	// Children identity portion in virtual layer
+	var childrenIdentityLabels= ['0', 'I', 'II', 'III', 'IV', 'V', 'VI'];
 
 	var firstLevelG1 = g.select('.level-1');
 
@@ -246,8 +246,8 @@ function drawNodeLinkTree(data) {
 
 	firstLevelButtons.call(interactiveLevelButton, {
 		viewLabels: viewLabels,
-		leftIdentityLabels: leftIdentityLabels,
-		rightIdentityLabels: rightIdentityLabels,
+		parentIdentityLabels: parentIdentityLabels,
+		childrenIdentityLabels: childrenIdentityLabels,
 		levelG: firstLevelG,
 		level: 'level1',
 		charts: chartList,
@@ -473,8 +473,8 @@ function drawNodeLinkTree(data) {
 	// TODO add width varies for bar chart
 	secondLevelButtons.call(interactiveLevelButton, {
 		viewLabels: viewLabels,
-		leftIdentityLabels: leftIdentityLabels,
-		rightIdentityLabels: rightIdentityLabels,
+		parentIdentityLabels: parentIdentityLabels,
+		childrenIdentityLabels: childrenIdentityLabels,
 		level: 'level2',
 		//charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
 		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
@@ -664,8 +664,8 @@ function drawNodeLinkTree(data) {
 
 		thirdLevelButtons.call(interactiveLevelButton, {
 			viewLabels: viewLabels,
-			leftIdentityLabels: leftIdentityLabels,
-			rightIdentityLabels: rightIdentityLabels,
+			parentIdentityLabels: parentIdentityLabels,
+			childrenIdentityLabels: childrenIdentityLabels,
 			level: 'level3',
 			charts: ['list', 'scatterplot']
 		});
@@ -675,8 +675,8 @@ function drawNodeLinkTree(data) {
 
 		thirdLevelButtons.call(interactiveLevelButton, {
 			viewLabels: viewLabels,
-			leftIdentityLabels: leftIdentityLabels,
-			rightIdentityLabels: rightIdentityLabels,
+			parentIdentityLabels: parentIdentityLabels,
+			childrenIdentityLabels: childrenIdentityLabels,
 			levelG: thirdLevelG,
 			level: 'level3',
 			charts: ['list', 'countrymap', 'barchart', 'genericheatmap'
