@@ -20,7 +20,7 @@ const interact_children_button = (selection, props) => {
 		if (level == 'level1') {
 			// Initialize children virtual layer width
 			globalFirstLevelWidth = globalFirstLevelWidth - globalFirstLevelChildrenVLWidth;
-			globalFirstLevelChildrenVLWidth = 0;
+			globalFirstLevelChildrenVLWidth = 20;
 		}
 
 		d3.selectAll('.' + level + '.' + selectedChart + '.virtuallayer.children.rect')
@@ -32,10 +32,7 @@ const interact_children_button = (selection, props) => {
 			.attr("height", 20);
 
 		// Remove existing virtual layer except rect
-		d3.selectAll('.children.virtuallayer')
-			.filter(function() {
-				return this.tagName !== 'rect';
-			})
+		d3.selectAll(".children.virtuallayer:not([class*='rect'])")
 			.remove();
 		
 		d3.selectAll('.aux.virtuallayer').remove();
@@ -647,17 +644,9 @@ const interact_children_button = (selection, props) => {
 
 		}
 
-		if (selectedChart == 'genericheatmap') {
+		if (selectedChart == 'interactheatmap') {
 			if (i == 2) {
-				globalFirstLevelChildrenVLWidth = 40 + 20;
-
-				adjustWidth({
-					firstLevelWidth: globalFirstLevelWidth, 
-					addWidth: globalFirstLevelChildrenVLWidth,  
-					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
-					level: 'level2'});
-
-				globalFirstLevelWidth += globalFirstLevelChildrenVLWidth;
+				globalFirstLevelChildrenVLWidth = 80;
 
 				// Hide node
 				d3.selectAll('.' + level + '.virtuallayer.children.rect')
@@ -686,16 +675,15 @@ const interact_children_button = (selection, props) => {
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 					level: 'level2'
 				})
+				globalFirstLevelWidth += globalFirstLevelChildrenVLWidth;	
 
 				// Reset the x position for child nodes in level 1 Virtual Layer
 				d3.selectAll('.' + level + '.virtuallayer.children.rect')
 					.transition()
 					.attr("transform", function(d,i) { 
-						var position_x = 250 + globalFirstLevelChildrenVLWidth - 20;
+						var position_x = globalFirstLevelWidth - globalFirstLevelParentVLWidth - 20;
 						return "translate(" + (position_x) + "," + 0 + ")"; });
 			}
-
-			globalFirstLevelWidth += globalFirstLevelChildrenVLWidth;	
 		}
 	});
 

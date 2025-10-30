@@ -122,7 +122,7 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 
 	selection.each(function (d) {
 		var selectionLevelG = d3.select(this);
-		selectionLevelG.select(".genericheatmap.cell")
+		selectionLevelG.select(".genericheatmap.cell, .interactheatmap.cell")
 				.each(function () {
 					var bbox = this.getBBox();
 					width = bbox.width;
@@ -230,7 +230,7 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 			// Duplicate the axis labels
 			g.append("g")
 				.attr("class", level + " " + side + " genericheatmap virtuallayer y axis")
-				.attr("transform", "translate(" + (x_position - childrenVLWidth - 10) + ","+ 0 +")")
+				.attr("transform", "translate(" + (x_position - childrenVLWidth + 10) + ","+ 0 +")")
 				.call(d3.axisRight(y)
 						.tickSize(0))
 				.select(".domain").remove()

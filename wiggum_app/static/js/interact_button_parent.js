@@ -506,8 +506,8 @@ const interact_parent_button = (selection, props) => {
 			}
 		}
 
-		if (selectedChart == 'genericheatmap') {
-
+		if (selectedChart == 'interactheatmap') {
+			
 			if (i == 2) {
 				addWidth4Lable = 30;
 				globalFirstLevelParentVLWidth = addWidth4Lable;
@@ -516,7 +516,7 @@ const interact_parent_button = (selection, props) => {
 				d3.selectAll('.'+ level +'.list.cell')
 					.transition().style('visibility', "hidden");
 
-				d3.selectAll('.'+ level +'.genericheatmap.children.text')
+				d3.selectAll('.'+ level +'.list.text')
 					.transition().style('visibility', "hidden");
 
 				levelG.call(generic_heatmap_virtual_layer, {
