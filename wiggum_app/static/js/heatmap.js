@@ -404,7 +404,6 @@ const interactHeatmap = (selection, props) => {
 	var aggResultArray = d3.nest()
 						.key(function(d) {return d[y_var]})
 						.key(function(d) {return d[x_var]})
-						.sortKeys(d3.ascending)
 						.rollup(function(v) {
 							return {
 								sum: d3.sum(v, function(d) {return d[z_var]})

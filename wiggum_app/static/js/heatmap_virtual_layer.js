@@ -135,7 +135,6 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 
 		var aggResultArray = d3.nest()
 							.key(function(d) {return d[keyArray[1]]})
-							.sortKeys(d3.ascending)
 							.rollup(function(v) {
 								return {
 									sum: d3.sum(v, function(d) {return d[keyArray[0]]})
@@ -158,7 +157,7 @@ const generic_heatmap_virtual_layer = (selection, props) => {
 
 		// Label
 		var var1_label = d3.map(chart_data, function(d){return d[independent];}).keys().reverse();
-	
+
 		const g = selectionLevelG.append('g')
 				.attr('transform', `translate(${-10},${-height/2 })`);
 	
