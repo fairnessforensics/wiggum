@@ -10,7 +10,9 @@ const interact_children_button = (selection, props) => {
 											.data(childrenIdentityLabels)
 											.enter()
 											.append("g")
-											.attr("class", level + " children identity button")
+											.attr("class", function(d, i) {
+												return level + " children identity button index" + i;
+											})
 											.style("cursor","pointer")
 											.on("click",function(d, i) {
 
@@ -702,5 +704,8 @@ const interact_children_button = (selection, props) => {
 		side: 'children'
 	});	
 
-
+	// Set button invisible at the beginning
+	d3.selectAll('.' + level + '.children.identity.button')
+		.selectAll('rect, text')
+		.style('visibility', 'hidden');
 }

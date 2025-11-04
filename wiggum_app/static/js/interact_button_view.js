@@ -499,6 +499,34 @@ const interact_view_button = (selection, props) => {
 				.style('visibility', 'hidden');
 		}
 
+		// Hide all identity buttons (parent and children)
+		d3.selectAll('.' + level + '.parent.identity.button, ' + '.' + level + '.children.identity.button')
+			.selectAll('rect, text')
+			.style('visibility', 'hidden');
+		
+		const identityButtonCounts = {
+				"scatterplot": 7,
+				"interactheatmap": 3
+		};
+
+		// Show only the buttons relevant to the selected chart
+		if (Object.keys(identityButtonCounts).includes(selectedChart)) {
+			const count = identityButtonCounts[selectedChart];
+
+			for (let i = 0; i < count; i++) {
+				d3.selectAll('.' + level + '.parent.identity.button.index' + i)
+					.selectAll('rect, text')
+					.style('visibility', 'visible');
+
+				d3.selectAll('.' + level + '.children.identity.button.index' + i)	
+					.selectAll('rect, text')
+					.style('visibility', 'visible');
+			}
+		}
+	
+
+
+
 /*===========WORKING====================>
 							// Level 1 keep both view and identity
 							if (level == "level1") {
@@ -1039,7 +1067,8 @@ const interact_view_button = (selection, props) => {
 					return y0+bHeight/2 + (bHeight+bSpace)*row;
 				})
                 .attr("text-anchor","middle")
-                .attr("dominant-baseline","central")
+                .attr("alignment-baseline", "middle")
+				//.attr("dominant-baseline","central")
                 .attr("fill","white")
                 .text(function(d) {return d;})
 

@@ -87,7 +87,8 @@ const button_vertical_list = (selection, props) => {
 			return y0+bHeight/2 + (bHeight+bSpace)*row;
 		})
 		.attr("text-anchor","middle")
-		.attr("dominant-baseline","central")
+		.attr("alignment-baseline", "middle")
+		//.attr("dominant-baseline","central")
 		.attr("fill","white")
 		.text(function(d) {return d;});
 
