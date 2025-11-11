@@ -477,7 +477,7 @@ function drawNodeLinkTree(data) {
 		childrenIdentityLabels: childrenIdentityLabels,
 		level: 'level2',
 		//charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
-		charts: ['list', 'scatterplot1d', 'scatterplot2d'],
+		charts: ['list', 'scatterplot1d', 'scatterplot'],
 		width: width,
 		addWidthArray: height_array,
 		treeHeight: treeHeight + margin.top + margin.bottom,

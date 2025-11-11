@@ -128,12 +128,17 @@ const interact_view_button = (selection, props) => {
 
 			} else if (selectedChart == 'scatterplot') {
 				/* Visual Tech 5: Scatterplot */
-				// Filter the independent var from contextual_cat_vars
-				candidate_context_vars = contextual_ord_vars.filter(function(item) {
-					return item !== independent
-				})
+				if (level == 'level1') {
+					// Filter the independent var from contextual_cat_vars
+					candidate_context_vars = contextual_ord_vars.filter(function(item) {
+						return item !== independent
+					})
 
-				first_candidate = candidate_context_vars[0];
+					first_candidate = candidate_context_vars[0];
+				} else if (level == 'level2') {
+					
+
+				}
 
 			} else if (selectedChart == 'smscatterplot_industry' || 
 						selectedChart == 'scatterplot_industry' || 
