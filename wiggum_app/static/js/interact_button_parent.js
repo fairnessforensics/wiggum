@@ -21,6 +21,11 @@ const interact_parent_button = (selection, props) => {
 		if (level == 'level1') {
 			globalFirstLevelWidth = globalFirstLevelWidth - globalFirstLevelParentVLWidth;
 			globalFirstLevelParentVLWidth = 0;
+			selectedChart = globalFirstLevelView;
+		} else if (level == 'level2') {
+			selectedChart = globalSecondLevelView;
+		} else if (level == 'level3') {
+			selectedChart = globalThirdLevelView;
 		}
 
 		d3.selectAll('.'+ level +'.list.cell')
@@ -424,6 +429,7 @@ const interact_parent_button = (selection, props) => {
 
 			adjustWidth({
 				firstLevelWidth: globalFirstLevelWidth, 
+				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: globalFirstLevelChildrenVLWidth, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 				level: 'level2'});
@@ -595,6 +601,7 @@ const interact_parent_button = (selection, props) => {
 				// Adjust Total Space
 				adjustWidth({
 					firstLevelWidth: globalFirstLevelWidth, 
+					secondLevelWidth: globalSecondLevelWidth,
 					addWidth: globalFirstLevelParentVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 					resetFlag: true,

@@ -23,6 +23,11 @@ const interact_children_button = (selection, props) => {
 			// Initialize children virtual layer width
 			globalFirstLevelWidth = globalFirstLevelWidth - globalFirstLevelChildrenVLWidth;
 			globalFirstLevelChildrenVLWidth = 20;
+			selectedChart = globalFirstLevelView;
+		} else if (level == 'level2') {
+			selectedChart = globalSecondLevelView;
+		} else if (level == 'level3') {
+			selectedChart = globalThirdLevelView;
 		}
 
 		d3.selectAll('.' + level + '.' + selectedChart + '.virtuallayer.children.rect')
@@ -34,7 +39,7 @@ const interact_children_button = (selection, props) => {
 			.attr("height", 20);
 
 		// Remove existing virtual layer except rect
-		d3.selectAll(".children.virtuallayer:not([class*='rect'])")
+		d3.selectAll("." + level + ".children.virtuallayer:not([class*='rect'])")
 			.remove();
 		
 		d3.selectAll('.aux.virtuallayer').remove();
@@ -477,6 +482,7 @@ const interact_children_button = (selection, props) => {
 		if (i == 1) {
 			adjustWidth({
 				firstLevelWidth: globalFirstLevelWidth, 
+				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: globalFirstLevelParentVLWidth, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 				level: 'level1'});
@@ -673,6 +679,7 @@ const interact_children_button = (selection, props) => {
 				// Adjust Total Space
 				adjustWidth({
 					firstLevelWidth: globalFirstLevelWidth, 
+					secondLevelWidth: globalSecondLevelWidth,
 					addWidth: globalFirstLevelChildrenVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 					level: 'level2'

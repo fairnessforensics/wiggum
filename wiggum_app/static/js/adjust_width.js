@@ -30,6 +30,7 @@ const adjustTotalWidth = (props) => {
 const adjustWidth = (props) => {
 	const {
         firstLevelWidth, 
+        secondLevelWidth,
 		addWidth,
         thirdLevelParentVLWidth,
         resetFlag,
@@ -45,7 +46,7 @@ const adjustWidth = (props) => {
                 return "translate(" + postion_x + "," + d.x + ")"; });	
     }
 
-    if (level == 'level1') {    
+    if (level == 'level1' || level == 'level2') {    
         // Adjust level 2 nodes x postion
         d3.selectAll('.node.level-2')
             .transition()
@@ -59,11 +60,11 @@ const adjustWidth = (props) => {
         d3.selectAll('.node.level-3')
             .transition()
             .attr("transform", function(d,i) { 
-                var postion_x = d.y + firstLevelWidth + addWidth + thirdLevelParentVLWidth;
+                var postion_x = d.y + firstLevelWidth + secondLevelWidth + addWidth + thirdLevelParentVLWidth;
                 return "translate(" + postion_x + "," + d.x + ")"; });
     }
 
-    if (level == 'level1') {
+    if (level == 'level1' || level == 'level2') {
         // Move level 1 paths
         d3.selectAll('.level1.path')
             .each(function (d) {
@@ -78,7 +79,7 @@ const adjustWidth = (props) => {
             .each(function (d) {
                 d3.select(this)
                     .attr("transform",  
-                    "translate(" + (firstLevelWidth + addWidth) + ", 0)")
+                    "translate(" + (firstLevelWidth + secondLevelWidth + addWidth) + ", 0)")
         });	
     }
 
