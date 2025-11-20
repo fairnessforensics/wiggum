@@ -66,23 +66,26 @@ const interact_view_button = (selection, props) => {
 			.transition()
 			.style('visibility', 'visible');
 
-		if (level == "level1") {
+		if (level == "level1" || level == "level2") {
 			d3.selectAll('.' + level + '.list.text')
 				.transition()
 				.attr('dx', () => selectedChart === 'list' ? '0em' : '.6em')
 				.attr('dy', '1.5em')
 				.attr('text-anchor', () => selectedChart === 'list' ? 'middle' : 'end');
 
-			// Reset path visible
-			d3.select('#node_link_tree')
-				.selectAll('.path.level0')
-				.style('visibility', 'visible');
-		}
+			if (level == "level1") {
+				// Reset path visible
+				d3.select('#node_link_tree')
+					.selectAll('.path.level0')
+					.style('visibility', 'visible');
+			}
+		} 
 
 		var viewVLWidth = 0;
 		var viewVLHeight = 0;
 		var childrenVLWidth = 0;
 		var childrenVLHeight = 0;
+		var secondLevelG1;
 
 		firstLevelG.each(function (d) {
 
@@ -128,17 +131,12 @@ const interact_view_button = (selection, props) => {
 
 			} else if (selectedChart == 'scatterplot') {
 				/* Visual Tech 5: Scatterplot */
-				if (level == 'level1') {
-					// Filter the independent var from contextual_cat_vars
-					candidate_context_vars = contextual_ord_vars.filter(function(item) {
-						return item !== independent
-					})
+				// Filter the independent var from contextual_cat_vars
+				candidate_context_vars = contextual_ord_vars.filter(function(item) {
+					return item !== independent
+				})
 
-					first_candidate = candidate_context_vars[0];
-				} else if (level == 'level2') {
-					
-
-				}
+				first_candidate = candidate_context_vars[0];
 
 			} else if (selectedChart == 'smscatterplot_industry' || 
 						selectedChart == 'scatterplot_industry' || 
@@ -150,8 +148,7 @@ const interact_view_button = (selection, props) => {
 				*/
 				first_candidate = "industry";
 
-			} else if (selectedChart == 'scatterplot1d') {
-				yAxisLabel = "mean_distance";
+			} else if (selectedChart == 'scatterplot1d' || selectedChart == 'scatterplot_level2') {
 				
 				chart_data = splitby_table.filter(obj => {
 					return obj.dependent === dependent
@@ -217,7 +214,7 @@ const interact_view_button = (selection, props) => {
 					height: viewVLHeight,
 					childrenIdentityFlag: false,
 					margin: { left: 50, top: 0, right: 0, bottom: 0 },
-					yAxisLabel: keyArray[0],	
+					yAxisLabel: dependent,	
 					y_axis_scale: 'scaleLog',	
 					y_axis_tick_num: 5,
 					level: level,
@@ -233,10 +230,10 @@ const interact_view_button = (selection, props) => {
 					width: viewVLWidth,
 					height: viewVLHeight,
 					xValue: d => d[first_candidate],
-					yValue: d => d[keyArray[1]],
+					yValue: d => d[independent],
 					x_var: first_candidate,
-					y_var: keyArray[1],
-					z_var: keyArray[0],
+					y_var: independent,
+					z_var: dependent,
 					contextaul_vars: candidate_context_vars,
 					csvData: csvData,
 					level: level
@@ -250,9 +247,9 @@ const interact_view_button = (selection, props) => {
 				container.call(scatterPlot, {
 					xValue: d => d[first_candidate],
 					xAxisLabel: first_candidate,
-					yValue: d => d[keyArray[0]],
-					yAxisLabel: keyArray[0],
-					splitby: keyArray[1],
+					yValue: d => d[dependent],
+					yAxisLabel: dependent,
+					splitby: independent,
 					circleRadius: 3,
 					margin: { left: 50, top: 0, right: 0, bottom: 0 },
 					width: viewVLWidth,
@@ -280,8 +277,8 @@ const interact_view_button = (selection, props) => {
 					height: viewVLHeight,
 					padding: 20,
 					xAxisLabel: first_candidate,
-					yAxisLabel: keyArray[0],
-					splitby: keyArray[1],
+					yAxisLabel: dependent,
+					splitby: independent,
 					chart_data: chart_data,
 					myColor: countryColor,
 					rowIndex: rowIndex,
@@ -296,9 +293,9 @@ const interact_view_button = (selection, props) => {
 				container.call(scatterPlot, {
 					xValue: d => d[first_candidate],
 					xAxisLabel: first_candidate,
-					yValue: d => d[keyArray[0]],
-					yAxisLabel: keyArray[0],
-					splitby: keyArray[1],
+					yValue: d => d[dependent],
+					yAxisLabel: dependent,
+					splitby: independent,
 					margin: { left: 50, top: 0, right: 0, bottom: 0 },
 					width: viewVLWidth,
 					height: viewVLHeight,
@@ -351,9 +348,9 @@ const interact_view_button = (selection, props) => {
 				scatterplot_industry_svg.call(scatterPlot, {
 					xValue: d => d[first_candidate],
 					xAxisLabel: first_candidate,
-					yValue: d => d[keyArray[0]],
-					yAxisLabel: keyArray[0],
-					splitby: keyArray[1],
+					yValue: d => d[dependent],
+					yAxisLabel: dependent,
+					splitby: independent,
 					margin: { left: 35, top: 0, right: 0, bottom: 0 },
 					width: 1600,
 					height: 100,
@@ -373,8 +370,11 @@ const interact_view_button = (selection, props) => {
 					rowIndex: 'row' + rowIndex,
 					level: level
 				});
-			} else if (selectedChart == 'scatterplot1d') {
-				/* Level 2 - Visual Tech 1: 1d scatter plot */
+			} else if (selectedChart == 'scatterplot1d' || selectedChart == 'scatterplot_level2'	) {
+				/* 
+					Level 2 - Visual Tech 1: 1d scatter plot 			
+							  Visual Tech 2: Scatterplot 
+				*/
 				var maxHeight = 300;
 				viewVLHeight = d.children[d.children.length - 1].x - d.children[0].x;
 
@@ -382,63 +382,115 @@ const interact_view_button = (selection, props) => {
 					viewVLHeight = maxHeight;
 				}
 
-				var secondLevelG1 = d3.select('#node_link_tree')
+				secondLevelG1 = d3.select('#node_link_tree')
 									.select('.level-2' + '.' + dependent + '.' + independent);
 
-				secondLevelG1.call(oneDimensionalScatterPlot, {
-									yValue: d => d[yAxisLabel],
-									yAxisLabel: yAxisLabel,
-									circleRadius: globalCircleRadius,
-									height: viewVLHeight,
-									chart_data: chart_data,
-									chart_name: selectedChart,
-									level: level
-								});		
+				var yColumn = "mean_distance";
+				var xColumn = 'max_distance';
 
-				// Hide the list circle
-				d3.selectAll('.' + level + '.list.circle, ' + '.' + level + '.list.text')
-					.transition()
-					.style('visibility', 'hidden');
-			}
+				if (selectedChart == 'scatterplot1d') {
+					secondLevelG1.call(oneDimensionalScatterPlot, {
+										yValue: d => d[yColumn],
+										yAxisLabel: 'The Mean of Distances',
+										circleRadius: globalCircleRadius,
+										margin: { top: 0, right: 0, bottom: 0, left: 0 },
+										height: viewVLHeight,
+										chart_data: chart_data,
+										chart_name: selectedChart,
+										level: level
+									});		
+
+					// Hide the list circle
+					d3.selectAll('.' + level + '.list.circle, ' + '.' + level + '.list.text')
+						.transition()
+						.style('visibility', 'hidden');
+
+				} else if (selectedChart == 'scatterplot_level2') {
+					// Apply the same width and height, and padding 50 pixels
+					viewVLWidth = viewVLHeight + 50;
+
+					secondLevelG1.call(oneDimensionalScatterPlot, {
+										xValue: d => d[xColumn],
+										xAxisLabel: 'The Maximum Distance',
+										yValue: d => d[yColumn],
+										yAxisLabel: 'The Mean of Distances',
+										circleRadius: globalCircleRadius,
+										margin: { top: 0, right: 0, bottom: 0, left: 50 },
+										width: viewVLWidth,
+										height: viewVLHeight,
+										chart_data: chart_data,
+										chart_name: selectedChart,
+										level: level
+									});		
+									
+
+				}
+
+			} 
 
 			// Update global view size
-			globalFirstLevelViewVLWidth = viewVLWidth;
-			globalFirstLevelViewVLHeight = viewVLHeight;
+			if (level == 'level1') {
+				globalFirstLevelViewVLWidth = viewVLWidth;
+				globalFirstLevelViewVLHeight = viewVLHeight;
+			} else if (level == 'level2') {
+				globalSecondLevelViewVLWidth = viewVLWidth;
+				globalSecondLevelViewVLHeight = viewVLHeight;
+			}
 
-			// Create a rectangle for children VL
-			if (selectedChart == 'heatmaplist' ||
-				selectedChart == 'coloredbarchart' ||
-				selectedChart == 'interactheatmap' ||
-				selectedChart == 'scatterplot' ||
-				selectedChart == 'smscatterplot_industry' ||
-				selectedChart == 'scatterplot_industry' ||
-				selectedChart == 'scatterplot_industry_bounded') {
+			/* ==================== Initialize Children Virtual Layer ==================== */
+			if (level == 'level1') {
+				// Create a rectangle for children VL in Level 1
+				if (selectedChart == 'heatmaplist' ||
+					selectedChart == 'coloredbarchart' ||
+					selectedChart == 'interactheatmap' ||
+					selectedChart == 'scatterplot' ||
+					selectedChart == 'smscatterplot_industry' ||
+					selectedChart == 'scatterplot_industry' ||
+					selectedChart == 'scatterplot_industry_bounded') {
 
-				// Identity data
-				var single_object = {};
-				var identity_data = [];
-				single_object['dependent'] = dependent;
-				single_object['independent'] = independent;
-				single_object['value'] = getMatrixValue(matrix_data, dependent, independent);
-				identity_data.push(single_object);
+					// Identity data
+					var single_object = {};
+					var identity_data = [];
+					single_object['dependent'] = dependent;
+					single_object['independent'] = independent;
+					single_object['value'] = getMatrixValue(matrix_data, dependent, independent);
+					identity_data.push(single_object);
 
-				childrenVLWidth = 20;
-				var position_x = viewVLWidth;
-				var position_y = 0;
+					childrenVLWidth = 20;
+					var position_x = viewVLWidth;
+					var position_y = 0;
 
-				if (selectedChart == 'scatterplot_industry_bounded') {
-					var padding = 20;
-					childrenVLWidth += padding;
-					position_x = viewVLWidth + padding;
+					if (selectedChart == 'scatterplot_industry_bounded') {
+						var padding = 20;
+						childrenVLWidth += padding;
+						position_x = viewVLWidth + padding;
+					}
+					
+					container.call(initial_children_virtual_layer, {
+						chart_name: selectedChart,
+						identity_data: identity_data,
+						position_x: position_x,
+						position_y: position_y,
+						level: level
+					});
+				} 
+			} else if (level == 'level2') {
+				// Create cycles for children VL in Level 2
+				if (selectedChart == 'scatterplot_level2') {
+
+					childrenVLWidth = 50; 
+					
+					var position_x = viewVLWidth + childrenVLWidth;
+					var position_y = 0;					
+
+					secondLevelG1.call(initial_level2_children_virtual_layer, {
+										chart_name: selectedChart,
+										identity_data: chart_data,
+										position_x: position_x,
+										position_y: viewVLHeight,
+										level: level
+					});
 				}
-				
-				container.call(initial_children_virtual_layer, {
-					chart_name: selectedChart,
-					identity_data: identity_data,
-					position_x: position_x,
-					position_y: position_y,
-					level: level
-				});
 			}
 
 			rowIndex = rowIndex + 1;
@@ -463,6 +515,15 @@ const interact_view_button = (selection, props) => {
 
 		} else if (level == 'level2') {
 
+			globalSecondLevelWidth = viewVLWidth + childrenVLWidth;
+			globalSecondLevelChildrenVLWidth = childrenVLWidth;
+			
+			// Adjust second level width
+			adjustWidth({
+				firstLevelWidth: globalFirstLevelWidth, 
+				addWidth: globalSecondLevelWidth, 
+				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
+				level: 'level2'});
 		}
 
 		// Tree path adjustment
@@ -482,7 +543,7 @@ const interact_view_button = (selection, props) => {
 					})
 			}
 		} else {
-			if (globalSecondLevelView == 'list') {
+			if (globalSecondLevelView == 'list' || globalSecondLevelView == 'scatterplot_level2') {
 				d3.select('#node_link_tree').selectAll('.path')
 					.attr('d', function(d, i) {
 						return d.source.depth < 1 ? globalMatrixLinkPathGenerator(d, i, 'list', matrixHeight) 
@@ -511,7 +572,8 @@ const interact_view_button = (selection, props) => {
 		
 		const identityButtonCounts = {
 				"scatterplot": 7,
-				"interactheatmap": 3
+				"interactheatmap": 3,
+				"scatterplot_level2": 2
 		};
 
 		// Show only the buttons relevant to the selected chart

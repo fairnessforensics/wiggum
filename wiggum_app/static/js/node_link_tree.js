@@ -435,10 +435,10 @@ function drawNodeLinkTree(data) {
 	viewLabels= ['\uf03a', 'SP1', 'SP2' ];
 	
 	// Left identity portion in virtual layer
-	leftIdentityLabels = ['I', 'II', 'III'];
+	//leftIdentityLabels = ['I', 'II', 'III'];
 
 	// Right identity portion in virtual layer
-	rightIdentityLabels = ['I', 'II', 'III'];
+	//rightIdentityLabels = ['I', 'II', 'III'];
 	
 	var secondLevelG1 = g.select('.level-2');
 
@@ -477,7 +477,7 @@ function drawNodeLinkTree(data) {
 		childrenIdentityLabels: childrenIdentityLabels,
 		level: 'level2',
 		//charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
-		charts: ['list', 'scatterplot1d', 'scatterplot'],
+		charts: ['list', 'scatterplot1d', 'scatterplot_level2'],
 		width: width,
 		addWidthArray: height_array,
 		treeHeight: treeHeight + margin.top + margin.bottom,

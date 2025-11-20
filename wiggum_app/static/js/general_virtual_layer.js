@@ -41,3 +41,50 @@ const initial_children_virtual_layer = (selection, props) => {
 		.style("text-anchor", "end")
 		.text(d => d.dependent + "," + d.independent);
 }
+
+const initial_level2_children_virtual_layer = (selection, props) => {
+	const {
+		chart_name,
+		identity_data,
+		position_x,
+		position_y,
+	  	level
+	} = props;
+
+	var number_of_circles = identity_data.length;
+	var interval = position_y / (number_of_circles - 1);
+
+	selection.selectAll(".virtuallayer.children.circle")
+		.data(identity_data)
+		.enter()
+		.append("circle")	    
+		.attr("class", d => level + " " + chart_name + " virtuallayer children circle " 
+					+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	
+		.attr("transform", function(d, i) {
+				return "translate(" + position_x +"," + (interval * i) + ")";
+			})
+		.attr('r', globalCircleRadius)	
+		.style('stroke', 'black')
+		.style('stroke-width', '2px')
+		.attr("stroke-opacity", 0.3)
+		.style("fill-opacity", 1) 
+		.style("fill", d => heatmapColorScale(d.mean_distance))
+		.append('title')
+		.text(function(d) {
+			return `The mean distance is ${d3.format(".3f")(d.mean_distance)}.`
+		});
+
+	// Text for identity portion  
+	selection.selectAll(".text")		
+		.data(identity_data)
+		.enter().append("text")	   
+		.attr("class", d => level + " " + chart_name + " children text " 
+				+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	
+		.attr("transform", function(d, i) {
+				return "translate(" + position_x +"," + (interval * i) + ")";
+			})
+		.attr("dx", -globalCircleRadius)			  
+		.attr("dy", 2*globalCircleRadius + 5)			
+		.style("text-anchor", "start")
+		.text(d => d.splitby);			
+}

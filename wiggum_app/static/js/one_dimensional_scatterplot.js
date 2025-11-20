@@ -5,6 +5,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 	  yValue,
 	  yAxisLabel,
 	  circleRadius,
+	  margin,
 	  width,
 	  height,
 	  chart_data,
@@ -12,40 +13,50 @@ const oneDimensionalScatterPlot = (selection, props) => {
 	  level
 	} = props;
 
+	var innerWidth  = width  - margin.left - margin.right;
+	var innerHeight = height - margin.bottom;
+
 	const g = selection.append('g')
 				.attr("class", level + " view virtuallayer " + chart_name)
+				.attr('transform', `translate(${margin.left},${0})`);
+
+	const padding = 0.05; 
 
 	const yScale = d3.scaleLinear();
 	//yScale.domain(d3.extent(chart_data, yValue));
-	yScale.domain([0, 1]);
-	yScale.range([height, 0]);
+	yScale.domain([0 - padding, 1 + padding]);
+	yScale.range([innerHeight, 0]);
 	yScale.nice();
 
-	const yAxis = d3.axisLeft(yScale);
+	const yAxis = d3.axisLeft(yScale)
+					.tickValues(d3.range(0, 1.01, 0.1));;
 	
 	const xScale = d3.scaleLinear();
 	if (xValue) {
-		xScale.domain([0, 1]);
-		xScale.range([0, width]);
+		xScale.domain([0 - padding, 1 + padding]);
+		xScale.range([0, innerWidth]);
 		xScale.nice();
 
-		const xAxis = d3.axisBottom(xScale);
+		const xAxis = d3.axisBottom(xScale)
+						.tickValues(d3.range(0, 1.01, 0.1));
+
 		g.append("g")
 			.attr("class", level + " scatterplot2d x axis")
-			.attr("transform", "translate(0," + height + ")")
+			.attr("transform", "translate(0," + innerHeight + ")")
 			.call(xAxis)
 			.append("text")
 			.attr("class", level + " scatterplot2d label")
 			.attr('fill', 'black')
-			.attr("x", width/2)
+			.attr("x", innerWidth/2)
 			.attr("y", 26)
 			.text(xAxisLabel);	
 
 		// add right y axis
-		const yAxisRight = d3.axisRight(yScale);
+		const yAxisRight = d3.axisRight(yScale)
+							 .tickValues(d3.range(0, 1.01, 0.1));;
 		g.append("g")
 			.attr("class", level + " scatterplot2d y right axis")
-			.attr("transform", "translate(" + width + ",0)")
+			.attr("transform", "translate(" + innerWidth + ",0)")
 			.call(yAxisRight)
 		.append("text")
 			.attr("class", level + " scatterplot2d label")
@@ -82,7 +93,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 						.startAngle( 0 ) 
 						.endAngle( 3.14 ) 
 			)
-			.attr("transform", d => "translate(" + (width + 1) +"," + yScale(yValue(d)) +")")			
+			.attr("transform", d => "translate(" + (innerWidth + 1) +"," + yScale(yValue(d)) +")")			
 			.attr("stroke", "black")
 			.attr("stroke-width", 2)	  
 			.style("fill", d => heatmapColorScale(d.mean_distance));			
@@ -136,6 +147,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .attr("cy", d => yScale(yValue(d)))
 		  .attr("stroke", "black")
 		  .attr("stroke-width", 2)	  
+		  .attr("stroke-opacity", 0.3)
 		  .style("fill", d => heatmapColorScale(d.mean_distance))
 		  .append('title')
 		  .text(function(d) {
