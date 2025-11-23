@@ -21,8 +21,12 @@ const interact_parent_button = (selection, props) => {
 		if (level == 'level1') {
 			globalFirstLevelWidth = globalFirstLevelWidth - globalFirstLevelParentVLWidth;
 			globalFirstLevelParentVLWidth = 0;
+
 			selectedChart = globalFirstLevelView;
 		} else if (level == 'level2') {
+			globalSecondLevelWidth = globalSecondLevelWidth - globalSecondLevelParentVLWidth;
+			globalSecondLevelParentVLWidth = 0;
+
 			selectedChart = globalSecondLevelView;
 		} else if (level == 'level3') {
 			selectedChart = globalThirdLevelView;
@@ -432,6 +436,7 @@ const interact_parent_button = (selection, props) => {
 				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: globalFirstLevelChildrenVLWidth, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
+				layerType: 'parent',
 				level: 'level2'});
 
 			d3.selectAll('.'+ level +'.list.cell')
@@ -595,6 +600,22 @@ const interact_parent_button = (selection, props) => {
 			}
 		}
 
+		if (selectedChart == 'scatterplot_level2') {
+			// Pull the View VL back by 50 pixels, which corresponds to the left margin
+			globalSecondLevelParentVLWidth = -50;
+
+			levelG.call(scatterplot_virtual_layer, {
+				width: globalSecondLevelWidth,
+				height: globalSecondLevelViewVLHeight,
+				parentVLWidth: globalSecondLevelParentVLWidth,
+				axis_x_position: 15,
+				link_opacity: 0.3,
+				side: 'parent',
+				level: 'level2'
+			});	
+			
+		}
+
 		// Common code
 		if (level == "level1") {
 			if (i == 0 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6) {
@@ -605,12 +626,28 @@ const interact_parent_button = (selection, props) => {
 					addWidth: globalFirstLevelParentVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 					resetFlag: true,
+					layerType: 'parent',
 					level: 'level1'
 				})
 			}
 
 			globalFirstLevelWidth += globalFirstLevelParentVLWidth;
 
+		} else if (level == "level2") {
+			if (i == 0 || i == 1) {
+				// Adjust Total Space
+				adjustWidth({
+					firstLevelWidth: globalFirstLevelWidth, 
+					secondLevelWidth: globalSecondLevelWidth,
+					addWidth: globalSecondLevelParentVLWidth,
+					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
+					resetFlag: true,
+					layerType: 'parent',
+					level: 'level2'
+				})
+			}
+			
+			globalSecondLevelWidth += globalSecondLevelParentVLWidth;
 		}
 	});
 

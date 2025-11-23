@@ -485,6 +485,7 @@ const interact_children_button = (selection, props) => {
 				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: globalFirstLevelParentVLWidth, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
+				layerType: 'children',
 				level: 'level1'});
 
 			d3.selectAll('.'+ level +'.virtuallayer.children.rect')
@@ -682,8 +683,11 @@ const interact_children_button = (selection, props) => {
 					secondLevelWidth: globalSecondLevelWidth,
 					addWidth: globalFirstLevelChildrenVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
-					level: 'level2'
+					resetFlag: false,
+					layerType: 'children',
+					level: 'level1'
 				})
+
 				globalFirstLevelWidth += globalFirstLevelChildrenVLWidth;	
 
 				// Reset the x position for child nodes in level 1 Virtual Layer

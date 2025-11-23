@@ -34,16 +34,17 @@ const adjustWidth = (props) => {
 		addWidth,
         thirdLevelParentVLWidth,
         resetFlag,
+        layerType,
         level
 	} = props;
 
-    if (level == 'level1') {
+    if (level === 'level1' && ['parent', 'view'].includes(layerType)) {
         // Adjust level 1 nodes x postion
         d3.selectAll('.node.level-1')
             .transition()
             .attr("transform", function(d,i) { 
                 var postion_x = d.y + addWidth;
-                return "translate(" + postion_x + "," + d.x + ")"; });	
+                return "translate(" + postion_x + "," + d.x + ")"; });
     }
 
     if (level == 'level1' || level == 'level2') {    
@@ -64,7 +65,7 @@ const adjustWidth = (props) => {
                 return "translate(" + postion_x + "," + d.x + ")"; });
     }
 
-    if (level == 'level1' || level == 'level2') {
+    if (level == 'level1') {
         // Move level 1 paths
         d3.selectAll('.level1.path')
             .each(function (d) {
@@ -83,11 +84,13 @@ const adjustWidth = (props) => {
         });	
     }
 
-    // Reset the x position for tree node in level 1
+   
     if (resetFlag == true) {
-        d3.selectAll('.level1.list.cell, .level1.list.text')
-            .transition()
+        // Reset the x position for tree node in level 1
+       // d3.selectAll('.level1.list.cell, .level1.list.text')
+         d3.selectAll('.' + level + '.list')
+             .transition()
             .attr("transform", function(d,i) { 
-                return "translate(" + (-globalFirstLevelParentVLWidth) + "," + 0 + ")"; });	
+                return "translate(" + (-addWidth) + "," + 0 + ")"; });	
     }
 }

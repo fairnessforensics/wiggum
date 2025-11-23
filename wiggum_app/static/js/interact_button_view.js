@@ -508,6 +508,7 @@ const interact_view_button = (selection, props) => {
 				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: 0, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
+				layerType: 'view',
 				level: 'level1'});
 
 			// Hide children text
@@ -525,6 +526,7 @@ const interact_view_button = (selection, props) => {
 				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: 0, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
+				layerType: 'view',
 				level: 'level2'});
 		}
 
