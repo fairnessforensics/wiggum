@@ -518,6 +518,7 @@ const interact_view_button = (selection, props) => {
 			// Adjust first level width
 			adjustWidth({
 				firstLevelWidth: globalFirstLevelWidth, 
+				seoncdLevelParentVLWidth: globalSecondLevelParentVLWidth,
 				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: 0, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
@@ -536,6 +537,7 @@ const interact_view_button = (selection, props) => {
 			// Adjust second level width
 			adjustWidth({
 				firstLevelWidth: globalFirstLevelWidth, 
+				seoncdLevelParentVLWidth: globalSecondLevelParentVLWidth,
 				secondLevelWidth: globalSecondLevelWidth,
 				addWidth: 0, 
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,

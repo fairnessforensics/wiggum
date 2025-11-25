@@ -756,14 +756,8 @@ const scatterplot_level2_virtual_layer = (selection, props) => {
 	var rowIndex = 0;
 
 	selection.each(function (d) {
-		var selectionLevelG = d3.select(this);
-
-		var list_cell = selectionLevelG.select(".list.cell");
-		var list_cell_x = parseFloat(list_cell.attr("x"));
-		var list_cell_y = parseFloat(list_cell.attr("y"));
-
-		var selectionLevelG_x = d.y + list_cell_y;
-		var selectionLevelG_y = d.x + list_cell_x;
+		var selectionLevelG_x = d.y;
+		var level2_x = d.children[0].y;
 
 		var keyArray = d.data.key.split(",");
 		keyArray[0] = keyArray[0].replace(/\s+/g, '.');
@@ -788,8 +782,9 @@ const scatterplot_level2_virtual_layer = (selection, props) => {
 				var object = {};
 
 				if (side == "parent" ) {
-					object['source'] = [0, 10];
-					object['target'] = [y_position, selectionLevelG_x];
+					// Tree left margin 60
+					object['source'] = [height/2, -level2_x + selectionLevelG_x + 60];
+					object['target'] = [circleY, -parentVLWidth - 10];
 				} else {
 					object['source'] = [y_position, axis_x_position];
 					object['target'] = [0, 280 + 60];
@@ -824,7 +819,7 @@ const scatterplot_level2_virtual_layer = (selection, props) => {
 
 		})
 
-		selectionLevelG.call(link, {
+		secondLevelG1.call(link, {
 				data: linkData,
 				side: side,
 				rowIndex: 'row' + rowIndex,

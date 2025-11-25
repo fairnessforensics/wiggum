@@ -30,6 +30,7 @@ const adjustTotalWidth = (props) => {
 const adjustWidth = (props) => {
 	const {
         firstLevelWidth, 
+        seoncdLevelParentVLWidth,
         secondLevelWidth,
 		addWidth,
         thirdLevelParentVLWidth,
@@ -51,8 +52,9 @@ const adjustWidth = (props) => {
         // Adjust level 2 nodes x postion
         d3.selectAll('.node.level-2')
             .transition()
-            .attr("transform", function(d,i) { 
-                var postion_x = d.y + firstLevelWidth + addWidth;
+            .attr("transform", function(d,i) {
+                var postion_x = d.y + firstLevelWidth + seoncdLevelParentVLWidth + addWidth;
+
                 return "translate(" + postion_x + "," + d.x + ")"; });	
     }
 

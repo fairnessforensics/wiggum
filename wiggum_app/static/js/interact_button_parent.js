@@ -620,7 +620,6 @@ const interact_parent_button = (selection, props) => {
 					height: globalSecondLevelViewVLHeight,
 					parentVLWidth: globalSecondLevelParentVLWidth,
 					axis_x_position: 15,
-					link_opacity: 0.3,
 					side: 'parent',
 					level: 'level2'
 				});	
@@ -643,6 +642,7 @@ const interact_parent_button = (selection, props) => {
 				// Adjust Total Space
 				adjustWidth({
 					firstLevelWidth: globalFirstLevelWidth, 
+					seoncdLevelParentVLWidth: globalSecondLevelParentVLWidth,
 					secondLevelWidth: globalSecondLevelWidth,
 					addWidth: globalFirstLevelParentVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
@@ -659,6 +659,7 @@ const interact_parent_button = (selection, props) => {
 				// Adjust Total Space
 				adjustWidth({
 					firstLevelWidth: globalFirstLevelWidth, 
+					seoncdLevelParentVLWidth: 0,
 					secondLevelWidth: globalSecondLevelWidth,
 					addWidth: globalSecondLevelParentVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
@@ -667,8 +668,9 @@ const interact_parent_button = (selection, props) => {
 					level: 'level2'
 				})
 			}
-			
+
 			globalSecondLevelWidth += globalSecondLevelParentVLWidth;
+
 		}
 	});
 

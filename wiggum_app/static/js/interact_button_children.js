@@ -680,6 +680,7 @@ const interact_children_button = (selection, props) => {
 				// Adjust Total Space
 				adjustWidth({
 					firstLevelWidth: globalFirstLevelWidth, 
+					seoncdLevelParentVLWidth: globalSecondLevelParentVLWidth,
 					secondLevelWidth: globalSecondLevelWidth,
 					addWidth: globalFirstLevelChildrenVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
