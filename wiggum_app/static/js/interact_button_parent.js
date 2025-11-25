@@ -42,7 +42,7 @@ const interact_parent_button = (selection, props) => {
 
 		// Remove existing virtual layer
 		d3.selectAll('.' + level + '.parent.virtuallayer').remove();
-		
+
 		// Reset third level
 		if (level == 'level3') {
 			globalThirdLevelParentVLWidth = 0;
@@ -422,6 +422,16 @@ const interact_parent_button = (selection, props) => {
 						.transition()
 						.attr('transform', `translate(${0},${0})`);
 				}
+			} else if (level == "level2") {
+				// Show level 1 path
+				d3.selectAll('.level1.path')
+					.transition()
+					.style('visibility', 'visible');
+
+				// Show the list circle
+				d3.selectAll('.' + level + '.list.circle, ' + '.' + level + '.list.text')
+					.transition()
+					.style('visibility', 'visible');	
 			}
 
 		}
@@ -601,19 +611,30 @@ const interact_parent_button = (selection, props) => {
 		}
 
 		if (selectedChart == 'scatterplot_level2') {
-			// Pull the View VL back by 50 pixels, which corresponds to the left margin
-			globalSecondLevelParentVLWidth = -50;
+			if (i == 1) {
+				// Pull the View VL back by 50 pixels, which corresponds to the left margin
+				globalSecondLevelParentVLWidth = -50;
 
-			levelG.call(scatterplot_virtual_layer, {
-				width: globalSecondLevelWidth,
-				height: globalSecondLevelViewVLHeight,
-				parentVLWidth: globalSecondLevelParentVLWidth,
-				axis_x_position: 15,
-				link_opacity: 0.3,
-				side: 'parent',
-				level: 'level2'
-			});	
-			
+				levelG.call(scatterplot_level2_virtual_layer, {
+					width: globalSecondLevelWidth,
+					height: globalSecondLevelViewVLHeight,
+					parentVLWidth: globalSecondLevelParentVLWidth,
+					axis_x_position: 15,
+					link_opacity: 0.3,
+					side: 'parent',
+					level: 'level2'
+				});	
+
+				// Hide level 1 path
+				d3.selectAll('.level1.path')
+					.transition()
+					.style('visibility', 'hidden');
+
+				// Hide the list circle
+				d3.selectAll('.' + level + '.list.circle, ' + '.' + level + '.list.text')
+					.transition()
+					.style('visibility', 'hidden');	
+			}
 		}
 
 		// Common code
@@ -641,7 +662,7 @@ const interact_parent_button = (selection, props) => {
 					secondLevelWidth: globalSecondLevelWidth,
 					addWidth: globalSecondLevelParentVLWidth,
 					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
-					resetFlag: true,
+					resetFlag: false,
 					layerType: 'parent',
 					level: 'level2'
 				})

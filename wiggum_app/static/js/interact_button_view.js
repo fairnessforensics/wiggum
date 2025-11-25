@@ -52,6 +52,13 @@ const interact_view_button = (selection, props) => {
 			globalFirstLevelChildrenVLWidth = 0;
 
 		} else if (level == 'level2') {
+			// Reset second level size
+			globalSecondLevelWidth = 0;
+			globalSecondLevelHeight = 0;
+
+			// Reset second level VL width 
+			globalSecondLevelParentVLWidth = 0;
+			globalSecondLevelChildrenVLWidth = 0;
 
 		} else if (level == 'level3') {
 
@@ -77,6 +84,11 @@ const interact_view_button = (selection, props) => {
 				// Reset path visible
 				d3.select('#node_link_tree')
 					.selectAll('.path.level0')
+					.style('visibility', 'visible');
+			} else if (level == "level2") {
+				// Reset path visible
+				d3.selectAll('.level1.path')
+					.transition()
 					.style('visibility', 'visible');
 			}
 		} 
@@ -420,6 +432,7 @@ const interact_view_button = (selection, props) => {
 										height: viewVLHeight,
 										chart_data: chart_data,
 										chart_name: selectedChart,
+										rowIndex: 'row' + rowIndex,
 										level: level
 									});		
 									

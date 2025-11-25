@@ -10,6 +10,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 	  height,
 	  chart_data,
 	  chart_name,
+	  rowIndex,
 	  level
 	} = props;
 
@@ -41,11 +42,11 @@ const oneDimensionalScatterPlot = (selection, props) => {
 						.tickValues(d3.range(0, 1.01, 0.1));
 
 		g.append("g")
-			.attr("class", level + " scatterplot2d x axis")
+			.attr("class", level + " scatterplot_level2 x axis")
 			.attr("transform", "translate(0," + innerHeight + ")")
 			.call(xAxis)
 			.append("text")
-			.attr("class", level + " scatterplot2d label")
+			.attr("class", level + " scatterplot_level2 label")
 			.attr('fill', 'black')
 			.attr("x", innerWidth/2)
 			.attr("y", 26)
@@ -55,37 +56,22 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		const yAxisRight = d3.axisRight(yScale)
 							 .tickValues(d3.range(0, 1.01, 0.1));;
 		g.append("g")
-			.attr("class", level + " scatterplot2d y right axis")
+			.attr("class", level + " scatterplot_level2 y right axis")
 			.attr("transform", "translate(" + innerWidth + ",0)")
 			.call(yAxisRight)
 		.append("text")
-			.attr("class", level + " scatterplot2d label")
+			.attr("class", level + " scatterplot_level2 label")
 			.attr("transform", "rotate(-90)")
 			.attr("y", 6)
 			.attr("dy", ".71em");
 		
-		// Left dots
-		g.selectAll(".path")
-			.data(chart_data)
-			.enter().append("path")	    
-			.attr("class", d => level + " scatterplot2d left circle " 
-						+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
-			.attr("d", d3.arc()
-						.innerRadius( 0 )
-						.outerRadius( 10 )
-						.startAngle( 3.14 ) 
-						.endAngle( 6.28 ) 
-			)
-			.attr("transform", d => "translate(0 ," + yScale(yValue(d)) +")")
-			.attr("stroke", "black")
-			.attr("stroke-width", 2)	  
-			.style("fill", d => heatmapColorScale(d.mean_distance));
+
 
 		// Right dots
 		g.selectAll(".path")
 			.data(chart_data)
 			.enter().append("path")	    
-			.attr("class", d => level + " scatterplot2d right circle " 
+			.attr("class", d => level + " scatterplot_level2 right circle " 
 						+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
 			.attr("d", d3.arc()
 						.innerRadius( 0 )
@@ -102,7 +88,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 	g.append("g")
 		  .attr("class", function(d) {
 			if (xValue) {
-				return level + " scatterplot2d y left axis";
+				return level + " scatterplot_level2 y left axis";
 			  }
 			  return level + " scatterplot1d y left axis";
 			})	  
@@ -110,7 +96,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		.append("text")
 		  .attr("class", function(d) {
 			if (xValue) {
-				return level + " scatterplot2d label";
+				return level + " scatterplot_level2 label";
 			  }
 			  return level + " scatterplot1d label";
 			})	  
@@ -123,20 +109,26 @@ const oneDimensionalScatterPlot = (selection, props) => {
 		  .attr('fill', 'black')
 		  .text(yAxisLabel);
 
-	g.selectAll(xValue ? ".scatterplot2d.circle.middle" : ".scatterplot1d.circle.middle")
+	g.selectAll(xValue ? ".scatterplot_level2.circle.middle" : ".scatterplot1d.circle.middle")
 		  .data(chart_data)
 		  .enter().append("circle")	    
 		  .attr("class", function(d) {
 			if (xValue) {
-				// Add splitby_ for differenctiate the varible in both
+				// Add splitby_ for differenctiate the variable in both
 				// the dependent var and splitby var case
-				return level + " scatterplot2d middle circle " 
+				return level + " " + rowIndex + " scatterplot_level2 middle circle " 
 					+ d.dependent + " " + d.independent + " splitby_" + d.splitby;
 			  }
 
 			  return level + " scatterplot1d middle circle " 
 		  			+ d.dependent + " " + d.independent + " splitby_" + d.splitby;
 			})	  
+		  .attr("id", function(d, i) {
+			if (xValue) {
+					return level + "_" + rowIndex + "_" + "scatterplot_level2_middle_circle_"
+						+ d.dependent + "_" + d.independent + "_splitby_" + d.splitby;
+			}
+		  })
 		  .attr("r", circleRadius)
 		  .attr("cx", function(d) {
 			  if (xValue) {
@@ -157,12 +149,12 @@ const oneDimensionalScatterPlot = (selection, props) => {
 				return `${d3.format(".3f")(yValue(d))}`;
 			}});
 
-	g.selectAll(xValue ? ".scatterplot2d.text" : ".scatterplot1d.text")		
+	g.selectAll(xValue ? ".scatterplot_level2.text" : ".scatterplot1d.text")		
 		.data(chart_data)
 		.enter().append("text")	   
 		.attr("class", function(d) {
 			if (xValue) {
-				return level + " scatterplot2d text";
+				return level + " scatterplot_level2 text";
 			  }
 			  return level + " scatterplot1d text";
 			})	  			

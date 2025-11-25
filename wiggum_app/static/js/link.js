@@ -161,7 +161,7 @@ function onMouseOver(selection, element, level, rowIndex, side, multi_no, chartT
 			d3.selectAll("." + level + "." + rowIndex + "."+ chartType + ".bar")
 				.style("opacity", 0.1);	
 		}
-	} else if (chartType == 'scatterplot') {
+	} else if (chartType == 'scatterplot' || chartType == 'scatterplot_level2') {
 		d3.selectAll("." + level + "." + rowIndex + "."+ chartType + ".circle")
 			.style("opacity", 0.1);	
 	}
@@ -188,7 +188,7 @@ function onMouseOver(selection, element, level, rowIndex, side, multi_no, chartT
 	if (group_select_flag == true) {
 		var selected_subgroup = getSecondLastPart(view_elementId);
 
-		selection.selectAll(".scatterplot .subgroup_" + selected_subgroup)
+		selection.selectAll(".scatterplot.subgroup_" + selected_subgroup)
 				.style("opacity", 1)
 				.raise();
 

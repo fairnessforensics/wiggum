@@ -470,15 +470,12 @@ function drawNodeLinkTree(data) {
 		height_array.push(singleObj);
 	});
 
-	// Second level drawing
-	var secondLevelG = g.selectAll('.level-2');
-
 	// TODO add width varies for bar chart
 	secondLevelButtons.call(interactiveLevelButton, {
 		viewLabels: viewLabels,
 		parentIdentityLabels: parentIdentityLabels,
 		childrenIdentityLabels: childrenIdentityLabels,
-		levelG: secondLevelG,
+		levelG: firstLevelG,
 		level: 'level2',
 		//charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
 		charts: ['list', 'scatterplot1d', 'scatterplot_level2'],
@@ -2288,7 +2285,7 @@ function initVisibility() {
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
 
 	// Splitby level
-	d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
+	//d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
 	d3.selectAll('.level2.barchart').transition().style('visibility', "hidden");	
 	//d3.selectAll('.path.list.barchart').transition().style('visibility', "hidden");	
 

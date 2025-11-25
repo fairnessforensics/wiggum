@@ -742,3 +742,98 @@ const agg_scatterplot_swath_control_virtual_layer = (selection, props) => {
 	});
 
 }
+
+const scatterplot_level2_virtual_layer = (selection, props) => {
+	const {
+	  width,
+	  height,
+	  parentVLWidth,
+	  axis_x_position,
+	  side,
+	  level
+	} = props;
+
+	var rowIndex = 0;
+
+	selection.each(function (d) {
+		var selectionLevelG = d3.select(this);
+
+		var list_cell = selectionLevelG.select(".list.cell");
+		var list_cell_x = parseFloat(list_cell.attr("x"));
+		var list_cell_y = parseFloat(list_cell.attr("y"));
+
+		var selectionLevelG_x = d.y + list_cell_y;
+		var selectionLevelG_y = d.x + list_cell_x;
+
+		var keyArray = d.data.key.split(",");
+		keyArray[0] = keyArray[0].replace(/\s+/g, '.');
+		keyArray[1] = keyArray[1].replace(/\s+/g, '.');
+
+		var secondLevelG1 = d3.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
+
+		// Add links
+		var linkData = [];
+		var heatmapConColors = ["#f7fcf5","#e8f6e3","#d3eecd","#b7e2b1","#97d494","#73c378","#4daf62","#2f984f","#157f3b","#036429"];
+		var heatmapColorScale = d3.scaleQuantize()
+						.domain([0, 1])
+						.range(heatmapConColors);
+
+		secondLevelG1.selectAll("." + level + ".scatterplot_level2.middle.circle")
+			.each(function (d) {
+				// Add link from first level nodes to VL nodes
+				var circleX = d3.select(this).attr("cx");
+				var circleY = d3.select(this).attr("cy");
+				var y_position = circleY - height/2;
+
+				var object = {};
+
+				if (side == "parent" ) {
+					object['source'] = [0, 10];
+					object['target'] = [y_position, selectionLevelG_x];
+				} else {
+					object['source'] = [y_position, axis_x_position];
+					object['target'] = [0, 280 + 60];
+				}
+
+				// add color
+				object['color'] = '#000000';
+
+				// add opacity
+				object['opacity'] = 1;
+				
+				// add id for coordiate
+				object['id'] = d3.select(this).attr("id");
+
+				linkData.push(object);
+
+				// Create VL nodes
+				secondLevelG1.append("path")	    
+					.attr("class", level + " scatterplot_level2 virtuallayer " + side + " circle " 
+								+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
+					.attr("d", d3.arc()
+								.innerRadius( 0 )
+								.outerRadius( 10 )
+								.startAngle( 3.14 ) 
+								.endAngle( 6.28 ) 
+					)
+					.attr("transform", d => "translate(" + (50) + "," + circleY +")")
+					.attr("stroke", "black")
+					.attr("stroke-width", 2)	
+					.attr("stroke-opacity", 0.3)  
+					.style("fill", heatmapColorScale(d.mean_distance));
+
+		})
+
+		selectionLevelG.call(link, {
+				data: linkData,
+				side: side,
+				rowIndex: 'row' + rowIndex,
+				chartType: 'scatterplot_level2',
+				level: level
+		});		
+
+		rowIndex = rowIndex + 1;
+
+	});
+
+}
