@@ -87,7 +87,7 @@ const interact_view_button = (selection, props) => {
 					.style('visibility', 'visible');
 			} else if (level == "level2") {
 				// Reset path visible
-				d3.selectAll('.level1.path')
+				d3.selectAll('.level1.path, .level2.path')
 					.transition()
 					.style('visibility', 'visible');
 			}

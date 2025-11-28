@@ -44,8 +44,8 @@ const interact_children_button = (selection, props) => {
 			.attr("y", -10)
 			.attr("height", 20);
 
-		// Remove existing virtual layer except rect
-		d3.selectAll("." + level + ".children.virtuallayer:not([class*='" + child_shape + "'])")
+		// Remove existing virtual layer except rect for level 1 and circle for level 2
+		d3.selectAll("." + level + ".children.virtuallayer:not([class~='" + child_shape + "'])")
 			.remove();
 		
 		d3.selectAll('.aux.virtuallayer').remove();
@@ -484,6 +484,15 @@ const interact_children_button = (selection, props) => {
 				.attr("height", 20)
 				.attr('transform', `translate(${adjust_position},${globalFirstLevelViewVLHeight/2})`);
 		}*/
+		
+		if (i == 0) {
+			if (level == "level2") {
+				// Show level 2 path
+				d3.selectAll('.level2.path')
+					.transition()
+					.style('visibility', 'visible');
+			}
+		}
 
 		if (level == 'level1' && i == 1) {
 			adjustWidth({
@@ -689,7 +698,7 @@ const interact_children_button = (selection, props) => {
 					width: globalSecondLevelWidth,
 					height: globalSecondLevelViewVLHeight,
 					parentVLWidth: globalSecondLevelParentVLWidth,
-					axis_x_position: globalSecondLevelWidth,
+					axis_x_position: globalSecondLevelWidth - globalSecondLevelParentVLWidth,
 					side: 'children',
 					level: 'level2'
 				});	
