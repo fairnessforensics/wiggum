@@ -39,7 +39,7 @@ const adjustWidth = (props) => {
         level
 	} = props;
 
-    if (level === 'level1' && ['parent', 'view'].includes(layerType)) {
+    if (level == 'level1' && ['parent', 'view'].includes(layerType)) {
         // Adjust level 1 nodes x postion
         d3.selectAll('.node.level-1')
             .transition()
@@ -48,7 +48,7 @@ const adjustWidth = (props) => {
                 return "translate(" + postion_x + "," + d.x + ")"; });
     }
 
-    if (level == 'level1' || level == 'level2') {    
+    if (level == 'level1' || (level == 'level2' && ['parent', 'view'].includes(layerType))) {    
         // Adjust level 2 nodes x postion
         d3.selectAll('.node.level-2')
             .transition()

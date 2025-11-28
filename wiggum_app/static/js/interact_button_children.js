@@ -23,15 +23,21 @@ const interact_children_button = (selection, props) => {
 			// Initialize children virtual layer width
 			globalFirstLevelWidth = globalFirstLevelWidth - globalFirstLevelChildrenVLWidth;
 			globalFirstLevelChildrenVLWidth = 20;
+			
 			selectedChart = globalFirstLevelView;
 		} else if (level == 'level2') {
+			globalSecondLevelWidth = globalSecondLevelWidth - globalSecondLevelChildrenVLWidth;
+			globalSecondLevelChildrenVLWidth = 50;
+		
 			selectedChart = globalSecondLevelView;
 		} else if (level == 'level3') {
 			selectedChart = globalThirdLevelView;
 		}
 
-		d3.selectAll('.' + level + '.' + selectedChart + '.virtuallayer.children.rect')
-			.transition().style('visibility', "visible");
+		var child_shape = level === "level1" ? "rect" : "circle";
+
+		d3.selectAll('.' + level + '.' + selectedChart + '.virtuallayer.children.' + child_shape)
+			.transition().style('visibility', "visible");	
 
 		// Reset children rect
 		d3.selectAll('.'+ level +'.virtuallayer.children.rect')
@@ -39,7 +45,7 @@ const interact_children_button = (selection, props) => {
 			.attr("height", 20);
 
 		// Remove existing virtual layer except rect
-		d3.selectAll("." + level + ".children.virtuallayer:not([class*='rect'])")
+		d3.selectAll("." + level + ".children.virtuallayer:not([class*='" + child_shape + "'])")
 			.remove();
 		
 		d3.selectAll('.aux.virtuallayer').remove();
@@ -479,7 +485,7 @@ const interact_children_button = (selection, props) => {
 				.attr('transform', `translate(${adjust_position},${globalFirstLevelViewVLHeight/2})`);
 		}*/
 
-		if (i == 1) {
+		if (level == 'level1' && i == 1) {
 			adjustWidth({
 				firstLevelWidth: globalFirstLevelWidth, 
 				secondLevelWidth: globalSecondLevelWidth,
@@ -674,6 +680,32 @@ const interact_children_button = (selection, props) => {
 			}
 		}
 
+		if (selectedChart == 'scatterplot_level2') {
+			if (i == 1) {
+				// Pull the View VL back by 50 pixels, which corresponds to the inital children VL width
+				globalSecondLevelChildrenVLWidth = 0;
+
+				levelG.call(scatterplot_level2_virtual_layer, {
+					width: globalSecondLevelWidth,
+					height: globalSecondLevelViewVLHeight,
+					parentVLWidth: globalSecondLevelParentVLWidth,
+					axis_x_position: globalSecondLevelWidth,
+					side: 'children',
+					level: 'level2'
+				});	
+
+				// Hide level 2 path
+				d3.selectAll('.level2.path')
+					.transition()
+					.style('visibility', 'hidden');
+
+				// Hide the children circle
+				d3.selectAll('.' + level + '.children.circle, ' + '.' + level + '.children.text')
+					.transition()
+					.style('visibility', 'hidden');	
+			}
+		}
+
 		// Common code
 		if (level == 'level1') {
 			if (i == 0 || i == 2 || i == 3 || i == 4 || i == 5 || i == 6) {
@@ -698,6 +730,22 @@ const interact_children_button = (selection, props) => {
 						var position_x = globalFirstLevelWidth - globalFirstLevelParentVLWidth - 20;
 						return "translate(" + (position_x) + "," + 0 + ")"; });
 			}
+		} else if (level == "level2") {
+			if (i == 0 || i == 1) {
+				// Adjust Total Space
+				adjustWidth({
+					firstLevelWidth: globalFirstLevelWidth, 
+					seoncdLevelParentVLWidth: globalSecondLevelParentVLWidth,
+					secondLevelWidth: globalSecondLevelWidth,
+					addWidth: globalSecondLevelChildrenVLWidth,
+					thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
+					resetFlag: false,
+					layerType: 'children',
+					level: 'level2'
+				})
+			}
+
+			globalSecondLevelWidth += globalSecondLevelChildrenVLWidth;
 		}
 	});
 

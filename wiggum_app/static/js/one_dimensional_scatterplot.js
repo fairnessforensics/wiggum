@@ -63,26 +63,7 @@ const oneDimensionalScatterPlot = (selection, props) => {
 			.attr("class", level + " scatterplot_level2 label")
 			.attr("transform", "rotate(-90)")
 			.attr("y", 6)
-			.attr("dy", ".71em");
-		
-
-
-		// Right dots
-		g.selectAll(".path")
-			.data(chart_data)
-			.enter().append("path")	    
-			.attr("class", d => level + " scatterplot_level2 right circle " 
-						+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
-			.attr("d", d3.arc()
-						.innerRadius( 0 )
-						.outerRadius( 10 )
-						.startAngle( 0 ) 
-						.endAngle( 3.14 ) 
-			)
-			.attr("transform", d => "translate(" + (innerWidth + 1) +"," + yScale(yValue(d)) +")")			
-			.attr("stroke", "black")
-			.attr("stroke-width", 2)	  
-			.style("fill", d => heatmapColorScale(d.mean_distance));			
+			.attr("dy", ".71em");		
 	}
 
 	g.append("g")

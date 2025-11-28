@@ -756,8 +756,10 @@ const scatterplot_level2_virtual_layer = (selection, props) => {
 	var rowIndex = 0;
 
 	selection.each(function (d) {
+
 		var selectionLevelG_x = d.y;
 		var level2_x = d.children[0].y;
+		var level2_y = d.children[0].x;
 
 		var keyArray = d.data.key.split(",");
 		keyArray[0] = keyArray[0].replace(/\s+/g, '.');
@@ -772,6 +774,7 @@ const scatterplot_level2_virtual_layer = (selection, props) => {
 						.domain([0, 1])
 						.range(heatmapConColors);
 
+						
 		secondLevelG1.selectAll("." + level + ".scatterplot_level2.middle.circle")
 			.each(function (d) {
 				// Add link from first level nodes to VL nodes
@@ -785,33 +788,49 @@ const scatterplot_level2_virtual_layer = (selection, props) => {
 					// Tree left margin 60
 					object['source'] = [height/2, -level2_x + selectionLevelG_x + 60];
 					object['target'] = [circleY, -parentVLWidth - 10];
+
+					// add color
+					object['color'] = '#000000';
+
+					// add opacity
+					object['opacity'] = 1;
+					
+					// add id for coordiate
+					object['id'] = d3.select(this).attr("id");
+
+					linkData.push(object);
+
 				} else {
-					object['source'] = [y_position, axis_x_position];
-					object['target'] = [0, 280 + 60];
+					var thirdLevelG = d3.selectAll('.node.level-3' + '.' + d.dependent + '.' + d.independent + '.splitby_' + d.splitby);
+					thirdLevelG.each(function(dd) {
+						object = {};
+						object['source'] = [circleY, axis_x_position + 10];
+						object['target'] = [dd.x - level2_y, dd.y - axis_x_position + 20];
+
+						// add color
+						object['color'] = '#000000';
+
+						// add opacity
+						object['opacity'] = 1;
+						
+						// add id for coordiate
+						object['id'] = d3.select(this).attr("id");
+
+						linkData.push(object);
+
+					});
 				}
-
-				// add color
-				object['color'] = '#000000';
-
-				// add opacity
-				object['opacity'] = 1;
-				
-				// add id for coordiate
-				object['id'] = d3.select(this).attr("id");
-
-				linkData.push(object);
 
 				// Create VL nodes
 				secondLevelG1.append("path")	    
-					.attr("class", level + " scatterplot_level2 virtuallayer " + side + " circle " 
+					.attr("class", level + " scatterplot_level2 virtuallayer " + side + " semicircle " 
 								+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
 					.attr("d", d3.arc()
 								.innerRadius( 0 )
 								.outerRadius( 10 )
-								.startAngle( 3.14 ) 
-								.endAngle( 6.28 ) 
-					)
-					.attr("transform", d => "translate(" + (50) + "," + circleY +")")
+								.startAngle( side === "parent" ? 3.14 : 0) 
+								.endAngle( side === "parent" ? 6.28 : 3.14 ) )
+					.attr("transform", "translate(" + (side === "parent" ? 50 : axis_x_position + 1) + "," + circleY + ")")
 					.attr("stroke", "black")
 					.attr("stroke-width", 2)	
 					.attr("stroke-opacity", 0.3)  

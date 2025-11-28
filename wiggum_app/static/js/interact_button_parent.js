@@ -436,7 +436,7 @@ const interact_parent_button = (selection, props) => {
 
 		}
 
-		if (i == 1) {
+		if (level == 'level1' && i == 1) {
 			d3.selectAll('.'+ level +'.' + selectedChart + '.children.text')
 			.transition()
 			.attr("x", -25);
@@ -619,7 +619,7 @@ const interact_parent_button = (selection, props) => {
 					width: globalSecondLevelWidth,
 					height: globalSecondLevelViewVLHeight,
 					parentVLWidth: globalSecondLevelParentVLWidth,
-					axis_x_position: 15,
+					axis_x_position: 0,
 					side: 'parent',
 					level: 'level2'
 				});	
