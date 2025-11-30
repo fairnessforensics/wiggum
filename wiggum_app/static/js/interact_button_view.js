@@ -80,6 +80,10 @@ const interact_view_button = (selection, props) => {
 				.attr('dy', '1.5em')
 				.attr('text-anchor', () => selectedChart === 'list' ? 'middle' : 'end');
 
+			// Reset translate to (0, 0)
+			d3.selectAll('.' + level + '.list')
+				.attr("transform",  "translate(0, 0)");
+
 			if (level == "level1") {
 				// Reset path visible
 				d3.select('#node_link_tree')
