@@ -1,0 +1,6 @@
+variable,dtype,var_type,role,isCount,weighting_var
+Sunlight,float64,continuous,"['independent', 'dependent']",False,
+VitaminD,float64,continuous,"['independent', 'dependent']",False,
+Age,int64,categorical,['splitby'],False,
+Food,float64,continuous,"['independent', 'dependent']",False,
+Gender,object,binary,['splitby'],False,
