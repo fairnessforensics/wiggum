@@ -103,7 +103,7 @@ class Regression():
         # if the lists are the same, then symmetric
         dep_indep = [d in indep_vars for d in dep_vars]
         # product of bools is true iff all are true
-        if np.product(dep_indep):
+        if np.prod(dep_indep):
             self.symmetric_vars = True
         # use iterator to compute pairs
         reg_var_iterator = itertools.product(indep_vars,dep_vars)

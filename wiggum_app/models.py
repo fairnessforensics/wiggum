@@ -105,7 +105,7 @@ def getDistanceHeatmapDict(labeled_df, cur_result_df):
 
     distance_heatmap_dict_list = []
 
-    for trend_type, trend_df in cur_result_df.groupby(['trend_type'], sort=False):
+    for trend_type, trend_df in cur_result_df.groupby('trend_type', sort=False):
 
         # iterate over the GroupFeat variables
         for gby, gby_trend_df in trend_df.groupby('splitby'):
