@@ -1,0 +1,9 @@
+variable,dtype,var_type,role,isCount,weighting_var
+workclass,object,categorical,"['independent', 'splitby']",False,
+education,object,categorical,"['independent', 'splitby']",False,
+marital-status,object,categorical,"['independent', 'splitby']",False,
+occupation,object,categorical,"['independent', 'splitby']",False,
+relationship,object,categorical,"['independent', 'splitby']",False,
+race,object,categorical,"['independent', 'splitby']",False,
+sex,object,categorical,"['independent', 'splitby']",False,
+income,int64,binary,['dependent'],False,

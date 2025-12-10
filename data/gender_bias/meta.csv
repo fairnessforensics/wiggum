@@ -1,0 +1,5 @@
+variable,dtype,var_type,role,isCount,weighting_var
+department,object,categorical,['splitby'],False,
+gender,object,categorical,['independent'],False,
+applicants,int64,ordinal,[],True,
+admitted,float64,continuous,['dependent'],False,applicants
