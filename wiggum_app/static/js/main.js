@@ -117,7 +117,7 @@ var options = select.selectAll('option')
 // View Score Selector	
 // view options
 //var optionData = ['distance', 'SP'];
-var optionData = ['distance'];
+var optionData = ['distance', 'coloredview'];
 var select = d3.select("#ranking").append('select')
 							.attr('id','score_col_selector');
 var options = select.selectAll('option')
