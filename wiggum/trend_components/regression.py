@@ -40,7 +40,7 @@ class LinearRegression():
         vart_test_list = [regssion_vars_tuple or regression_vars_len,
                     len(self.var_weight_list)==len(self.regression_vars)]
 
-        return np.product([vartest for vartest in vart_test_list])
+        return np.prod([vartest for vartest in vart_test_list])
 
     def get_trends(self,data_df,trend_col_name):
         """
