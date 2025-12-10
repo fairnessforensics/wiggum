@@ -1,0 +1,18 @@
+[project]
+name = "wiggum"
+version = "0.3.0"
+description = "Utilities to analyze Simpsons scripts and generate new ones using machine learning."
+readme = "README.rst"
+requires-python = ">=3.9.6"
+authors = [
+    {name = "Dr. Shine Xu", email = "shine.xu@okcu.edu"},
+]
+dependencies = [
+    "flask>=3.1.2",
+    "numpy>=2.0.2",
+    "pandas>=2.3.3",
+    "pandoc>=2.4",
+    "scikit-learn>=1.6.1",
+    "scipy>=1.13.1",
+    "seaborn>=0.13.2",
+]
