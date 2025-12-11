@@ -99,7 +99,14 @@ var updateScatterplot = function(data, vars) {
 	
 	// Reset color 
 	color = d3.scale.category10();
-	
+
+	// TODO : hard coded for Age category
+	if (vars.categoryAttr == "Age") {
+		color = d3.scale.ordinal()
+						.domain(["20", "30", "40", "50", "60"])
+						.range(["#e6f598", "#abdda4", "#66c2a5", "#3288bd", "#5e4fa2"]);
+	}
+
 	// Update colors for dots
 	scatterplot.selectAll(".dot")
 		.style("fill", function(d) {
