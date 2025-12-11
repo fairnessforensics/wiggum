@@ -35,7 +35,7 @@ function updateParallelCoordinates(data, vars) {
  * @returns none.
  */
 function DrawParallelCoordinates(data, vars) {
-	var margin = {top: 20, right: 90, bottom: 30, left: 30},
+	var margin = {top: 5, right: 90, bottom: 70, left: 30},
 		width = 480 - margin.left - margin.right,
 		height = 420 - margin.top - margin.bottom;
   
@@ -142,9 +142,10 @@ function DrawParallelCoordinates(data, vars) {
 		.attr("class", "axis")
 		.attr("transform", function(d) { return "translate(" + x(d) + ")"; })
 		.each(function(d) { d3.select(this).call(d3.svg.axis().scale(y[d]).ticks(5).orient("left")); })
-		.append("text")
-		.style("text-anchor", "middle")
-		.attr("y", -9)
+		.append("text")	
+		.style("text-anchor", "start")			
+		.attr("y", height)
+		.attr("transform", "translate(115,30)rotate(20)")				
 		.text(function(d) { return d; })
 		.style("fill", "black");
 
@@ -181,7 +182,7 @@ function DrawParallelCoordinates(data, vars) {
 	// by <groupby var> groups
 	svg.append("text")
 		.attr("x", width/2)		
-		.attr("y", height+15)
+		.attr("y", height+42)
 		.attr("dy", ".35em")
 		.style("font-size", "12px")                     
 		.style("text-anchor", "middle")
