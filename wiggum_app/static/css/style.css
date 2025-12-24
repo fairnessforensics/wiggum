@@ -64,19 +64,35 @@
     background: white;
     position: absolute;
 }
-
+/* Control Buttons on Viz Page */
 #controlbuttons {
     width: 15%;    
     height: 20%;
     position: absolute;
     margin-left: 5%;   
-    margin-top: 30%; 
+    margin-top: 35%; 
+    padding: 10px;
 }
-
+#detect-btn{
+    margin: 5px;
+}
+#save-btn{
+    margin: 5px;
+}
+/* Ranking Selectors on Viz page */
 #ranking {
     position: absolute;
     margin-left: 5%;     
     margin-top: 31.5%; 
+}
+#agg_type_selector{
+    margin:5px;
+}
+#score_col_selector{
+    margin: 5px;
+}
+#rank-btn{
+    margin:5px;
 }
 
 #scatterplot {
@@ -104,7 +120,7 @@
 
 .index_center {
     margin: auto;
-    width: 1300px;
+    width: 100%;
     border: 3px solid #ffffff;
     padding: 10px;
 }
@@ -212,8 +228,24 @@ line.slope-line4all{
     float: left;
 }
 
-.row {
-    height: 160px;
+.container {
+    padding: 10px;
+    /* display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    overflow: auto; */
+}
+
+.row{
+    float: left;
+    display: block;
+    position: static;
+}
+
+/* Label for choosing file */
+#chooseFile{
+    left: 0;
+    margin: 2px;
 }
 
 #table {
@@ -266,6 +298,7 @@ table {
 .rankingparam {
     border: none;
     box-shadow: none;
+    padding: 5px;
 }
 
 .paramtr {
@@ -320,17 +353,17 @@ div.tooltip {
     stroke-width: 2px;
     stroke-opacity: 1;  
 }
-
+#extra{
+    display:inline-block;
+}
 #trend_type_selection {
-    position: absolute;
-    top: 50px;
     width: 206px;
+    margin: 5px;
 }
 
 #control_table {
-    position: absolute;
-    top: 30px;
-    margin-left: 660px;
+    display: inline-block;
+    left: 0;
 }
 
 #groupedbarchart {
