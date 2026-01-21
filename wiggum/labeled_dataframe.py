@@ -7,6 +7,7 @@ import matplotlib.pylab as plt
 import itertools
 import json
 from pydoc import locate
+from werkzeug.datastructures import FileStorage
 
 META_COLUMNS = ['dtype','var_type','role','isCount', 'weighting_var']
 possible_roles = ['independent','dependent','splitby','prediction',
@@ -161,11 +162,29 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
             results = os.path.join(data,result_csv)
             trends = os.path.join(data,trend_json)
             data = os.path.join(data,data_csv)
+        elif type(data) == list and meta ==None and results ==None:
+            # if files are uploaded from wiggum-app
+            filename = ''
+            for file in data:
+                filename = file.filename
+                if ('/' in filename):
+                    # if file name contains '/', Wiggum runs in Windows system
+                    # remove the directory and only use the file name
+                    filename = filename.split('/')[1]
+
+                if filename == data_csv:
+                    data = file
+                elif filename == meta_csv:
+                    meta = file
+                elif filename == result_csv:
+                    results = file
+                elif filename == trend_json:
+                    trends = file
 
         # set data
         if type(data) is  pd.core.frame.DataFrame:
             self.df = data
-        elif type(data) is str:
+        elif type(data) is str or type(data) is FileStorage:
             self.df = pd.read_csv(data)
             self.df.index.name = ''
         else:
@@ -180,7 +199,7 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
             self.meta_df['dtype'] = self.df.dtypes
         elif type(meta) is  pd.core.frame.DataFrame:
             self.meta_df = meta
-        elif type(meta) is str:
+        elif type(meta) is str or type(meta) is FileStorage:
             self.meta_df = pd.read_csv(meta,index_col='variable')
             self.meta_df.index.name = 'variable'
             # handle lists
@@ -208,8 +227,11 @@ class LabeledDataFrame(_ResultDataFrame,_TrendDetectors,_AugmentedData,_AuditRep
 
         # if result_df not empty then load trend_list and type objects
         if len(self.result_df) >0:
-            with open(trends, 'r') as tjson:
-                trend_content = json.load(tjson)
+            if type(trends) is str:
+                with open(trends, 'r') as tjson:
+                    trend_content = json.load(tjson)
+            elif type(trends) is FileStorage:
+                trend_content = json.load(trends)
 
             # initialize trend objects by looking up type and calling init
             self.trend_list = [locate(c['type'])()

@@ -11,7 +11,8 @@ def test_controller():
 
     # test pearson_corr
     # action: folder_open
-    response = tester.post('/', data = dict(action="folder_open", folder = "iristest"))
+    files = [(open('data/iristest/df.csv', 'rb'), 'df.csv'), (open('data/iristest/meta.csv', 'rb'), 'meta.csv'), (open('data/iristest/result_df.csv', 'rb'),'result_df.csv')]
+    response = tester.post('/', data = dict(action="folder_open", folder = "iristest", file=files))
     meta = ""
     meta += "[{\"name\":\"sepal length\",\"var_type\":\"continuous\",\"role\":[\"independent\",\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
     meta += "{\"name\":\"sepal width\",\"var_type\":\"continuous\",\"role\":[\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
@@ -30,7 +31,8 @@ def test_controller():
 
     # test lin_reg
     # action: folder_open
-    response = tester.post('/', data = dict(action="folder_open", folder = "iristest"))
+    files = [(open('data/iristest/df.csv', 'rb'), 'df.csv'), (open('data/iristest/meta.csv', 'rb'), 'meta.csv'), (open('data/iristest/result_df.csv', 'rb'),'result_df.csv')]
+    response = tester.post('/', data = dict(action="folder_open", folder = "iristest", file=files))
     meta = ""
     meta += "[{\"name\":\"sepal length\",\"var_type\":\"continuous\",\"role\":[\"independent\",\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
     meta += "{\"name\":\"sepal width\",\"var_type\":\"continuous\",\"role\":[\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
@@ -49,7 +51,8 @@ def test_controller():
     
     # test rank_trend
     # action: folder_open
-    response = tester.post('/', data = dict(action="folder_open", folder = "wages_gender_rank_time_regression2"))
+    files = [(open('data/wages_gender_rank_time_regression2/df.csv', 'rb'), 'df.csv'), (open('data/wages_gender_rank_time_regression2/meta.csv', 'rb'), 'meta.csv'), (open('data/wages_gender_rank_time_regression2/result_df.csv', 'rb'),'result_df.csv')]
+    response = tester.post('/', data = dict(action="folder_open", folder = "wages_gender_rank_time_regression2", file=files))
     meta = ""
     meta += "[{\"name\":\"pay\",\"var_type\":\"continuous\",\"role\":[\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
     meta += "{\"name\":\"year\",\"var_type\":\"continuous\",\"role\":[\"independent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
@@ -66,7 +69,8 @@ def test_controller():
     assert response.status_code == 200
 
     # test compute quantiles
-    response = tester.post('/', data = dict(action="folder_open", folder = "iristest"))
+    files = [(open('data/iristest/df.csv', 'rb'), 'df.csv'), (open('data/iristest/meta.csv', 'rb'), 'meta.csv'), (open('data/iristest/result_df.csv', 'rb'),'result_df.csv')]
+    response = tester.post('/', data = dict(action="folder_open", folder = "iristest", file=files))
     meta = ""
     meta += "[{\"name\":\"sepal length\",\"var_type\":\"continuous\",\"role\":[\"independent\",\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
     meta += "{\"name\":\"sepal width\",\"var_type\":\"continuous\",\"role\":[\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
@@ -81,7 +85,8 @@ def test_controller():
     assert response.status_code == 200
 
     # test clustering
-    response = tester.post('/', data = dict(action="folder_open", folder = "iristest"))
+    files = [(open('data/iristest/df.csv', 'rb'), 'df.csv'), (open('data/iristest/meta.csv', 'rb'), 'meta.csv'), (open('data/iristest/result_df.csv', 'rb'),'result_df.csv')]
+    response = tester.post('/', data = dict(action="folder_open", folder = "iristest", file=files))
     meta = ""
     meta += "[{\"name\":\"sepal length\",\"var_type\":\"continuous\",\"role\":[\"independent\",\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
     meta += "{\"name\":\"sepal width\",\"var_type\":\"continuous\",\"role\":[\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
@@ -95,7 +100,8 @@ def test_controller():
     assert response.status_code == 200
 
     # test intersection
-    response = tester.post('/', data = dict(action="folder_open", folder = "wages_gender_rank_time_regression2"))
+    files = [(open('data/wages_gender_rank_time_regression2/df.csv', 'rb'), 'df.csv'), (open('data/wages_gender_rank_time_regression2/meta.csv', 'rb'), 'meta.csv'), (open('data/wages_gender_rank_time_regression2/result_df.csv', 'rb'),'result_df.csv')]
+    response = tester.post('/', data = dict(action="folder_open", folder = "wages_gender_rank_time_regression2", file=files))
     meta = ""
     meta += "[{\"name\":\"pay\",\"var_type\":\"continuous\",\"role\":[\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
     meta += "{\"name\":\"year\",\"var_type\":\"continuous\",\"role\":[\"independent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
@@ -128,7 +134,8 @@ def test_controller():
     assert response.status_code == 200    
 
     # test filter, detect, ranking, reset
-    response = tester.post('/', data = dict(action="folder_open", folder = "iristest"))
+    files = [(open('data/iristest/df.csv', 'rb'), 'df.csv'), (open('data/iristest/meta.csv', 'rb'), 'meta.csv'), (open('data/iristest/result_df.csv', 'rb'),'result_df.csv')]
+    response = tester.post('/', data = dict(action="folder_open", folder = "iristest", file=files))
     meta = ""
     meta += "[{\"name\":\"sepal length\",\"var_type\":\"continuous\",\"role\":[\"independent\",\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"
     meta += "{\"name\":\"sepal width\",\"var_type\":\"continuous\",\"role\":[\"dependent\"],\"isCount\":\"N\",\"weighting_var\":\"N/A\"},"

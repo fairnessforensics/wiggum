@@ -66,10 +66,18 @@
                     // folder chosen for saved data
                     $('#projectName').val(folder);
 
+                    // add files, action, folder to form_data
+                    var form_data = new FormData($('#open-file')[0]);
+                    form_data.append('action', 'folder_open');
+                    form_data.append('folder', folder);
+
                     $.ajax({
                         type: 'POST',
                         url: '/',
-                        data: {'action':'folder_open', 'folder': folder},                               
+                        data: form_data,                                
+                        contentType: false,
+                        cache: false,
+                        processData: false,                       
                         success: function(data) {
                             var var_names = data.var_names;
                             var var_types = data.var_types;
@@ -541,8 +549,9 @@
                                 <input name="projectName" type="text" id="projectName" placeholder="Project Name">                        
                         </td>
                         <td class="param">
-                                <button id="save-btn" type="button" value="save">Save</button>    
-                                <label id="save-label" style="font-size: 14px;"></label>                                            
+                                <button id="save-btn" type="button" value="save">Save</button>
+                                <label id="save-label" style="font-size: 14px;"></label>
+                                <a href="/download" target="blank"><button id="donwload-btn" type="button" value="download">Download</button></a>             
                         </td>                    
                     </tr>                                    
                 </table>
