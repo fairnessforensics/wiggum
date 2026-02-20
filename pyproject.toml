@@ -1,18 +1,27 @@
 [project]
 name = "wiggum"
-version = "0.3.0"
-description = "Utilities to analyze Simpsons scripts and generate new ones using machine learning."
-readme = "README.rst"
+version = "0.4.0"
+description = "Interactive visualization tool for detecting Simpson's Paradox and mixed effects in data."
+readme = "README.md"
 requires-python = ">=3.9.6"
 authors = [
     {name = "Dr. Shine Xu", email = "shine.xu@okcu.edu"},
 ]
 dependencies = [
-    "flask>=3.1.2",
+    "loguru>=0.7.0",
     "numpy>=2.0.2",
     "pandas>=2.3.3",
-    "pandoc>=2.4",
+    "plotly>=5.18.0",
     "scikit-learn>=1.6.1",
     "scipy>=1.13.1",
     "seaborn>=0.13.2",
+    "streamlit>=1.32.0",
+]
+
+[project.scripts]
+wiggum = "streamlit_app.app:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
 ]
