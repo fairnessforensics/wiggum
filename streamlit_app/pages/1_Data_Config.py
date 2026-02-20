@@ -19,9 +19,11 @@ from streamlit_app.utils.state import (
     reset_all,
 )
 from streamlit_app.utils.data_helpers import (
+    auto_assign_roles,
+    check_trends_computable,
     get_meta_dataframe,
     update_metadata,
-    check_trends_computable,
+    validate_roles,
 )
 
 
@@ -165,10 +167,44 @@ edited_meta = st.data_editor(
     width="stretch",
 )
 
+# Auto-assign roles button
+if st.button("Auto-assign Roles", help="Automatically assign roles based on variable types"):
+    auto_meta = auto_assign_roles(edited_meta)
+    labeled_df = update_metadata(labeled_df, auto_meta)
+    st.session_state.labeled_df = labeled_df
+    logger.info("Auto-assigned roles based on variable types")
+    st.rerun()
+
 # Update metadata when changed
 if not edited_meta.equals(meta_df):
     labeled_df = update_metadata(labeled_df, edited_meta)
     st.session_state.labeled_df = labeled_df
+
+# Validate roles and show warnings
+role_warnings = validate_roles(edited_meta)
+if role_warnings:
+    with st.expander("Role Warnings", expanded=True):
+        for warning in role_warnings:
+            st.warning(warning)
+
+# Check if required roles are set
+roles_list = edited_meta["role"].tolist()
+has_independent = any("independent" in str(r) for r in roles_list)
+has_dependent = any("dependent" in str(r) for r in roles_list)
+has_splitby = any("splitby" in str(r) for r in roles_list)
+
+if not (has_independent and has_dependent and has_splitby):
+    missing = []
+    if not has_independent:
+        missing.append("independent")
+    if not has_dependent:
+        missing.append("dependent")
+    if not has_splitby:
+        missing.append("splitby")
+    st.info(
+        f"Missing required roles: {', '.join(missing)}. "
+        "Click 'Auto-assign Roles' or manually assign roles to compute trends."
+    )
 
 # Data sample preview
 with st.expander("Data Sample", expanded=False):

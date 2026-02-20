@@ -229,6 +229,137 @@ def get_rank_trend_detail(labeled_df, dependent, independent, splitby):
     return detail_df, count_df
 
 
+def validate_roles(meta_df):
+    """Validate role assignments and return warnings.
+
+    Rules:
+    - Continuous variables should be independent or dependent
+    - Categorical/binary/ordinal variables should be splitby
+
+    Args:
+        meta_df: DataFrame with var_type and role columns.
+
+    Returns:
+        List of warning messages.
+    """
+    warnings = []
+
+    for _, row in meta_df.iterrows():
+        var_name = row["variable"]
+        var_type = row["var_type"]
+        role = row["role"]
+
+        if role == "ignore":
+            continue
+
+        is_continuous = var_type == "continuous"
+        is_categorical = var_type in ["categorical", "binary", "ordinal"]
+
+        if is_continuous and "splitby" in role:
+            warnings.append(
+                f"'{var_name}' is continuous but assigned as splitby. "
+                "Consider using categorical variables for splitby."
+            )
+
+        if is_categorical and role in ["independent", "dependent"]:
+            warnings.append(
+                f"'{var_name}' is {var_type} but assigned as {role}. "
+                "Categorical variables are typically used as splitby."
+            )
+
+    return warnings
+
+
+def auto_assign_roles(meta_df):
+    """Auto-assign roles based on variable types.
+
+    Ensures at least one of each required role (independent, dependent, splitby).
+
+    Algorithm:
+    - Categorical/binary/ordinal variables -> splitby (first one)
+    - Continuous variables -> independent (first), dependent (second)
+    - If no categorical for splitby, use third continuous variable
+    - Remaining -> ignore
+
+    Args:
+        meta_df: DataFrame with variable and var_type columns.
+
+    Returns:
+        DataFrame with updated role column.
+    """
+    result_df = meta_df.copy()
+    result_df["role"] = "ignore"
+
+    categorical_vars = result_df[
+        result_df["var_type"].isin(["categorical", "binary", "ordinal"])
+    ]["variable"].tolist()
+
+    continuous_vars = result_df[
+        result_df["var_type"] == "continuous"
+    ]["variable"].tolist()
+
+    all_vars = result_df["variable"].tolist()
+
+    assigned_splitby = False
+    assigned_independent = False
+    assigned_dependent = False
+
+    if categorical_vars:
+        result_df.loc[result_df["variable"] == categorical_vars[0], "role"] = "splitby"
+        assigned_splitby = True
+        logger.debug(f"Auto-assigned splitby: {categorical_vars[0]}")
+
+    if len(continuous_vars) >= 2:
+        result_df.loc[result_df["variable"] == continuous_vars[0], "role"] = "independent"
+        result_df.loc[result_df["variable"] == continuous_vars[1], "role"] = "dependent"
+        assigned_independent = True
+        assigned_dependent = True
+        logger.debug(f"Auto-assigned independent: {continuous_vars[0]}, dependent: {continuous_vars[1]}")
+    elif len(continuous_vars) == 1:
+        result_df.loc[result_df["variable"] == continuous_vars[0], "role"] = "dependent"
+        assigned_dependent = True
+        logger.debug(f"Auto-assigned dependent: {continuous_vars[0]}")
+
+    if not assigned_splitby:
+        if len(continuous_vars) >= 3:
+            result_df.loc[result_df["variable"] == continuous_vars[2], "role"] = "splitby"
+            assigned_splitby = True
+            logger.debug(f"Auto-assigned splitby (from continuous): {continuous_vars[2]}")
+        elif len(all_vars) > 2:
+            for var in all_vars:
+                current_role = result_df.loc[result_df["variable"] == var, "role"].values[0]
+                if current_role == "ignore":
+                    result_df.loc[result_df["variable"] == var, "role"] = "splitby"
+                    assigned_splitby = True
+                    logger.debug(f"Auto-assigned splitby (fallback): {var}")
+                    break
+
+    if not assigned_independent and len(all_vars) >= 1:
+        for var in all_vars:
+            current_role = result_df.loc[result_df["variable"] == var, "role"].values[0]
+            if current_role == "ignore":
+                result_df.loc[result_df["variable"] == var, "role"] = "independent"
+                assigned_independent = True
+                logger.debug(f"Auto-assigned independent (fallback): {var}")
+                break
+
+    if not assigned_dependent and len(all_vars) >= 2:
+        for var in all_vars:
+            current_role = result_df.loc[result_df["variable"] == var, "role"].values[0]
+            if current_role == "ignore":
+                result_df.loc[result_df["variable"] == var, "role"] = "dependent"
+                assigned_dependent = True
+                logger.debug(f"Auto-assigned dependent (fallback): {var}")
+                break
+
+    logger.info(
+        f"Auto-assign complete: independent={assigned_independent}, "
+        f"dependent={assigned_dependent}, splitby={assigned_splitby}"
+    )
+
+    return result_df
+
+
 def check_trends_computable(labeled_df, trend_names):
     """Check which trends are computable for the given data.
 
