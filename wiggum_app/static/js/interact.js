@@ -1,6 +1,7 @@
 // Global variable
 var csvData;
 var globalInitData;
+var globalResultTable;
 
 /**
  * Initialize interact page
@@ -11,12 +12,12 @@ var globalInitData;
  function init(data){	
 
     // Draw node link tree
-    var result_table = JSON.parse(data.result_df);
+    globalResultTable = JSON.parse(data.result_df);
     // Store data to global variable
     globalInitData = data;
     drawNodeLinkTree(data);
     //drawNodeLinkTree(result_table, data.agg_distance_heatmap_dict);
-    drawMapState(result_table);
+    drawMapState(globalResultTable);
 
     if (data.agg_distance_heatmap_dict[0].detail_view_type === 'iscatter') {
         // dependent vars list

@@ -74,11 +74,11 @@ const initial_level2_children_virtual_layer = (selection, props) => {
 			return `The mean distance is ${d3.format(".3f")(d.mean_distance)}.`
 		});
 
-	// Text for identity portion  
-	selection.selectAll(".text")		
+	// Text for identity portion
+	selection.selectAll(".virtualLayer.children.text")		
 		.data(identity_data)
 		.enter().append("text")	   
-		.attr("class", d => level + " " + chart_name + " children text " 
+		.attr("class", d => level + " " + chart_name + " virtualLayer children text " 
 				+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	
 		.attr("transform", function(d, i) {
 				return "translate(" + position_x +"," + (interval * i) + ")";

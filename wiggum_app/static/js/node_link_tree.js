@@ -50,8 +50,6 @@ var globalCircleRadius = 10;
 */
 function drawNodeLinkTree(data) {
 
-    var result_table = JSON.parse(data.result_df);
-
 	// =================TODO remove=======================>
 	var contextual_cat_vars = data.contextual_cat_vars;
 	var contextual_ord_vars = data.contextual_ord_vars;
@@ -70,7 +68,7 @@ function drawNodeLinkTree(data) {
 	//var innerHeight = height - margin.top - margin.bottom;
 
 	// calculate the number of leaf nodes 
-	const num_leaf_nodes = result_table.length;
+	const num_leaf_nodes = globalResultTable.length;
 
 	var treeHeight = 50 * num_leaf_nodes + margin.top + margin.bottom;
 
@@ -82,7 +80,7 @@ function drawNodeLinkTree(data) {
 						.key(d => [d.dependent, d.independent])
 						.sortKeys(d3.ascending)
 						.key(d => d.splitby)
-						.entries(result_table);
+						.entries(globalResultTable);
 
 	// Add root
 	nested_data = {key: 'root', values: nested_data};
@@ -432,8 +430,8 @@ function drawNodeLinkTree(data) {
 	// Generate interactive buttons
 	// TODO Generalize Gerrymandering: barchart for competitive information
 	//viewLabels= ['\uf03a', 'SP1', 'SP2', '\uf080' ];
-	viewLabels= ['\uf03a', 'SP1', 'SP2' ];
-	
+	viewLabels= ['\uf03a', '\uf080', 'SP1', 'SP2' ];
+
 	// Left identity portion in virtual layer
 	//leftIdentityLabels = ['I', 'II', 'III'];
 
@@ -478,7 +476,7 @@ function drawNodeLinkTree(data) {
 		levelG: firstLevelG,
 		level: 'level2',
 		//charts: ['list', 'scatterplot1d', 'scatterplot2d', 'barchart'],
-		charts: ['list', 'scatterplot1d', 'scatterplot_level2'],
+		charts: ['list', 'horizontalgroupedbarchart', 'scatterplot1d', 'scatterplot_level2'],
 		width: width,
 		addWidthArray: height_array,
 		treeHeight: treeHeight + margin.top + margin.bottom,
@@ -1092,7 +1090,7 @@ function drawNodeLinkTree(data) {
 					+ ' ' + independent + ' splitby_' + splitby + ' va map')
 					//.attr("transform", "translate(" + (rectWidth + 10) + ", 0)");
 					.attr("transform", "translate(" + (globalRectWidth + 50) + "," + (-globalRectHeight) + ")");
-				var map_data = result_table.filter(obj => {
+				var map_data = globalResultTable.filter(obj => {
 					return obj.dependent === dependent
 							&& obj.independent === independent
 							&& obj.splitby === splitby

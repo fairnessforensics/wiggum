@@ -170,18 +170,27 @@ const interact_view_button = (selection, props) => {
 					return obj.dependent === dependent
 							&& obj.independent === independent
 				  })
+
+			} else if (selectedChart == 'horizontalgroupedbarchart') {
+				chart_data = globalResultTable.filter(obj => {
+					return obj.dependent === dependent
+							&& obj.independent === independent
+				  })
 			}
 
 			// Analytical Abstraction - Aggregation
+			var ranges;
+			var rangeKeys;
+
 			if (selectedChart == 'scatterplot' || 
 				selectedChart == 'smscatterplot_industry' ||
 				selectedChart == 'scatterplot_industry' ||
 				selectedChart == 'scatterplot_industry_bounded') {
 				/* 
-					Visual Tech 5: Scatterplot 
-					Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID
-					Visual Tech 7: Scatterplot specificly for Industry ID
-					Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space
+					Level 1 - Visual Tech 5: Scatterplot 
+							  Visual Tech 6: Small Multiples of Scatterplot Specificly for Industry ID
+							  Visual Tech 7: Scatterplot specificly for Industry ID
+							  Visual Tech 8: Scatterplot specificly for Industry ID in a bounded space
 				*/
 				chart_data = aggregate({data: csvData,
 					groupby_keys: [independent, first_candidate],
@@ -194,6 +203,43 @@ const interact_view_button = (selection, props) => {
 						return d[dependent] > 0;
 					});
 				}
+			} else if (selectedChart == 'horizontalgroupedbarchart') {
+				/*	Level 2 - Visual Tech 3: Horizontal Grouped Bar Chart */
+				ranges = [
+					{ label: '[0, 0.333]', min: 0, max: 0.333 },
+					{ label: '(0.333, 0.666]', min: 0.333, max: 0.666 },
+					{ label: '(0.666, 1]', min: 0.666, max: 1 }
+				];
+
+				rangeKeys = ranges.map(r => r.label);
+
+				chart_data = Object.values(
+					chart_data.reduce((groups, d) => {
+						const subgroup = d.splitby;
+
+						if (!groups[subgroup]) {
+							groups[subgroup] = {
+								subgroup: subgroup
+							};
+
+							rangeKeys.forEach(key => {
+								groups[subgroup][key] = 0;
+							});
+						}
+
+						ranges.forEach((r, i) => {
+							const inRange = i === 0
+								? d.distance >= r.min && d.distance <= r.max
+								: d.distance > r.min && d.distance <= r.max;
+
+							if (inRange) {
+								groups[subgroup][r.label]++;
+							}
+						});
+
+						return groups;
+					}, {})
+				);
 			}
 
 			/* ==================== View Space ==================== */
@@ -386,10 +432,12 @@ const interact_view_button = (selection, props) => {
 					rowIndex: 'row' + rowIndex,
 					level: level
 				});
-			} else if (selectedChart == 'scatterplot1d' || selectedChart == 'scatterplot_level2'	) {
+			} else if (selectedChart == 'scatterplot1d' || selectedChart == 'scatterplot_level2'
+					|| selectedChart == 'horizontalgroupedbarchart') {
 				/* 
 					Level 2 - Visual Tech 1: 1d scatter plot 			
-							  Visual Tech 2: Scatterplot 
+							  Visual Tech 2: Scatterplot
+							  Visual Tech 3: Horizontal Grouped Bar Chart 
 				*/
 				var maxHeight = 300;
 				viewVLHeight = d.children[d.children.length - 1].x - d.children[0].x;
@@ -441,9 +489,36 @@ const interact_view_button = (selection, props) => {
 									});		
 									
 
-				}
+				} else if (selectedChart == 'horizontalgroupedbarchart') {
+					viewVLWidth = viewVLHeight + 20;
+					
+					var maxCount = Math.max(
+						...chart_data.flatMap(d =>
+							rangeKeys.map(key => d[key])
+						)
+					);
 
-			} 
+					var competitive_color = d3.scaleOrdinal()
+										.range(["#8dd3c7", "#fdb462", "#bc80bd"]);
+
+					secondLevelG1.call(horizontalGroupedBarchart, {
+						chart_data: chart_data,
+						width: viewVLWidth,
+						height: viewVLHeight,
+						margin: { left: 20, top: 8, right: 0, bottom: 20 },
+						x_axis_scale: 'scaleLinear',
+						largerFlag: false,
+						keys: rangeKeys,
+						x_axis_ticks: [maxCount],
+						x_axis_tick_format: d3.format("d"),
+						x_axis_label: 'Number of Subgroups',
+						legend_title: 'Pattern Distance',
+						level: level,
+						myColor: competitive_color,
+						tooltipValueFormatFlag: false
+					});	
+				}
+			}
 
 			// Update global view size
 			if (level == 'level1') {
@@ -493,16 +568,25 @@ const interact_view_button = (selection, props) => {
 				} 
 			} else if (level == 'level2') {
 				// Create cycles for children VL in Level 2
-				if (selectedChart == 'scatterplot_level2') {
-
+				if (selectedChart == 'scatterplot_level2' ||
+					selectedChart == 'horizontalgroupedbarchart') {
 					childrenVLWidth = 50; 
+
+					if (selectedChart == 'horizontalgroupedbarchart') {
+						childrenVLWidth = 20;
+					}
 					
 					var position_x = viewVLWidth + childrenVLWidth;
 					var position_y = 0;					
 
+					var identity_data = splitby_table.filter(obj => {
+						return obj.dependent === dependent
+								&& obj.independent === independent
+					})
+
 					secondLevelG1.call(initial_level2_children_virtual_layer, {
 										chart_name: selectedChart,
-										identity_data: chart_data,
+										identity_data: identity_data,
 										position_x: position_x,
 										position_y: viewVLHeight,
 										level: level
@@ -547,6 +631,10 @@ const interact_view_button = (selection, props) => {
 				thirdLevelParentVLWidth: globalThirdLevelParentVLWidth,
 				layerType: 'view',
 				level: 'level2'});
+
+			// Hide children text
+			d3.selectAll('.'+level + '.children.text')
+						.style('visibility', 'hidden');	
 		}
 
 		// Tree path adjustment
@@ -566,7 +654,9 @@ const interact_view_button = (selection, props) => {
 					})
 			}
 		} else {
-			if (globalSecondLevelView == 'list' || globalSecondLevelView == 'scatterplot_level2') {
+			if (globalSecondLevelView == 'list' || 
+				globalSecondLevelView == 'scatterplot_level2' ||
+				globalSecondLevelView == 'horizontalgroupedbarchart') {
 				d3.select('#node_link_tree').selectAll('.path')
 					.attr('d', function(d, i) {
 						return d.source.depth < 1 ? globalMatrixLinkPathGenerator(d, i, 'list', matrixHeight) 
@@ -596,7 +686,8 @@ const interact_view_button = (selection, props) => {
 		const identityButtonCounts = {
 				"scatterplot": 7,
 				"interactheatmap": 3,
-				"scatterplot_level2": 2
+				"scatterplot_level2": 2,
+				"horizontalgroupedbarchart": 2
 		};
 
 		// Show only the buttons relevant to the selected chart

@@ -371,3 +371,227 @@ const coloredBarChart = (selection, props) => {
 		.text(d => `${d.name} : ${d3.format(".2s")(d.value)}` );
 
 }
+
+const horizontalGroupedBarchart = (selection, props) => {
+	const {
+	  chart_data,
+	  width,
+	  height,
+	  margin,
+	  largerFlag,
+	  keys,
+	  x_axis_label,
+	  x_axis_scale,
+	  x_axis_ticks = [],
+	  x_axis_tick_format,
+	  legend_title,
+	  level,
+	  myColor,
+	  tooltipValueFormatFlag
+	} = props;
+
+	var subgroups;
+	if (keys == undefined) {
+		subgroups = Object.keys(chart_data[0]).filter(item => {
+			return item != 'subgroup'
+		});
+	} else {
+		subgroups = keys;
+	}
+
+	var groups = d3.map(chart_data, function(d){return(d.subgroup)}).keys();
+
+	const innerWidth = width - margin.left - margin.right;
+	
+	var innerHeight;
+	if (!largerFlag) {
+		//innerHeight = height + 45;
+		innerHeight =  height;
+	} else {
+		innerHeight =  height - margin.top - margin.bottom;
+	}
+
+	var xScale;
+	var xAxis;
+
+	var x_value_max = Math.max(
+						...chart_data.flatMap(d =>
+							keys.map(key => d[key])
+						)
+					);
+
+	if (x_axis_scale == 'scaleLog') {
+		// Log scale cannot include zero
+		xScale = d3.scaleLog()
+						.range([0, innerWidth]);
+		xScale.domain([1, x_value_max]).nice();
+
+		xAxis = d3.axisBottom(xScale)
+					.tickSize(-innerHeight)
+					// TODO move it to x_axis_ticks: [5, ",.0e"]
+					// same for format using parameter x_axis_tick_format
+					.ticks(x_axis_tick_num, ",.0e")  
+					.tickFormat(d3.format(",.0e")); 
+	} else {
+		xScale = d3.scaleLinear()
+					.range([0, innerWidth]);
+		
+		xScale.domain([0, x_value_max]).nice();	
+
+		xAxis = d3.axisBottom(xScale)
+					.tickSize(-innerHeight);
+
+		if (x_axis_ticks.length) {
+			xAxis.ticks(...x_axis_ticks);
+		}
+
+		if (x_axis_tick_format) {
+			xAxis.tickFormat(x_axis_tick_format);
+		}		
+
+		// TODO using parameter
+		/*if (percentageFlag) {
+			xAxis = d3.axisBottom(xScale)
+				.tickSize(-innerHeight)
+				.ticks(5, "%");
+		} else {
+			xAxis = d3.axisBottom(xScale)
+				.tickSize(-innerHeight)
+				.tickFormat(d3.format(".2s"));
+		}*/
+	}
+	
+	const yScale = d3.scaleBand()
+	  .domain(groups)
+	  .range([0, innerHeight])
+	  .paddingInner(0.3)
+	  .paddingOuter(0.1);
+	
+	var ySubgroup = d3.scaleBand()
+	  .domain(subgroups)
+	  .range([0, yScale.bandwidth()])
+	  .padding([0.05]);
+
+	//var color = d3.scaleOrdinal()
+	//  .domain(subgroups)
+	//  .range(['#e41a1c','#377eb8','#4daf4a'])
+
+	var color;
+	if (myColor == undefined) {
+		color = d3.scaleOrdinal(d3.schemeCategory10);
+	} else {
+		color = myColor;
+	}
+
+	const g = selection.append('g')
+					.attr("class", level + " view virtuallayer horizontalgroupedbarchart")
+	  				.attr('transform', `translate(${margin.left},${margin.top})`);
+	
+	// background bars
+	g.append("g")
+	  	.selectAll("g")
+		.data(chart_data)
+		.enter()
+		.append("g")
+		  .attr("transform", function(d) { return "translate(0, " + yScale(d.subgroup) + ")"; })
+		.selectAll("rect")
+		.data(function(d) { 
+			return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+		.enter().append("rect")
+		  .attr("class", level + " barchart backgroundbar")   
+		  .attr("y", function(d){ return ySubgroup(d.key); })
+		  .attr("width", function(d) { return innerWidth; })
+		  .attr("height", ySubgroup.bandwidth())
+		  .attr("fill", function(d) { return '#eee' ; });			
+
+	g.append('g')
+	  .call(d3.axisLeft(yScale))
+	  .call(selection => selection.selectAll(".tick")
+		.attr("class", level + " barchart tick")
+		.style("font", "16px times")
+		.style("display",  "none"))
+	  .selectAll('.domain, .tick line')
+		.remove();
+	
+	const xAxisG = g.append('g')
+					.attr("class", level + " barchart x axis")
+					.call(xAxis)
+					.attr("stroke-opacity", 0.2)
+					.attr('transform', `translate(0,${innerHeight})`);
+	
+	xAxisG.select('.domain').remove();
+
+
+
+	// Label for x-axis
+	// TODO using parameter merge two xAxisG when working on leaf level
+	/*
+	xAxisG.selectAll("text")
+		.attr("transform", "rotate(-60)")
+		.attr("dx", "-.9em")
+		.attr("dy", ".1em")
+		.style("text-anchor", "end");
+
+	xAxisG.select(".tick:last-of-type text").clone()
+		.attr("x", 20)
+		.attr("text-anchor", "start")
+		.attr("font-weight", "bold")
+		.attr("transform", "rotate(0)")
+		.attr("dx", ".9em")
+		.text(x_axis_label);
+	*/
+	xAxisG.select(".tick:last-of-type text").clone()
+		.attr("x", 28 - margin.left)
+		.attr("text-anchor", "start")
+		.attr("font-weight", "bold")
+		.text(x_axis_label);	
+
+	g.append("g")
+	  	.selectAll("g")
+		.data(chart_data)
+		.enter()
+		.append("g")
+		  .attr("transform", function(d) { return "translate(0, " + yScale(d.subgroup) + ")"; })
+		.selectAll("rect")
+		.data(function(d) { 
+			return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
+		.enter().append("rect")
+		  .attr("class", level + " barchart bar")   
+		  .attr("y", function(d){ return ySubgroup(d.key); })
+		  .attr("width", function(d) { return xScale(d.value); })
+		  .attr("height", ySubgroup.bandwidth())
+		  .attr("fill", function(d) { return color(d.key); })
+		  .append('title')
+		  .text(d => tooltipValueFormatFlag ? `${d3.format(".2s")(d.value)}` : `${d.value}`);		
+
+	// Legend      
+	var legend = g.selectAll(".legend")
+					.data(subgroups)
+					.enter().append("g")
+					.attr("class", level + " barchart legend")
+					.attr("transform", function(d, i) { 
+						return "translate("+ (width - margin.right - margin.left + 10) +"," + (i * 15 + 20) + ")"; });
+
+	legend.append("rect")
+		.attr("x", 0)
+		.attr("width", 10)
+		.attr("height", 10)
+		.style("fill", d => color(d));
+
+	legend.append("text")
+		.attr("x", 15)
+		.attr("y", 4)
+		.attr("dy", ".35em")
+		.style("font-size", "12px")                     
+		.style("text-anchor", "start")
+		.text(function(d) { return d; });
+
+	g.append("text")
+		.attr("class", level + " barchart legend title")		
+		.attr("x", width - margin.left - margin.right + 10)
+		.attr("y", 15)
+		.style("font-size", "12px")                     
+		.style("text-anchor", "start")
+		.text(legend_title);	
+
+  };
