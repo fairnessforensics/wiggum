@@ -111,7 +111,8 @@ function drawNodeLinkTree(data) {
 							if (d.depth == 2) {
 								// splitby level
 								var keyArray = d.parent.data.key.split(",");
-								return 'node level-' + d.depth + ' ' + keyArray[0] + ' ' + keyArray[1];
+
+								return 'node level-' + d.depth + ' ' + keyArray[0] + ' ' + keyArray[1] + ' splitby_' + d.data.key;
 							} else if (d.depth == 3) {
 								// subgroup level
 								return 'node level-' + d.depth + ' ' + d.data.dependent + ' ' 

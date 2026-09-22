@@ -1,3 +1,6 @@
+// Global variable
+var globalSplitbyTable;
+
 const interact_view_button = (selection, props) => {
 	const {
 		viewLabels,
@@ -39,7 +42,7 @@ const interact_view_button = (selection, props) => {
 		// Splitby table for level 2
 		var agg_splitby_table_dict = globalInitData.agg_splitby_table_dict;
 		var splitby_data = agg_splitby_table_dict[0];
-		var splitby_table = JSON.parse(splitby_data.splitby_table);
+		globalSplitbyTable = JSON.parse(splitby_data.splitby_table);
 
 		// Reset global level size
 		if (level == "level1") {
@@ -166,7 +169,7 @@ const interact_view_button = (selection, props) => {
 
 			} else if (selectedChart == 'scatterplot1d' || selectedChart == 'scatterplot_level2') {
 				
-				chart_data = splitby_table.filter(obj => {
+				chart_data = globalSplitbyTable.filter(obj => {
 					return obj.dependent === dependent
 							&& obj.independent === independent
 				  })
@@ -579,7 +582,7 @@ const interact_view_button = (selection, props) => {
 					var position_x = viewVLWidth + childrenVLWidth;
 					var position_y = 0;					
 
-					var identity_data = splitby_table.filter(obj => {
+					var identity_data = globalSplitbyTable.filter(obj => {
 						return obj.dependent === dependent
 								&& obj.independent === independent
 					})

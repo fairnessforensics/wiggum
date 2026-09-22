@@ -623,16 +623,18 @@ const interact_parent_button = (selection, props) => {
 					side: 'parent',
 					level: 'level2'
 				});	
+			}
+		}
 
-				// Hide level 1 path
-				d3.selectAll('.level1.path')
-					.transition()
-					.style('visibility', 'hidden');
-
-				// Hide the list circle
-				d3.selectAll('.' + level + '.list.circle, ' + '.' + level + '.list.text')
-					.transition()
-					.style('visibility', 'hidden');	
+		if (selectedChart == 'horizontalgroupedbarchart') {
+			if (i == 1) {
+				levelG.call(horizontal_grouped_bar_chart_virtual_layer, {
+					height: globalSecondLevelViewVLHeight,
+					parentVLWidth: globalSecondLevelParentVLWidth,
+					margin: { left: 20, top: 8, right: 0, bottom: 20 },
+					side: 'parent',
+					level: 'level2'
+				});	
 			}
 		}
 
@@ -671,6 +673,17 @@ const interact_parent_button = (selection, props) => {
 
 			globalSecondLevelWidth += globalSecondLevelParentVLWidth;
 
+			if (i == 1) {
+				// Hide level 1 path
+				d3.selectAll('.level1.path')
+					.transition()
+					.style('visibility', 'hidden');
+
+				// Hide the list circle
+				d3.selectAll('.' + level + '.list.circle, ' + '.' + level + '.list.text')
+					.transition()
+					.style('visibility', 'hidden');	
+			}
 		}
 	});
 
