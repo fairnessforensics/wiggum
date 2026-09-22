@@ -629,6 +629,7 @@ const interact_parent_button = (selection, props) => {
 		if (selectedChart == 'horizontalgroupedbarchart') {
 			if (i == 1) {
 				levelG.call(horizontal_grouped_bar_chart_virtual_layer, {
+					width: globalSecondLevelWidth,
 					height: globalSecondLevelViewVLHeight,
 					parentVLWidth: globalSecondLevelParentVLWidth,
 					margin: { left: 20, top: 8, right: 0, bottom: 20 },

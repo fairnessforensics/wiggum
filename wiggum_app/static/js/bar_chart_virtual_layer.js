@@ -1,8 +1,10 @@
 const horizontal_grouped_bar_chart_virtual_layer = (selection, props) => {
 	const {
+	  width,
 	  height,
 	  parentVLWidth,
 	  margin,
+	  axis_x_position,
 	  side,
 	  level
 	} = props;
@@ -15,17 +17,16 @@ const horizontal_grouped_bar_chart_virtual_layer = (selection, props) => {
 		var level2_y = d.children[0].x;
 
 		var keyArray = d.data.key.split(",");
-		keyArray[0] = keyArray[0].replace(/\s+/g, '.');
-		keyArray[1] = keyArray[1].replace(/\s+/g, '.');
+		var dependent = keyArray[0].replace(/\s+/g, '.');
+		var independent = keyArray[1].replace(/\s+/g, '.');
 
-		var secondLevelG1 = d3.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
-		var secondLevelG = d3.selectAll('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
-
+		var secondLevelG1 = d3.select('.level-2' + '.' + dependent + '.' + independent);
+		var secondLevelG = d3.selectAll('.level-2' + '.' + dependent + '.' + independent);
 		var groups = d.data.values.map(itemn => itemn.key);
 
 		var identity_data = globalSplitbyTable.filter(obj => {
-			return obj.dependent === keyArray[0]
-					&& obj.independent === keyArray[1]
+			return obj.dependent === dependent
+					&& obj.independent === independent
 		})
 
 		var yScale = d3.scaleBand()
@@ -34,49 +35,64 @@ const horizontal_grouped_bar_chart_virtual_layer = (selection, props) => {
 						.paddingInner(0.3)
 						.paddingOuter(0.1);
 		
-		secondLevelG1.selectAll(".virtuallayer.parent.circle")
-			.data(identity_data)
-			.enter().append("circle")	    
-			.attr("class", d => level + " horizontablgroupedbarchart virtuallayer parent circle " 
-						+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
-			.attr("transform", function(d) {
-				var y_position = margin.top + yScale(d.splitby) + yScale.bandwidth()/2;
-				return "translate(" + 0 +"," + y_position + ")";
-			})
-			.attr('r', globalCircleRadius)	
-			.style('stroke', 'black')
-			.style('stroke-width', '2px')
-			.attr("stroke-opacity", 0.3)
-			.style("fill-opacity", 1) 
-			.style("fill", d => heatmapColorScale(d.mean_distance))
-			.append('title')
-			.text(function(d) {
-				return `The mean distance is ${d3.format(".3f")(d.mean_distance)}.`
-			});
-		
-		// Text for identity portion
-		secondLevelG1.selectAll(".virtualLayer.parent.text")		
-			.data(identity_data)
-			.enter().append("text")	   
-			.attr("class", d => level + " horizontablgroupedbarchart virtuallayer parent text " 
-					+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	
-			.attr("transform", function(d, i) {
+		if (side == 'parent') {
+			secondLevelG1.selectAll(".virtuallayer." + side + ".circle")
+				.data(identity_data)
+				.enter().append("circle")	    
+				.attr("class", d => level + " horizontablgroupedbarchart virtuallayer " + side + " circle " 
+							+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	  
+				.attr("transform", function(d) {
 					var y_position = margin.top + yScale(d.splitby) + yScale.bandwidth()/2;
 					return "translate(" + 0 +"," + y_position + ")";
 				})
-			.attr("dx", globalCircleRadius)			  
-			.attr("dy", 2*globalCircleRadius + 5)			
-			.style("text-anchor", "end")
-			.text(d => d.splitby);	
+				.attr('r', globalCircleRadius)	
+				.style('stroke', 'black')
+				.style('stroke-width', '2px')
+				.attr("stroke-opacity", 0.3)
+				.style("fill-opacity", 1) 
+				.style("fill", d => heatmapColorScale(d.mean_distance))
+				.append('title')
+				.text(function(d) {
+					return `The mean distance is ${d3.format(".3f")(d.mean_distance)}.`
+				});
+		
+			// Text for identity portion
+			secondLevelG1.selectAll(".virtualLayer." + side + ".text")		
+				.data(identity_data)
+				.enter().append("text")	   
+				.attr("class", d => level + " horizontablgroupedbarchart virtuallayer " + side + " text " 
+						+ d.dependent + " " + d.independent + " splitby_" + d.splitby)	
+				.attr("transform", function(d, i) {
+						var y_position = margin.top + yScale(d.splitby) + yScale.bandwidth()/2;
+						return "translate(" + 0 +"," + y_position + ")";
+					})
+				.attr("dx", globalCircleRadius)			  
+				.attr("dy", 2*globalCircleRadius + 5)			
+				.style("text-anchor", "end")
+				.text(d => d.splitby);	
+		} else {
+			secondLevelG1.selectAll(".virtuallayer." + side + ".circle")
+				.each(function(d) {
+					d.originalTransform = d3.select(this).attr("transform");
+
+					var y_position = margin.top + yScale(d.splitby) + yScale.bandwidth() / 2;
+
+					d3.select(this)
+						.attr("transform",
+							"translate(" + (width - margin.right) + "," + y_position + ")"
+						);
+				});
+		}
 
 		// Add links
 		var linkData = [];
 
 		secondLevelG.each(function (d) {
 			var object = {};
+			var splitby = d.data.key;
+			var y_position = margin.top + yScale(splitby) + yScale.bandwidth()/2;
 			
 			if (side == 'parent') {
-				var y_position = margin.top + yScale(d.data.key) + yScale.bandwidth()/2;
 
 				object['source'] = [height/2, -level2_x + selectionLevelG_x + 10];
 				object['target'] = [y_position, -parentVLWidth - 10];
@@ -91,8 +107,28 @@ const horizontal_grouped_bar_chart_virtual_layer = (selection, props) => {
 				object['id'] = d3.select(this).attr("id");
 
 				linkData.push(object);
-			} 
+			} else {
+				var thirdLevelG = d3.selectAll('.node.level-3' + '.' + dependent + '.' 
+												+ independent + '.splitby_' + splitby);
+
+				thirdLevelG.each(function(dd) {
+					object = {};
+
+					object['source'] = [y_position, width + 10];
+					object['target'] = [dd.x - level2_y, dd.y - width];
+					
+					// add color
+					object['color'] = '#000000';
+
+					// add opacity
+					object['opacity'] = 1;
 				
+					// TODO(not working) add id for coordiate
+					object['id'] = d3.select(this).attr("id");
+
+					linkData.push(object);
+				})
+			}
 		});
 
 		secondLevelG1.call(link, {
