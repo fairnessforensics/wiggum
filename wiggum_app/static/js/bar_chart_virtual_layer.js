@@ -82,6 +82,23 @@ const horizontal_grouped_bar_chart_virtual_layer = (selection, props) => {
 							"translate(" + (width - margin.right) + "," + y_position + ")"
 						);
 				});
+
+			// Legend
+			secondLevelG1.selectAll("." + level + ".horizontalgroupedbarchart.legend")
+				.each(function() {
+					var selection = d3.select(this);
+					var currentTransform = selection.attr("transform");
+
+					// Store on the DOM element
+					this.originalTransform = currentTransform;
+					
+					var match = currentTransform.match(/translate\(([^,]+),([^)]+)\)/);
+
+					var x = +match[1];
+					var y = +match[2];
+
+					selection.attr("transform", "translate(" + x + "," + (y - 30) + ")");
+				});
 		}
 
 		// Add links

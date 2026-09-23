@@ -498,7 +498,7 @@ const horizontalGroupedBarchart = (selection, props) => {
 		.data(function(d) { 
 			return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
 		.enter().append("rect")
-		  .attr("class", level + " barchart backgroundbar")   
+		  .attr("class", level + " horizontalgroupedbarchart backgroundbar")   
 		  .attr("y", function(d){ return ySubgroup(d.key); })
 		  .attr("width", function(d) { return innerWidth; })
 		  .attr("height", ySubgroup.bandwidth())
@@ -507,14 +507,14 @@ const horizontalGroupedBarchart = (selection, props) => {
 	g.append('g')
 	  .call(d3.axisLeft(yScale))
 	  .call(selection => selection.selectAll(".tick")
-		.attr("class", level + " barchart tick")
+		.attr("class", level + " horizontalgroupedbarchart tick")
 		.style("font", "16px times")
 		.style("display",  "none"))
 	  .selectAll('.domain, .tick line')
 		.remove();
 	
 	const xAxisG = g.append('g')
-					.attr("class", level + " barchart x axis")
+					.attr("class", level + " horizontalgroupedbarchart x axis")
 					.call(xAxis)
 					.attr("stroke-opacity", 0.2)
 					.attr('transform', `translate(0,${innerHeight})`);
@@ -556,7 +556,7 @@ const horizontalGroupedBarchart = (selection, props) => {
 		.data(function(d) { 
 			return subgroups.map(function(key) { return {key: key, value: d[key]}; }); })
 		.enter().append("rect")
-		  .attr("class", level + " barchart bar")   
+		  .attr("class", level + " horizontalgroupedbarchart bar")   
 		  .attr("y", function(d){ return ySubgroup(d.key); })
 		  .attr("width", function(d) { return xScale(d.value); })
 		  .attr("height", ySubgroup.bandwidth())
@@ -568,7 +568,7 @@ const horizontalGroupedBarchart = (selection, props) => {
 	var legend = g.selectAll(".legend")
 					.data(subgroups)
 					.enter().append("g")
-					.attr("class", level + " barchart legend")
+					.attr("class", level + " horizontalgroupedbarchart legend")
 					.attr("transform", function(d, i) { 
 						return "translate("+ (width - margin.right - margin.left + 10) +"," + (i * 15 + 20) + ")"; });
 
@@ -587,9 +587,8 @@ const horizontalGroupedBarchart = (selection, props) => {
 		.text(function(d) { return d; });
 
 	g.append("text")
-		.attr("class", level + " barchart legend title")		
-		.attr("x", width - margin.left - margin.right + 10)
-		.attr("y", 15)
+		.attr("class", level + " horizontalgroupedbarchart legend title")		
+		.attr("transform", "translate(" + (width - margin.left - margin.right + 10) + ",15)")
 		.style("font-size", "12px")                     
 		.style("text-anchor", "start")
 		.text(legend_title);	
