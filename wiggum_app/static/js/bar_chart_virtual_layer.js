@@ -73,8 +73,10 @@ const horizontal_grouped_bar_chart_virtual_layer = (selection, props) => {
 		} else {
 			secondLevelG1.selectAll(".virtuallayer." + side + ".circle")
 				.each(function(d) {
-					d.originalTransform = d3.select(this).attr("transform");
-
+					if (d.originalTransform == undefined) {
+						d.originalTransform = d3.select(this).attr("transform");
+					}
+		
 					var y_position = margin.top + yScale(d.splitby) + yScale.bandwidth() / 2;
 
 					d3.select(this)
@@ -86,18 +88,22 @@ const horizontal_grouped_bar_chart_virtual_layer = (selection, props) => {
 			// Legend
 			secondLevelG1.selectAll("." + level + ".horizontalgroupedbarchart.legend")
 				.each(function() {
-					var selection = d3.select(this);
-					var currentTransform = selection.attr("transform");
+					if (this.legendMoved !== true) {
+						var selection = d3.select(this);
+						var currentTransform = selection.attr("transform");
 
-					// Store on the DOM element
-					this.originalTransform = currentTransform;
-					
-					var match = currentTransform.match(/translate\(([^,]+),([^)]+)\)/);
+						// Store on the DOM element
+						this.originalTransform = currentTransform;
+						
+						var match = currentTransform.match(/translate\(([^,]+),([^)]+)\)/);
 
-					var x = +match[1];
-					var y = +match[2];
+						var x = +match[1];
+						var y = +match[2];
 
-					selection.attr("transform", "translate(" + x + "," + (y - 30) + ")");
+						selection.attr("transform", "translate(" + x + "," + (y - 30) + ")");
+
+						this.legendMoved = true;
+					}
 				});
 		}
 

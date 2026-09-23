@@ -499,13 +499,23 @@ const interact_children_button = (selection, props) => {
 
 				if (selectedChart == 'horizontalgroupedbarchart') {
 					d3.selectAll('.'+ level +'.virtuallayer.children.circle')
-    					.attr("transform", d => d.originalTransform);
-
+						.each(function(d) {
+							if (d.originalTransform !== undefined) {
+								// Only store for the first time
+								d3.select(this)
+									.attr("transform", d.originalTransform);
+							}
+						});
+					
 					// Reset the position for legend	
 					d3.selectAll('.'+ level +'.horizontalgroupedbarchart.legend')
 						.each(function() {
-							d3.select(this)
-								.attr("transform", this.originalTransform);
+							if (this.originalTransform !== undefined) {
+								d3.select(this)
+									.attr("transform", this.originalTransform);
+
+								this.legendMoved = false;	
+							}
 						});
 				}
 			}
