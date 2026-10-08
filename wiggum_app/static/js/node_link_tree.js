@@ -522,121 +522,7 @@ function drawNodeLinkTree(data) {
 			  })
 			return `The mean distance is ${d3.format(".3f")(row.mean_distance)}.`
 		}); 			
-/*=================================WORKING==============================>
-	// Visual Alternatives
-	root.children.forEach(function (d) {
 
-		var yColumn = 'mean_distance';
-
-		var keyArray = d.data.key.split(",");
-		var chart_data = splitby_table.filter(obj => {
-			return obj.dependent === keyArray[0]
-					&& obj.independent === keyArray[1]
-		  })
-
-		keyArray[0] = keyArray[0].replace(/\s+/g, '.');
-		keyArray[1] = keyArray[1].replace(/\s+/g, '.');
-		var secondLevelG1 = g.select('.level-2' + '.' + keyArray[0] + '.' + keyArray[1]);
-
-		var secondLevelG1_position = secondLevelG1.attr('transform').split(/[\s,()]+/);
-		var secondLevelG1_x = parseFloat(secondLevelG1_position[1]);
-		var secondLevelG1_y = parseFloat(secondLevelG1_position[2]);
-
-		var height = d.children[d.children.length - 1].x - d.children[0].x;
-		var offset_y;
-
-		if (height > maxHeight) {
-			offset_y = height/2 - maxHeight/2;
-			// set max height
-			height = maxHeight;
-			secondLevelG1_y = secondLevelG1_y + offset_y;
-
-		}
-
-		var secondLevelG1_visual_alter = secondLevelG1.append("g")
-			.attr("class", 'level-2' + ' ' + keyArray[0] + ' ' + keyArray[1] + ' va')
-			.attr("transform", "translate(0,0)");
-			//.attr("transform", "translate(" + secondLevelG1_x + "," + secondLevelG1_y + ")");
-
-		// Visual Tech 2: 1d scatter plot	
-		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
-			yValue: d => d[yColumn],
-			yAxisLabel: yColumn,
-			circleRadius: secondLevelCircleRadius,
-			height,
-			chart_data,
-			level: 'level2'
-		});		
-
-		// Visual Tech 3: 2d scatter plot	
-		// var xColumn = 'mean_subgroup_trend_strength';
-		var xColumn = 'max_distance';
-
-		secondLevelG1_visual_alter.call(oneDimensionalScatterPlot, {
-			xValue: d => d[xColumn],
-			//xAxisLabel: 'The Mean of Winning Margins',
-			xAxisLabel: 'The Maximum Distance',
-			yValue: d => d[yColumn],
-			yAxisLabel: 'The Mean of Distances',
-			circleRadius: secondLevelCircleRadius,
-			margin: { top: 10, right: 40, bottom: 88, left: 150 },
-			width: height,
-			height,
-			chart_data,
-			level: 'level2'
-		});
-<=================================WORKING==============================*/
-		/* Gerrymandering Only
-		if (agg_data.trend_type == 'rank_trend') {
-			// Visual Tech 4: grouped bar chart
-			var competitive_chart_data = competitive_table.filter(obj => {
-				return obj.dependent === keyArray[0]
-						&& obj.independent === keyArray[1]
-			})
-
-			var competitive_bar_chart_data = [];
-
-			d.data.values.forEach(function (item) {
-				var singleObj = {};
-				singleObj['subgroup'] = item.key;
-				for (var i = 0; i < competitive_chart_data.length; i++){
-					if (item.key == competitive_chart_data[i].splitby) {
-						var key = competitive_chart_data[i].winning_margin;
-						singleObj[key] = competitive_chart_data[i].count;
-					}
-				}
-				competitive_bar_chart_data.push(singleObj);
-			});
-
-			const xValue = competitive_table => competitive_table['count'];
-			var xDomain = [0, d3.max(competitive_table, xValue)];
-			var competitive_color = d3.scaleOrdinal()
-										//.range(["#a6cee3", "#fb9a99", "#cab2d6"]);
-										//.range(["#80b1d3", "#fb8072", "#bc80bd"]);
-										.range(["#8dd3c7", "#fdb462", "#bc80bd"]);
-
-			secondLevelG1_visual_alter.call(barChart, {
-				chart_data: competitive_bar_chart_data,
-				width: height,
-				height: height,
-				xDomain: xDomain,
-				level: 'level2',
-				largerFlag: false,
-				keys: ['[0, 10%]', '(10%, 20%]', '(20%, 100%]'],
-				percentageFlag: false,
-				parentIdentityFlag: true,
-				childrenIdentityFlag: true,
-				circleRadius: secondLevelCircleRadius,
-				identity_data: chart_data,
-				x_axis_label: 'Number of Districts',
-				legend_title: 'Winning Margin',
-				myColor: competitive_color,
-				tooltipValueFormatFlag: false
-			});	
-		}
-		*/
-
-// ===========WORKING============	});
 
 	// Third level: subgroups
 
@@ -679,7 +565,7 @@ function drawNodeLinkTree(data) {
 			childrenIdentityLabels: childrenIdentityLabels,
 			levelG: thirdLevelG,
 			level: 'level3',
-			charts: ['list', 'countrymap', 'barchart', 'genericheatmap'
+			charts: ['list', 'countrymap', 'horizontalgroupedbarchart', 'genericheatmap'
 						, 'smscatterplot_year', 'smscatterplot_industry'
 						, 'smscatterplot_industry_all', 'smscatterplot_industry_all_bounded'],
 			trendType: agg_data.trend_type
@@ -1107,55 +993,6 @@ function drawNodeLinkTree(data) {
 					splitby: splitby,
 					level: 'level3'
 				});	
-
-				// Visual Tech 3: grouped bar chart
-				var thirdLevelG1_visual_alter_barchart = thirdLevelG1.append("g")
-					.attr("class", 'level-3' + ' ' + dependent 
-					+ ' ' + independent + ' splitby_' + splitby + ' va barchart')
-					.attr("transform", "translate(" + (globalRectWidth + 10) + ", " + relative_translate_y +")");
-
-				var bar_chart_data = [];
-
-				d.data.values.forEach(function (item) {
-					var singleObj = {};
-					singleObj['subgroup'] = item.subgroup;
-					for (var i = 0; i < chart_data.length; i++){
-						if (item.subgroup == chart_data[i].subgroup) {
-							var key = chart_data[i].name;
-							singleObj[key] = chart_data[i].value;
-						}
-					}
-					bar_chart_data.push(singleObj);
-				});
-
-				const xValue = chart_data => chart_data['value'];
-				var x_value_max = d3.max(chart_data, xValue);
-
-				thirdLevelG1_visual_alter_barchart.call(barChart, {
-					chart_data: bar_chart_data,
-					width: 300,
-					height: chart_height,
-					margin: { top: 0, right: 0, bottom: 0, left: 30 },
-					level: 'level3',
-					largerFlag: largerFlag,
-					percentageFlag: false,
-					x_axis_label: dependent,
-					x_axis_scale: 'scaleLog',
-					x_value_max: x_value_max,
-					x_axis_tick_num: 5,
-					legend_title: independent,
-					myColor: countryColor,
-					tooltipValueFormatFlag: true
-				});	
-
-				/*thirdLevelG1_visual_alter_barchart
-					.append("rect")
-					.attr("width", 20)
-					.attr("height",20)
-					.attr("x",0)
-					.attr("y",0)
-					.attr("fill","red")
-				*/
 
 				// Visual Tech 4: generic heatmap
 				var thirdLevelG1_visual_alter_genericheatmap = thirdLevelG1.append("g")
