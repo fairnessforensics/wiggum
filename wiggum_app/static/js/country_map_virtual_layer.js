@@ -1,3 +1,66 @@
+const country_map_shape_virtual_layer = (selection, props) => {
+	const {
+	  chart_data,
+	  side,
+	  level
+	} = props;
+
+	selection.each(function (d) {
+		// TODO hardcode to exit
+		if (d.data.splitby != "importer" && d.data.splitby != "exporter") {
+			return;
+		}
+
+		var nodeG = d3.select('.level-3'+ '.' + d.data.dependent 
+							+ '.' + d.data.independent + '.splitby_' + d.data.splitby
+							+ '.subgroup_' + d.data.subgroup);
+
+		// Hide the list rects when drawing the country map					
+		nodeG.select('.'+ level +'.list.rect')
+			.transition().style('visibility', "hidden");
+
+		var countryMapG = nodeG.append("g")
+								.attr("class", level + " " + side + " singlecountrymap virtuallayer"
+									+	 " subgroup_" + d.data.subgroup)
+								.attr("width", 20)
+								.attr("height", 20)
+								.attr("transform", "translate(-10, -10)");
+		
+		// Draw identity portion map
+		var single_country = westernHemisphere.filter(obj => {
+			return obj.id == d.data.subgroup
+			})
+
+		var mapG = d3.select("." + level + ".countrymap" 
+						+ "." + d.data.dependent + "." + d.data.independent + ".splitby_" + d.data.splitby);
+
+		map_width = mapG.attr('width');
+		map_height = mapG.attr('height');
+
+		var projection = d3.geoEquirectangular()
+			.center([-90, 0])
+			.translate([map_width / 2, map_height / 2]);
+
+		var path = d3.geoPath().projection(projection);	
+
+		projection.fitSize([20, 20],
+			{"type": "FeatureCollection","features":single_country})
+
+		countryMapG.append("g")
+			.attr("class", "countrynode")
+			.selectAll("path")
+			.data(single_country)
+			.enter()
+			.append("path")
+			.attr("d", path)
+			.style("fill",  heatmapColorScale(d.data.distance))				
+			.attr("stroke", "#929292")
+			.append('title')
+			.text(`The distance is ${d.data.distance}.`);				
+	})
+
+}
+
 const country_map_virtual_layer = (selection, props) => {
 	const {
 	  side,

@@ -52,7 +52,7 @@ const interact_parent_button = (selection, props) => {
 				.transition()
 				.attr("transform", function(d,i) { 
 					var postion_x = d.y + globalFirstLevelWidth 
-									+ secondLevelWidth + globalThirdLevelParentVLWidth;
+									+ globalSecondLevelWidth + globalThirdLevelParentVLWidth;
 					return "translate(" + postion_x + "," + d.x + ")"; });	
 
 			// Reset the position by overwriting
@@ -64,9 +64,6 @@ const interact_parent_button = (selection, props) => {
 		d3.selectAll('.'+ level +'.list.rect')
 			.transition().style('visibility', "visible");
 
-		d3.selectAll('.'+level + '.singlecountrymap')
-			.transition()
-			.style('visibility', 'hidden');	
 
 		/*d3.selectAll('.' + level + '.list.rect, ' + '.' + level + '.list.text')
 			.attr("transform", function(d,i) { 
@@ -555,6 +552,14 @@ const interact_parent_button = (selection, props) => {
 		}
 
 		if (selectedChart == 'countrymap') {
+			if (i == 1) {
+				// Call Virtual Layer
+				levelG.call(country_map_shape_virtual_layer, {
+					side: 'parent',
+					level: 'level3'
+				});
+			}
+
 			if (i == 2) {
 				// Call Virtual Layer
 				levelG.call(country_map_virtual_layer, {
@@ -570,7 +575,7 @@ const interact_parent_button = (selection, props) => {
 					.transition()
 					.attr("transform", function(d,i) { 
 						var postion_x = d.y + globalFirstLevelWidth 
-										+ secondLevelWidth + globalThirdLevelParentVLWidth;
+										+ globalSecondLevelWidth + globalThirdLevelParentVLWidth;
 						return "translate(" + postion_x + "," + d.x + ")"; });	
 
 				d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')
@@ -593,7 +598,7 @@ const interact_parent_button = (selection, props) => {
 					.transition()
 					.attr("transform", function(d,i) { 
 						var postion_x = d.y + globalFirstLevelWidth 
-										+ secondLevelWidth + globalThirdLevelParentVLWidth;
+										+ globalSecondLevelWidth + globalThirdLevelParentVLWidth;
 						return "translate(" + postion_x + "," + d.x + ")"; });	
 
 				d3.selectAll('.' + level + '.list.rect,' + '.' + level + '.list.text')

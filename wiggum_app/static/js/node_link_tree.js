@@ -527,10 +527,10 @@ function drawNodeLinkTree(data) {
 	// Third level: subgroups
 
 	// Left identity labels for virtual layer
-	leftIdentityLabels = ['0', 'I', 'II', 'III', 'IV'];
+	// leftIdentityLabels = ['0', 'I', 'II', 'III', 'IV'];
 
 	// Right identity labels for virtual layer
-	rightIdentityLabels = [];
+	// rightIdentityLabels = [];
 
 	var thirdLevelG1 = g.select('.level-3');
 
@@ -557,7 +557,7 @@ function drawNodeLinkTree(data) {
 		});
 	} else if (agg_data.detail_view_type == 'rank') {
 		// Generate interactive buttons
-		var viewLabels= ['\uf03a', '\uf279', '\uf080', 'HM', 'SM1', 'SM2', 'SM3', 'SM4'];
+		var viewLabels= ['\uf03a', '\uf080', 'HM', 'SM1', 'SM2', 'SM3', 'SM4', '\uf279'];
 
 		thirdLevelButtons.call(interactiveLevelButton, {
 			viewLabels: viewLabels,
@@ -565,9 +565,9 @@ function drawNodeLinkTree(data) {
 			childrenIdentityLabels: childrenIdentityLabels,
 			levelG: thirdLevelG,
 			level: 'level3',
-			charts: ['list', 'countrymap', 'horizontalgroupedbarchart', 'genericheatmap'
+			charts: ['list', 'horizontalgroupedbarchart', 'genericheatmap'
 						, 'smscatterplot_year', 'smscatterplot_industry'
-						, 'smscatterplot_industry_all', 'smscatterplot_industry_all_bounded'],
+						, 'smscatterplot_industry_all', 'smscatterplot_industry_all_bounded', 'countrymap'],
 			trendType: agg_data.trend_type
 		});
 	}
@@ -970,29 +970,6 @@ function drawNodeLinkTree(data) {
 				var paddingOuter = 20;
 				relative_translate_y = -globalRectHeight - paddingOuter/2;
 				chart_height = height + 2 * globalRectHeight + paddingOuter;
-
-				// Visual Tech 2: map
-				var thirdLevelG1_visual_alter_map = thirdLevelG1.append("g")
-					.attr("class", 'level-3' + ' ' + dependent 
-					+ ' ' + independent + ' splitby_' + splitby + ' va map')
-					//.attr("transform", "translate(" + (rectWidth + 10) + ", 0)");
-					.attr("transform", "translate(" + (globalRectWidth + 50) + "," + (-globalRectHeight) + ")");
-				var map_data = globalResultTable.filter(obj => {
-					return obj.dependent === dependent
-							&& obj.independent === independent
-							&& obj.splitby === splitby
-				});
-
-				thirdLevelG1_visual_alter_map.call(countryMap, {
-					chart_data: map_data,
-					leaf_node_links,
-					width: chart_height,
-					height: chart_height,
-					dependent: dependent,
-					independent: independent,
-					splitby: splitby,
-					level: 'level3'
-				});	
 
 				// Visual Tech 4: generic heatmap
 				var thirdLevelG1_visual_alter_genericheatmap = thirdLevelG1.append("g")
@@ -2120,17 +2097,9 @@ function initVisibility() {
 	d3.selectAll('.level1.heatmapdensity').transition().style('visibility', "hidden");	
 	d3.selectAll('.level1.histogram').transition().style('visibility', "hidden");
 
-	// Splitby level
-	//d3.selectAll('.level2.scatterplot2d').transition().style('visibility', "hidden");	
-	d3.selectAll('.level2.barchart').transition().style('visibility', "hidden");	
-	//d3.selectAll('.path.list.barchart').transition().style('visibility', "hidden");	
-
 	// Subgroup level
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
 	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
-	d3.selectAll('.level3.countrymap').transition().style('visibility', "hidden");	
-	d3.selectAll('.level3.singlecountrymap').transition().style('visibility', "hidden");
-	d3.selectAll('.level3.barchart').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.smscatterplot_year').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.smscatterplot_industry').transition().style('visibility', "hidden");	

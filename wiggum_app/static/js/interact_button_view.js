@@ -538,9 +538,8 @@ const interact_view_button = (selection, props) => {
 					chart_data = [];
 					splitby = dd.data.key;
 
-
 					if (selectedChart == 'horizontalgroupedbarchart') {
-						/* Visual Tech 2: horizontal grouped bar chart */
+						/* Visual Tech: horizontal grouped bar chart */
 						var detail_dict = globalInitData.rank_trend_detail_dict.find(obj => {
 							return obj.dependent === dependent
 									&& obj.independent === independent
@@ -563,7 +562,7 @@ const interact_view_button = (selection, props) => {
 							}
 						}
 
-											// Transform the data
+						// Transform the data
 						dd.data.values.forEach(function (item) {
 							var singleObj = {};
 							singleObj['subgroup'] = item.subgroup;
@@ -575,12 +574,14 @@ const interact_view_button = (selection, props) => {
 							}
 							chart_data.push(singleObj);
 						});
+					} else if (selectedChart == 'countrymap') {
+						/* Visual Tech: Country Map */
+						chart_data = globalResultTable.filter(obj => {
+										return obj.dependent === dependent
+											&& obj.independent === independent
+											&& obj.splitby === splitby
+									});
 					}
-
-					// Analytical Abstraction - Aggregation
-
-
-
 
 					/* ==================== View Space ==================== */
 					var relative_translate_y = 0;
@@ -590,16 +591,18 @@ const interact_view_button = (selection, props) => {
 					var height = dd.children[dd.children.length - 1].x - dd.children[0].x;
 					var chart_height = height + 2 * globalRectHeight + paddingOuter;
 
+					thirdLevelG1 = d3.select('#node_link_tree')
+									.select('.level-3' + '.' + dependent 
+									+ '.' + independent + '.splitby_' + splitby);
+
+					var thirdLevelG1_G4Transform = thirdLevelG1.append("g")
+													.attr("class", level + ' ' + dependent + ' ' + independent + ' splitby_' + splitby
+															+ ' virtuallayer')
+													.attr("transform", "translate(" 
+															+ (globalRectWidth + 40) 
+															+ ", " + relative_translate_y +")");
+
 					if (selectedChart == 'horizontalgroupedbarchart') {
-
-						thirdLevelG1 = d3.select('#node_link_tree')
-										.select('.level-3' + '.' + dependent 
-										+ '.' + independent + '.splitby_' + splitby);
-
-					    var thirdLevelG1_G4Transform = thirdLevelG1.append("g")
-														.attr("transform", "translate(" 
-																+ (globalRectWidth + 40) 
-																+ ", " + relative_translate_y +")");
 
 						thirdLevelG1_G4Transform.call(horizontalGroupedBarchart, {
 							chart_data: chart_data,
@@ -616,8 +619,18 @@ const interact_view_button = (selection, props) => {
 							tooltipValueFormatFlag: true
 						});	
 
+					} else if (selectedChart == 'countrymap') {
+
+						thirdLevelG1_G4Transform.call(countryMap, {
+							chart_data: chart_data,
+							width: chart_height,
+							height: chart_height,
+							dependent: dependent,
+							independent: independent,
+							splitby: splitby,
+							level: level
+						});	
 					}
-				
 				})
 			}
 
@@ -790,7 +803,8 @@ const interact_view_button = (selection, props) => {
 				"scatterplot": 7,
 				"interactheatmap": 3,
 				"scatterplot_level2": 2,
-				"horizontalgroupedbarchart": 2
+				"horizontalgroupedbarchart": 2,
+				"countrymap": 5
 		};
 
 		// Show only the buttons relevant to the selected chart
