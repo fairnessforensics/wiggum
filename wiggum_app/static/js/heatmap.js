@@ -227,6 +227,7 @@ function countByTwoRanges(data, var1, var2, var1_range, var2_range) {
 
 const genericHeatmap = (selection, props) => {
 	const {
+	  chart_data,
 	  margin,
 	  width,
 	  height,
@@ -235,12 +236,8 @@ const genericHeatmap = (selection, props) => {
 	  x_var,
 	  y_var,
 	  z_var,
-	  parentIdentityFlag,
-	  childrenIdentityFlag,
-	  rectWidth,
-	  rectHeight,
-	  identity_data,
-	  chart_data,
+	  y_axis_tick_format,
+	  y_axis_label,
 	  myColor,
 	  level
 	} = props;
@@ -303,16 +300,17 @@ const genericHeatmap = (selection, props) => {
 				.paddingInner(0.1)
 				.paddingOuter(0);
 
-	g.append("g")
-		.attr("class", level + " genericheatmap y axis")
-		.call(d3.axisLeft(y)
-				.tickSize(0))
-		.select(".domain").remove();
-
-	if (parentIdentityFlag == true) {
-		// Remove all tick labels
+	if (y_axis_tick_format == null) {
 		g.selectAll(".y.axis .tick").remove();
 	} else {
+		g.append("g")
+			.attr("class", level + " genericheatmap y axis")
+			.call(d3.axisLeft(y)
+					.tickSize(0))
+			.select(".domain").remove();
+	}
+
+	if (y_axis_label != null) {
 		// Add y axis label
 		g.select('.' + level + '.genericheatmap.y.axis')
 			.append("text")
@@ -321,7 +319,7 @@ const genericHeatmap = (selection, props) => {
 			.attr("y", -1)
 			.attr("text-anchor", "middle")
 			.attr('fill', 'black')
-			.text(y_var);
+			.text(y_axis_label);
 	}
 
 	// Use 7 levels of purple
@@ -349,36 +347,6 @@ const genericHeatmap = (selection, props) => {
 		.style("stroke-width", "1px")
 		.append('title')
 		.text(d => `The ${z_var} is ${d3.format(".2s")(d[z_var])}.`);	
-
-	// Children Identity
-	// TODO merge all identity code to a class
-	if (childrenIdentityFlag) {
-		g.selectAll(".rect")
-			.data(identity_data)
-			.enter()    
-			.append("rect")	
-			.attr("class", d => level + " genericheatmap virtuallayer children rect " 
-						+ d.dependent + " " + d.independent)	  
-			.attr("transform", function(d) {
-				var y_position = height/2;
-				return "translate(" + (-margin.left) +"," + y_position + ")";
-			})						
-			//.attr("x", -10)
-			.attr("x", width + rectWidth + 30)
-			.attr("y", -10)						
-			.attr("width", rectWidth)
-			.attr("height", rectHeight)
-			.style("stroke", "black")
-			.style("stroke-width", "2px")
-			.attr("stroke-opacity", 0.3)
-			.style("fill-opacity", 1)
-			.style("fill", d => heatmapColorScale(d.value))
-			.append('title')
-			.text(function(d) {
-				return `The mean distance is ${d3.format(".3f")(d.value)}.`
-			});
-	}
-
 }
 
 const interactHeatmap = (selection, props) => {

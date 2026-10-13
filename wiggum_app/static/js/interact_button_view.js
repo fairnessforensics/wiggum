@@ -583,12 +583,27 @@ const interact_view_button = (selection, props) => {
 									});
 					}
 
+					// Analytical Abstraction - Aggregation
+					if (selectedChart == 'genericheatmap') {
+						/* Visual Tech: generic heatmap */
+						chart_data = aggregate({data: csvData,
+							groupby_keys: [independent, splitby],
+							agg_var: dependent});
+					}
+
 					/* ==================== View Space ==================== */
 					var relative_translate_y = 0;
-					var paddingOuter = 20;
-					relative_translate_y = -globalRectHeight - paddingOuter/2;
-					
+					var paddingOuter;
 					var height = dd.children[dd.children.length - 1].x - dd.children[0].x;
+
+					if (selectedChart == 'genericheatmap') {
+						paddingOuter = 0;
+						relative_translate_y = height/2;
+					} else {
+						paddingOuter = 20;
+						relative_translate_y = -globalRectHeight - paddingOuter/2;
+					}
+					
 					var chart_height = height + 2 * globalRectHeight + paddingOuter;
 
 					thirdLevelG1 = d3.select('#node_link_tree')
@@ -619,6 +634,22 @@ const interact_view_button = (selection, props) => {
 							tooltipValueFormatFlag: true
 						});	
 
+					} else if (selectedChart == 'genericheatmap') {
+
+						thirdLevelG1_G4Transform.call(genericHeatmap, {
+							chart_data: chart_data,
+							width: chart_height,
+							height: chart_height,
+							margin: { left: 0, top: 0, right: 0, bottom: 0 },
+							xValue: d => d[independent],
+							yValue: d => d[splitby],
+							x_var: independent,
+							y_var: splitby,
+							z_var: dependent,
+							y_axis_tick_format: null,
+							y_axis_label: null,
+							level: level
+						});	
 					} else if (selectedChart == 'countrymap') {
 
 						thirdLevelG1_G4Transform.call(countryMap, {

@@ -525,13 +525,6 @@ function drawNodeLinkTree(data) {
 
 
 	// Third level: subgroups
-
-	// Left identity labels for virtual layer
-	// leftIdentityLabels = ['0', 'I', 'II', 'III', 'IV'];
-
-	// Right identity labels for virtual layer
-	// rightIdentityLabels = [];
-
 	var thirdLevelG1 = g.select('.level-3');
 
 	const thirdLevelG1_position = thirdLevelG1.attr('transform').split(/[\s,()]+/);
@@ -970,56 +963,6 @@ function drawNodeLinkTree(data) {
 				var paddingOuter = 20;
 				relative_translate_y = -globalRectHeight - paddingOuter/2;
 				chart_height = height + 2 * globalRectHeight + paddingOuter;
-
-				// Visual Tech 4: generic heatmap
-				var thirdLevelG1_visual_alter_genericheatmap = thirdLevelG1.append("g")
-					.attr("class", 'level-3' + ' ' + dependent 
-					+ ' ' + independent + ' splitby_' + splitby + ' va genericheatmap')
-					.attr("transform", "translate(" + (globalRectWidth + 20) + ", " + height/2 +")");
-
-				var aggResultArray = d3.nest()
-					.key(function(d) {return d[independent]})
-					.key(function(d) {return d[splitby]})
-					.sortKeys(d3.ascending)
-					.rollup(function(v) {
-						return {
-							sum: d3.sum(v, function(d) {return d[dependent]})
-						}
-					})
-					.entries(csvData);
-
-				// Flattern the nested data
-				var heatmap_data = []
-				aggResultArray.forEach(function(row) {
-					row.values.forEach(function(cell) {
-						var singleObj = {};
-						singleObj[independent] = row.key;
-						singleObj[splitby] = cell.key;
-						singleObj[dependent] = cell.value.sum;
-
-						heatmap_data.push(singleObj);
-					});
-				});
-
-				// Adjustment height for vertical alignment
-				var adjustHeight = 20;
-
-				thirdLevelG1_visual_alter_genericheatmap.call(genericHeatmap, {
-					margin: { left: 30, top: 0, right: 0, bottom: 0 },
-					width: height + globalRectHeight + adjustHeight,
-					height: height + globalRectHeight + adjustHeight,
-					xValue: d => d[independent],
-					yValue: d => d[splitby],
-					x_var: independent,
-					y_var: splitby,
-					z_var: dependent,
-					parentIdentityFlag: true,
-					childrenIdentityFlag: false,
-					rectWidth: globalRectWidth,
-					rectHeight: globalRectHeight,
-					chart_data: heatmap_data,
-					level: 'level3'
-				});	
 
 				// Visual Tech 4: small multiples scatterplot for year
 				var thirdLevelG1_visual_alter_smscatterplot_year = thirdLevelG1.append("g")
@@ -2100,7 +2043,6 @@ function initVisibility() {
 	// Subgroup level
 	d3.selectAll('.level3.list').transition().style('visibility', "visible");
 	d3.selectAll('.level3.stripplot').transition().style('visibility', "hidden");	
-	d3.selectAll('.level3.genericheatmap').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.smscatterplot_year').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.smscatterplot_industry').transition().style('visibility', "hidden");	
 	d3.selectAll('.level3.smscatterplot_industry_all').transition().style('visibility', "hidden");	

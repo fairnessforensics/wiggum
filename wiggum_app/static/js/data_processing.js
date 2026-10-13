@@ -22,7 +22,7 @@ const aggregate = (props) => {
 		row.values.forEach(function(cell) {
 			var singleObj = {};
 			singleObj[groupby_keys[0]] = row.key;
-			singleObj[groupby_keys[1]] = Number(cell.key);
+			singleObj[groupby_keys[1]] = !isNaN(Number(cell.key)) ? Number(cell.key) : cell.key;
 			singleObj[agg_var] = cell.value.sum;
 
 			result.push(singleObj);
