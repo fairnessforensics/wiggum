@@ -835,6 +835,7 @@ const interact_view_button = (selection, props) => {
 				"interactheatmap": 3,
 				"scatterplot_level2": 2,
 				"horizontalgroupedbarchart": 2,
+				"genericheatmap": 2,
 				"countrymap": 5
 		};
 
